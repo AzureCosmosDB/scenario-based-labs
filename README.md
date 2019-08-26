@@ -1,1 +1,1 @@
-# cosmos-db-scenario-based-labs
+# Cosmos DB Scenario-Based Labs
