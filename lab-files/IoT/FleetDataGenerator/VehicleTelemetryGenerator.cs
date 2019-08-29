@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
@@ -21,27 +22,27 @@ namespace FleetDataGenerator
         private const double LowOutsideTempProbabilityPower = 1.2;
         private const double HighEngineTempProbabilityPower = 0.3;
         private const double LowEngineTempProbabilityPower = 1.2;
-        static readonly List<string> VinList = new List<string>();
+        private static readonly List<string> VinList = new List<string>();
 
         public static void Init()
         {
             GetVinMasterList();
         }
 
-        public static CarEvent GenerateMessage()
+        public static VehicleEvent GenerateMessage()
         {
-            var city = GetLocation();
-            return new CarEvent()
+            var state = GetLocation();
+            return new VehicleEvent()
             {
                 vin = GetRandomVin(),
-                city = city,
-                outsideTemperature = GetOutsideTemp(city),
-                engineTemperature = GetEngineTemp(city),
-                speed = GetSpeed(city),
+                state = state,
+                outsideTemperature = GetOutsideTemp(state),
+                engineTemperature = GetEngineTemp(state),
+                speed = GetSpeed(state),
                 fuel = Random.Next(0, 40),
                 fuelRate = GetEngineFuelRateValue(),
-                engineoil = GetOil(city),
-                tirepressure = GetTirePressure(city),
+                engineoil = GetOil(state),
+                tirepressure = GetTirePressure(state),
                 odometer = Random.Next(0, 200000),
                 accelerator_pedal_position = Random.Next(0, 100),
                 parking_brake_status = GetRandomBoolean(),
@@ -60,49 +61,76 @@ namespace FleetDataGenerator
             System.Console.WriteLine(task.Exception?.ToString() ?? "null error");
         }
 
-        private static int GetSpeed(string city)
+        private static int GetSpeed(string state)
         {
-            if (city.ToLower() == "orlando")
+            string[] statesWithHigherSpeed =
+            {
+                "AZ", "CA", "DE", "FL", "IL", "IN", "MN", "MT", "NM",
+                "NV", "NY", "PA", "RI", "SC", "SD", "TX", "VA", "VT",
+                "WA", "WI"
+            };
+            if (statesWithHigherSpeed.Contains(state.ToUpper()))
             {
                 return GetRandomWeightedNumber(100, 0, HighSpeedProbabilityPower);
             }
             return GetRandomWeightedNumber(100, 0, LowSpeedProbabilityPower);
         }
 
-        public static int GetOil(string city)
+        private static int GetOil(string state)
         {
-            if (city.ToLower() == "orlando")
+            string[] statesWithLowerOilPressure =
+            {
+                "AK", "AR", "AZ", "CO", "CT", "DE", "HI", "KS", "KY",
+                "LA", "MA", "MD", "MO", "NC", "ND", "NM", "OH", "PA",
+                "SC", "TN", "UT", "VA", "VT", "WA", "WI", "WV", "WY"
+            };
+            if (statesWithLowerOilPressure.Contains(state.ToUpper()))
             {
                 return GetRandomWeightedNumber(50, 0, LowOilProbabilityPower);
             }
             return GetRandomWeightedNumber(50, 0, HighOilProbabilityPower);
         }
 
-        public static int GetTirePressure(string city)
+        private static int GetTirePressure(string state)
         {
-            if (city.ToLower() == "orlando")
+            string[] statesWithLowerTirePressure =
+            {
+                "AL", "AZ", "CA", "CT", "DE", "FL", "IA", "IN", "KY",
+                "MA", "ME", "MN", "RI", "SD", "TX", "UT", "VA", "WA"
+            };
+            if (statesWithLowerTirePressure.Contains(state.ToUpper()))
             {
                 return GetRandomWeightedNumber(50, 0, LowTirePressureProbabilityPower);
             }
             return GetRandomWeightedNumber(50, 0, HighTirePressureProbabilityPower);
         }
 
-        public static int GetEngineTemp(string city)
+        private static int GetEngineTemp(string state)
         {
-            if (city.ToLower() == "orlando")
+            string[] statesWithHigherEngineTemp =
+            {
+                "AL", "AR", "AZ", "CA", "DE", "FL", "IA", "IL", "IN",
+                "KS", "LA", "MO", "MS", "MT", "NJ", "NM", "NV", "NY",
+                "OK", "OR", "TX", "VA", "VT", "WA", "WY"
+            };
+            if (statesWithHigherEngineTemp.Contains(state.ToUpper()))
             {
                 return GetRandomWeightedNumber(500, 0, HighEngineTempProbabilityPower);
             }
             return GetRandomWeightedNumber(500, 0, LowEngineTempProbabilityPower);
         }
 
-        public static int GetOutsideTemp(string city)
+        private static int GetOutsideTemp(string state)
         {
-            if (city.ToLower() == "orlando")
+            string[] statesWithHigherOutsideTemp =
             {
-                return GetRandomWeightedNumber(100, 0, LowOutsideTempProbabilityPower);
+                "AL", "AZ", "CA", "FL", "GA", "LA", "NM", "NV", "TX"
+            };
+            if (statesWithHigherOutsideTemp.Contains(state.ToUpper()))
+            {
+                return GetRandomWeightedNumber(110, 40, HighOutsideTempProbabilityPower);
             }
-            return GetRandomWeightedNumber(100, 0, HighOutsideTempProbabilityPower);
+            return GetRandomWeightedNumber(90, 0, LowOutsideTempProbabilityPower);
         }
 
         private static int GetRandomWeightedNumber(int max, int min, double probabilityPower)
@@ -113,7 +141,7 @@ namespace FleetDataGenerator
             return (int)result;
         }
 
-        public static string GetGearPos()
+        private static string GetGearPos()
         {
             var list = new List<string>() { "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eight" };
             var l = list.Count;
@@ -121,31 +149,33 @@ namespace FleetDataGenerator
             return list[num];
         }
 
-        static double GetEngineFuelRateValue()
+        private static double GetEngineFuelRateValue()
         {
-            var variance = Random.NextDouble() * 6 + 8;
-            return variance;
+            var rate = Random.NextDouble() * 6 + 8;
+            return rate;
         }
 
         public static bool GetRandomBoolean()
         {
-            return new Random().Next(100) % 2 == 0;
+            return Random.Next(100) % 2 == 0;
         }
 
-        private static void GetVinMasterList()
+        public static void GetVinMasterList()
         {
-            var reader = new StreamReader(File.OpenRead(@"VINMasterList.csv"));
-            while (!reader.EndOfStream)
+            using (var reader = new StreamReader(File.OpenRead(@"VINMasterList.csv")))
             {
-                var line = reader.ReadLine();
-                if (line == null) continue;
-                var values = line.Split(';');
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (line == null) continue;
+                    var values = line.Split(';');
 
-                VinList.Add(values[0]);
+                    VinList.Add(values[0]);
+                }
             }
         }
 
-        private static string GetRandomVin()
+        public static string GetRandomVin()
         {
             var randomIndex = Random.Next(1, VinList.Count - 1);
             return VinList[randomIndex];
@@ -153,11 +183,14 @@ namespace FleetDataGenerator
 
         public static string GetLocation()
         {
-            var list = new List<string>() { "Los Angeles", "San Diego", "Chicago", "Madison", "Orlando", "Tampa" };
-            var l = list.Count;
-            var r = new Random();
-            var num = r.Next(l);
-            return list[num];
+            string[] states =
+            {
+                "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "IA", "ID", "IL", "IN", "KS", "KY",
+                "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY",
+                "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"
+            };
+            var num = Random.Next(50);
+            return states[num];
         }
     }
 }

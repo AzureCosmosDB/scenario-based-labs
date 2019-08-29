@@ -13,7 +13,10 @@ namespace CosmosDbIoTScenario.Common
             public static string Southeast = "Southeast";
         }
 
-        public struct TripStatus
+        /// <summary>
+        /// Status used for packages and consignments.
+        /// </summary>
+        public struct Status
         {
             public static string Pending = "Pending";
             public static string Active = "Active";
