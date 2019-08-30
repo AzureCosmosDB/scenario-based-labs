@@ -1,29 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace CosmosDbIoTScenario.Common.Models
 {
     public class Package
     {
-        public string partitionKey => packageId;
-        public string packageId { get; set; }
+        [JsonProperty] public string partitionKey => packageId;
+        [JsonProperty] public string packageId { get; set; }
         // This property is used to indicate the type of document this is within the container.
         // This allows consumers to query documents stored within the container by the type.
         // This is needed because a container can contain any number of document types within,
         // since it does not enforce any type of schema.
-        public string entityType => "Package";
-        public string tripId { get; set; }
-        public string consignmentId { get; set; }
-        public double height { get; set; }
-        public double length { get; set; }
-        public double depth { get; set; }
-        public double grossWeight { get; set; }
-        public string storageTemperature { get; set; }
-        public bool highValue { get; set; }
-        public PackageTrip trip { get; set; }
-        public PackageConsignment consignment { get; set; }
-        public DateTime timestamp { get; set; }
+        [JsonProperty] public string entityType => "Package";
+        [JsonProperty] public string tripId { get; set; }
+        [JsonProperty] public string consignmentId { get; set; }
+        [JsonProperty] public double height { get; set; }
+        [JsonProperty] public double length { get; set; }
+        [JsonProperty] public double width { get; set; }
+        [JsonProperty] public double grossWeight { get; set; }
+        [JsonProperty] public double storageTemperature { get; set; }
+        [JsonProperty] public bool highValue { get; set; }
+        [JsonProperty] public PackageTrip trip { get; set; }
+        [JsonProperty] public PackageConsignment consignment { get; set; }
+        [JsonProperty] public DateTime timestamp { get; set; }
     }
 
     public class PackageTrip

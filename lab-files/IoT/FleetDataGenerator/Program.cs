@@ -99,7 +99,7 @@ namespace FleetDataGenerator
                 var dataCollection = _database.GetContainer(TelemetryContainerName);
 
                 var offer = await dataCollection.ReadThroughputAsync();
-                
+
                 //var offer = (OfferV2)_cosmosDbClient.CreateOfferQuery().Where(o => o.ResourceLink == dataCollection.SelfLink).AsEnumerable().FirstOrDefault();
                 if (offer != null)
                 {
@@ -135,7 +135,7 @@ namespace FleetDataGenerator
         /// MillisecondsToRun: The maximum amount of time to allow the generator to run before stopping transmission of data. The default value is 14,400.
         /// MillisecondsToLead: The amount of time to wait before sending simulated data. Default value is 0.
         /// </returns>
-        private static (string EventHubConnectionString, 
+        private static (string EventHubConnectionString,
             string CosmosDbConnectionString,
             int NumberSimulatedTrucks,
             int MillisecondsToRun,
@@ -148,7 +148,7 @@ namespace FleetDataGenerator
                 var cosmosDbConnectionString = _configuration["COSMOS_DB_CONNECTION_STRING"];
                 var numberOfMillisecondsToRun = (int.TryParse(_configuration["SECONDS_TO_RUN"], out var outputSecondToRun) ? outputSecondToRun : 0) * 1000;
                 var numberOfMillisecondsToLead = (int.TryParse(_configuration["SECONDS_TO_LEAD"], out var outputSecondsToLead) ? outputSecondsToLead : 0) * 1000;
-                var numberOfSimulatedTrucks = int.TryParse(_configuration["NUMBER_SIMULATED_TRUCKS"], out var outputSimulatedTrucks)? outputSimulatedTrucks : 0;
+                var numberOfSimulatedTrucks = int.TryParse(_configuration["NUMBER_SIMULATED_TRUCKS"], out var outputSimulatedTrucks) ? outputSimulatedTrucks : 0;
 
                 if (string.IsNullOrWhiteSpace(cosmosDbConnectionString))
                 {
@@ -189,7 +189,7 @@ namespace FleetDataGenerator
             var telemetryContainerDefinition =
                 new ContainerProperties(id: TelemetryContainerName, partitionKeyPath: $"/{PartitionKey}")
                 {
-                    IndexingPolicy = {IndexingMode = IndexingMode.Consistent}
+                    IndexingPolicy = { IndexingMode = IndexingMode.Consistent }
                 };
 
             // Tune the indexing policy for write-heavy workloads by only including regularly queried paths.
@@ -214,7 +214,7 @@ namespace FleetDataGenerator
                 {
                     // Set the indexing policy to consistent and use the default settings because we expect read-heavy workloads in this container (includes all paths (/*) with all range indexes).
                     // Indexing all paths when you have write-heavy workloads may impact performance and cost more RU/s than desired.
-                    IndexingPolicy = {IndexingMode = IndexingMode.Consistent}
+                    IndexingPolicy = { IndexingMode = IndexingMode.Consistent }
                 };
 
             // Create with a throughput of 15000 RU/s.

@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace CosmosDbIoTScenario.Common.Models
 {
     public class Consignment
     {
-        public string partitionKey => consignmentId;
-        public string consignmentId { get; set; }
+        [JsonProperty] public string partitionKey => consignmentId;
+        [JsonProperty] public string consignmentId { get; set; }
         // This property is used to indicate the type of document this is within the container.
         // This allows consumers to query documents stored within the container by the type.
         // This is needed because a container can contain any number of document types within,
         // since it does not enforce any type of schema.
-        public string entityType => "Consignment";
-        public string customer { get; set; }
-        public string description { get; set; }
-        public string status { get; set; }
-        public DateTime deliveryDueDate { get; set; }
+        [JsonProperty] public string entityType => "Consignment";
+        [JsonProperty] public string customer { get; set; }
+        [JsonProperty] public string description { get; set; }
+        [JsonProperty] public string status { get; set; }
+        [JsonProperty] public DateTime deliveryDueDate { get; set; }
         /// <summary>
         /// List of package IDs associated with the consignment.
         /// </summary>
-        public IEnumerable<string> packages { get; set; }
-        public DateTime timestamp { get; set; }
+        [JsonProperty] public IEnumerable<string> packages { get; set; }
+        [JsonProperty] public DateTime timestamp { get; set; }
     }
 }

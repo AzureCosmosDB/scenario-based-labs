@@ -22,11 +22,11 @@ namespace FleetDataGenerator
         private const double LowOutsideTempProbabilityPower = 1.2;
         private const double HighEngineTempProbabilityPower = 0.3;
         private const double LowEngineTempProbabilityPower = 1.2;
-        private static readonly List<string> VinList = new List<string>();
+        private static List<string> VinList = new List<string>();
 
         public static void Init()
         {
-            GetVinMasterList();
+            VinList = GetVinMasterList().ToList();
         }
 
         public static VehicleEvent GenerateMessage()
@@ -160,8 +160,9 @@ namespace FleetDataGenerator
             return Random.Next(100) % 2 == 0;
         }
 
-        public static void GetVinMasterList()
+        public static IEnumerable<string> GetVinMasterList()
         {
+            var vins = new List<string>();
             using (var reader = new StreamReader(File.OpenRead(@"VINMasterList.csv")))
             {
                 while (!reader.EndOfStream)
@@ -170,9 +171,11 @@ namespace FleetDataGenerator
                     if (line == null) continue;
                     var values = line.Split(';');
 
-                    VinList.Add(values[0]);
+                    vins.Add(values[0]);
                 }
             }
+
+            return vins;
         }
 
         public static string GetRandomVin()
