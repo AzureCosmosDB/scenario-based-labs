@@ -6,14 +6,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
+using CosmosDbIoTScenario.Common.Models;
 using FleetDataGenerator.OutputHelpers;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Scripts;
+using Microsoft.Azure.CosmosDB.BulkExecutor;
 using Microsoft.Extensions.Configuration;
-using Database = Microsoft.Azure.Cosmos.Database;
-using DataType = Microsoft.Azure.Cosmos.DataType;
-using ExcludedPath = Microsoft.Azure.Cosmos.ExcludedPath;
-using IndexingMode = Microsoft.Azure.Cosmos.IndexingMode;
-using IndexingPolicy = Microsoft.Azure.Cosmos.IndexingPolicy;
+using Newtonsoft.Json;
 
 namespace FleetDataGenerator
 {
@@ -98,9 +97,8 @@ namespace FleetDataGenerator
                 // Find and output the container details, including # of RU/s.
                 var dataCollection = _database.GetContainer(TelemetryContainerName);
 
-                var offer = await dataCollection.ReadThroughputAsync();
+                var offer = await dataCollection.ReadThroughputAsync(cancellationToken);
 
-                //var offer = (OfferV2)_cosmosDbClient.CreateOfferQuery().Where(o => o.ResourceLink == dataCollection.SelfLink).AsEnumerable().FirstOrDefault();
                 if (offer != null)
                 {
                     var currentCollectionThroughput = offer ?? 0;
@@ -109,6 +107,9 @@ namespace FleetDataGenerator
                     var estimatedCostPerHour = estimatedCostPerMonth / (24 * 30);
                     WriteLineInColor($"The collection will cost an estimated ${estimatedCostPerHour:0.00} per hour (${estimatedCostPerMonth:0.00} per month (per write region))", ConsoleColor.Green);
                 }
+
+                // Initially seed the Cosmos DB database with metadata if empty.
+                await SeedDatabase(cosmosDbConnectionString, cancellationToken);
 
                 // Start sending data to Cosmos DB.
                 //SendData(100, taskWaitTime, cancellationToken, progress).Wait();
@@ -200,7 +201,6 @@ namespace FleetDataGenerator
             telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Clear();
             telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/vin/?" });
             telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/state/?" });
-            telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/tripId/?" });
             telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/partitionKey/?" });
 
             // Create the container with a throughput of 15000 RU/s.
@@ -217,9 +217,25 @@ namespace FleetDataGenerator
                     IndexingPolicy = { IndexingMode = IndexingMode.Consistent }
                 };
 
-            // Create with a throughput of 15000 RU/s.
-            await _database.CreateContainerIfNotExistsAsync(metadataContainerDefinition, throughput: 15000);
+            // Set initial performance to 50,000 RU/s for bulk import performance.
+            await _database.CreateContainerIfNotExistsAsync(metadataContainerDefinition, throughput: 50000);
             #endregion
+        }
+
+        private static async Task ChangeContainerPerformance(Container container, int desiredThroughput)
+        {
+            // Retrieve the existing throughput.
+            var throughputResponse = await container.ReadThroughputAsync();
+
+            WriteLineInColor($"\nThe {container.Id} is configured with the existing throughput: {throughputResponse}\nChanging throughput to {desiredThroughput}", ConsoleColor.White);
+
+            // Change the throughput performance.
+            await container.ReplaceThroughputAsync(desiredThroughput);
+
+            // Verify the changed throughput.
+            throughputResponse = await container.ReadThroughputAsync();
+
+            WriteLineInColor($"\nChanged {container.Id}'s requested throughput to {throughputResponse}", ConsoleColor.Cyan);
         }
 
         /// <summary>
@@ -235,9 +251,65 @@ namespace FleetDataGenerator
         /// Get the collection if it exists, null if it doesn't.
         /// </summary>
         /// <returns>The requested collection</returns>
-        private static async Task<Container> GetContainerIfExists(string databaseName, string containerName)
+        private static async Task<Container> GetContainerIfExists(string containerName)
         {
             return _database.GetContainer(containerName);
+        }
+
+        /// <summary>
+        /// Seeds the Cosmos DB metadata container.
+        /// </summary>
+        private static async Task SeedDatabase(CosmosDbConnectionString cosmosDbConnectionString, CancellationToken cancellationToken)
+        {
+            // TODO: Check if data exists before seeding.
+            var count = 0;
+            var query = new QueryDefinition($"SELECT VALUE COUNT(1) FROM c");
+            var container = await GetContainerIfExists(MetadataContainerName);
+            var resultSetIterator = container.GetItemQueryIterator<int>(query, requestOptions: new QueryRequestOptions() { MaxItemCount = 1});
+            
+            if (resultSetIterator.HasMoreResults)
+            {
+                var result = await resultSetIterator.ReadNextAsync();
+                if (result.Count > 0) count = result.FirstOrDefault();
+            }
+
+            if (count == 0)
+            {
+                WriteLineInColor("Generating data to seed database...", ConsoleColor.Cyan);
+
+                var bulkImporter = new BulkImporter(cosmosDbConnectionString);
+                var vehicles = DataGenerator.GenerateVehicles().ToList();
+                var consignments = DataGenerator.GenerateConsignments(900).ToList();
+                var packages = DataGenerator.GeneratePackages(consignments.ToList()).ToList();
+                var trips = DataGenerator.GenerateTrips(consignments.ToList(), vehicles.ToList()).ToList();
+
+                WriteLineInColor("Generated data to seed database. Saving metadata to Cosmos DB...", ConsoleColor.Cyan);
+
+                // Save vehicles:
+                WriteLineInColor($"Adding {vehicles.Count()} vehicles...", ConsoleColor.Green);
+                await bulkImporter.BulkImport(vehicles, DatabaseName, MetadataContainerName, cancellationToken);
+
+                // Save consignments:
+                WriteLineInColor($"Adding {consignments.Count()} consignments...", ConsoleColor.Green);
+                await bulkImporter.BulkImport(consignments, DatabaseName, MetadataContainerName, cancellationToken);
+
+                // Save packages:
+                WriteLineInColor($"Adding {packages.Count()} packages...", ConsoleColor.Green);
+                await bulkImporter.BulkImport(packages, DatabaseName, MetadataContainerName, cancellationToken);
+
+                // Save trips:
+                WriteLineInColor($"Adding {trips.Count()} trips...", ConsoleColor.Green);
+                await bulkImporter.BulkImport(trips, DatabaseName, MetadataContainerName, cancellationToken);
+
+                WriteLineInColor("Finished seeding Cosmos DB.", ConsoleColor.Cyan);
+                
+                // Scale down the requested throughput (RU/s) for the metadata container:
+                await ChangeContainerPerformance(container, 15000);
+            }
+            else
+            {
+                WriteLineInColor("\nCosmos DB already contains data. Skipping database seeding step...", ConsoleColor.Yellow);
+            }
         }
     }
 }

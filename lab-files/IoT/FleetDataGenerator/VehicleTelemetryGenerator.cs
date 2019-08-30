@@ -160,12 +160,12 @@ namespace FleetDataGenerator
             return Random.Next(100) % 2 == 0;
         }
 
-        public static IEnumerable<string> GetVinMasterList()
+        public static IEnumerable<string> GetVinMasterList(int maxVINs = 1000)
         {
             var vins = new List<string>();
             using (var reader = new StreamReader(File.OpenRead(@"VINMasterList.csv")))
             {
-                while (!reader.EndOfStream)
+                while (!reader.EndOfStream && vins.Count < maxVINs)
                 {
                     var line = reader.ReadLine();
                     if (line == null) continue;

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FleetDataGenerator
 {
-    internal class CosmosDbConnectionString
+    public class CosmosDbConnectionString
     {
         // This class parses a Cosmos DB connection string to its Account Key and Account Endpoint components.
         public CosmosDbConnectionString(string connectionString)
