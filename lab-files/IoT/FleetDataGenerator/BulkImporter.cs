@@ -36,10 +36,9 @@ namespace FleetDataGenerator
         }
 
         public async Task BulkImport<T>(IEnumerable<T> documents,
-            string databaseName, string collectionName, CancellationToken cancellationToken) where T : class
+            string databaseName, string collectionName,
+            CancellationToken cancellationToken, int numberOfBatchesEachCollection = 10) where T : class
         {
-            var numberOfBatchesEachCollection = 10;
-
             var dataCollection = GetCollectionIfExists(_client, databaseName, collectionName);
             if (dataCollection == null)
             {

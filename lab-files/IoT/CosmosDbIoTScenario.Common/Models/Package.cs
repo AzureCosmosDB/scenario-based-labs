@@ -7,7 +7,10 @@ namespace CosmosDbIoTScenario.Common.Models
 {
     public class Package
     {
-        [JsonProperty] public string partitionKey => id;
+        /// <summary>
+        /// Partition: consignmentId
+        /// </summary>
+        [JsonProperty] public string partitionKey => consignmentId;
         [JsonProperty] public string id { get; set; }
         // This property is used to indicate the type of document this is within the container.
         // This allows consumers to query documents stored within the container by the type.

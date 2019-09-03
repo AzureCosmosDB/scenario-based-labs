@@ -21,6 +21,9 @@ namespace FleetDataGenerator
         private static CosmosClient _cosmosDbClient;
         private static Database _database = null;
         private static IConfigurationRoot _configuration;
+        private static List<SimulatedVehicle> _simulatedVehicles = new List<SimulatedVehicle>();
+        private static CancellationTokenSource _cancellationSource;
+        private static Dictionary<string, Task> _runningVehicleTasks;
 
         private const string DatabaseName = "ContosoAuto";
         private const string TelemetryContainerName = "telemetry";
@@ -44,9 +47,10 @@ namespace FleetDataGenerator
             var arguments = ParseArguments();
             var cosmosDbConnectionString = new CosmosDbConnectionString(arguments.CosmosDbConnectionString);
             // Set an optional timeout for the generator.
-            var cancellationSource = arguments.MillisecondsToRun == 0 ? new CancellationTokenSource() : new CancellationTokenSource(arguments.MillisecondsToRun);
-            var cancellationToken = cancellationSource.Token;
+            _cancellationSource = arguments.MillisecondsToRun == 0 ? new CancellationTokenSource() : new CancellationTokenSource(arguments.MillisecondsToRun);
+            var cancellationToken = _cancellationSource.Token;
             var statistics = new Statistic[0];
+            List<Trip> trips;
 
             // Set the Cosmos DB connection policy.
             var connectionPolicy = new CosmosClientOptions
@@ -83,39 +87,64 @@ namespace FleetDataGenerator
             Console.CancelKeyPress += (o, e) =>
             {
                 WriteLineInColor("Stopped generator. No more events are being sent.", ConsoleColor.Yellow);
-                cancellationSource.Cancel();
+                CancelAll();
 
                 // Allow the main thread to continue and exit...
                 WaitHandle.Set();
             };
 
             // Instantiate Cosmos DB client and start sending messages:
-            using (_cosmosDbClient = new CosmosClient(cosmosDbConnectionString.ServiceEndpoint.OriginalString, cosmosDbConnectionString.AuthKey, connectionPolicy))
+            using (_cosmosDbClient = new CosmosClient(cosmosDbConnectionString.ServiceEndpoint.OriginalString,
+                cosmosDbConnectionString.AuthKey, connectionPolicy))
             {
                 await InitializeCosmosDb();
 
                 // Find and output the container details, including # of RU/s.
-                var dataCollection = _database.GetContainer(TelemetryContainerName);
+                var container = _database.GetContainer(MetadataContainerName);
 
-                var offer = await dataCollection.ReadThroughputAsync(cancellationToken);
+                var offer = await container.ReadThroughputAsync(cancellationToken);
 
                 if (offer != null)
                 {
                     var currentCollectionThroughput = offer ?? 0;
-                    WriteLineInColor($"Found collection `{TelemetryContainerName}` with {currentCollectionThroughput} RU/s ({currentCollectionThroughput} reads/second; {currentCollectionThroughput / 5} writes/second @ 1KB doc size)", ConsoleColor.Green);
-                    var estimatedCostPerMonth = 0.06 * currentCollectionThroughput;
-                    var estimatedCostPerHour = estimatedCostPerMonth / (24 * 30);
-                    WriteLineInColor($"The collection will cost an estimated ${estimatedCostPerHour:0.00} per hour (${estimatedCostPerMonth:0.00} per month (per write region))", ConsoleColor.Green);
+                    WriteLineInColor(
+                        $"Found collection `{MetadataContainerName}` with {currentCollectionThroughput} RU/s.",
+                        ConsoleColor.Green);
                 }
 
                 // Initially seed the Cosmos DB database with metadata if empty.
                 await SeedDatabase(cosmosDbConnectionString, cancellationToken);
-
-                // Start sending data to Cosmos DB.
-                //SendData(100, taskWaitTime, cancellationToken, progress).Wait();
+                trips = await GetTripsFromDatabase(arguments.NumberSimulatedTrucks, container);
             }
 
-            cancellationSource.Cancel();
+            try
+            {
+                // Start sending telemetry from simulated vehicles to Event Hubs:
+                _runningVehicleTasks = await SetupVehicleTelemetryRunTasks(arguments.NumberSimulatedTrucks,
+                    trips, arguments.EventHubConnectionString);
+                var tasks = _runningVehicleTasks.Select(t => t.Value).ToList();
+                while (tasks.Count > 0)
+                {
+                    try
+                    {
+                        Task.WhenAll(tasks).Wait(cancellationToken);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        //expected
+                    }
+
+                    tasks = _runningVehicleTasks.Where(t => !t.Value.IsCompleted).Select(t => t.Value).ToList();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("The vehicle telemetry operation was canceled.");
+                // No need to throw, as this was expected.
+            }
+            
+
+            CancelAll();
             Console.WriteLine();
             WriteLineInColor("Done sending generated vehicle telemetry data", ConsoleColor.Cyan);
             Console.WriteLine();
@@ -124,6 +153,71 @@ namespace FleetDataGenerator
             // Keep the console open.
             Console.ReadLine();
             WaitHandle.WaitOne();
+        }
+
+        /// <summary>
+        /// Retrieves trips from Cosmos DB.
+        /// </summary>
+        /// <param name="numberOfSimulatedTrucks"></param>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        private static async Task<List<Trip>> GetTripsFromDatabase(int numberOfSimulatedTrucks, Container container)
+        {
+            var trips = new List<Trip>();
+
+            WriteLineInColor($"\nRetrieving trip data for {numberOfSimulatedTrucks} vehicles from Cosmos DB.", ConsoleColor.DarkCyan);
+
+            var query = new QueryDefinition("SELECT TOP @limit * FROM c WHERE c.entityType = 'Trip' AND c.status = @status")
+                .WithParameter("@limit", numberOfSimulatedTrucks)
+                .WithParameter("@status", WellKnown.Status.Pending);
+
+            var results = container.GetItemQueryIterator<Trip>(query);
+
+            while (results.HasMoreResults)
+            {
+                foreach (var trip in await results.ReadNextAsync())
+                {
+                    trips.Add(trip);
+                }
+            }
+
+            return trips;
+        }
+
+        /// <summary>
+        /// Creates the set of tasks that will send telemetry data to Event Hubs.
+        /// </summary>
+        /// <returns></returns>
+        private static async Task<Dictionary<string, Task>> SetupVehicleTelemetryRunTasks(int numberOfSimulatedTrucks, List<Trip> trips, string eventHubsConnectionString)
+        {
+            var vehicleTelemetryRunTasks = new Dictionary<string, Task>();
+            WriteLineInColor($"\nFound {trips.Count} trips. Setting up simulated vehicles...", ConsoleColor.Cyan);
+
+            foreach (var trip in trips)
+            {
+                // 8% probability of a refrigeration unit failure.
+                var causeRefrigerationUnitFailure = DataGenerator.GetRandomWeightedBoolean(8);
+                // 30% of immediate vs. gradual failure if a failure occurs.
+                var immediateFailure = DataGenerator.GetRandomWeightedBoolean(30);
+
+                _simulatedVehicles.Add(new SimulatedVehicle(trip, causeRefrigerationUnitFailure, immediateFailure, eventHubsConnectionString));
+            }
+
+            foreach (var simulatedVehicle in _simulatedVehicles)
+            {
+                vehicleTelemetryRunTasks.Add(simulatedVehicle.TripId, simulatedVehicle.RunVehicleSimulationAsync());
+            }
+
+            return vehicleTelemetryRunTasks;
+        }
+
+        private static void CancelAll()
+        {
+            foreach (var simulatedVehicle in _simulatedVehicles)
+            {
+                simulatedVehicle.CancelCurrentRun();
+            }
+            _cancellationSource.Cancel();
         }
 
         /// <summary>
@@ -154,6 +248,11 @@ namespace FleetDataGenerator
                 if (string.IsNullOrWhiteSpace(cosmosDbConnectionString))
                 {
                     throw new ArgumentException("COSMOS_DB_CONNECTION_STRING must be provided");
+                }
+
+                if (string.IsNullOrWhiteSpace(eventHubConnectionString))
+                {
+                    throw new ArgumentException("EVENT_HUB_CONNECTION_STRING must be provided");
                 }
 
                 if (numberOfSimulatedTrucks < 1 || numberOfSimulatedTrucks > 1000)
@@ -287,19 +386,19 @@ namespace FleetDataGenerator
 
                 // Save vehicles:
                 WriteLineInColor($"Adding {vehicles.Count()} vehicles...", ConsoleColor.Green);
-                await bulkImporter.BulkImport(vehicles, DatabaseName, MetadataContainerName, cancellationToken);
+                await bulkImporter.BulkImport(vehicles, DatabaseName, MetadataContainerName, cancellationToken, 1);
 
                 // Save consignments:
                 WriteLineInColor($"Adding {consignments.Count()} consignments...", ConsoleColor.Green);
-                await bulkImporter.BulkImport(consignments, DatabaseName, MetadataContainerName, cancellationToken);
+                await bulkImporter.BulkImport(consignments, DatabaseName, MetadataContainerName, cancellationToken, 1);
 
                 // Save packages:
                 WriteLineInColor($"Adding {packages.Count()} packages...", ConsoleColor.Green);
-                await bulkImporter.BulkImport(packages, DatabaseName, MetadataContainerName, cancellationToken);
+                await bulkImporter.BulkImport(packages, DatabaseName, MetadataContainerName, cancellationToken, 4);
 
                 // Save trips:
                 WriteLineInColor($"Adding {trips.Count()} trips...", ConsoleColor.Green);
-                await bulkImporter.BulkImport(trips, DatabaseName, MetadataContainerName, cancellationToken);
+                await bulkImporter.BulkImport(trips, DatabaseName, MetadataContainerName, cancellationToken, 1);
 
                 WriteLineInColor("Finished seeding Cosmos DB.", ConsoleColor.Cyan);
                 

@@ -29,21 +29,21 @@ namespace FleetDataGenerator
             VinList = GetVinMasterList().ToList();
         }
 
-        public static VehicleEvent GenerateMessage()
+        public static VehicleEvent GenerateMessage(string vin, string state, double outsideTemperature)
         {
-            var state = GetLocation();
+            //var state = GetLocation();
             return new VehicleEvent()
             {
-                vin = GetRandomVin(),
+                vin = vin,
                 state = state,
-                outsideTemperature = GetOutsideTemp(state),
+                outsideTemperature = outsideTemperature,
                 engineTemperature = GetEngineTemp(state),
                 speed = GetSpeed(state),
                 fuel = Random.Next(0, 40),
                 fuelRate = GetEngineFuelRateValue(),
                 engineoil = GetOil(state),
                 tirepressure = GetTirePressure(state),
-                odometer = Random.Next(0, 200000),
+                //odometer = Random.Next(0, 200000),
                 accelerator_pedal_position = Random.Next(0, 100),
                 parking_brake_status = GetRandomBoolean(),
                 headlamp_status = GetRandomBoolean(),
@@ -120,7 +120,7 @@ namespace FleetDataGenerator
             return GetRandomWeightedNumber(500, 0, LowEngineTempProbabilityPower);
         }
 
-        private static int GetOutsideTemp(string state)
+        public static int GetOutsideTemp(string state)
         {
             string[] statesWithHigherOutsideTemp =
             {

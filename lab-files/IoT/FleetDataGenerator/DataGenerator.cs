@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
+using MathNet.Numerics;
 
 namespace FleetDataGenerator
 {
@@ -92,6 +93,9 @@ namespace FleetDataGenerator
                     packages.Add(newPackage);
                     consignment.attachedPackages.Add(newPackage);
                 }
+
+                // Add list of package IDs to consignment entity.
+                consignment.packages = consignment.attachedPackages.Select(x => x.id);
             }
 
             return packages;
@@ -143,7 +147,11 @@ namespace FleetDataGenerator
                             consignmentId = consignment.id,
                             vin = vehicle.vin,
                             status = WellKnown.Status.Pending,
-                            plannedTripDistance = RandomDoubleInRange(250, 30)
+                            plannedTripDistance = Math.Round(RandomDoubleInRange(250, 30), 2),
+                            location = vehicle.stateVehicleRegistered,
+                            // Set the vehicle's temperature setting to the coldest package storage requirement, minus 2 degrees.
+                            temperatureSetting = packageList.Select(x => x.storageTemperature).Min() - 2,
+                            odometerBegin = RandomIntegerInRange(250000, 18000)
                         };
 
                         foreach (var package in packageList)
@@ -158,13 +166,9 @@ namespace FleetDataGenerator
 
                             packages.Add(new TripPackage
                             {
-                                grossWeight = package.grossWeight,
-                                height = package.height,
                                 highValue = package.highValue,
-                                length = package.length,
                                 packageId = package.id,
-                                storageTemperature = package.storageTemperature,
-                                width = package.width
+                                storageTemperature = package.storageTemperature
                             });
                         }
 
@@ -224,6 +228,68 @@ namespace FleetDataGenerator
             var l = list.Count;
             var num = _random.Next(l);
             return list[num];
+        }
+
+        /// <summary>
+        /// Generates pump telemetry data to send to IoT Central.
+        /// </summary>
+        /// <param name="temperatureSetting">The normal operating/target temperature setting for the unit.</param>
+        /// <param name="sampleSize">The number of telemetry items to generate (excluding the number of gradually failed items, if applicable).</param>
+        /// <param name="causeFailure">Whether to cause a refrigeration unit failure.</param>
+        /// <param name="failOverXIterations">If there is a unit failure, how gradual should it be? Enter 0 for immediate failure.</param>
+        /// <returns></returns>
+        public static IEnumerable<RefrigerationUnitTelemetryItem> GenerateRefrigerationUnitTelemetry(double temperatureSetting, int sampleSize = 500, bool causeFailure = true,
+            int failOverXIterations = 250)
+        {
+            // If causing a failure, set the good sample size to 1/8.
+            var normalSampleSize = causeFailure ? sampleSize / 8 : sampleSize;
+
+            // Generate normal refrigeration unit operation:
+            var refrigerationUnitKw = Generate.Sinusoidal(normalSampleSize, RefrigerationUnitNormalState.RefrigerationUnitKw.SamplingRate, RefrigerationUnitNormalState.RefrigerationUnitKw.Frequency, RefrigerationUnitNormalState.RefrigerationUnitKw.Amplitude, RandomizeInitialValue(RefrigerationUnitNormalState.RefrigerationUnitKw.InitialValue));
+            var refrigerationUnitTemp = Generate.Normal(normalSampleSize, temperatureSetting, RefrigerationUnitNormalState.RefrigerationUnitTemp.StandardDeviation);
+
+            var telemetry = new RefrigerationUnitTelemetry();
+
+            if (causeFailure)
+            {
+                var failedSampleSize = sampleSize - normalSampleSize;
+
+                // Generate failing refrigeration unit operation:
+                var refrigerationUnitKwFailing = Generate.Sinusoidal(failedSampleSize, RefrigerationUnitFailedState.RefrigerationUnitKw.SamplingRate, RefrigerationUnitFailedState.RefrigerationUnitKw.Frequency, RefrigerationUnitFailedState.RefrigerationUnitKw.Amplitude, RandomizeInitialValue(RefrigerationUnitFailedState.RefrigerationUnitKw.InitialValue));
+                var refrigerationUnitTempFailing = Generate.Normal(failedSampleSize, RandomizeInitialValue(RefrigerationUnitFailedState.RefrigerationUnitTemp.InitialValue), RefrigerationUnitFailedState.RefrigerationUnitTemp.StandardDeviation);
+
+                telemetry.GraduallyDeteriorateNormalToFailed(refrigerationUnitKw, refrigerationUnitTemp,
+                    refrigerationUnitKwFailing, refrigerationUnitTempFailing, failOverXIterations);
+            }
+            else
+            {
+                telemetry = new RefrigerationUnitTelemetry(refrigerationUnitKw, refrigerationUnitTemp);
+            }
+
+            return telemetry.ToRefrigerationUnitTelemetryItems();
+        }
+
+        /// <summary>
+        /// Creates a random value in a range of += 2% of the initial value.
+        /// </summary>
+        /// <param name="initialValue">The initial value you wish to randomize.</param>
+        /// <returns></returns>
+        private static double RandomizeInitialValue(double initialValue)
+        {
+            var upper = initialValue + (initialValue * 0.02);
+            var lower = initialValue - (initialValue * 0.02);
+
+            return _random.NextDouble() * (upper - lower) + lower;
+        }
+
+        /// <summary>
+        /// Returns a weighted boolean.
+        /// </summary>
+        /// <param name="chancePercentage">Percentage chance of being true represented as a whole number (60 = 60%)</param>
+        /// <returns></returns>
+        public static bool GetRandomWeightedBoolean(int chancePercentage)
+        {
+            return _random.Next(0, 100) < chancePercentage;
         }
     }
 }

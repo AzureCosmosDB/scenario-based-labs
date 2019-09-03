@@ -36,7 +36,7 @@ namespace CosmosDbIoTScenario.Common.Models
         [JsonProperty] public double fuelRate { get; set; }
         [JsonProperty] public int engineoil { get; set; }
         [JsonProperty] public int tirepressure { get; set; }
-        [JsonProperty] public int odometer { get; set; }
+        [JsonProperty] public double odometer { get; set; }
         [JsonProperty] public int accelerator_pedal_position { get; set; }
         [JsonProperty] public bool parking_brake_status { get; set; }
         [JsonProperty] public bool brake_pedal_status { get; set; }
@@ -45,7 +45,7 @@ namespace CosmosDbIoTScenario.Common.Models
         [JsonProperty] public bool ignition_status { get; set; }
         [JsonProperty] public bool windshield_wiper_status { get; set; }
         [JsonProperty] public bool abs { get; set; }
-        [JsonProperty] public double refrigerationUnitKhz { get; set; }
+        [JsonProperty] public double refrigerationUnitKw { get; set; }
         [JsonProperty] public double refrigerationUnitTemp { get; set; }
         [JsonProperty] public DateTime timestamp { get; set; }
     }

@@ -14,9 +14,9 @@ namespace CosmosDbIoTScenario.Common
         /// <param name="velocity">Velocity measured in miles per hour.</param>
         /// <param name="time">Elapsed time measured in milliseconds.</param>
         /// <returns></returns>
-        public static double DistanceTraveled(int velocity, int time)
+        public static double DistanceTraveled(int velocity, long time)
         {
-            return velocity == 0 || time == 0 ? 0 : (velocity / 3600000) * time;
+            return velocity == 0 || time == 0 ? 0 : ((double)velocity / 3600000) * time;
         }
     }
 }
