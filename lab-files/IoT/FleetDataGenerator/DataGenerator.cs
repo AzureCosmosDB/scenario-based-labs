@@ -146,7 +146,7 @@ namespace FleetDataGenerator
                             id = Guid.NewGuid().ToString(),
                             consignmentId = consignment.id,
                             vin = vehicle.vin,
-                            status = WellKnown.Status.Pending,
+                            status = WellKnown.Status.Active, // Only adding Active trips. Only one trip per vehicle can be active.
                             plannedTripDistance = Math.Round(RandomDoubleInRange(250, 30), 2),
                             location = vehicle.stateVehicleRegistered,
                             // Set the vehicle's temperature setting to the coldest package storage requirement, minus 2 degrees.

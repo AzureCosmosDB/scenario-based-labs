@@ -143,7 +143,6 @@ namespace FleetDataGenerator
                 // No need to throw, as this was expected.
             }
             
-
             CancelAll();
             Console.WriteLine();
             WriteLineInColor("Done sending generated vehicle telemetry data", ConsoleColor.Cyan);
@@ -167,9 +166,9 @@ namespace FleetDataGenerator
 
             WriteLineInColor($"\nRetrieving trip data for {numberOfSimulatedTrucks} vehicles from Cosmos DB.", ConsoleColor.DarkCyan);
 
-            var query = new QueryDefinition("SELECT TOP @limit * FROM c WHERE c.entityType = 'Trip' AND c.status = @status")
+            var query = new QueryDefinition("SELECT TOP @limit * FROM c WHERE c.entityType = 'Trip' AND c.status = @status AND c.tripStarted = null")
                 .WithParameter("@limit", numberOfSimulatedTrucks)
-                .WithParameter("@status", WellKnown.Status.Pending);
+                .WithParameter("@status", WellKnown.Status.Active);
 
             var results = container.GetItemQueryIterator<Trip>(query);
 

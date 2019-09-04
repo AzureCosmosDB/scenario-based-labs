@@ -151,7 +151,7 @@ namespace FleetDataGenerator
 
         private static double GetEngineFuelRateValue()
         {
-            var rate = Random.NextDouble() * 6 + 8;
+            var rate = Math.Round(Random.NextDouble() * 6 + 8, 2);
             return rate;
         }
 

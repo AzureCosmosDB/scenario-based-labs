@@ -13,7 +13,7 @@ namespace CosmosDbIoTScenario.Common.Models
         // This allows consumers to query documents stored within the container by the type.
         // This is needed because a container can contain any number of document types within,
         // since it does not enforce any type of schema.
-        [JsonProperty] public string entityType => "Vehicle";
+        [JsonProperty] public string entityType => WellKnown.EntityTypes.Vehicle;
         [JsonProperty] public string vin { get; set; }
         [JsonProperty] public DateTime lastServiceDate { get; set; }
         [JsonProperty] public int batteryAgeDays { get; set; }

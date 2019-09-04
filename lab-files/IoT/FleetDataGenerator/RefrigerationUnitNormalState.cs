@@ -17,7 +17,7 @@ namespace FleetDataGenerator
 
         public struct RefrigerationUnitTemp
         {
-            public static double StandardDeviation = 1.2;
+            public static double StandardDeviation = 0.8;
             public static double InitialValue = 20.0;
         }
     }
