@@ -97,7 +97,27 @@ Synopsis: TODO
 
 1.  Blah
 
-## Exercise 3: Install and configure IoT Edge
+## Exercise 3: Simulate data and events
+
+Duration: 30 minutes
+
+In this exercise you will TODO
+
+### Task 1: Blah
+
+1.  Blah
+
+## Exercise 4: Reporting with Stream Analytics and Power BI
+
+Duration: 30 minutes
+
+In this exercise you will TODO
+
+### Task 1: Blah
+
+1.  Blah
+
+## Exercise 5: Email alerts using Logic Apps
 
 Duration: 30 minutes
 
