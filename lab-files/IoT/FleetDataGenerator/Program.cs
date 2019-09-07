@@ -166,9 +166,10 @@ namespace FleetDataGenerator
 
             WriteLineInColor($"\nRetrieving trip data for {numberOfSimulatedTrucks} vehicles from Cosmos DB.", ConsoleColor.DarkCyan);
 
-            var query = new QueryDefinition("SELECT TOP @limit * FROM c WHERE c.entityType = 'Trip' AND c.status = @status AND c.tripStarted = null")
+            var query = new QueryDefinition("SELECT TOP @limit * FROM c WHERE c.entityType = @entityType AND c.status = @status ORDER BY c.plannedTripDistance")
                 .WithParameter("@limit", numberOfSimulatedTrucks)
-                .WithParameter("@status", WellKnown.Status.Active);
+                .WithParameter("@entityType", WellKnown.EntityTypes.Trip)
+                .WithParameter("@status", WellKnown.Status.Pending);
 
             var results = container.GetItemQueryIterator<Trip>(query);
 
@@ -191,6 +192,7 @@ namespace FleetDataGenerator
         {
             var vehicleTelemetryRunTasks = new Dictionary<string, Task>();
             WriteLineInColor($"\nFound {trips.Count} trips. Setting up simulated vehicles...", ConsoleColor.Cyan);
+            var vehicleNumber = 1;
 
             foreach (var trip in trips)
             {
@@ -199,7 +201,9 @@ namespace FleetDataGenerator
                 // 30% of immediate vs. gradual failure if a failure occurs.
                 var immediateFailure = DataGenerator.GetRandomWeightedBoolean(30);
 
-                _simulatedVehicles.Add(new SimulatedVehicle(trip, causeRefrigerationUnitFailure, immediateFailure, eventHubsConnectionString));
+                _simulatedVehicles.Add(new SimulatedVehicle(trip, causeRefrigerationUnitFailure, immediateFailure, eventHubsConnectionString, vehicleNumber));
+
+                vehicleNumber++;
             }
 
             foreach (var simulatedVehicle in _simulatedVehicles)

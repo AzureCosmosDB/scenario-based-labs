@@ -28,11 +28,15 @@ namespace CosmosDbIoTScenario.Common
         public struct Status
         {
             /// <summary>
-            /// Pending trips are queued for future vehicle assignments.
+            /// Inactive trips are queued for future vehicle assignments.
+            /// </summary>
+            public static string Inactive = "Inactive";
+            /// <summary>
+            /// Pending trips are assigned to a vehicle and will become active when the vehicle starts its trip.
             /// </summary>
             public static string Pending = "Pending";
             /// <summary>
-            /// Active trips are assigned to a vehicle. A vehicle can only be assigned one active trip at a time.
+            /// When a trip starts, it becomes active. A vehicle can only be assigned one active trip at a time.
             /// </summary>
             public static string Active = "Active";
             /// <summary>
@@ -48,5 +52,12 @@ namespace CosmosDbIoTScenario.Common
             /// </summary>
             public static string Completed = "Completed";
         }
+
+        public static List<string> StatesList = new List<string>
+        {
+            "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "IA", "ID", "IL", "IN", "KS", "KY",
+            "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY",
+            "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"
+        };
     }
 }

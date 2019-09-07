@@ -1,0 +1,98 @@
+﻿@model FleetManagementWebApp.ViewModels.ConsignmentDetailsViewModel
+
+@{
+    ViewData["Title"] = "Consignment details";
+
+    var packageStatistics = Model.PackageStatistics();
+}
+
+<section class="content-header">
+    <h1>
+        @ViewData["Title"]
+        <small>View information about the consignment, including its status and package statistics</small>
+    </h1>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    
+    @if (Model.Consignment != null)
+    {
+        <div>
+            <h4>Consignment: <strong>@Model.Consignment.id</strong></h4>
+            <hr/>
+            <div class="col-md-6">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <i class="fa fa-user-circle"></i>
+
+                        <h3 class="box-title">Details</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <dl class="dl-horizontal">
+                            <dt>Customer</dt>
+                            <dd>@Model.Consignment.customer</dd>
+                            <dt>Delivery due date</dt>
+                            <dd>@Model.Consignment.deliveryDueDate</dd>
+                            <dt>Status</dt>
+                            <dd>@Model.Consignment.status</dd>
+                        </dl>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <div class="col-md-6">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <i class="fa fa-map"></i>
+
+                        <h3 class="box-title">Package statistics</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        
+                        <div class="info-box bg-green">
+                            <span class="info-box-icon"><i class="fa fa-cubes"></i></span>
+
+                            <div class="info-box-content">
+                                <span class="info-box-text">Packages</span>
+                                <span class="info-box-number">@Model.Packages.Count() (@Model.Packages.Min(x => x.storageTemperature) <super>&#8457;</super>)</span>
+                                <span class="progress-description">
+                                    Required storage temperature
+                                </span>
+                            </div>
+                            <!-- /.info-box-content -->
+                        </div>
+                        
+                        <dl class="dl-horizontal">
+                            <dt>Total cubic feet</dt>
+                            <dd>@packageStatistics.TotalPackageVolume</dd>
+                            <dt>Total gross weight (lbs)</dt>
+                            <dd>@packageStatistics.TotalPackageWeight</dd>
+                            <dt>Contains high-value?</dt>
+                            <dd>@Html.Raw(packageStatistics.ContainsHighValue ? "Yes" : "No")</dd>
+                        </dl>
+
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-md-6">
+            <div class="callout callout-error">
+                <h4>Consignment not found</h4>
+
+                <p>We could not locate the consignment. Please go back to the list and try again.</p>
+            </div>
+        </div>
+    }
+    <div>
+        <a asp-action="Index">Back to the list</a>
+    </div>
+
+</section>

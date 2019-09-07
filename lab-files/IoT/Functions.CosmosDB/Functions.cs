@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
+using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
@@ -24,13 +26,16 @@ namespace Functions.CosmosDB
             ConnectionStringSetting = "CosmosDBConnection",
             LeaseCollectionName = "leases",
             LeaseCollectionPrefix = "trips",
-            CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> vehicleEvents,
+            CreateLeaseCollectionIfNotExists = true,
+            StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
             [CosmosDB(
                 databaseName: "ContosoAuto",
                 collectionName: "metadata",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
             ILogger log)
         {
+            log.LogInformation($"Evaluating {vehicleEvents.Count} events from Cosmos DB to optionally update Trip and Consignment metadata.");
+
             // Retrieve the Trip records by VIN, compare the odometer reading to the starting odometer reading to calculate miles driven,
             // and update the Trip status and send an alert if needed once completed.
             var sendTripCompletedAlert = false;
@@ -38,7 +43,7 @@ namespace Functions.CosmosDB
             var database = "ContosoAuto";
             var metadataContainer = "metadata";
 
-            if (vehicleEvents != null && vehicleEvents.Count > 0)
+            if (vehicleEvents.Count > 0)
             {
                 var collectionUri = UriFactory.CreateDocumentCollectionUri(database, metadataContainer);
 
@@ -47,11 +52,12 @@ namespace Functions.CosmosDB
                     var vin = group.Key;
                     var odometerHigh = group.Max(item => item.GetPropertyValue<double>("odometer"));
 
-                    // Create a query, defining the partition key so we don't execute a fan-out query (saving RUs), where the entity type is a Trip and the status is not Completed or Pending.
+                    // Create a query, defining the partition key so we don't execute a fan-out query (saving RUs), where the entity type is a Trip and the status is not Completed, Canceled, or Inactive.
                     var query = client.CreateDocumentQuery<Trip>(collectionUri,
                             new FeedOptions { PartitionKey = new PartitionKey(vin) })
                         .Where(p => p.status != WellKnown.Status.Completed
-                                    && p.status != WellKnown.Status.Pending
+                                    && p.status != WellKnown.Status.Canceled
+                                    && p.status != WellKnown.Status.Inactive
                                     && p.entityType == WellKnown.EntityTypes.Trip)
                         .AsDocumentQuery();
 
@@ -106,6 +112,8 @@ namespace Functions.CosmosDB
                             {
                                 // Set the trip start date.
                                 trip.tripStarted = DateTime.UtcNow;
+                                // Set the trip and consignment status to Active.
+                                trip.status = WellKnown.Status.Active;
                                 consignment.status = WellKnown.Status.Active;
 
                                 updateTrip = true;
@@ -135,11 +143,14 @@ namespace Functions.CosmosDB
             ConnectionStringSetting = "CosmosDBConnection",
             LeaseCollectionName = "leases",
             LeaseCollectionPrefix = "cold",
-            CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> vehicleEvents,
+            CreateLeaseCollectionIfNotExists = true,
+            StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
             Binder binder,
             ILogger log)
         {
-            if (vehicleEvents != null && vehicleEvents.Count > 0)
+            log.LogInformation($"Saving {vehicleEvents.Count} events from Cosmos DB to cold storage.");
+
+            if (vehicleEvents.Count > 0)
             {
                 // Use imperative binding to Azure Storage, as opposed to declarative binding.
                 // This allows us to compute the binding parameters and set the file path dynamically during runtime.
@@ -157,6 +168,33 @@ namespace Functions.CosmosDB
                     // Application Insights cannot distinguish between "good" and "bad" 404 responses for these calls. These errors can be ignored for now.
                     // For more information, see https://github.com/Azure/azure-functions-durable-extension/issues/593
                     fileOutput.Write(JsonConvert.SerializeObject(vehicleEvents));
+                }
+            }
+        }
+
+        [FunctionName("SendToEventHubsForReporting")]
+        public static async Task SendToEventHubsForReporting([CosmosDBTrigger(
+            databaseName: "ContosoAuto",
+            collectionName: "telemetry",
+            ConnectionStringSetting = "CosmosDBConnection",
+            LeaseCollectionName = "leases",
+            LeaseCollectionPrefix = "reporting",
+            CreateLeaseCollectionIfNotExists = true,
+            StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
+            [EventHub("reporting", Connection = "EventHubsConnection")] IAsyncCollector<EventData> vehicleEventsOut,
+            ILogger log)
+        {
+            log.LogInformation($"Sending {vehicleEvents.Count} Cosmos DB records to Event Hubs for reporting.");
+
+            if (vehicleEvents.Count > 0)
+            {
+                foreach (var vehicleEvent in vehicleEvents)
+                {
+                    // Convert to a VehicleEvent class.
+                    var vehicleEventOut = await vehicleEvent.ReadAsAsync<VehicleEvent>();
+                    // Add to the Event Hub output collection.
+                    await vehicleEventsOut.AddAsync(new EventData(
+                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleEventOut))));
                 }
             }
         }

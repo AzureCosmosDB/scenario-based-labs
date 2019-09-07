@@ -9,9 +9,9 @@ using CosmosDbIoTScenario.Common.Models;
 
 namespace FleetDataGenerator
 {
-    public static class VehicleTelemetryGenerator
+    public class VehicleTelemetryGenerator
     {
-        private static readonly Random Random = new Random();
+        private readonly Random _random = new Random();
         private const double HighSpeedProbabilityPower = 0.3;
         private const double LowSpeedProbabilityPower = 0.9;
         private const double HighOilProbabilityPower = 0.3;
@@ -22,29 +22,31 @@ namespace FleetDataGenerator
         private const double LowOutsideTempProbabilityPower = 1.2;
         private const double HighEngineTempProbabilityPower = 0.3;
         private const double LowEngineTempProbabilityPower = 1.2;
+        private readonly string _state;
+        private readonly string _vin;
         private static List<string> VinList = new List<string>();
 
-        public static void Init()
+        public VehicleTelemetryGenerator(string vin)
         {
-            VinList = GetVinMasterList().ToList();
+            _vin = vin;
         }
 
-        public static VehicleEvent GenerateMessage(string vin, string state, double outsideTemperature)
+        public VehicleEvent GenerateMessage(string state, double outsideTemperature)
         {
             //var state = GetLocation();
             return new VehicleEvent()
             {
-                vin = vin,
+                vin = _vin,
                 state = state,
                 outsideTemperature = outsideTemperature,
                 engineTemperature = GetEngineTemp(state),
                 speed = GetSpeed(state),
-                fuel = Random.Next(0, 40),
+                fuel = _random.Next(0, 40),
                 fuelRate = GetEngineFuelRateValue(),
                 engineoil = GetOil(state),
                 tirepressure = GetTirePressure(state),
                 //odometer = Random.Next(0, 200000),
-                accelerator_pedal_position = Random.Next(0, 100),
+                accelerator_pedal_position = _random.Next(0, 100),
                 parking_brake_status = GetRandomBoolean(),
                 headlamp_status = GetRandomBoolean(),
                 brake_pedal_status = GetRandomBoolean(),
@@ -61,7 +63,7 @@ namespace FleetDataGenerator
             System.Console.WriteLine(task.Exception?.ToString() ?? "null error");
         }
 
-        private static int GetSpeed(string state)
+        private int GetSpeed(string state)
         {
             string[] statesWithHigherSpeed =
             {
@@ -76,7 +78,7 @@ namespace FleetDataGenerator
             return GetRandomWeightedNumber(100, 0, LowSpeedProbabilityPower);
         }
 
-        private static int GetOil(string state)
+        private int GetOil(string state)
         {
             string[] statesWithLowerOilPressure =
             {
@@ -91,7 +93,7 @@ namespace FleetDataGenerator
             return GetRandomWeightedNumber(50, 0, HighOilProbabilityPower);
         }
 
-        private static int GetTirePressure(string state)
+        private int GetTirePressure(string state)
         {
             string[] statesWithLowerTirePressure =
             {
@@ -105,7 +107,7 @@ namespace FleetDataGenerator
             return GetRandomWeightedNumber(50, 0, HighTirePressureProbabilityPower);
         }
 
-        private static int GetEngineTemp(string state)
+        private int GetEngineTemp(string state)
         {
             string[] statesWithHigherEngineTemp =
             {
@@ -120,7 +122,7 @@ namespace FleetDataGenerator
             return GetRandomWeightedNumber(500, 0, LowEngineTempProbabilityPower);
         }
 
-        public static int GetOutsideTemp(string state)
+        public int GetOutsideTemp(string state)
         {
             string[] statesWithHigherOutsideTemp =
             {
@@ -133,67 +135,38 @@ namespace FleetDataGenerator
             return GetRandomWeightedNumber(90, 0, LowOutsideTempProbabilityPower);
         }
 
-        private static int GetRandomWeightedNumber(int max, int min, double probabilityPower)
+        private int GetRandomWeightedNumber(int max, int min, double probabilityPower)
         {
-            var randomDouble = Random.NextDouble();
+            var randomDouble = _random.NextDouble();
 
             var result = Math.Floor(min + (max + 1 - min) * (Math.Pow(randomDouble, probabilityPower)));
             return (int)result;
         }
 
-        private static string GetGearPos()
+        private string GetGearPos()
         {
             var list = new List<string>() { "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eight" };
             var l = list.Count;
-            var num = Random.Next(l);
+            var num = _random.Next(l);
             return list[num];
         }
 
-        private static double GetEngineFuelRateValue()
+        private double GetEngineFuelRateValue()
         {
-            var rate = Math.Round(Random.NextDouble() * 6 + 8, 2);
+            var rate = Math.Round(_random.NextDouble() * 6 + 8, 2);
             return rate;
         }
 
-        public static bool GetRandomBoolean()
+        public bool GetRandomBoolean()
         {
-            return Random.Next(100) % 2 == 0;
+            return _random.Next(100) % 2 == 0;
         }
 
-        public static IEnumerable<string> GetVinMasterList(int maxVINs = 1000)
+        public string GetRandomVin()
         {
-            var vins = new List<string>();
-            using (var reader = new StreamReader(File.OpenRead(@"VINMasterList.csv")))
-            {
-                while (!reader.EndOfStream && vins.Count < maxVINs)
-                {
-                    var line = reader.ReadLine();
-                    if (line == null) continue;
-                    var values = line.Split(';');
-
-                    vins.Add(values[0]);
-                }
-            }
-
-            return vins;
-        }
-
-        public static string GetRandomVin()
-        {
-            var randomIndex = Random.Next(1, VinList.Count - 1);
+            var randomIndex = _random.Next(1, VinList.Count - 1);
             return VinList[randomIndex];
         }
 
-        public static string GetLocation()
-        {
-            string[] states =
-            {
-                "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "IA", "ID", "IL", "IN", "KS", "KY",
-                "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY",
-                "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"
-            };
-            var num = Random.Next(50);
-            return states[num];
-        }
     }
 }

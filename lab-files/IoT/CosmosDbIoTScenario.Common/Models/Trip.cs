@@ -29,6 +29,7 @@ namespace CosmosDbIoTScenario.Common.Models
         [JsonProperty] public string status { get; set; }
         [JsonProperty] public DateTime timestamp { get; set; }
         [JsonProperty] public IEnumerable<TripPackage> packages { get; set; }
+        [JsonProperty] public TripConsignment consignment { get; set; }
     }
 
     public class TripPackage
@@ -36,5 +37,12 @@ namespace CosmosDbIoTScenario.Common.Models
         [JsonProperty] public string packageId { get; set; }
         [JsonProperty] public double storageTemperature { get; set; }
         [JsonProperty] public bool highValue { get; set; }
+    }
+
+    public class TripConsignment
+    {
+        [JsonProperty] public string consignmentId { get; set; }
+        [JsonProperty] public string customer { get; set; }
+        [JsonProperty] public DateTime deliveryDueDate { get; set; }
     }
 }

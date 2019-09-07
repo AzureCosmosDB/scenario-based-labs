@@ -17,6 +17,7 @@ namespace FleetDataGenerator
         // The amount of time to delay between sending telemetry.
         private readonly TimeSpan CycleTime = TimeSpan.FromMilliseconds(100);
         private int _messagesSent = 0;
+        private int _vehicleNumber = 0;
         private bool _causeRefrigerationUnitFailure = false;
         private bool _immediateRefrigerationUnitFailure = false;
         private double _distanceRemaining = 0;
@@ -34,8 +35,10 @@ namespace FleetDataGenerator
         public int MessagesSent => _messagesSent;
 
         public SimulatedVehicle(Trip trip, bool causeRefrigerationUnitFailure,
-            bool immediateRefrigerationUnitFailure, string eventHubsConnectionString)
+            bool immediateRefrigerationUnitFailure, string eventHubsConnectionString,
+            int vehicleNumber)
         {
+            _vehicleNumber = vehicleNumber;
             _trip = trip;
             _tripId = trip.id;
             _distanceRemaining = trip.plannedTripDistance + 2; // Pad a little bit extra distance to ensure all events captured.
@@ -69,24 +72,26 @@ namespace FleetDataGenerator
             // Generate simulated refrigeration unit data.
             const int sampleSize = 10000;
             const int failOverXIterations = 625;
+            var vehicleTelemetryGenerator = new VehicleTelemetryGenerator(_trip.vin);
             var telemetryTimer = new Stopwatch();
             var refrigerationTelemetry = DataGenerator.GenerateRefrigerationUnitTelemetry(_trip.temperatureSetting, sampleSize,
                 _causeRefrigerationUnitFailure, _immediateRefrigerationUnitFailure ? 0 : failOverXIterations).ToArray();
 
             var refrigerationTelemetryCount = refrigerationTelemetry.Length;
             var idx = 0;
-            var outsideTemperature = VehicleTelemetryGenerator.GetOutsideTemp(_trip.location);
+            var outsideTemperature = vehicleTelemetryGenerator.GetOutsideTemp(_trip.location);
 
             telemetryTimer.Start();
             while (!_localCancellationSource.IsCancellationRequested && _distanceRemaining >= 0)
             {
                 // Reset the refrigeration unit telemetry if we've run out of items. This will also reset failed events, if applicable.
                 if (idx >= refrigerationTelemetryCount) idx = 0;
-                var vehicleTelemetry = VehicleTelemetryGenerator.GenerateMessage(_trip.vin, _trip.location, outsideTemperature);
+                var vehicleTelemetry = vehicleTelemetryGenerator.GenerateMessage(_trip.location, outsideTemperature);
                 vehicleTelemetry.refrigerationUnitKw = refrigerationTelemetry[idx].RefrigerationUnitKw;
                 vehicleTelemetry.refrigerationUnitTemp = refrigerationTelemetry[idx].RefrigerationUnitTemp;
                 var distanceTraveled = Helpers.DistanceTraveled(vehicleTelemetry.speed, telemetryTimer.ElapsedMilliseconds);
                 telemetryTimer.Restart();
+                
                 _distanceTraveled += distanceTraveled;
                 _distanceRemaining -= distanceTraveled;
                 vehicleTelemetry.odometer = Math.Round(_trip.odometerBegin + _distanceTraveled, 2);
@@ -97,6 +102,11 @@ namespace FleetDataGenerator
                 idx++;
 
                 await Task.Delay(CycleTime, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (_distanceRemaining < 0)
+            {
+                Program.WriteLineInColor($"Vehicle {_vehicleNumber} has completed its trip.", ConsoleColor.Yellow);
             }
 
             telemetryTimer.Stop();
@@ -119,7 +129,7 @@ namespace FleetDataGenerator
                 var currCount = Interlocked.Increment(ref _messagesSent);
                 if (currCount % 50 == 0)
                 {
-                    Console.WriteLine($"Vehicle: {_trip.vin} Message count: {currCount}");
+                    Console.WriteLine($"Vehicle {_vehicleNumber}: {_trip.vin} Message count: {currCount} -- {Math.Round(_distanceRemaining, 2)} miles remaining");
                 }
             }
         }

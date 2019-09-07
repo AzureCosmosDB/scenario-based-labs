@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Text;
 using CosmosDbIoTScenario.Common;
@@ -21,7 +22,7 @@ namespace FleetDataGenerator
         {
             var vehicles = new List<Vehicle>();
             const double defaultBatteryCycles = 200.0;
-            var vins = VehicleTelemetryGenerator.GetVinMasterList();
+            var vins = GetVinMasterList();
 
             foreach (var vin in vins)
             {
@@ -35,7 +36,7 @@ namespace FleetDataGenerator
                     batteryAgeDays = batteryAgeDays,
                     lifetimeBatteryCyclesUsed = batteryAgeDays * averageDailyBatteryCycles,
                     lastServiceDate = RandomDateBeforeToday(400),
-                    stateVehicleRegistered = VehicleTelemetryGenerator.GetLocation()
+                    stateVehicleRegistered = GetLocation()
                 });
             }
 
@@ -146,12 +147,18 @@ namespace FleetDataGenerator
                             id = Guid.NewGuid().ToString(),
                             consignmentId = consignment.id,
                             vin = vehicle.vin,
-                            status = WellKnown.Status.Active, // Only adding Active trips. Only one trip per vehicle can be active.
-                            plannedTripDistance = Math.Round(RandomDoubleInRange(250, 30), 2),
+                            status = WellKnown.Status.Pending, // Only adding Pending trips. Pending means the trip has been assigned to a vehicle and will become active once started.
+                            plannedTripDistance = Math.Round(RandomDoubleInRange(250, 10), 2),
                             location = vehicle.stateVehicleRegistered,
                             // Set the vehicle's temperature setting to the coldest package storage requirement, minus 2 degrees.
                             temperatureSetting = packageList.Select(x => x.storageTemperature).Min() - 2,
-                            odometerBegin = RandomIntegerInRange(250000, 18000)
+                            odometerBegin = RandomIntegerInRange(250000, 18000),
+                            consignment = new TripConsignment
+                            {
+                                consignmentId = consignment.id,
+                                customer = consignment.customer,
+                                deliveryDueDate = consignment.deliveryDueDate
+                            }
                         };
 
                         foreach (var package in packageList)
@@ -228,6 +235,32 @@ namespace FleetDataGenerator
             var l = list.Count;
             var num = _random.Next(l);
             return list[num];
+        }
+
+        public static string GetLocation()
+        {
+            var states = WellKnown.StatesList.ToArray();
+
+            var num = _random.Next(50);
+            return states[num];
+        }
+
+        public static IEnumerable<string> GetVinMasterList(int maxVINs = 1000)
+        {
+            var vins = new List<string>();
+            using (var reader = new StreamReader(File.OpenRead(@"VINMasterList.csv")))
+            {
+                while (!reader.EndOfStream && vins.Count < maxVINs)
+                {
+                    var line = reader.ReadLine();
+                    if (line == null) continue;
+                    var values = line.Split(';');
+
+                    vins.Add(values[0]);
+                }
+            }
+
+            return vins;
         }
 
         /// <summary>
