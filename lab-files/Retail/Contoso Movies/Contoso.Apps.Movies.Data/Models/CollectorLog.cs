@@ -8,7 +8,7 @@ namespace Contoso.Apps.Movies.Data.Models
     [Serializable]
     public class CollectorLog
     {
-        public string UserId { get; set; }
+        public int UserId { get; set; }
 
         public string ContentId { get; set; }
 
