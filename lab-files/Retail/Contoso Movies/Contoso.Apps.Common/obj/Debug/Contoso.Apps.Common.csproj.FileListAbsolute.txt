@@ -1,0 +1,13 @@
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\bin\Debug\Microsoft.Azure.Documents.ServiceInterop.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\bin\Debug\Cosmos.CRTCompat.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\bin\Debug\Contoso.Apps.Common.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\bin\Debug\Contoso.Apps.Common.pdb
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\bin\Debug\Microsoft.Azure.Documents.Client.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\bin\Debug\Newtonsoft.Json.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\bin\Debug\Microsoft.Azure.Documents.Client.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\bin\Debug\Newtonsoft.Json.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\obj\Debug\Contoso.Apps.Common.csprojAssemblyReference.cache
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\obj\Debug\Contoso.Apps.Common.csproj.CoreCompileInputs.cache
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\obj\Debug\Contoso.Apps.Common.csproj.CopyComplete
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\obj\Debug\Contoso.Apps.Common.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.Common\obj\Debug\Contoso.Apps.Common.pdb
