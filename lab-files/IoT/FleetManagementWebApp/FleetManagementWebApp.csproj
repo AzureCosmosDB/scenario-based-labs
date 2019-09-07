@@ -6,10 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\bower_components\**" />
-    <Content Remove="wwwroot\bower_components\**" />
-    <EmbeddedResource Remove="wwwroot\bower_components\**" />
-    <None Remove="wwwroot\bower_components\**" />
+    <Content Include="wwwroot\bower_components\**\*" CopyToPublishDirectory="Always" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 
@@ -24,6 +22,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CosmosDbIoTScenario.Common\CosmosDbIoTScenario.Common.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\bower_components\moment\moment.d.ts" />
   </ItemGroup>
 
 </Project>
