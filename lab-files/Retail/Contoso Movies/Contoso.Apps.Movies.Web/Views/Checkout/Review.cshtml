@@ -1,0 +1,198 @@
+﻿@model Contoso.Apps.Movies.Web.Models.CheckoutModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@section HeaderOverlay {
+    
+}
+
+<section class="store">
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+
+                @if (Model.ItemsTotal > 0)
+                {
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Order Summary</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-2"><strong>Total Items:</strong></div>
+                                <div class="col-md-10">@Model.ItemsTotal</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2"><strong>Order Total:</strong></div>
+                                <div class="col-md-10">@String.Format("{0:c}", Model.OrderTotal)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    using (Html.BeginForm("Complete", "Checkout"))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.Order.Total)
+
+                        <dl class="dl-horizontal">
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.FirstName)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.FirstName)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.LastName)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.LastName)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.Address)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.Address)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.City)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.City)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.State)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.State)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.PostalCode)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.PostalCode)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.Country)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.Country)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.Phone)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.Phone)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.SMSOptIn)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.SMSOptIn)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.Email)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.Email)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.CreditCardType)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.CreditCardType)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.CreditCardNumber)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.CreditCardNumber)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Order.ExpirationDate)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Order.ExpirationDate)
+                            </dd>
+
+                        </dl>
+                    
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Verify your information</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        Please verify that your information is correct, then click the COMPLETE ORDER button below.
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                        <div class="pull-right">
+                            <input type="submit" class="btn btn-primary" value="Complete Order" />
+                        </div>
+
+                        <div class="pull-left">
+                            <a href="#" class="btn trans-btn cancel"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Go Back</a>
+                        </div>
+                    }
+
+                }
+                else
+                {
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Your shopping cart is empty</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>Oops! You haven't added anything to your shopping cart yet!</p>
+                            <p>You may have forgotten to add something to the cart. How about <a href="@Url.Action("Index", "Store")" style="color: blue">you take another look</a> at our selection of awesome products to try again?</p>
+                        </div>
+                    </div>
+                }
+
+                @section Scripts {
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            $('.cancel').click(function (e) {
+                                e.preventDefault();
+                                history.back(1);
+                            });
+                        });
+                    </script>
+                }
+            </div>
+        </div>
+    </div>
+</section>

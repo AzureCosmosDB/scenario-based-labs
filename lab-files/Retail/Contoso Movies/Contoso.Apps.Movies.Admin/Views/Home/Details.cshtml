@@ -1,0 +1,107 @@
+﻿@model Contoso.Apps.Movies.Admin.Models.DetailsModel
+@using AspNet.Mvc.Grid
+@{
+    ViewBag.Title = "Order Details";
+}
+
+<h1><a href="@Url.Action("Index", "Home")">Home</a> <i class="fa fa-chevron-circle-right"></i> @ViewBag.Title</h1>
+<h3></h3>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Contact Information</h3>
+    </div>
+    <div class="panel-body">
+
+        <div class="row">
+            <div class="col-md-3">
+                <strong>First Name:</strong>
+            </div>
+            <div class="col-md-9">
+                @Model.Order.FirstName
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Last Name:</strong>
+            </div>
+            <div class="col-md-9">
+                @Model.Order.LastName
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Email Address:</strong>
+            </div>
+            <div class="col-md-9">
+                @Model.Order.Email
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Phone Number:</strong>
+            </div>
+            <div class="col-md-9">
+                @Model.Order.Phone
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Address:</strong>
+            </div>
+            <div class="col-md-9">
+                @Model.Order.Address
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <strong>City:</strong>
+            </div>
+            <div class="col-md-9">
+                @Model.Order.City
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <strong>State/Province:</strong>
+            </div>
+            <div class="col-md-9">
+                @Model.Order.State
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Postal Code:</strong>
+            </div>
+            <div class="col-md-9">
+                @Model.Order.PostalCode
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<h2>Order Details</h2>
+<h3>Order date: @Model.Order.OrderDate</h3>
+
+@Html.Grid(Model.Order.OrderDetails).Columns(cb =>
+{
+    cb.For(p => p.Product.ProductName).Named("Item");
+    cb.For(p => p.Quantity);
+    cb.For(p => p.UnitPrice).Format("{0:c}").Named("Price");
+    cb.For(p => p.Cost).Format("{0:c}").Named("Total");
+}).Attributes(@class => "table table-striped table-hover table-condensed").HeaderRowAttributes(new Dictionary<string, object> { { "class", "active" } })
+
+@if (!string.IsNullOrWhiteSpace(Model.Order.ReceiptUrl))
+{
+<p>
+    <a href="@Model.Order.ReceiptUrl" target="_blank"><i class="fa fa-cloud-download"></i>&nbsp;&nbsp;Download receipt</a>
+</p>
+}

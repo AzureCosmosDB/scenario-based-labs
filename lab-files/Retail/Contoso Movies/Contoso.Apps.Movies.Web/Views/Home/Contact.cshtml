@@ -1,0 +1,118 @@
+﻿@{
+    ViewBag.Title = "Contact";
+}
+
+@section HeaderOverlay {
+    <div class="button-wrapper">
+        <div class="container">
+            <div class="row">
+                <a href="#" class="btn-content pull-right">Contact Us</a>
+            </div>
+        </div>
+    </div>
+}
+
+<section class="store">
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+                <aside class="content contact-wrap">
+                    <div id="map-wrapper">
+                    </div>
+                    <div class="contact-form clearfix">
+                        <form>
+                            <div class="form-group">
+                                <input type="email" class="form-control text" placeholder="your name">
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control text" id="exampleInputEmail1" placeholder="Your E-mail ">
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control text" placeholder="your name">
+                            </div>
+                            <div class="form-group1">
+                                <textarea class="form-control texta" id="comment" placeholder="Message "></textarea>
+                            </div>
+                            <button class="submit">send message</button>
+                        </form>
+                    </div>
+                    <div class="contact-address ">
+                        <p class="paragraph_opensans">
+                            If you are interested in joining our league, have issues with your order, or would like to chat with us about anything else (anything at all), please feel free to contact
+                            us using one of the many options we've presented you on this page. We've made it easy for you. No excuses. The ball is in your court!
+                        </p>
+                        <div class="fig-addrs clearfix">
+                            <p>Phone:</p>
+                            <div class="address-cont">
+                                <i class="fa fa-phone"></i>
+                                <span>(555) 555-8000</span>
+
+                            </div>
+                        </div> <!-- End of figure address -->
+                        <div class="fig-addrs clearfix">
+                            <p>Email:</p>
+                            <div class="address-cont">
+                                <i class="fa fa-envelope"></i>
+                                <span><a href="mailto:contact@contoso.com">contact@contoso.com</a></span>
+
+                            </div>
+                        </div> <!-- End of figure address -->
+                        <div class="fig-addrs clearfix">
+                            <p>address:</p>
+                            <div class="address-cont">
+                                <i class="fa fa-map-marker"></i>
+                                <span>7401 164th Ave NE<br />Redmond, WA 98052</span>
+
+                            </div>
+                        </div> <!-- End of figure address -->
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script>
+
+        var map;
+        function initialize() {
+            var mapOptions = {
+                zoom: 12,
+                scrollwheel: false,
+                center: new google.maps.LatLng(47.671633, -122.122466),
+                panControl: false,
+                zoomControl: false,
+                styles: [
+                      { 'stylers': [{ 'hue': '#dd0d0d' }, { saturation: -100 }] },
+                      {
+                          'featureType': 'road.arterial',
+                          'elementType': 'labels',
+                          'stylers': [{ 'visibility': 'off' }]
+                      },
+                      {
+                          'featureType': 'poi.business',
+                          'elementType': 'geometry',
+                          'stylers': [{ 'lightness': 100 },
+                                { 'visibility': 'simplified' }]
+                      }
+                ]
+            };
+            map = new google.maps.Map(document.getElementById('map-wrapper'), mapOptions);
+            // var image = 'images/vector-Smart-Object.png';
+            var myLatLng = new google.maps.LatLng(47.671633, -122.122466);
+            var beachMarker = new google.maps.Marker({
+                position: myLatLng,
+                map: map,
+                // icon: image
+            });
+
+            google.maps.event.addListener(beachMarker, 'click', function () {
+                infowindow.open(map, beachMarker);
+            });
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+}
