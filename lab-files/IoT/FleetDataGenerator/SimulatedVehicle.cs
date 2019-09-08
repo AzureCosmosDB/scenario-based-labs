@@ -16,16 +16,17 @@ namespace FleetDataGenerator
     {
         // The amount of time to delay between sending telemetry.
         private readonly TimeSpan CycleTime = TimeSpan.FromMilliseconds(100);
+        private const string TelemetryEventHubName = "telemetry";
         private int _messagesSent = 0;
-        private int _vehicleNumber = 0;
-        private bool _causeRefrigerationUnitFailure = false;
-        private bool _immediateRefrigerationUnitFailure = false;
+        private readonly int _vehicleNumber = 0;
+        private readonly bool _causeRefrigerationUnitFailure = false;
+        private readonly bool _immediateRefrigerationUnitFailure = false;
         private double _distanceRemaining = 0;
         private double _distanceTraveled = 0;
         private readonly Trip _trip;
         private readonly string _tripId;
         private readonly EventHubClient _eventHubClient;
-        private CancellationTokenSource _localCancellationSource = new CancellationTokenSource();
+        private readonly CancellationTokenSource _localCancellationSource = new CancellationTokenSource();
 
         public string TripId => _tripId;
 
@@ -44,7 +45,7 @@ namespace FleetDataGenerator
             _distanceRemaining = trip.plannedTripDistance + 2; // Pad a little bit extra distance to ensure all events captured.
             _causeRefrigerationUnitFailure = causeRefrigerationUnitFailure;
             _immediateRefrigerationUnitFailure = immediateRefrigerationUnitFailure;
-            _eventHubClient = EventHubClient.CreateFromConnectionString(eventHubsConnectionString);
+            _eventHubClient = EventHubClient.CreateFromConnectionString(Helpers.CreateEventHubsConnectionString(eventHubsConnectionString, TelemetryEventHubName));
         }
 
         /// <summary>

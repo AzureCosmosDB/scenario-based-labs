@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
+using CosmosDbIoTScenario.Common.Models.Alerts;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
@@ -17,10 +19,18 @@ using Newtonsoft.Json;
 
 namespace Functions.CosmosDB
 {
-    public static class Functions
+    public class Functions
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        // Use Dependency Injection to inject the HttpClientFactory service that was configured in Startup.cs.
+        public Functions(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
         [FunctionName("TripProcessor")]
-        public static async Task TripProcessor([CosmosDBTrigger(
+        public async Task TripProcessor([CosmosDBTrigger(
             databaseName: "ContosoAuto",
             collectionName: "telemetry",
             ConnectionStringSetting = "CosmosDBConnection",
@@ -37,9 +47,8 @@ namespace Functions.CosmosDB
             log.LogInformation($"Evaluating {vehicleEvents.Count} events from Cosmos DB to optionally update Trip and Consignment metadata.");
 
             // Retrieve the Trip records by VIN, compare the odometer reading to the starting odometer reading to calculate miles driven,
-            // and update the Trip status and send an alert if needed once completed.
-            var sendTripCompletedAlert = false;
-            var sendTripDelayedAlert = false;
+            // and update the Trip and Consignment status and send an alert if needed once completed.
+            var sendTripAlert = false;
             var database = "ContosoAuto";
             var metadataContainer = "metadata";
 
@@ -51,6 +60,8 @@ namespace Functions.CosmosDB
                 {
                     var vin = group.Key;
                     var odometerHigh = group.Max(item => item.GetPropertyValue<double>("odometer"));
+                    var averateRefrigerationUnitTemp =
+                        group.Average(item => item.GetPropertyValue<double>("refrigerationUnitTemp"));
 
                     // Create a query, defining the partition key so we don't execute a fan-out query (saving RUs), where the entity type is a Trip and the status is not Completed, Canceled, or Inactive.
                     var query = client.CreateDocumentQuery<Trip>(collectionUri,
@@ -90,7 +101,7 @@ namespace Functions.CosmosDB
                                 updateTrip = true;
                                 updateConsignment = true;
 
-                                sendTripCompletedAlert = true;
+                                sendTripAlert = true;
                             }
                             else
                             {
@@ -104,7 +115,7 @@ namespace Functions.CosmosDB
                                     updateTrip = true;
                                     updateConsignment = true;
 
-                                    sendTripDelayedAlert = true;
+                                    sendTripAlert = true;
                                 }
                             }
 
@@ -118,6 +129,8 @@ namespace Functions.CosmosDB
 
                                 updateTrip = true;
                                 updateConsignment = true;
+
+                                sendTripAlert = true;
                             }
 
                             // Update the trip and consignment records.
@@ -130,6 +143,39 @@ namespace Functions.CosmosDB
                             {
                                 await client.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(database, metadataContainer, consignment.id), consignment);
                             }
+
+                            // Send a trip alert.
+                            if (sendTripAlert)
+                            {
+                                // Have the HttpClient factory create a new client instance.
+                                var httpClient = _httpClientFactory.CreateClient(NamedHttpClients.LogicAppClient);
+
+                                // Create the payload to send to the Logic App.
+                                var payload = new LogicAppAlert
+                                {
+                                    consignmentId = trip.consignmentId,
+                                    customer = trip.consignment.customer,
+                                    deliveryDueDate = trip.consignment.deliveryDueDate,
+                                    hasHighValuePackages = trip.packages.Any(p => p.highValue),
+                                    id = trip.id,
+                                    lastRefrigerationUnitTemperatureReading = averateRefrigerationUnitTemp,
+                                    location = trip.location,
+                                    lowestPackageStorageTemperature = trip.packages.Min(p => p.storageTemperature),
+                                    odometerBegin = trip.odometerBegin,
+                                    odometerEnd = trip.odometerEnd,
+                                    plannedTripDistance = trip.plannedTripDistance,
+                                    tripStarted = trip.tripStarted,
+                                    tripEnded = trip.tripEnded,
+                                    status = trip.status,
+                                    vin = trip.vin,
+                                    temperatureSetting = trip.temperatureSetting,
+                                    recipientEmail = Environment.GetEnvironmentVariable("RecipientEmail")
+                                };
+
+                                var postBody = JsonConvert.SerializeObject(payload);
+
+                                var httpResult = await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
+                            }
                         }
                     }
                 }
@@ -137,7 +183,7 @@ namespace Functions.CosmosDB
         }
 
         [FunctionName("ColdStorage")]
-        public static async Task ChangeColdStorageFeedTrigger([CosmosDBTrigger(
+        public async Task ChangeColdStorageFeedTrigger([CosmosDBTrigger(
             databaseName: "ContosoAuto",
             collectionName: "telemetry",
             ConnectionStringSetting = "CosmosDBConnection",
@@ -173,7 +219,7 @@ namespace Functions.CosmosDB
         }
 
         [FunctionName("SendToEventHubsForReporting")]
-        public static async Task SendToEventHubsForReporting([CosmosDBTrigger(
+        public async Task SendToEventHubsForReporting([CosmosDBTrigger(
             databaseName: "ContosoAuto",
             collectionName: "telemetry",
             ConnectionStringSetting = "CosmosDBConnection",

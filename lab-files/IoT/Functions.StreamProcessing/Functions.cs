@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Functions.StreamProcessing
 {
-    public static class Function1
+    public static class Functions
     {
         [FunctionName("EventHubTrigger")]
         public static async Task EventHubTrigger([EventHubTrigger("telemetry", Connection = "EventHubsConnection")] EventData[] vehicleEventData,
@@ -46,6 +46,7 @@ namespace Functions.StreamProcessing
                     vehicleEvent.partitionKey = $"{vehicleEvent.vin}-{DateTime.UtcNow:yyyy-MM}";
                     // Set the TTL to expire the document after 60 days.
                     vehicleEvent.ttl = 60 * 60 * 24 * 60;
+                    vehicleEvent.timestamp = DateTime.UtcNow;
 
                     await vehicleTelemetryOut.AddAsync(vehicleEvent);
 
