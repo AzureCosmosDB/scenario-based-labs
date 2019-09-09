@@ -42,7 +42,7 @@ namespace FleetDataGenerator
             _vehicleNumber = vehicleNumber;
             _trip = trip;
             _tripId = trip.id;
-            _distanceRemaining = trip.plannedTripDistance + 2; // Pad a little bit extra distance to ensure all events captured.
+            _distanceRemaining = trip.plannedTripDistance + 3; // Pad a little bit extra distance to ensure all events captured.
             _causeRefrigerationUnitFailure = causeRefrigerationUnitFailure;
             _immediateRefrigerationUnitFailure = immediateRefrigerationUnitFailure;
             _eventHubClient = EventHubClient.CreateFromConnectionString(Helpers.CreateEventHubsConnectionString(eventHubsConnectionString, TelemetryEventHubName));

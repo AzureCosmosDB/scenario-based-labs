@@ -41,7 +41,7 @@ namespace CosmosDbIoTScenario.Common.Models
         [JsonProperty] public bool parking_brake_status { get; set; }
         [JsonProperty] public bool brake_pedal_status { get; set; }
         [JsonProperty] public bool headlamp_status { get; set; }
-        [JsonProperty] public string transmission_gear_position { get; set; }
+        [JsonProperty] public int transmission_gear_position { get; set; }
         [JsonProperty] public bool ignition_status { get; set; }
         [JsonProperty] public bool windshield_wiper_status { get; set; }
         [JsonProperty] public bool abs { get; set; }

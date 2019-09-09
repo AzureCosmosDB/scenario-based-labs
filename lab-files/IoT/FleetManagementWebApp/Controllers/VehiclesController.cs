@@ -1,23 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
+using FleetManagementWebApp.Helpers;
+using FleetManagementWebApp.Models;
 using FleetManagementWebApp.Services;
 using FleetManagementWebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace FleetManagementWebApp.Controllers
 {
     public class VehiclesController : Controller
     {
         private readonly ICosmosDbService _cosmosDbService;
+        private readonly IHttpClientFactory _clientFactory;
+        private readonly IConfiguration _configuration;
         private readonly Random _random = new Random();
-        public VehiclesController(ICosmosDbService cosmosDbService)
+
+        public VehiclesController(ICosmosDbService cosmosDbService, IHttpClientFactory clientFactory, IConfiguration configuration)
         {
             _cosmosDbService = cosmosDbService;
+            _clientFactory = clientFactory;
+            _configuration = configuration;
         }
 
         public async Task<IActionResult> Index(int page = 1, string search = "")
@@ -32,8 +43,8 @@ namespace FleetManagementWebApp.Controllers
             {
                 Search = search,
                 Vehicles = await _cosmosDbService.GetItemsWithPagingAsync<Vehicle>(
-                    x => x.entityType == WellKnown.EntityTypes.Vehicle && 
-                         (string.IsNullOrWhiteSpace(search) || 
+                    x => x.entityType == WellKnown.EntityTypes.Vehicle &&
+                         (string.IsNullOrWhiteSpace(search) ||
                          (x.vin.ToLower().Contains(search.ToLower()) || x.stateVehicleRegistered.ToLower() == search.ToLower())), page, 10)
             };
 
@@ -142,7 +153,7 @@ namespace FleetManagementWebApp.Controllers
         public async Task<ActionResult> DeleteAsync(string id, string pk)
         {
             pk = pk.ToUpper();
-            
+
             if (id == null || pk == null)
             {
                 return BadRequest();
@@ -214,12 +225,27 @@ namespace FleetManagementWebApp.Controllers
         }
 
         [ActionName("BatteryPrediction")]
-        [HttpPost]
-        public async Task<ActionResult> BatteryPredictionAsync(int batteryAgeDays, double batteryRatedCycles, double lifetimeBatteryCyclesUsed)
+        public async Task<ActionResult> BatteryPredictionAsync(int batteryAgeDays, double batteryRatedCycles, double lifetimeBatteryCyclesUsed, double dailyTripDuration)
         {
-            var predictedToFail = false;
+            bool predictedToFail;
 
-            predictedToFail = _random.Next(100) % 2 == 0;
+            var payload = new BatteryPredictionPayload(batteryAgeDays, dailyTripDuration);
+
+            var httpClient = _clientFactory.CreateClient(NamedHttpClients.ScoringService);
+
+            // Create the payload to send to the Logic App.
+            var postBody = JsonConvert.SerializeObject(payload);
+
+            var httpResponse = await httpClient.PostAsync(_configuration["ScoringUrl"],
+                new StringContent(postBody, Encoding.UTF8, "application/json"));
+            httpResponse.EnsureSuccessStatusCode();
+
+            var result = await httpResponse.Content.ReadAsAsync<string>();
+
+            var predictedDailyCyclesUsed = PredictionHelper.ParsePredictionResult(result);
+
+            // Multiply the predictedCyclesConsumed * 30 (days), add that value to the lifetime cycles used, then see if it exceeds the battery's rated cycles.
+            predictedToFail = predictedDailyCyclesUsed * 30 + lifetimeBatteryCyclesUsed > batteryRatedCycles;
 
             return Json(predictedToFail);
         }

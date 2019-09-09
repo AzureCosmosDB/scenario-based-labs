@@ -45,12 +45,11 @@ namespace FleetDataGenerator
                 fuelRate = GetEngineFuelRateValue(),
                 engineoil = GetOil(state),
                 tirepressure = GetTirePressure(state),
-                //odometer = Random.Next(0, 200000),
                 accelerator_pedal_position = _random.Next(0, 100),
                 parking_brake_status = GetRandomBoolean(),
                 headlamp_status = GetRandomBoolean(),
                 brake_pedal_status = GetRandomBoolean(),
-                transmission_gear_position = GetGearPos(),
+                transmission_gear_position = _random.Next(1, 8),
                 ignition_status = GetRandomBoolean(),
                 windshield_wiper_status = GetRandomBoolean(),
                 abs = GetRandomBoolean(),
@@ -141,14 +140,6 @@ namespace FleetDataGenerator
 
             var result = Math.Floor(min + (max + 1 - min) * (Math.Pow(randomDouble, probabilityPower)));
             return (int)result;
-        }
-
-        private string GetGearPos()
-        {
-            var list = new List<string>() { "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eight" };
-            var l = list.Count;
-            var num = _random.Next(l);
-            return list[num];
         }
 
         private double GetEngineFuelRateValue()

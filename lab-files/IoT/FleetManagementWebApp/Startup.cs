@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
 using FleetManagementWebApp.Services;
@@ -13,6 +14,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
 
 namespace FleetManagementWebApp
 {
@@ -36,7 +38,16 @@ namespace FleetManagementWebApp
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSingleton<ICosmosDbService>(InitializeCosmosClientInstance(Configuration.GetSection("CosmosDb")));
+            services.AddSingleton<ICosmosDbService>(InitializeCosmosClientInstance(Configuration));
+
+            // Inject the HttpClientFactory and set a default resilience policy with an exponential back-off using Polly, in case of failures reaching the service.
+            services.AddHttpClient(NamedHttpClients.ScoringService, client =>
+                {
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                })
+                .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder
+                    .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
+                        retryAttempt))));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,11 +80,11 @@ namespace FleetManagementWebApp
         /// Retrieves a Cosmos DB database and a container with the specified partition key. 
         /// </summary>
         /// <returns></returns>
-        private static CosmosDbService InitializeCosmosClientInstance(IConfigurationSection configurationSection)
+        private static CosmosDbService InitializeCosmosClientInstance(IConfiguration configuration)
         {
-            var databaseName = configurationSection.GetSection("DatabaseName").Value;
-            var containerName = configurationSection.GetSection("ContainerName").Value;
-            var connectionString = configurationSection.GetSection("CosmosDBConnection").Value;
+            var databaseName = configuration["DatabaseName"];
+            var containerName = configuration["ContainerName"];
+            var connectionString = configuration["CosmosDBConnection"];
             var cosmosDbConnectionString = new CosmosDbConnectionString(connectionString);
             CosmosClientBuilder clientBuilder = new CosmosClientBuilder(cosmosDbConnectionString.ServiceEndpoint.OriginalString, cosmosDbConnectionString.AuthKey);
             CosmosClient client = clientBuilder

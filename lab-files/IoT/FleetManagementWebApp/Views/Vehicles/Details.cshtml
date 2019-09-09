@@ -42,6 +42,8 @@
                             <dd>@Model.Vehicle.batteryRatedCycles</dd>
                             <dt>Lifetime cycles used</dt>
                             <dd>@Model.Vehicle.lifetimeBatteryCyclesUsed</dd>
+                            <dt>Average daily trip duration</dt>
+                            <dd>@Model.Vehicle.averageDailyTripDuration</dd>
                             <dt>Battery failure prediction</dt>
                             <dd>@Html.Raw(Model.Vehicle.batteryFailurePredicted ? "Yes" : "No")</dd>
                         </dl>
@@ -191,11 +193,12 @@
                 var batteryInfo = {
                     batteryAgeDays: @Model.Vehicle.batteryAgeDays,
                     batteryRatedCycles: @Model.Vehicle.batteryRatedCycles,
-                    lifetimeBatteryCyclesUsed: @Model.Vehicle.lifetimeBatteryCyclesUsed
+                    lifetimeBatteryCyclesUsed: @Model.Vehicle.lifetimeBatteryCyclesUsed,
+                    dailyTripDuration: @Model.Vehicle.averageDailyTripDuration
                 };
 
                 $.ajax({
-                    type: 'POST',
+                    type: 'GET',
                     url: '/vehicles/batteryprediction/',
                     contentType: 'application/json; charset=utf-8',
                     data: batteryInfo,

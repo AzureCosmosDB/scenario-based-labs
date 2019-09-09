@@ -22,6 +22,7 @@ namespace CosmosDbIoTScenario.Common.Models
         /// </summary>
         [JsonProperty] public double batteryRatedCycles { get; set; }
         [JsonProperty] public double lifetimeBatteryCyclesUsed { get; set; }
+        [JsonProperty] public double averageDailyTripDuration { get; set; }
         /// <summary>
         /// Updated by prediction from deployed ML model.
         /// </summary>

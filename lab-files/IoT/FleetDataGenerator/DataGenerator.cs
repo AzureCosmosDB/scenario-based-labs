@@ -28,6 +28,7 @@ namespace FleetDataGenerator
             {
                 var batteryAgeDays = RandomIntegerInRange(1600, 20);
                 var averageDailyBatteryCycles = RandomDoubleInRange(0.1852, 0.1056);
+                var averageDailyTripDuration = RandomDoubleInRange(75.29434108, 42.94108964);
                 vehicles.Add(new Vehicle
                 {
                     id = Guid.NewGuid().ToString(),
@@ -35,6 +36,7 @@ namespace FleetDataGenerator
                     batteryRatedCycles = defaultBatteryCycles,
                     batteryAgeDays = batteryAgeDays,
                     lifetimeBatteryCyclesUsed = batteryAgeDays * averageDailyBatteryCycles,
+                    averageDailyTripDuration = averageDailyTripDuration,
                     lastServiceDate = RandomDateBeforeToday(400),
                     stateVehicleRegistered = GetLocation()
                 });

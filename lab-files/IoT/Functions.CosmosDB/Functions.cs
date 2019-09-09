@@ -60,7 +60,7 @@ namespace Functions.CosmosDB
                 {
                     var vin = group.Key;
                     var odometerHigh = group.Max(item => item.GetPropertyValue<double>("odometer"));
-                    var averateRefrigerationUnitTemp =
+                    var averageRefrigerationUnitTemp =
                         group.Average(item => item.GetPropertyValue<double>("refrigerationUnitTemp"));
 
                     // Create a query, defining the partition key so we don't execute a fan-out query (saving RUs), where the entity type is a Trip and the status is not Completed, Canceled, or Inactive.
@@ -158,7 +158,7 @@ namespace Functions.CosmosDB
                                     deliveryDueDate = trip.consignment.deliveryDueDate,
                                     hasHighValuePackages = trip.packages.Any(p => p.highValue),
                                     id = trip.id,
-                                    lastRefrigerationUnitTemperatureReading = averateRefrigerationUnitTemp,
+                                    lastRefrigerationUnitTemperatureReading = averageRefrigerationUnitTemp,
                                     location = trip.location,
                                     lowestPackageStorageTemperature = trip.packages.Min(p => p.storageTemperature),
                                     odometerBegin = trip.odometerBegin,

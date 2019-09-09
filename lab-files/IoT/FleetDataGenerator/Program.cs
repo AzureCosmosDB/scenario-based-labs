@@ -135,6 +135,7 @@ namespace FleetDataGenerator
                     }
 
                     tasks = _runningVehicleTasks.Where(t => !t.Value.IsCompleted).Select(t => t.Value).ToList();
+                    
                 }
             }
             catch (OperationCanceledException)
@@ -230,12 +231,14 @@ namespace FleetDataGenerator
         /// EventHubConnectionString: The primary Event Hubs connection string for sending telemetry.
         /// CosmosDbConnectionString: The primary or secondary connection string copied from your Cosmos DB properties.
         /// NumberSimulatedTrucks: The number of trucks to simulate. Must be a number between 1 and 1,000.
+        /// ContinuouslyAddThisManyTrucks: If true, once a truck completes its trip, another is added in its place. Otherwise, the generator stops sending events once all trucks have completed their trip.
         /// MillisecondsToRun: The maximum amount of time to allow the generator to run before stopping transmission of data. The default value is 14,400.
         /// MillisecondsToLead: The amount of time to wait before sending simulated data. Default value is 0.
         /// </returns>
         private static (string EventHubConnectionString,
             string CosmosDbConnectionString,
             int NumberSimulatedTrucks,
+            bool ContinuouslyAddThisManyTrucks,
             int MillisecondsToRun,
             int MillisecondsToLead) ParseArguments()
         {
@@ -247,6 +250,7 @@ namespace FleetDataGenerator
                 var numberOfMillisecondsToRun = (int.TryParse(_configuration["SECONDS_TO_RUN"], out var outputSecondToRun) ? outputSecondToRun : 0) * 1000;
                 var numberOfMillisecondsToLead = (int.TryParse(_configuration["SECONDS_TO_LEAD"], out var outputSecondsToLead) ? outputSecondsToLead : 0) * 1000;
                 var numberOfSimulatedTrucks = int.TryParse(_configuration["NUMBER_SIMULATED_TRUCKS"], out var outputSimulatedTrucks) ? outputSimulatedTrucks : 0;
+                var continuouslyAddTrucks = bool.TryParse(_configuration["CONTINUOUSLY_ADD_THIS_MANY_TRUCKS"], out var outputContinuouslyAdd) && outputContinuouslyAdd;
 
                 if (string.IsNullOrWhiteSpace(cosmosDbConnectionString))
                 {
@@ -263,7 +267,7 @@ namespace FleetDataGenerator
                     throw new ArgumentException("The NUMBER_SIMULATED_TRUCKS value must be a number between 1 and 1000");
                 }
 
-                return (eventHubConnectionString, cosmosDbConnectionString, numberOfSimulatedTrucks, numberOfMillisecondsToRun, numberOfMillisecondsToLead);
+                return (eventHubConnectionString, cosmosDbConnectionString, numberOfSimulatedTrucks, continuouslyAddTrucks, numberOfMillisecondsToRun, numberOfMillisecondsToLead);
             }
             catch (Exception e)
             {
