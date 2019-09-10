@@ -11,11 +11,11 @@ namespace Contoso.Apps.Movies.Data.Logic
 {
     public class OrderActions : IDisposable
     {
-        private readonly ProductContext _db;
+        List<Order> orders;
 
-        public OrderActions()
+        public OrderActions(List<Order> orders)
         {
-            _db = new ProductContext();
+            this.orders = orders;
         }
 
         /// <summary>
@@ -24,8 +24,7 @@ namespace Contoso.Apps.Movies.Data.Logic
         /// <returns></returns>
         public List<Order> GetCompletedOrders()
         {
-            var orders = _db.Orders.Include(od => od.OrderDetails.Select(p => p.Product)).Where(o => !(o.PaymentTransactionId == null || o.PaymentTransactionId.Trim() == string.Empty)).ToList();
-            return orders;
+            return orders.Where(o => !(o.PaymentTransactionId == null || o.PaymentTransactionId.Trim() == string.Empty)).ToList();
         }
 
         public Order GetOrder(int orderId)
@@ -33,9 +32,9 @@ namespace Contoso.Apps.Movies.Data.Logic
             var order = new Order();
 
             // Retrieve the order record.
-            if (_db.Orders.Any(o => o.OrderId == orderId))
+            if (orders.Any(o => o.OrderId == orderId))
             {
-                order = _db.Orders.Include(od => od.OrderDetails.Select(p => p.Product)).Single(o => o.OrderId == orderId);
+                order = orders.Single(o => o.OrderId == orderId);
             }
            
             // Success.
@@ -52,11 +51,12 @@ namespace Contoso.Apps.Movies.Data.Logic
         {
             try
             {
-                var order = _db.Orders.Where(o => o.OrderId == orderId).FirstOrDefault();
+                var order = orders.Where(o => o.OrderId == orderId).FirstOrDefault();
                 if (order != null)
                 {
                     order.ReceiptUrl = uri;
-                    _db.SaveChanges();
+
+                    //_db.SaveChanges();
                 }
             }
             catch (Exception exp)
@@ -67,10 +67,7 @@ namespace Contoso.Apps.Movies.Data.Logic
 
         public void Dispose()
         {
-            if (_db != null)
-            {
-                _db.Dispose();
-            }
+            
         }
     }
 }

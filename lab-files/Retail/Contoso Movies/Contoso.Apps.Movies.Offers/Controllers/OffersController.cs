@@ -14,7 +14,7 @@ namespace Contoso.Apps.Movies.Offers.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class OffersController : ApiController
     {
-        private ProductContext db = new ProductContext();
+        List<Item> allProducts = new List<Item>();
 
         // GET api/values
         [Route("api/get")]
@@ -24,7 +24,7 @@ namespace Contoso.Apps.Movies.Offers.Controllers
             // Retrieve 3 random products.
             // In a real-world scenario, you may return a list of products that are on sale,
             // or based off of popularity or other factors.
-            var products = db.Products.ToList().Shuffle().Take(3);
+            var products = allProducts.Shuffle().Take(3);
 
             if (products != null && products.Count() > 0)
             {
@@ -44,7 +44,7 @@ namespace Contoso.Apps.Movies.Offers.Controllers
 
                     productOffers.Add(new OfferedProduct
                     {
-                        ProductID = product.ProductId,
+                        ProductId = product.ProductId,
                         ProductName = product.ProductName,
                         Description = product.Description,
                         ImagePath = product.ImagePath,

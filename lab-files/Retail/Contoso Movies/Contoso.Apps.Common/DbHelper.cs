@@ -27,7 +27,7 @@ namespace Contoso.Apps.Common
                 new RequestOptions { OfferThroughput = 400 });
         }
 
-        public static List<Product> GetMoviesByType(int v)
+        public static List<Item> GetMoviesByType(int v)
         {
             throw new NotImplementedException();
         }

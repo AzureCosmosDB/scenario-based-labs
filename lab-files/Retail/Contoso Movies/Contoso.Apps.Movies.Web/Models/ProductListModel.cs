@@ -2,7 +2,7 @@
 
 namespace Contoso.Apps.Movies.Web.Models
 {
-    public class ProductListModel : Product
+    public class ProductListModel : Item
     {
         new public double? UnitPrice { get; set; }
 

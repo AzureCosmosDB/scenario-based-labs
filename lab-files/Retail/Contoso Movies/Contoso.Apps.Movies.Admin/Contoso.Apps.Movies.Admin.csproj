@@ -139,7 +139,6 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -225,6 +224,10 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Contoso.Apps.Common\Contoso.Apps.Common.csproj">
+      <Project>{3FF97305-2331-4E46-8D0F-C3E3BBD372F2}</Project>
+      <Name>Contoso.Apps.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Contoso.Apps.Movies.Data\Contoso.Apps.Movies.Data.csproj">
       <Project>{b74e00b2-7568-4990-81f8-b54aa6751600}</Project>
       <Name>Contoso.Apps.Movies.Data</Name>

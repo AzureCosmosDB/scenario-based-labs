@@ -7,8 +7,8 @@ namespace Contoso.Apps.Movies.Web.Models
     {
         public IList<Models.ProductModel> Products { get; set; }
 
-        public List<Product> RecommendProductsBought { get; set; }
+        public List<Item> RecommendProductsBought { get; set; }
 
-        public List<Product> RecommendProductsLiked { get; set; }
+        public List<Item> RecommendProductsLiked { get; set; }
     }
 }

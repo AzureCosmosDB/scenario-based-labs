@@ -12,6 +12,7 @@ using System.Configuration;
 using System.Net;
 using System.Web.Mvc;
 using System.Linq;
+using Contoso.Apps.Common.Controllers;
 
 namespace Contoso.Apps.Movies.Web.Controllers
 {
@@ -30,7 +31,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
 
             var vm = new CartModel();
 
-            using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, this.products, this.categories))
+            using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, items, categories))
             {
                 var shoppingCartItems = usersShoppingCart.GetCartItems();
                 var cartItemsVM = Mapper.Map<List<CartItemModel>>(shoppingCartItems);
@@ -45,7 +46,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         public RedirectResult AddToCart(int productId)
         {
             var cartId = new Helpers.CartHelpers().GetCartId();
-            using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, this.products, this.categories))
+            using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, items, categories))
             {
                 usersShoppingCart.AddToCart(productId);
             }
@@ -83,7 +84,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         // GET: Cart/Create
         public ActionResult Create()
         {
-            ViewBag.ProductId = new SelectList(products, "ProductID", "ProductName");
+            ViewBag.ProductId = new SelectList(items, "ProductId", "ProductName");
             return View();
         }
 
@@ -102,7 +103,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ProductId = new SelectList(products, "ProductID", "ProductName", cartItem.ProductId);
+            ViewBag.ProductId = new SelectList(items, "ProductId", "ProductName", cartItem.ProductId);
             return View(cartItem);
         }
 
@@ -131,7 +132,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ProductId = new SelectList(products, "ProductID", "ProductName", cartItem.ProductId);
+            ViewBag.ProductId = new SelectList(items, "ProductId", "ProductName", cartItem.ProductId);
             return View(cartItem);
         }
 
@@ -148,7 +149,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 client.UpsertDocumentAsync(collectionUri, cartItem);
                 return RedirectToAction("Index");
             }
-            ViewBag.ProductId = new SelectList(products, "ProductID", "ProductName", cartItem.ProductId);
+            ViewBag.ProductId = new SelectList(items, "ProductID", "ProductName", cartItem.ProductId);
             return View(cartItem);
         }
 

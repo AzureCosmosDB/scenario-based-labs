@@ -51,7 +51,18 @@
                             </div>
                         </div>
                         <div class="shop-related clearfix">
-                            <h6>Related products</h6>
+                            @if (this.Session["User"] == null)
+                            {
+                                <h6>Similar Items You Might Also Like</h6>
+
+                                foreach (var product in Model.SimilarProducts)
+                                {
+                                    @Html.Partial("_MoviesTeaser", product)
+                                }
+                            }
+
+                            <h6>Frequently Bought Together</h6>
+
                             @foreach (var product in Model.RelatedProducts)
                             {
                                 @Html.Partial("_MoviesTeaser", product)

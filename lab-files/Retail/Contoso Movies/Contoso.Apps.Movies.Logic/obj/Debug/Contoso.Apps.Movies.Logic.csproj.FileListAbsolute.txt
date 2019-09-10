@@ -39,7 +39,6 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Net.Http.WinHttpHandler.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Numerics.Vectors.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\EntityFramework.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\Contoso.Apps.Movies.Data.pdb
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\Contoso.Apps.Movies.Data.dll.config
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\Microsoft.Azure.Documents.Client.xml
@@ -48,7 +47,6 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Memory.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Numerics.Vectors.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\EntityFramework.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\obj\Debug\Contoso.Apps.Movies.Logic.csprojAssemblyReference.cache
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\obj\Debug\Contoso.Apps.Movies.Logic.csproj.CoreCompileInputs.cache
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\obj\Debug\Contoso.Apps.Movies.Logic.csproj.CopyComplete

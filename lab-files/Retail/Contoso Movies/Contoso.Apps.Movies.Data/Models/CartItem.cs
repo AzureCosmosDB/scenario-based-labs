@@ -15,7 +15,7 @@ namespace Contoso.Apps.Movies.Data.Models
 
         public int ProductId { get; set; }
 
-        public virtual Product Product { get; set; }
+        public virtual Item Product { get; set; }
 
         public string EntityType { get { return "CartItem"; } }
     }

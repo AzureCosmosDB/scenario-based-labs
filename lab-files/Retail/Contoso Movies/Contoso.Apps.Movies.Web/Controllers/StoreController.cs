@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contoso.Apps.Common;
+using Contoso.Apps.Common.Controllers;
 using Contoso.Apps.Common.Extensions;
 using Contoso.Apps.Movies.Data.Models;
 using Contoso.Apps.Movies.Logic;
@@ -25,7 +26,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         public ActionResult Index(string categoryId)
         {
             //only take 10 products...
-            List<Product> products = RecommendationHelper.Get("assoc", "", 12);
+            List<Item> products = RecommendationHelper.Get("assoc", "", 12);
             var productsVm = Mapper.Map<List<Models.ProductListModel>>(products);
 
             // Retrieve category listing:
@@ -43,7 +44,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         public ActionResult Genre(int categoryId)
         {
             Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "product");
-            var query = client.CreateDocumentQuery<Product>(collectionUri, new SqlQuerySpec()
+            var query = client.CreateDocumentQuery<Item>(collectionUri, new SqlQuerySpec()
             {
                 QueryText = "SELECT * FROM product f WHERE f.CategoryId = @id",
                 Parameters = new SqlParameterCollection()
@@ -52,7 +53,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                     }
             }, DefaultOptions);
 
-            List<Product> products = query.ToList().Take(12).ToList();
+            List<Item> products = query.ToList().Take(12).ToList();
 
             var productsVm = Mapper.Map<List<Models.ProductListModel>>(products);
 
@@ -76,18 +77,18 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "product");
+            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
 
-            var query = client.CreateDocumentQuery<Product>(productCollectionUri, new SqlQuerySpec()
+            var query = client.CreateDocumentQuery<Item>(productCollectionUri, new SqlQuerySpec()
             {
-                QueryText = "SELECT * FROM product f WHERE (f.ProductId = @id)",
+                QueryText = "SELECT * FROM item f WHERE (f.ProductId = @id)",
                 Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", id)
                     }
             }, DefaultOptions);
 
-            Product product = query.ToList().FirstOrDefault();
+            Item product = query.ToList().FirstOrDefault();
 
             if (product == null)
             {
@@ -96,14 +97,14 @@ namespace Contoso.Apps.Movies.Web.Controllers
             var productVm = Mapper.Map<Models.ProductModel>(product);
 
             // Find related products, based on the category:
-            var relatedProducts = products.ToList().Where(p => p.CategoryID == product.CategoryID && p.ProductId != product.ProductId).Take(10).ToList();
+            var relatedProducts = items.ToList().Where(p => p.CategoryID == product.CategoryID && p.ProductId != product.ProductId).Take(10).ToList();
             var relatedProductsVm = Mapper.Map<List<Models.ProductListModel>>(relatedProducts);
 
             // Retrieve category listing:
             var categoriesVm = Mapper.Map<List<Models.CategoryModel>>(categories);
 
             // Retrieve "new products" as a list of three random products not equal to the displayed one:
-            var newProducts = products.ToList().Where(p => p.ProductId != product.ProductId).ToList().Shuffle().Take(3);
+            var newProducts = items.ToList().Where(p => p.ProductId != product.ProductId).ToList().Shuffle().Take(3);
 
             var newProductsVm = Mapper.Map<List<Models.ProductListModel>>(newProducts);
 

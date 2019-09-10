@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contoso.Apps.Common;
+using Contoso.Apps.Common.Controllers;
 using Contoso.Apps.Movies.Data.Logic;
 using Contoso.Apps.Movies.Data.Models;
 using Contoso.Apps.Movies.Web.Helpers;
@@ -29,7 +30,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         public ActionResult Index()
         {
             var vm = new CheckoutModel();
-            using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, this.products, this.categories))
+            using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, items, categories))
             {
                 var shoppingCartItems = usersShoppingCart.GetCartItems();
                 var cartItemsVM = Mapper.Map<List<CartItemModel>>(shoppingCartItems);
@@ -88,16 +89,12 @@ namespace Contoso.Apps.Movies.Web.Controllers
                         // Timestamp with a UTC date.
                         myOrder.OrderDate = DateTime.UtcNow;
 
-                        // Get DB context.
-                        ProductContext _db = new ProductContext();
-
                         // Add order to DB.
                         Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "order");
                         client.UpsertDocumentAsync(collectionUri, myOrder);
-                        
 
                         // Get the shopping cart items and process them.
-                        using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, this.products, this.categories))
+                        using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, items, categories))
                         {
                             List<CartItem> myOrderList = usersShoppingCart.GetCartItems();
 
@@ -210,8 +207,6 @@ namespace Contoso.Apps.Movies.Web.Controllers
                     string PaymentConfirmation = decoder[NVPProperties.Properties.TRANSACTIONID].ToString();
                     order.PaymentTransactionId = PaymentConfirmation;
 
-
-                    ProductContext _db = new ProductContext();
                     // Get the current order id.
                     int currentOrderId = -1;
                     if (Session["currentOrderId"] != null && Session["currentOrderId"].ToString() != string.Empty)
@@ -219,14 +214,15 @@ namespace Contoso.Apps.Movies.Web.Controllers
                         currentOrderId = Convert.ToInt32(Session["currentOrderID"]);
                     }
                     Order myCurrentOrder;
+
+                    Uri orderCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "order");
+
                     if (currentOrderId >= 0)
                     {
-                        Uri orderCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "order");
-
                         // Get the order based on order id.
                         var query = client.CreateDocumentQuery<Order>(orderCollectionUri, new SqlQuerySpec()
                         {
-                            QueryText = "SELECT * FROM order f WHERE (f.id = @id)",
+                            QueryText = "SELECT * FROM order f WHERE (f.OrderId = @id)",
                             Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", currentOrderId)
@@ -238,8 +234,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                         // Update the order to reflect payment has been completed.
                         myCurrentOrder.PaymentTransactionId = PaymentConfirmation;
 
-                        Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "orders");
-                        await client.UpsertDocumentAsync(collectionUri, myCurrentOrder);
+                        await client.UpsertDocumentAsync(orderCollectionUri, myCurrentOrder);
 
                         // Queue up a receipt generation request, asynchronously.
                         await new AzureQueueHelper().QueueReceiptRequest(myCurrentOrder);
@@ -254,7 +249,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
 
                     // Clear shopping cart.
                     using (ShoppingCartActions usersShoppingCart =
-                        new ShoppingCartActions(cartId, databaseId, client, this.products, this.categories))
+                        new ShoppingCartActions(cartId, databaseId, client, items, categories))
                     {
                         usersShoppingCart.EmptyCart();
                     }

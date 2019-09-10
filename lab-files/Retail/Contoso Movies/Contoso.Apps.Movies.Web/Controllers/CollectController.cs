@@ -1,4 +1,5 @@
-﻿using Contoso.Apps.Movies.Data.Models;
+﻿using Contoso.Apps.Common.Controllers;
+using Contoso.Apps.Movies.Data.Models;
 using Contoso.Apps.Movies.Web.Controllers;
 using Contoso.Apps.Movies.Web.Models;
 using Microsoft.Azure.Documents.Client;

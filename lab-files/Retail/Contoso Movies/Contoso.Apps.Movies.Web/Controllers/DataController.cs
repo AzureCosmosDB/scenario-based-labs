@@ -82,7 +82,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         [Route("api/recommend")]
         public IHttpActionResult Recommend(string algo, int count)
         {
-            List<Product> products = new List<Product>();
+            List<Item> products = new List<Item>();
 
             string name = this.User.Identity.Name;
 

@@ -16,7 +16,7 @@ namespace Contoso.Apps.Movies.Data.Models
     [Display(Name = "Product Description")]
     public string Description { get; set; }
 
-    public virtual ICollection<Product> Products { get; set; }
+    public virtual ICollection<Item> Products { get; set; }
 
         public string EntityType { get { return "Category"; } }
     }

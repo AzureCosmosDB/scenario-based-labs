@@ -1,4 +1,5 @@
-﻿using Contoso.Apps.Movies.Data.Models;
+﻿using Contoso.Apps.Common.Controllers;
+using Contoso.Apps.Movies.Data.Models;
 using Contoso.Apps.Movies.Logic;
 using Contoso.Apps.Movies.Web.Controllers;
 using Contoso.Apps.Movies.Web.Models;
@@ -22,12 +23,12 @@ namespace Contoso.Apps.Movies.Controllers
 
             UserAnalyticsModel m = new UserAnalyticsModel();
 
-            m.RecommendProductsAssoc = new List<Product>();
-            m.RecommendProductsCollabBased = new List<Product>();
-            m.RecommendProductsContentBased = new List<Product>();
-            m.RecommendProductsHybrid = new List<Product>();
-            m.RecommendProductsMatrixFactor = new List<Product>();
-            m.RecommendProductsRanking = new List<Product>();
+            m.RecommendProductsAssoc = new List<Item>();
+            m.RecommendProductsCollabBased = new List<Item>();
+            m.RecommendProductsContentBased = new List<Item>();
+            m.RecommendProductsHybrid = new List<Item>();
+            m.RecommendProductsMatrixFactor = new List<Item>();
+            m.RecommendProductsRanking = new List<Item>();
 
             /*
             m.RecommendProductsAssoc = RecommendationHelper.AssociationRecommendation(name, 12);

@@ -44,7 +44,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 Duration: 10 minutes
 
-Synopsis: In this exercise, you will set up your environment for use in the rest of the hands-on lab. You should follow all the steps provided in the Before the Hands-on Lab section to prepare your environment *before* attending the workshop.
+Synopsis: In this exercise, you will set up your environment for use in the rest of the hands-on lab. You should follow all the steps provided in the Before the Hands-on Lab section to prepare your environment *before* attempting the labs.
 
 ### Task 1: Download GitHub resources
 
@@ -66,7 +66,7 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 3.  Select **+Add**.
 
-4.  Type a resource group name, such as **iotsecurity-\[your initials or first name\]**.
+4.  Type a resource group name, such as **cosmosretail-\[your initials or first name\]**.
 
 5.  Select a region
 
@@ -88,7 +88,7 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
     -  Subscription: Select your **subscription**.
 
-    -  Resource group: Use an existing Resource group, or create a new one by entering a unique name, such as **iotsecurity-\[your initials or first name\]**.
+    -  Resource group: Use an existing Resource group, or create a new one by entering a unique name, such as **cosmosretail-\[your initials or first name\]**.
 
     -  If prompted for location: Select a **location** for the Resource group.
 
@@ -113,8 +113,6 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
        -  App service plan
 
        -  Azure Cosmos DB Account
-
-       -  Several virtual machines and supported resources (oilwells-edgevm, oilwells-001, oilwells-002).
 
        -  Event Hubs namespace
        

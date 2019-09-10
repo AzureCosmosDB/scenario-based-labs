@@ -1,6 +1,8 @@
-﻿using Contoso.Apps.Movies.Data.Logic;
+﻿using Contoso.Apps.Common.Controllers;
+using Contoso.Apps.Movies.Data.Logic;
 using Contoso.Apps.Movies.Data.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace Contoso.Apps.Movies.Admin.Controllers
@@ -12,7 +14,7 @@ namespace Contoso.Apps.Movies.Admin.Controllers
             //var orderId = 2;
             //var order = new Order();
             List<Order> orders = new List<Order>();
-            using (var orderActions = new OrderActions())
+            using (var orderActions = new OrderActions(orders))
             {
                 //order = orderActions.GetOrder(orderId);
                 orders = orderActions.GetCompletedOrders();
@@ -47,7 +49,7 @@ namespace Contoso.Apps.Movies.Admin.Controllers
         public ActionResult Details(int Id)
         {
             var order = new Order();
-            using (var orderActions = new OrderActions())
+            using (var orderActions = new OrderActions(orders.ToList()))
             {
                 order = orderActions.GetOrder(Id);
             }

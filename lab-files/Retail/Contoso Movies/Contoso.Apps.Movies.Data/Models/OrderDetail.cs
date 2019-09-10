@@ -34,7 +34,7 @@ namespace Contoso.Apps.Movies.Data.Models
         }
 
         [ReadOnly(true)]
-        public Product Product { get; set; }
+        public Item Product { get; set; }
 
         public string EntityType { get { return "OrderDetail"; } }
     }

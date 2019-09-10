@@ -27,11 +27,11 @@ namespace Contoso.Apps.Movies.Web
 
             // Automapper configuration.
             // Products:
-            Mapper.CreateMap<Data.Models.Product, Models.ProductModel>();
-            Mapper.CreateMap<IList<Data.Models.Product>, IList<Models.ProductModel>>();
+            Mapper.CreateMap<Data.Models.Item, Models.ProductModel>();
+            Mapper.CreateMap<IList<Data.Models.Item>, IList<Models.ProductModel>>();
             // Product list (subset of full product data):
-            Mapper.CreateMap<Data.Models.Product, Models.ProductListModel>();
-            Mapper.CreateMap<IList<Data.Models.Product>, IList<Models.ProductListModel>>();
+            Mapper.CreateMap<Data.Models.Item, Models.ProductListModel>();
+            Mapper.CreateMap<IList<Data.Models.Item>, IList<Models.ProductListModel>>();
             // Cart Items:
             Mapper.CreateMap<Data.Models.CartItem, Models.CartItemModel>();
             Mapper.CreateMap<IList<Data.Models.CartItem>, IList<Models.CartItemModel>>();

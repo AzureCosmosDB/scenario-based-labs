@@ -9,7 +9,7 @@ namespace Contoso.Apps.Movies.Data.Logic
 {
     public class ShoppingCartActions : IDisposable
     {
-        protected IQueryable<Product> products;
+        protected IQueryable<Item> items;
         protected IQueryable<Category> categories;
         protected IQueryable<Order> orders;
         protected IQueryable<CartItem> shoppingCartItems;
@@ -20,11 +20,11 @@ namespace Contoso.Apps.Movies.Data.Logic
 
         protected static readonly FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
 
-        public ShoppingCartActions(string cartId, string databaseId, DocumentClient client, IQueryable<Product> products, IQueryable<Category> categories)
+        public ShoppingCartActions(string cartId, string databaseId, DocumentClient client, IQueryable<Item> items, IQueryable<Category> categories)
         {
             this.databaseId = databaseId;
             this.client = client;
-            this.products = products;
+            this.items = items;
             this.categories = categories;
             this.ShoppingCartId = cartId;
 
@@ -59,7 +59,7 @@ namespace Contoso.Apps.Movies.Data.Logic
                     ItemId = Guid.NewGuid().ToString(),
                     ProductId = id,
                     CartId = ShoppingCartId,
-                    Product = products.ToList().Where(
+                    Product = items.ToList().Where(
                      p => p.ProductId == id).FirstOrDefault(),
                     Quantity = 1,
                     DateCreated = DateTime.Now
@@ -105,35 +105,32 @@ namespace Contoso.Apps.Movies.Data.Logic
 
         public void UpdateShoppingCartDatabase(String cartId, ShoppingCartUpdates[] CartItemUpdates)
         {
-            using (var db = new Contoso.Apps.Movies.Data.Models.ProductContext())
+            try
             {
-                try
+                int CartItemCount = CartItemUpdates.Count();
+                List<CartItem> myCart = GetCartItems();
+                foreach (var cartItem in myCart)
                 {
-                    int CartItemCount = CartItemUpdates.Count();
-                    List<CartItem> myCart = GetCartItems();
-                    foreach (var cartItem in myCart)
+                    // Iterate through all rows within shopping cart list
+                    for (int i = 0; i < CartItemCount; i++)
                     {
-                        // Iterate through all rows within shopping cart list
-                        for (int i = 0; i < CartItemCount; i++)
+                        if (cartItem.Product.ProductId == CartItemUpdates[i].ProductId)
                         {
-                            if (cartItem.Product.ProductId == CartItemUpdates[i].ProductId)
+                            if (CartItemUpdates[i].PurchaseQuantity < 1 || CartItemUpdates[i].RemoveItem == true)
                             {
-                                if (CartItemUpdates[i].PurchaseQuantity < 1 || CartItemUpdates[i].RemoveItem == true)
-                                {
-                                    RemoveItem(cartId, cartItem.ProductId);
-                                }
-                                else
-                                {
-                                    UpdateItem(cartId, cartItem.ProductId, CartItemUpdates[i].PurchaseQuantity);
-                                }
+                                RemoveItem(cartId, cartItem.ProductId);
+                            }
+                            else
+                            {
+                                UpdateItem(cartId, cartItem.ProductId, CartItemUpdates[i].PurchaseQuantity);
                             }
                         }
                     }
                 }
-                catch (Exception exp)
-                {
-                    throw new Exception("ERROR: Unable to Update Cart Database - " + exp.Message.ToString(), exp);
-                }
+            }
+            catch (Exception exp)
+            {
+                throw new Exception("ERROR: Unable to Update Cart Database - " + exp.Message.ToString(), exp);
             }
         }
 
