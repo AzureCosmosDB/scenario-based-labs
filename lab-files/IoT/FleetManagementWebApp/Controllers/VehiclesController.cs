@@ -227,8 +227,6 @@ namespace FleetManagementWebApp.Controllers
         [ActionName("BatteryPrediction")]
         public async Task<ActionResult> BatteryPredictionAsync(int batteryAgeDays, double batteryRatedCycles, double lifetimeBatteryCyclesUsed, double dailyTripDuration)
         {
-            bool predictedToFail;
-
             var payload = new BatteryPredictionPayload(batteryAgeDays, dailyTripDuration);
 
             var httpClient = _clientFactory.CreateClient(NamedHttpClients.ScoringService);
@@ -240,12 +238,13 @@ namespace FleetManagementWebApp.Controllers
                 new StringContent(postBody, Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
 
-            var result = await httpResponse.Content.ReadAsAsync<string>();
+            var result = BatteryPredictionResult.FromJson(await httpResponse.Content.ReadAsAsync<string>());
 
-            var predictedDailyCyclesUsed = PredictionHelper.ParsePredictionResult(result);
+            // The results return in an array of doubles. We only expect a single result for this prediction.
+            var predictedDailyCyclesUsed = result.Result[0];
 
             // Multiply the predictedCyclesConsumed * 30 (days), add that value to the lifetime cycles used, then see if it exceeds the battery's rated cycles.
-            predictedToFail = predictedDailyCyclesUsed * 30 + lifetimeBatteryCyclesUsed > batteryRatedCycles;
+            var predictedToFail = predictedDailyCyclesUsed * 30 + lifetimeBatteryCyclesUsed > batteryRatedCycles;
 
             return Json(predictedToFail);
         }

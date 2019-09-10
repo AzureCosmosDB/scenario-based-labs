@@ -1,25 +1,39 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
+using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace FleetManagementWebApp.Models
 {
-    public class BatteryPredictionResult
+    public partial class BatteryPredictionResult
     {
-        public string result { get; set; }
+        [JsonProperty("result")]
+        public double[] Result { get; set; }
+    }
 
-        public double ParseResult()
+    public partial class BatteryPredictionResult
+    {
+        public static BatteryPredictionResult FromJson(string json) => JsonConvert.DeserializeObject<BatteryPredictionResult>(json, FleetManagementWebApp.Models.Converter.Settings);
+    }
+
+    public static class Serialize
+    {
+        public static string ToJson(this BatteryPredictionResult self) => JsonConvert.SerializeObject(self, FleetManagementWebApp.Models.Converter.Settings);
+    }
+
+    internal static class Converter
+    {
+        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {
-            var value = 0.0;
-
-            if (result.Contains("["))
+            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+            DateParseHandling = DateParseHandling.None,
+            Converters =
             {
-                var stringValue = result.Substring(result.IndexOf("["), result.IndexOf("]"));
-                double.TryParse(stringValue, out value);
-            }
-
-            return value;
-        }
+                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
+            },
+        };
     }
 }
