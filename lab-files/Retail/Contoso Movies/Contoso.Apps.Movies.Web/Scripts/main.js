@@ -52,6 +52,17 @@ function get_recs(url, element_name) {
         });
 }
 
+function add_log(log, recs) {
+
+    fig_div = document.createElement('div')
+    
+    spanLog = document.createElement('span')
+    spanLog.text = log.Event + ' - ' + log.ProductId;
+
+    fig_div.appendChild(spanLog);
+    recs.appendChild(fig_div);
+}
+
 function add_movie(mov, recs) {    
 
     fig_div = document.createElement('div')

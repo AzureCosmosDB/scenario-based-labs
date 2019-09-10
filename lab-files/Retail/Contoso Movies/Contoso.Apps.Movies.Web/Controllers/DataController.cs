@@ -35,7 +35,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
 
         [HttpGet]
         [Route("api/logs")]
-        public List<CollectorLog> Logs()
+        public IHttpActionResult Logs()
         {
             List<CollectorLog> logs = new List<CollectorLog>();
 
@@ -54,12 +54,12 @@ namespace Contoso.Apps.Movies.Web.Controllers
                     ), DefaultOptions
             ).ToList();
 
-            return logs;
+            return Json(logs);
         }
 
         [HttpGet]
         [Route("api/similar")]
-        public List<Data.Models.User> SimilarUsers(string algo)
+        public IHttpActionResult SimilarUsers(string algo)
         {
             List<Data.Models.User> users = new List<Data.Models.User>();
 
@@ -74,8 +74,8 @@ namespace Contoso.Apps.Movies.Web.Controllers
                     users = RecommendationHelper.PearsonRecommendation(name);
                     break;
             }
-
-            return users;
+            
+            return Json(users);
         }
 
         [HttpGet]
