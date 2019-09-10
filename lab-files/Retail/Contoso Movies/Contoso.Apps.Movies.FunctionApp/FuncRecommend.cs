@@ -36,7 +36,7 @@ namespace ContosoFunctionApp
 
                     log.LogInformation($"Webhook was triggered!");
  
-                    products = RecommendationHelper.Get(payload.Algo, payload.Name);
+                    products = RecommendationHelper.Get(payload.Algo, payload.UserId, payload.ContentId);
 
                     return new OkObjectResult(products);
                 }

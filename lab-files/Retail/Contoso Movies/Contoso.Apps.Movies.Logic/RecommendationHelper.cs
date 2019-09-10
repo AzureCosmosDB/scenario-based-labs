@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Contoso.Apps.Movies.Data.Models;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Newtonsoft.Json;
 
 namespace Contoso.Apps.Movies.Logic
 {
@@ -70,11 +72,12 @@ namespace Contoso.Apps.Movies.Logic
 
         }
 
-        public static List<Movies.Data.Models.Item> ContentBasedRecommendation(string name, int take)
+        public static List<Movies.Data.Models.Item> ContentBasedRecommendation(int contentId, int take)
         {
             return GetRandom(take);
         }
 
+        //aka NeighborhoodBasedRecs
         public static List<Movies.Data.Models.Item> CollaborationBasedRecommendation(int userId, int take)
         {
             return GetRandom(take);
@@ -83,110 +86,163 @@ namespace Contoso.Apps.Movies.Logic
             decimal minSim = 0.0m;
             int maxCandidates = 100;
 
-            List<Item> recommendedItems = GetRatedItems(userId);
+            List<ItemRating> userRatedItems = GetRatedItems(userId);
 
             DateTime start = DateTime.Now;
             int[] movieIds = null;
 
+            //this is the mean rating a user gave (python code looks odd and maybe wrong)
+            decimal ratingSum = 0;
+
+            foreach(ItemRating r in userRatedItems)
+            {
+                ratingSum += r.Rating;
+            }
+
+            decimal userMean = ratingSum / userRatedItems.Count;
+
             //get similar items
-            List<Item> candidateItems = null;
+            List<SimilarItem> candidateItems = null;
 
             //sort by similarity, take only max candidates
-            candidateItems = candidateItems.Take(maxCandidates);
+            candidateItems = candidateItems.Take(maxCandidates).ToList();
 
-            foreach(Item candidate in candidateItems)
+            Hashtable recs = new Hashtable();
+
+            foreach(SimilarItem candidate in candidateItems)
             {
+                int target = candidate.Target;
+                decimal pre = 0;
+                decimal simSum = 0;
 
+                List<SimilarItem> ratedItems = null;
+
+                if (ratedItems.Count > 1)
+                {
+                    foreach(SimilarItem simItem in ratedItems)
+                    {
+                        decimal r = 0; //rating of the movie - userMean;
+                        pre += simItem.Similarity * r;
+                        simSum += simItem.Similarity;
+
+                        if (simSum > 0)
+                        {
+                            PredictionModel p = new PredictionModel();
+                            p.Prediction = userMean + pre / simSum;
+                            p.Items = ratedItems;
+                            recs.Add(target, p);
+                        }
+                    }
+                }
             }
 
         }
 
-        public static List<Movies.Data.Models.Item> MatrixFactorRecommendation(string name, int take)
+        private static List<ItemRating> GetRatedItems(int userId)
+        {
+            return new List<ItemRating>();
+        }
+
+        public static List<Movies.Data.Models.Item> MatrixFactorRecommendation(int userId, int take)
         {
             return GetRandom(take);
         }
 
-        public static List<Movies.Data.Models.Item> HybridRecommendation(string name, int take)
+        public static List<Movies.Data.Models.Item> HybridRecommendation(int userId, int take)
         {
             return GetRandom(take);
         }
 
-        public static List<Movies.Data.Models.Item> RankingRecommendation(string name, int take)
+        public static List<Movies.Data.Models.Item> RankingRecommendation(int userId, int take)
         {
             return GetRandom(take);
         }
 
-        public static List<Data.Models.User> JaccardRecommendation(object name)
+        public static List<Data.Models.User> JaccardRecommendation(int userId)
         {
             return new List<Data.Models.User>();
         }
 
-        public static List<Data.Models.User> PearsonRecommendation(object name)
+        public static List<Data.Models.User> PearsonRecommendation(int userId)
         {
             return new List<Data.Models.User>();
         }
 
-        public static List<Item> GetViaFunction(string algo, string name)
+        public static List<Item> GetViaFunction(string algo, int userId, int contentId)
         {
-            return GetViaFunction(algo, name, 6);
+            return GetViaFunction(algo, userId, contentId, 6);
         }
 
-        public static List<Item> GetViaFunction(string algo, string name, int take)
+        public static List<Item> GetViaFunction(string algo, int userId, int contentId, int take)
         {
             List<Item> items = new List<Item>();
+
+            string funcUrl = "";
+
+            dynamic request = new System.Dynamic.ExpandoObject();
+            request.Algo = algo;
+            request.UserId = userId;
+            request.ContentId = contentId;
+            request.Take = take;
+
+            string json = JsonConvert.DeserializeObject(request);
 
             switch (algo)
             {
                 case "assoc":
-                    items = RecommendationHelper.AssociationRecommendation(name, take);
+                case "assocUser":
+                    items = RecommendationHelper.AssociationRecommendationByUser(userId, take);
+                    break;
+                case "assocContent":
+                    items = RecommendationHelper.AssociationRecommendationByContent(contentId, take);
                     break;
                 case "content":
-                    items = RecommendationHelper.ContentBasedRecommendation(name, take);
+                    items = RecommendationHelper.ContentBasedRecommendation(contentId, take);
                     break;
                 case "collab":
-                    items = RecommendationHelper.CollaborationBasedRecommendation(name, take);
+                    items = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
                     break;
                 case "matrix":
-                    items = RecommendationHelper.MatrixFactorRecommendation(name, take);
+                    items = RecommendationHelper.MatrixFactorRecommendation(userId, take);
                     break;
                 case "hybrid":
-                    items = RecommendationHelper.HybridRecommendation(name, take);
+                    items = RecommendationHelper.HybridRecommendation(userId, take);
                     break;
                 case "ranking":
-                    items = RecommendationHelper.RankingRecommendation(name, take);
+                    items = RecommendationHelper.RankingRecommendation(userId, take);
                     break;
             }
             return items;
         }
 
-        public static List<Item> Get(string algo, string name)
+        public static List<Item> Get(string algo, int userId, int contentId)
         {
-            return Get(algo, name, 6);
+            return Get(algo, userId, contentId, 6);
         }
 
-        public static List<Item> Get(string algo, string name, int take)
+        public static List<Item> Get(string algo, int userId, int contentId, int take)
         {
             List<Item> items = new List<Item>();
 
             switch (algo)
             {
                 case "assoc":
-                    items = RecommendationHelper.AssociationRecommendation(name, take);
+                    items = RecommendationHelper.AssociationRecommendationByUser(userId, take);
                     break;
                 case "content":
-                    items = RecommendationHelper.ContentBasedRecommendation(name, take);
+                    items = RecommendationHelper.ContentBasedRecommendation(userId, take);
                     break;
                 case "collab":
-                    items = RecommendationHelper.CollaborationBasedRecommendation(name, take);
+                    items = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
                     break;
                 case "matrix":
-                    items = RecommendationHelper.MatrixFactorRecommendation(name, take);
+                    items = RecommendationHelper.MatrixFactorRecommendation(userId, take);
                     break;
                 case "hybrid":
-                    items = RecommendationHelper.HybridRecommendation(name, take);
+                    items = RecommendationHelper.HybridRecommendation(userId, take);
                     break;
                 case "ranking":
-                    items = RecommendationHelper.RankingRecommendation(name, take);
+                    items = RecommendationHelper.RankingRecommendation(userId, take);
                     break;
             }
 

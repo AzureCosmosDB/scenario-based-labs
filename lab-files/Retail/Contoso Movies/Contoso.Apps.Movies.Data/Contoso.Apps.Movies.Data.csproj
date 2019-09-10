@@ -117,6 +117,9 @@
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\CollectorLog.cs" />
     <Compile Include="Models\IEntity.cs" />
+    <Compile Include="Models\Prediction.cs" />
+    <Compile Include="Models\SimilarItem.cs" />
+    <Compile Include="Models\Rating.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\User.cs" />

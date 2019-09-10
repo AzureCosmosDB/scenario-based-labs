@@ -32,7 +32,7 @@ namespace Contoso.Apps.Movies.Data.Models
 
         public virtual Category Category { get; set; }
 
-        public string EntityType { get { return "Product"; } }
+        public string EntityType { get { return "Item"; } }
     }
 
     // This class is used to compare two objects of type Product to remove 

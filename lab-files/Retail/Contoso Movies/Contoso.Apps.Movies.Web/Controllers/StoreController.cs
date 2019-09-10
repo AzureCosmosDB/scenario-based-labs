@@ -25,8 +25,22 @@ namespace Contoso.Apps.Movies.Web.Controllers
         // GET: Store
         public ActionResult Index(string categoryId)
         {
+            Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
+            string name = user.Email;
+            int userId = user.UserId;
+
+            List<Item> products = new List<Item>();
+
             //only take 10 products...
-            List<Item> products = RecommendationHelper.Get("assoc", "", 12);
+            if (user != null)
+            {
+                products = RecommendationHelper.Get("assoc", userId, 12);
+            }
+            else
+            {
+                products = RecommendationHelper.Get("top", 0, 12);
+            }
+
             var productsVm = Mapper.Map<List<Models.ProductListModel>>(products);
 
             // Retrieve category listing:

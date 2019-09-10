@@ -17,9 +17,16 @@ namespace Contoso.Apps.Movies.Controllers
             
             var vm = new HomeModel();
 
-            string name = this.User.Identity.Name;
-            vm.RecommendProductsBought = RecommendationHelper.Get("assoc", name, 10);
-            vm.RecommendProductsLiked = RecommendationHelper.Get("assoc", name, 10);
+            Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
+
+            if (user != null)
+            {
+                string name = user.Email;
+                int userId = user.UserId;
+
+                vm.RecommendProductsBought = RecommendationHelper.Get("assoc", userId, 10);
+                vm.RecommendProductsLiked = RecommendationHelper.Get("assoc", userId, 10);
+            }
 
             return View(vm);
         }

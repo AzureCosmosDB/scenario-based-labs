@@ -39,11 +39,9 @@ namespace ContosoFunctionApp
 
             if (events != null && events.Count > 0)
             {
-                //do the aggregate for a product...
+                //do the aggregate for each product...
                 foreach (var group in events.GroupBy(singleEvent => singleEvent.GetPropertyValue<int>("ProductId")))
                 {
-                    //get the count of buy events
-
                     //get the product
                     var database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
                     Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
@@ -53,7 +51,7 @@ namespace ContosoFunctionApp
                         QueryText = "SELECT * FROM item f WHERE (f.ProductId = @id)",
                         Parameters = new SqlParameterCollection()
                     {
-                        new SqlParameter("@id", group.TakeLast<Item>(events, 1).ProductId)
+                        new SqlParameter("@id", group.TakeLast<Document>(1).FirstOrDefault().GetPropertyValue<int>("ProductId"))
                     }
                     }, DefaultOptions); ;
 
@@ -62,7 +60,11 @@ namespace ContosoFunctionApp
                     if (product != null)
                     {
                         //update the product
-                        product.BuyCount += group.Count<Item>(item=> 1);
+                        product.BuyCount += group.Where(p => p.GetPropertyValue<string>("event") == "buy").Count<Document>();
+                        product.ViewDetailsCount += group.Where(p => p.GetPropertyValue<string>("event") == "details").Count<Document>();
+                        product.AddToCartCount += group.Where(p => p.GetPropertyValue<string>("event") == "addToCart").Count<Document>();
+
+                        client.UpsertDocumentAsync(productCollectionUri, product);
                     }
                 }
             }

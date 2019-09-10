@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.Results;
@@ -39,7 +40,9 @@ namespace Contoso.Apps.Movies.Web.Controllers
         {
             List<CollectorLog> logs = new List<CollectorLog>();
 
-            string name = this.User.Identity.Name;
+            Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)HttpContext.Current.Session["User"];
+            string name = user.Email;
+            int userId = user.UserId;
 
             Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "collector_log");
 
@@ -48,7 +51,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                     "SELECT * FROM collector_log r WHERE r.UserId = @userid",
                     new SqlParameterCollection(new[]
                     {
-                        new SqlParameter { Name = "@userid", Value = name }
+                        new SqlParameter { Name = "@userid", Value = userId }
                     }
                     )
                     ), DefaultOptions
@@ -63,15 +66,17 @@ namespace Contoso.Apps.Movies.Web.Controllers
         {
             List<Data.Models.User> users = new List<Data.Models.User>();
 
-            string name = this.User.Identity.Name;
+            Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)HttpContext.Current.Session["User"];
+            string name = user.Email;
+            int userId = user.UserId;
 
             switch (algo)
             {
                 case "jaccard":
-                    users = RecommendationHelper.JaccardRecommendation(name);
+                    users = RecommendationHelper.JaccardRecommendation(userId);
                     break;
                 case "pearson":
-                    users = RecommendationHelper.PearsonRecommendation(name);
+                    users = RecommendationHelper.PearsonRecommendation(userId);
                     break;
             }
             
@@ -84,9 +89,11 @@ namespace Contoso.Apps.Movies.Web.Controllers
         {
             List<Item> products = new List<Item>();
 
-            string name = this.User.Identity.Name;
+            Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)HttpContext.Current.Session["User"];
+            string name = user.Email;
+            int userId = user.UserId;
 
-            products = RecommendationHelper.Get(algo, name, count);
+            products = RecommendationHelper.Get(algo, userId, count);
 
             return Json(products);
         }
