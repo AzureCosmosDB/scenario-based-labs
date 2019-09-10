@@ -8,7 +8,7 @@ namespace Contoso.Apps.Movies.Data.Models
     public class Item : IEntity
     {
         [ScaffoldColumn(false)]
-        public int ProductId { get; set; }
+        public int ItemId { get; set; }
 
         public int BuyCount { get; set; }
         public int ViewDetailsCount { get; set; }
@@ -17,6 +17,8 @@ namespace Contoso.Apps.Movies.Data.Models
 
         [Required, StringLength(100), Display(Name = "Name")]
         public string ProductName { get; set; }
+
+        public string ImdbId { get; set; }
 
         [Required, StringLength(10000), Display(Name = "Product Description"), DataType(DataType.MultilineText)]
         public string Description { get; set; }
@@ -28,11 +30,16 @@ namespace Contoso.Apps.Movies.Data.Models
         [Display(Name = "Price")]
         public double? UnitPrice { get; set; }
 
-        public int? CategoryID { get; set; }
+        public int? CategoryId { get; set; }
 
         public virtual Category Category { get; set; }
 
         public string EntityType { get { return "Item"; } }
+
+        public dynamic Popularity { get; set; }
+        public dynamic OriginalLanguage { get; set; }
+        public dynamic ReleaseDate { get; set; }
+        public dynamic VoteAverage { get; set; }
     }
 
     // This class is used to compare two objects of type Product to remove 
@@ -41,7 +48,7 @@ namespace Contoso.Apps.Movies.Data.Models
     {
         public bool Equals(Item x, Item y)
         {
-            if (x.ProductId == y.ProductId)
+            if (x.ItemId == y.ItemId)
             {
                 return true;
             }
@@ -53,7 +60,7 @@ namespace Contoso.Apps.Movies.Data.Models
 
         public int GetHashCode(Item obj)
         {
-            return obj.ProductId.GetHashCode();
+            return obj.ItemId.GetHashCode();
         }
     }
 }

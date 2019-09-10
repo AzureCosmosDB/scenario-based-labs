@@ -27,7 +27,7 @@
                                         <span>availability:</span>
                                         <span>available</span>
                                     </div>
-                                    <a class="btn btn-small btn-red" href="@Url.Action("AddToCart", "Cart", new { productId = Model.Product.ProductId })" onclick="add_impression('@this.User.Identity.Name', 'buy', @Model.Product.ProductId, '@this.Session.SessionID','token')">Add to cart</a>
+                                    <a class="btn btn-small btn-red" href="@Url.Action("AddToCart", "Cart", new { productId = Model.Product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'buy', @Model.Product.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
                                 </div>
                             </aside>
                         </div>
@@ -76,7 +76,7 @@
                             <ul class="category">
                                 @foreach (var category in Model.Categories)
                                 {
-                                    <li><a href="@Url.Action("Genre", "Store", new { categoryId = category.CategoryID })" onclick="add_impression('@this.User.Identity.Name', 'genre_@category.CategoryName', @category.CategoryID, '@this.Session.SessionID','token')">@category.CategoryName</a></li>
+                                    <li><a href="@Url.Action("Genre", "Store", new { categoryId = category.CategoryId })" onclick="add_impression('@this.User.Identity.Name', 'genre_@category.CategoryName', @category.CategoryId, '@this.Session.SessionID','token')">@category.CategoryName</a></li>
                                 }
                             </ul>
                         </div>
@@ -92,7 +92,7 @@
                                         <img src="@Url.Content("http://image.tmdb.org/t/p/w500/")@product.ImagePath" alt="@product.ProductName">
                                     </div>
                                     <div class="item-content">
-                                        <h6><a href="@Url.Action("Details", "Store", new { id = product.ProductId })" onclick="add_impression('@this.User.Identity.Name', 'details', @product.ProductId, '@this.Session.SessionID','token')" >@product.ProductName</a></h6>
+                                        <h6><a href="@Url.Action("Details", "Store", new { id = product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'details', @product.ItemId, '@this.Session.SessionID','token')" >@product.ProductName</a></h6>
                                         <p>@String.Format("{0:c}", product.UnitPrice)</p>
                                     </div>
                                 </div>

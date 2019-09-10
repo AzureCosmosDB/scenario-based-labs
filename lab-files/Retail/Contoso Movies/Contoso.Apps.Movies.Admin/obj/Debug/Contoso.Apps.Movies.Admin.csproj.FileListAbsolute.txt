@@ -93,6 +93,7 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Contoso.Apps.Movies.Admin.pdb
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Antlr3.Runtime.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\AspNet.Mvc.Grid.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Contoso.Apps.Common.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Contoso.Apps.Movies.Data.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\EntityFramework.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\EntityFramework.SqlServer.dll
@@ -110,6 +111,8 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\WebActivatorEx.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\WebGrease.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Microsoft.Azure.Documents.Client.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Contoso.Apps.Common.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Contoso.Apps.Common.dll.config
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Contoso.Apps.Movies.Data.pdb
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Contoso.Apps.Movies.Data.dll.config
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Antlr3.Runtime.pdb
@@ -130,6 +133,3 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\obj\Debug\Contoso.Apps.Movies.Admin.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\obj\Debug\Contoso.Apps.Movies.Admin.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\obj\Debug\Contoso.Apps.Movies.Admin.pdb
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Contoso.Apps.Common.dll
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Contoso.Apps.Common.pdb
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Contoso.Apps.Common.dll.config

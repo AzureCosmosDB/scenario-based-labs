@@ -21,7 +21,8 @@ namespace Contoso.Apps.Common
 
                 if (string.IsNullOrEmpty(html))
                 {
-                    html = HttpHelper.Get(url);
+                    HttpHelper hh = new HttpHelper();
+                    html = hh.DoGet(url, "");
                     System.IO.File.WriteAllText("./Data/TheMovieDbCache/" + movieId, html);
 
                     Thread.Sleep(150);
@@ -48,7 +49,8 @@ namespace Contoso.Apps.Common
 
             if (string.IsNullOrEmpty(html))
             {
-                html = HttpHelper.Get(url);
+                HttpHelper hh = new HttpHelper();
+                html = hh.DoGet(url, "");
                 System.IO.File.WriteAllText("./Data/TheMovieDbCache/genres.json", html);
             }
 

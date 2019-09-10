@@ -76,6 +76,7 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.Documents.Client.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Movies.Data.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Common.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Common.dll.config
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Antlr3.Runtime.pdb
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Newtonsoft.Json.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.IdentityModel.Tokens.Jwt.pdb
@@ -99,4 +100,3 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.pdb
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Common.dll.config

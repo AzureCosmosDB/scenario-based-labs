@@ -12,16 +12,28 @@ using System.Net;
 using System.Text;
 using System.Collections.Generic;
 using Contoso.Apps.Movies.Data.Models;
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents;
+using System.Linq;
 
 namespace ContosoFunctionApp
 {
     public static class FuncTopItems
     {
+        static FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+
+        static DocumentClient client;
+        static Database database;
+        static string databaseId;
+        static DocumentCollection productColl, shoppingCartItems;
+
         [FunctionName("TopItems")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req, ILogger log)
         {
-            List<Item> products = new List<Item>();
+            List<Item> items = new List<Item>();
+
+            log.LogInformation($"Webhook was triggered!");
 
             try
             {
@@ -31,11 +43,14 @@ namespace ContosoFunctionApp
                 if (payload != null && payload.UserId != null)
                 {
                     var base64EncodedData = payload.Order.Value;
-                    var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+                    var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);                    
 
-                    log.LogInformation($"Webhook was triggered!");
+                    Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
 
-                    return new OkObjectResult(products);
+                    if (items == null)
+                        items = client.CreateDocumentQuery<Item>(productCollectionUri, "SELECT * FROM product f ORDER BY f.BuyCount OFFSET 0 LIMIT 20 ", DefaultOptions).ToList();
+
+                    return new OkObjectResult(items);
                 }
                 else
                 {

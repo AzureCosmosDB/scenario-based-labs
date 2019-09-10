@@ -44,7 +44,7 @@ namespace Contoso.Apps.Movies.Offers.Controllers
 
                     productOffers.Add(new OfferedProduct
                     {
-                        ProductId = product.ProductId,
+                        ItemId = product.ItemId,
                         ProductName = product.ProductName,
                         Description = product.Description,
                         ImagePath = product.ImagePath,

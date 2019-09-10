@@ -13,6 +13,7 @@ using System.Text;
 using System.Collections.Generic;
 using Contoso.Apps.Movies.Data.Models;
 using Contoso.Apps.Movies.Logic;
+using Microsoft.Extensions.Configuration;
 
 namespace ContosoFunctionApp
 {
@@ -20,23 +21,35 @@ namespace ContosoFunctionApp
     {
         [FunctionName("Recommend")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req, ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req, ILogger log, ExecutionContext ctx)
         {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(ctx.FunctionAppDirectory)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
             List<Item> products = new List<Item>();
+
+            log.LogInformation($"Webhook was triggered!");
+
+            RecommendationHelper.databaseId = config["databaseId"];
+            RecommendationHelper.endpointUrl = config["dbConnectionUrl"];
+            RecommendationHelper.authorizationKey = config["dbConnectionKey"];
+            RecommendationHelper.Init();
 
             try
             {
                 string jsonContent = await req.ReadAsStringAsync();
                 dynamic payload = JsonConvert.DeserializeObject(jsonContent);
 
+                log.LogInformation($"Payload recv: {payload}"); 
+
                 if (payload != null && payload.UserId != null)
                 {
-                    var base64EncodedData = payload.Order.Value;
-                    var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+                    log.LogInformation($"Getting recommendations.");
 
-                    log.LogInformation($"Webhook was triggered!");
- 
-                    products = RecommendationHelper.Get(payload.Algo, payload.UserId, payload.ContentId);
+                    products = RecommendationHelper.Get(payload.Algo.ToString(), (int)payload.UserId, (int)payload.ContentId, (int)payload.Take);
 
                     return new OkObjectResult(products);
                 }

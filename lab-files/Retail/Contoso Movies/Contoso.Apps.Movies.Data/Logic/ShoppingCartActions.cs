@@ -51,16 +51,16 @@ namespace Contoso.Apps.Movies.Data.Logic
 
             var cartItem = shoppingCartItems.ToList().SingleOrDefault(
                 c => c.CartId == ShoppingCartId
-                && c.ProductId == id);
+                && c.ItemId == id);
 
             if (cartItem == null) {
                 // Create a new cart item if no cart item exists.                 
                 cartItem = new CartItem {
-                    ItemId = Guid.NewGuid().ToString(),
-                    ProductId = id,
+                    CartItemId = Guid.NewGuid().ToString(),
+                    ItemId = id,
                     CartId = ShoppingCartId,
                     Product = items.ToList().Where(
-                     p => p.ProductId == id).FirstOrDefault(),
+                     p => p.ItemId == id).FirstOrDefault(),
                     Quantity = 1,
                     DateCreated = DateTime.Now
                 };
@@ -114,15 +114,15 @@ namespace Contoso.Apps.Movies.Data.Logic
                     // Iterate through all rows within shopping cart list
                     for (int i = 0; i < CartItemCount; i++)
                     {
-                        if (cartItem.Product.ProductId == CartItemUpdates[i].ProductId)
+                        if (cartItem.Product.ItemId == CartItemUpdates[i].ProductId)
                         {
                             if (CartItemUpdates[i].PurchaseQuantity < 1 || CartItemUpdates[i].RemoveItem == true)
                             {
-                                RemoveItem(cartId, cartItem.ProductId);
+                                RemoveItem(cartId, cartItem.ItemId);
                             }
                             else
                             {
-                                UpdateItem(cartId, cartItem.ProductId, CartItemUpdates[i].PurchaseQuantity);
+                                UpdateItem(cartId, cartItem.ItemId, CartItemUpdates[i].PurchaseQuantity);
                             }
                         }
                     }
@@ -138,7 +138,7 @@ namespace Contoso.Apps.Movies.Data.Logic
         {
             try
             {
-                var myItem = (from c in shoppingCartItems.ToList() where c.CartId == removeCartID && c.Product.ProductId == removeProductID select c).FirstOrDefault();
+                var myItem = (from c in shoppingCartItems.ToList() where c.CartId == removeCartID && c.Product.ItemId == removeProductID select c).FirstOrDefault();
 
                 if (myItem != null)
                 {
@@ -167,7 +167,7 @@ namespace Contoso.Apps.Movies.Data.Logic
         {
             try
             {
-                var myItem = (from c in shoppingCartItems.ToList() where c.CartId == updateCartID && c.Product.ProductId == updateProductID select c).FirstOrDefault();
+                var myItem = (from c in shoppingCartItems.ToList() where c.CartId == updateCartID && c.Product.ItemId == updateProductID select c).FirstOrDefault();
                 if (myItem != null)
                 {
                     myItem.Quantity = quantity;
@@ -192,11 +192,11 @@ namespace Contoso.Apps.Movies.Data.Logic
             {
                 Document doc = client.CreateDocumentQuery(collectionUri,
                         new SqlQuerySpec(
-                            "SELECT * FROM shoppingcartitems r WHERE r.CartId = @cartid and r.ProductID == @productid",
+                            "SELECT * FROM shoppingcartitems r WHERE r.CartId = @cartid and r.ItemId == @itemid",
                             new SqlParameterCollection(new[]
                             {
                                 new SqlParameter { Name = "@cartid", Value = cartItem.CartId },
-                                new SqlParameter { Name = "@productid", Value = cartItem.ProductId }
+                                new SqlParameter { Name = "@itemid", Value = cartItem.ItemId }
                             }
                             )
                             )

@@ -2,7 +2,7 @@
 {
     public class CategoryModel
     {
-        public int CategoryID { get; set; }
+        public int CategoryId{ get; set; }
         public string CategoryName { get; set; }
     }
 }

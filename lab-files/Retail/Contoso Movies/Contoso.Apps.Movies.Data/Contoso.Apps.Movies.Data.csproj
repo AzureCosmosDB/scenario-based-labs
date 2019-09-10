@@ -114,6 +114,7 @@
     <Compile Include="Logic\OrderActions.cs" />
     <Compile Include="Logic\ShoppingCartActions.cs" />
     <Compile Include="Models\CartItem.cs" />
+    <Compile Include="Models\ItemCategory.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\CollectorLog.cs" />
     <Compile Include="Models\IEntity.cs" />

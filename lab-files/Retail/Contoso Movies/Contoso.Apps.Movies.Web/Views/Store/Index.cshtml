@@ -15,7 +15,7 @@
             <li><a href="#menu" data-filter="*" class="headline-lato selected">select all</a></li>
             @foreach (var category in Model.Categories)
             {
-                <li><a href="#menu" data-filter=".@category.CategoryID" class="headline-lato" onclick="add_impression('@this.User.Identity.Name', 'genre', @category.CategoryID, '@this.Session.SessionID','token')">@category.CategoryName</a></li>
+                <li><a href="#menu" data-filter=".@category.CategoryId" class="headline-lato" onclick="add_impression('@this.User.Identity.Name', 'genre', @category.CategoryId, '@this.Session.SessionID','token')">@category.CategoryName</a></li>
             }
         </ul>
         <div class="row">
@@ -26,7 +26,7 @@
 
                         <div class="figure @product.CategoryID">
                             <div class="item clearfix">
-                                <a class="item-img" href="@Url.Action("Details", "Store", new { id = product.ProductId })" onclick="add_impression('@this.User.Identity.Name', 'more_details', @product.ProductId, '@this.Session.SessionID','token')">
+                                <a class="item-img" href="@Url.Action("Details", "Store", new { id = product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'more_details', @product.ItemId, '@this.Session.SessionID','token')">
                                     <img src="@Url.Content("http://image.tmdb.org/t/p/w500/")@product.ImagePath" alt="@product.ProductName" class="center-block">
                                 </a>
                                 <div class="item-content">
@@ -38,7 +38,7 @@
                                             </div>
                                         </div>
                                         <div class="footer-button">
-                                            <a class="btn trans-btn" href="@Url.Action("AddToCart", "Cart", new { productId = product.ProductId })" onclick="add_impression('@this.User.Identity.Name', 'buy', @product.ProductId, '@this.Session.SessionID','token')">Add to cart</a>
+                                            <a class="btn trans-btn" href="@Url.Action("AddToCart", "Cart", new { ItemId = product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'buy', @product.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
                                         </div>
                                     </div>
                                 </div>

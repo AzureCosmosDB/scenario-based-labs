@@ -104,7 +104,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                                 // Create a new OrderDetail object.
                                 var myOrderDetail = new OrderDetail();
                                 myOrderDetail.OrderId = myOrder.OrderId;
-                                myOrderDetail.ProductId = myOrderList[i].ProductId;
+                                myOrderDetail.ProductId = myOrderList[i].ItemId;
                                 myOrderDetail.Quantity = myOrderList[i].Quantity;
                                 myOrderDetail.UnitPrice = myOrderList[i].Product.UnitPrice;
 

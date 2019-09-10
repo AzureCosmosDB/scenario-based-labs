@@ -276,7 +276,6 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\AutoMapper.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Contoso.Apps.Common.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Contoso.Apps.Movies.Data.dll
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Contoso.Apps.Movies.Logic.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\EntityFramework.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\EntityFramework.SqlServer.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Microsoft.Azure.ActiveDirectory.GraphClient.dll
@@ -317,10 +316,9 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\System.Web.WebPages.Razor.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\WebGrease.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Contoso.Apps.Common.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Contoso.Apps.Common.dll.config
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Contoso.Apps.Movies.Data.pdb
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Contoso.Apps.Movies.Data.dll.config
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Contoso.Apps.Movies.Logic.pdb
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Contoso.Apps.Movies.Logic.dll.config
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Antlr3.Runtime.pdb
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\AutoMapper.pdb
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\AutoMapper.xml
@@ -403,4 +401,3 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\obj\Debug\Contoso.Apps.Movies.Web.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\obj\Debug\Contoso.Apps.Movies.Web.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\obj\Debug\Contoso.Apps.Movies.Web.pdb
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\bin\Contoso.Apps.Common.dll.config

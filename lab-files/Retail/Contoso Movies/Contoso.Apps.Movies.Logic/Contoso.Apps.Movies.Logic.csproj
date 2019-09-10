@@ -101,7 +101,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RecommendationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +108,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Contoso.Apps.Common\Contoso.Apps.Common.csproj">
+      <Project>{3FF97305-2331-4E46-8D0F-C3E3BBD372F2}</Project>
+      <Name>Contoso.Apps.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Contoso.Apps.Movies.Data\Contoso.Apps.Movies.Data.csproj">
       <Project>{b74e00b2-7568-4990-81f8-b54aa6751600}</Project>
       <Name>Contoso.Apps.Movies.Data</Name>

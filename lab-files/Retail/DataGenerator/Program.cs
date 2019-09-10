@@ -25,22 +25,22 @@ namespace DataGenerator
             //execute actions of a user...
             Guid sessionId = Guid.NewGuid();
 
-            List<Product> movies = DbHelper.GetMoviesByType(personalityType); ;
+            List<Item> movies = DbHelper.GetMoviesByType(personalityType); ;
 
             //loop...
             while (true)
             {
                 //randomly get a movie
-                Product p = GetRandomMovie(movies);
+                Item p = GetRandomMovie(movies);
 
                 //randomly do this x times / 
-                DbHelper.GenerateAction(1, p.ProductId.ToString(), "details", sessionId.ToString().Replace("-", ""));
-                DbHelper.GenerateAction(1, p.ProductId.ToString(), "buy", sessionId.ToString().Replace("-", ""));
-                DbHelper.GenerateAction(1, p.ProductId.ToString(), "order", sessionId.ToString().Replace("-", ""));
+                DbHelper.GenerateAction(1, p.ItemId.ToString(), "details", sessionId.ToString().Replace("-", ""));
+                DbHelper.GenerateAction(1, p.ItemId.ToString(), "buy", sessionId.ToString().Replace("-", ""));
+                DbHelper.GenerateAction(1, p.ItemId.ToString(), "order", sessionId.ToString().Replace("-", ""));
             }
         }
 
-        static Product GetRandomMovie(List<Product> movieSet)
+        static Item GetRandomMovie(List<Item> movieSet)
         {
             Random r = new Random();
             return movieSet.Skip(r.Next(movieSet.Count)).Take(1).FirstOrDefault();

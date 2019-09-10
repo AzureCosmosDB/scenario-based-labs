@@ -8,7 +8,7 @@ namespace Contoso.Apps.Movies.Data.Models
     public class Category : IEntity
   {
     [ScaffoldColumn(false)]
-    public int CategoryID { get; set; }
+    public int CategoryId { get; set; }
 
     [Required, StringLength(100), Display(Name = "Name")]
     public string CategoryName { get; set; }

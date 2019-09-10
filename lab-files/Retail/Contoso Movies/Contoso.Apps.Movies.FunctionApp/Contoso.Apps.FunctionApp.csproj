@@ -16,13 +16,15 @@
   <ItemGroup>
     <ProjectReference Include="..\Contoso.Apps.Common\Contoso.Apps.Common.csproj" />
     <ProjectReference Include="..\Contoso.Apps.Movies.Data\Contoso.Apps.Movies.Data.csproj" />
-    <ProjectReference Include="..\Contoso.Apps.Movies.Logic\Contoso.Apps.Movies.Logic.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="libwkhtmltox.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="local.settings.old.json">

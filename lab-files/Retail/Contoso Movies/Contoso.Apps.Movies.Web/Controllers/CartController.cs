@@ -84,7 +84,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         // GET: Cart/Create
         public ActionResult Create()
         {
-            ViewBag.ProductId = new SelectList(items, "ProductId", "ProductName");
+            ViewBag.ProductId = new SelectList(items, "ItemId", "ProductName");
             return View();
         }
 
@@ -93,7 +93,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ItemId,CartId,Quantity,DateCreated,ProductId")] CartItem cartItem)
+        public ActionResult Create([Bind(Include = "CartItemId,CartId,Quantity,DateCreated,ItemId")] CartItem cartItem)
         {
             if (ModelState.IsValid)
             {
@@ -103,7 +103,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ProductId = new SelectList(items, "ProductId", "ProductName", cartItem.ProductId);
+            ViewBag.ProductId = new SelectList(items, "ItemId", "ProductName", cartItem.ItemId);
             return View(cartItem);
         }
 
@@ -132,7 +132,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ProductId = new SelectList(items, "ProductId", "ProductName", cartItem.ProductId);
+            ViewBag.ProductId = new SelectList(items, "ItemId", "ProductName", cartItem.ItemId);
             return View(cartItem);
         }
 
@@ -141,7 +141,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ItemId,CartId,Quantity,DateCreated,ProductId")] CartItem cartItem)
+        public ActionResult Edit([Bind(Include = "CartItemId,CartId,Quantity,DateCreated,ItemId")] CartItem cartItem)
         {
             if (ModelState.IsValid)
             {
@@ -149,7 +149,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 client.UpsertDocumentAsync(collectionUri, cartItem);
                 return RedirectToAction("Index");
             }
-            ViewBag.ProductId = new SelectList(items, "ProductID", "ProductName", cartItem.ProductId);
+            ViewBag.ProductId = new SelectList(items, "ItemId", "ProductName", cartItem.ItemId);
             return View(cartItem);
         }
 

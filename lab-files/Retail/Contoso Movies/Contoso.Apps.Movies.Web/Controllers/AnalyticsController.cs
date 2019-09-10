@@ -24,7 +24,7 @@ namespace Contoso.Apps.Movies.Controllers
 
             UserAnalyticsModel m = new UserAnalyticsModel();
 
-            m.RecommendProductsAssoc = RecommendationHelper.AssociationRecommendationByUser(userId, 12); ;
+            m.RecommendProductsAssoc = RecommendationHelper.GetViaFunction("assoc", userId, 12);
             m.RecommendProductsCollabBased = new List<Item>();
             m.RecommendProductsContentBased = new List<Item>();
             m.RecommendProductsHybrid = new List<Item>();
@@ -40,10 +40,15 @@ namespace Contoso.Apps.Movies.Controllers
             m.RecommendProductsRanking = RecommendationHelper.RankingRecommendation(name, 12);
             */
 
+            m.UsersJaccard = new List<Data.Models.User>();
+            m.UsersPearson = new List<Data.Models.User>();
+
             //get similar users...
+            /*
             m.UsersJaccard = RecommendationHelper.JaccardRecommendation(userId);
             m.UsersPearson = RecommendationHelper.PearsonRecommendation(userId);
-            
+            */
+
             //get the user events
             Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "collector_log");
             var query = client.CreateDocumentQuery<CollectorLog>(collectionUri, new SqlQuerySpec()

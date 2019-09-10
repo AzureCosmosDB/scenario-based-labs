@@ -103,10 +103,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Category.cs" />
-    <Compile Include="Models\ProductCategory.cs" />
-    <Compile Include="Models\Product.cs" />
-    <Compile Include="Models\User.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -134,6 +130,10 @@
       <Project>{3ff97305-2331-4e46-8d0f-c3e3bbd372f2}</Project>
       <Name>Contoso.Apps.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Contoso Movies\Contoso.Apps.Movies.Data\Contoso.Apps.Movies.Data.csproj">
+      <Project>{b74e00b2-7568-4990-81f8-b54aa6751600}</Project>
+      <Name>Contoso.Apps.Movies.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Contoso Movies\Contoso.Apps.Movies.Logic\Contoso.Apps.Movies.Logic.csproj">
       <Project>{a63c252a-9b05-4ebb-9e0f-3e38c0b60890}</Project>
       <Name>Contoso.Apps.Movies.Logic</Name>
@@ -146,6 +146,9 @@
     <Content Include="Data\TheMovieDbCache\README.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Microsoft.Azure.DocumentDB.2.6.0\build\Microsoft.Azure.DocumentDB.targets" Condition="Exists('packages\Microsoft.Azure.DocumentDB.2.6.0\build\Microsoft.Azure.DocumentDB.targets')" />

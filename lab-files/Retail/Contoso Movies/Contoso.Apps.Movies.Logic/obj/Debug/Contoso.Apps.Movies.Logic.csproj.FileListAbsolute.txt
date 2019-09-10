@@ -52,3 +52,17 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\obj\Debug\Contoso.Apps.Movies.Logic.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\obj\Debug\Contoso.Apps.Movies.Logic.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\obj\Debug\Contoso.Apps.Movies.Logic.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\Contoso.Apps.Common.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Web.Mvc.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Web.Razor.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Web.WebPages.Razor.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Web.WebPages.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\Microsoft.Web.Infrastructure.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Web.WebPages.Deployment.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\Contoso.Apps.Common.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\Contoso.Apps.Common.dll.config
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Web.Mvc.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Web.Razor.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Web.WebPages.Razor.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Web.WebPages.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Logic\bin\Debug\System.Web.WebPages.Deployment.xml

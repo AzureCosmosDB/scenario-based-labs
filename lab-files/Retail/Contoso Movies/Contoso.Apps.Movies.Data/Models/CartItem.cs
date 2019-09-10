@@ -5,7 +5,7 @@ namespace Contoso.Apps.Movies.Data.Models
     public class CartItem : IEntity
     {
         [Key]
-        public string ItemId { get; set; }
+        public string CartItemId { get; set; }
 
         public string CartId { get; set; }
 
@@ -13,7 +13,7 @@ namespace Contoso.Apps.Movies.Data.Models
 
         public System.DateTime DateCreated { get; set; }
 
-        public int ProductId { get; set; }
+        public int ItemId { get; set; }
 
         public virtual Item Product { get; set; }
 

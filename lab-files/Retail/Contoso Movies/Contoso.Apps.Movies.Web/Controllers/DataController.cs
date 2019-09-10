@@ -73,10 +73,10 @@ namespace Contoso.Apps.Movies.Web.Controllers
             switch (algo)
             {
                 case "jaccard":
-                    users = RecommendationHelper.JaccardRecommendation(userId);
+                    users = RecommendationHelper.GetViaFunction(userId);
                     break;
                 case "pearson":
-                    users = RecommendationHelper.PearsonRecommendation(userId);
+                    users = RecommendationHelper.GetViaFunction(userId);
                     break;
             }
             
@@ -89,11 +89,16 @@ namespace Contoso.Apps.Movies.Web.Controllers
         {
             List<Item> products = new List<Item>();
 
-            Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)HttpContext.Current.Session["User"];
-            string name = user.Email;
-            int userId = user.UserId;
+            if (HttpContext.Current.Session != null && HttpContext.Current.Session["User"] != null)
+            {
+                Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)HttpContext.Current.Session["User"];
+                string name = user.Email;
+                int userId = user.UserId;
 
-            products = RecommendationHelper.Get(algo, userId, count);
+                products = RecommendationHelper.GetViaFunction(algo, userId, count);
+            }
+            else
+                products = RecommendationHelper.GetViaFunction(algo, 0, count);
 
             return Json(products);
         }
