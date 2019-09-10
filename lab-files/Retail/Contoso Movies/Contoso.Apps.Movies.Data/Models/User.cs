@@ -5,7 +5,7 @@ using System;
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
-    public class User
+    public class User : IEntity
     {
         public int UserId { get; set; }
 
@@ -14,5 +14,7 @@ namespace Contoso.Apps.Movies.Data.Models
         public string Email { get; set; }
 
         public string Personality { get; set; }
+
+        public string EntityType { get { return "User"; } }
     }
 }

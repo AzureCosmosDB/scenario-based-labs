@@ -6,7 +6,7 @@ using System;
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
-    public class Order
+    public class Order : IEntity
     {
         public int OrderId { get; set; }
 
@@ -78,5 +78,7 @@ namespace Contoso.Apps.Movies.Data.Models
         public bool HasBeenShipped { get; set; }
 
         public List<OrderDetail> OrderDetails { get; set; }
+
+        public string EntityType { get { return "Order"; } }
     }
 }

@@ -5,7 +5,7 @@ using System;
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
-    public class Product
+    public class Product : IEntity
     {
         [ScaffoldColumn(false)]
         public int ProductId { get; set; }
@@ -28,6 +28,8 @@ namespace Contoso.Apps.Movies.Data.Models
         public int? CategoryID { get; set; }
 
         public virtual Category Category { get; set; }
+
+        public string EntityType { get { return "Product"; } }
     }
 
     // This class is used to compare two objects of type Product to remove 

@@ -18,31 +18,9 @@
                                 <h3>Association Rules</h3>
                                 <p><br /></p>
 
-                                @foreach (var product in Model.RecommendProductsAssoc)
-                                {
-                                    @Html.Partial("_MoviesTeaser", product)
-                                }
-
-                            </div>
-                        </div>
-                    </aside>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                <div class="wrapper clearfix">
-                    <aside class="content contact-wrap">
-                        <div class="store-details-wrap clearfix">
-                            <div class="shop-related clearfix">
-                                <h2>Content Based</h2>
-                                <p><br /></p>
-
-                                @foreach (var product in Model.RecommendProductsContentBased)
-                                {
-                                    @Html.Partial("_MoviesTeaser", product)
-                                }
+                                <div id="assoc_recs">
+                                    Loading...
+                                </div>
 
                             </div>
                         </div>
@@ -60,16 +38,43 @@
                                 <h2>Collaboriative Based</h2>
                                 <p><br /></p>
 
-                                @foreach (var product in Model.RecommendProductsCollabBased)
-                                {
-                                    @Html.Partial("_MoviesTeaser", product)
-                                }
+                                <div id="collab_recs">
+                                    Loading...
+                                </div>                                
 
                             </div>
                         </div>
                     </aside>
                 </div>
             </div>
+        </div>
+
+        <!--
+
+
+        <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+                <aside class="content contact-wrap">
+                    <div class="store-details-wrap clearfix">
+                        <div class="shop-related clearfix">
+                            <h2>Content Based</h2>
+                            <p><br /></p>
+
+                            <div id="cb_recs">
+                                Loading...
+                            </div>
+
+                        @foreach (var product in Model.RecommendProductsContentBased)
+                        {
+                            @Html.Partial("_MoviesTeaser", product)
+                        }
+                        
+        </div>
+        </div>
+        </aside>
+        </div>
+        </div>
         </div>
 
         <div class="container">
@@ -114,52 +119,51 @@
             </div>
         </div>
 
-        <!--
-    <div class="container">
-        <div class="row">
-            <div class="wrapper clearfix">
-                <aside class="content contact-wrap">
-                    <div class="store-details-wrap clearfix">
-                        <div class="shop-related clearfix">
-                            <h3>Similar Users (Jaccard)</h3>
-                            <p><br /></p>
+        <div class="container">
+            <div class="row">
+                <div class="wrapper clearfix">
+                    <aside class="content contact-wrap">
+                        <div class="store-details-wrap clearfix">
+                            <div class="shop-related clearfix">
+                                <h3>Similar Users (Jaccard)</h3>
+                                <p><br /></p>
 
-                            <ul>
-                                @foreach (Contoso.Apps.Movies.Data.Models.User e in Model.UsersJaccard)
-                                {
-                                    <li>@e.UserId</li>
-                                }
-                            </ul>
+                                <ul>
+                                    @foreach (Contoso.Apps.Movies.Data.Models.User e in Model.UsersJaccard)
+                                    {
+                                        <li>@e.UserId</li>
+                                    }
+                                </ul>
 
+                            </div>
                         </div>
-                    </div>
-                </aside>
+                    </aside>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="wrapper clearfix">
-                <aside class="content contact-wrap">
-                    <div class="store-details-wrap clearfix">
-                        <div class="shop-related clearfix">
-                            <h3>Similar Users (Pearson)</h3>
-                            <p><br /></p>
+        <div class="container">
+            <div class="row">
+                <div class="wrapper clearfix">
+                    <aside class="content contact-wrap">
+                        <div class="store-details-wrap clearfix">
+                            <div class="shop-related clearfix">
+                                <h3>Similar Users (Pearson)</h3>
+                                <p><br /></p>
 
-                            <ul>
-                                @foreach (Contoso.Apps.Movies.Data.Models.User e in Model.UsersPearson)
-                                {
-                                    <li>@e.UserId</li>
-                                }
-                            </ul>
+                                <ul>
+                                    @foreach (Contoso.Apps.Movies.Data.Models.User e in Model.UsersPearson)
+                                    {
+                                        <li>@e.UserId</li>
+                                    }
+                                </ul>
 
+                            </div>
                         </div>
-                    </div>
-                </aside>
+                    </aside>
+                </div>
             </div>
         </div>
-    </div>
         -->
 
         <div class="container">
@@ -170,6 +174,10 @@
                             <div class="shop-related clearfix">
                                 <h3>User Events</h3>
                                 <p><br /></p>
+
+                                <div id="user_logs">
+                                    Loading...
+                                </div>
 
                                 <ul>
                                     @foreach (Contoso.Apps.Movies.Data.Models.CollectorLog e in Model.Events)
@@ -189,4 +197,15 @@
 
 @section Scripts {
 
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            get_assoc_recs(10);
+            get_cb_recs(10);
+            get_collab_recs(10);
+
+        });
+
+    </script>
 }

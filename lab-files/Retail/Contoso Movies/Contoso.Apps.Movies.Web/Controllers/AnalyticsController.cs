@@ -22,12 +22,21 @@ namespace Contoso.Apps.Movies.Controllers
 
             UserAnalyticsModel m = new UserAnalyticsModel();
 
+            m.RecommendProductsAssoc = new List<Product>();
+            m.RecommendProductsCollabBased = new List<Product>();
+            m.RecommendProductsContentBased = new List<Product>();
+            m.RecommendProductsHybrid = new List<Product>();
+            m.RecommendProductsMatrixFactor = new List<Product>();
+            m.RecommendProductsRanking = new List<Product>();
+
+            /*
             m.RecommendProductsAssoc = RecommendationHelper.AssociationRecommendation(name, 12);
             m.RecommendProductsCollabBased = RecommendationHelper.CollaborationBasedRecommendation(name, 12);
             m.RecommendProductsContentBased = RecommendationHelper.ContentBasedRecommendation(name, 12);
             m.RecommendProductsHybrid = RecommendationHelper.HybridRecommendation(name, 12);
             m.RecommendProductsMatrixFactor = RecommendationHelper.MatrixFactorRecommendation(name, 12);
             m.RecommendProductsRanking = RecommendationHelper.RankingRecommendation(name, 12);
+            */
 
             //get similar users...
             m.UsersJaccard = RecommendationHelper.JaccardRecommendation(name);

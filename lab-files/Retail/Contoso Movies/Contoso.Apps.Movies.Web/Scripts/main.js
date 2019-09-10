@@ -1,48 +1,116 @@
-function get_url(movieid) {
-    return 'https://api.themoviedb.org/3/find/tt' + movieid + '?external_source=imdb_id&api_key={{ api_key }}'
+function get_collab_recs(count) {
+    url = '/api/recommend?algo=collab&count=' + count;
+    element_name = 'collab_recs'
+    get_recs(url, element_name)
 }
 
-function get_cb_recs(userid) {
-    url = '/rec/cb/user/' + userid + '/'
+function get_cb_recs(count) {
+    url = '/api/recommend?algo=contentbased&count=' + count;
     element_name = 'cb_recs'
     get_recs(url, element_name)
 }
 
-function get_cf_recs(userid) {
-    url = '/rec/cf/user/' + userid + '/'
-    element_name = 'cf_recs'
+function get_assoc_recs(count) {
+    url = '/api/recommend?algo=assoc&count=' + count;
+    element_name = 'assoc_recs'
     get_recs(url, element_name)
 }
 
-function get_recs(url, element_name) {
+function get_logs(count) {
+    url = '/api/logs?count=' + count;
+    element_name = 'user_logs'
+    get_logs(url, element_name)
+}
+
+function get_logs(url, element_name) {
     $.getJSON(url,
         function (result) {
-            if ((result.data != null) && (result.data.length > 0)) {
+
+            if ((result != null) && (result.length > 0)) {
                 recs = document.getElementById(element_name)
+                recs.innerHTML = '';
                 recs.style.display = 'block'
-                result.data.forEach(function (element, index, array) {
-                    add_movie(element[0], recs)
+                result.forEach(function (element, index, array) {
+                    add_log(element, recs);
                 });
             }
         });
 }
 
-function add_movie(id, recs) {
-    $.getJSON(get_url(id), function (mov) {
-        image_url = 'http://image.tmdb.org/t/p/w500/'
-            + mov.movie_results[0].poster_path
-        rec_div = document.createElement('div')
-        rec_div.setAttribute('class', "col-sm-2 img-responsive")
-        a = document.createElement('a')
-        a.setAttribute('href', '/movies/movie/' + id)
-        img = document.createElement('img')
-        img.setAttribute('src', image_url)
-        img.setAttribute('class', "img-responsive")
-        img.setAttribute('title', mov.movie_results[0].title)
-        a.appendChild(img)
-        rec_div.appendChild(a)
-        recs.appendChild(rec_div)
-    })
+function get_recs(url, element_name) {
+    $.getJSON(url,
+        function (result) {
+
+            if ((result != null) && (result.length > 0)) {
+                recs = document.getElementById(element_name)
+                recs.innerHTML = '';
+                recs.style.display = 'block'
+                result.forEach(function (element, index, array) {
+                    add_movie(element, recs);
+                });
+            }
+        });
+}
+
+function add_movie(mov, recs) {    
+
+    fig_div = document.createElement('div')
+    fig_div.setAttribute('class', "figure " + mov.CategoryID);
+
+    item_div = document.createElement('div')
+    item_div.setAttribute('class', "item")
+
+    itemImg_div = document.createElement('div')
+    itemImg_div.setAttribute('class', "item-img")
+
+    img = document.createElement('img')
+    img.setAttribute('src', 'http://image.tmdb.org/t/p/w500' + mov.ImagePath)
+    img.setAttribute('alt', 'Add ' + mov.ProductName + ' to cart');
+    img.setAttribute('class', "center-block")
+    img.setAttribute('title', mov.ProductName)
+    itemImg_div.appendChild(img)
+
+    itemCart_div = document.createElement('div')
+    itemCart_div.setAttribute('class', "item-cart")
+    itemImg_div.appendChild(itemCart_div);
+
+    item_div.appendChild(itemImg_div);
+
+    a = document.createElement('a')
+    a.setAttribute('href', '/Store/Details?id=' + mov.ProductId)
+    a.setAttribute('class', "btn trans-btn");
+    a.setAttribute('onclick', "add_impression('', 'details', '" + mov.ProductId + "', '', '')")
+    a.text = "Product Details";
+    itemCart_div.appendChild(a);
+
+    
+    item_div.appendChild(itemImg_div);
+
+    itemContent_div = document.createElement('div')
+    itemContent_div.setAttribute('class', "item-content")
+    itemContent_div.setAttribute('style', "height:230px")
+
+    itemHeader_div = document.createElement('div')
+    itemHeader_div.setAttribute('class', "item-header clearfix")
+
+    spanHead_div = document.createElement('span');
+    spanHead_div.setAttribute('class', "headline-lato");
+
+    spanPrice = document.createElement('span')
+    spanPrice.text = mov.Price;
+
+    p = document.createElement('p')
+    a = document.createElement('a')
+    a.setAttribute('href', '/Cart/AddToCart?productId=')
+    a.setAttribute('alt', 'Add @Model.ProductName to cart')
+    a.setAttribute('onclick', "add_impression('', 'buy', '" + mov.ProductId + "', '', '')")
+    a.setAttribute('class', "btn trans-btn")
+    a.text = "Add to cart";
+    p.appendChild(a);
+
+    fig_div.appendChild(item_div);
+
+    recs.appendChild(fig_div);
 }
 
 function get_association_rule_recs(userid) {

@@ -16,9 +16,6 @@ namespace Contoso.Apps.Movies.Offers
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
-            // Initialize the product database.
-            Database.SetInitializer(new ProductDatabaseInitializer());
-
         }
     }
 }

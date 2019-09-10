@@ -2,7 +2,7 @@
 
 namespace Contoso.Apps.Movies.Data.Models
 {
-    public class CartItem
+    public class CartItem : IEntity
     {
         [Key]
         public string ItemId { get; set; }
@@ -17,5 +17,6 @@ namespace Contoso.Apps.Movies.Data.Models
 
         public virtual Product Product { get; set; }
 
+        public string EntityType { get { return "CartItem"; } }
     }
 }

@@ -12,9 +12,9 @@ namespace DataGenerator
     {
         static void Main(string[] args)
         {
-            
-            //fire off many threads of different personalities...
+            int[] types =  new int[] { 1, 2, 3 };
 
+            //fire off many threads of different personalities...
             DoWork(1);
             DoWork(2);
             DoWork(3);
@@ -33,6 +33,7 @@ namespace DataGenerator
                 //randomly get a movie
                 Product p = GetRandomMovie(movies);
 
+                //randomly do this x times / 
                 DbHelper.GenerateAction(1, p.ProductId.ToString(), "details", sessionId.ToString().Replace("-", ""));
                 DbHelper.GenerateAction(1, p.ProductId.ToString(), "buy", sessionId.ToString().Replace("-", ""));
                 DbHelper.GenerateAction(1, p.ProductId.ToString(), "order", sessionId.ToString().Replace("-", ""));

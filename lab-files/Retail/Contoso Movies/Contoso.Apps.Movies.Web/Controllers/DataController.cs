@@ -6,12 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
+using System.Web.Http.Results;
 
 namespace Contoso.Apps.Movies.Web.Controllers
 {
+    [AllowAnonymous]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class DataController : ApiController
     {
         protected DocumentClient client;
@@ -31,6 +33,8 @@ namespace Contoso.Apps.Movies.Web.Controllers
             database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
         }
 
+        [HttpGet]
+        [Route("api/logs")]
         public List<CollectorLog> Logs()
         {
             List<CollectorLog> logs = new List<CollectorLog>();
@@ -53,6 +57,8 @@ namespace Contoso.Apps.Movies.Web.Controllers
             return logs;
         }
 
+        [HttpGet]
+        [Route("api/similar")]
         public List<Data.Models.User> SimilarUsers(string algo)
         {
             List<Data.Models.User> users = new List<Data.Models.User>();
@@ -72,14 +78,17 @@ namespace Contoso.Apps.Movies.Web.Controllers
             return users;
         }
 
-        public List<Product> Recommend(string algo)
+        [HttpGet]
+        [Route("api/recommend")]
+        public IHttpActionResult Recommend(string algo, int count)
         {
             List<Product> products = new List<Product>();
 
             string name = this.User.Identity.Name;
-            products = RecommendationHelper.Get(algo, name);
 
-            return products;
+            products = RecommendationHelper.Get(algo, name, count);
+
+            return Json(products);
         }
     }
 }

@@ -6,7 +6,7 @@ using System;
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
-    public class CollectorLog
+    public class CollectorLog : IEntity
     {
         public int UserId { get; set; }
 
@@ -18,5 +18,6 @@ namespace Contoso.Apps.Movies.Data.Models
 
         public System.DateTime Created { get; set; }
 
+        public string EntityType { get { return "CollectorLog"; } }
     }
 }
