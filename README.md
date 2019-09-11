@@ -1,6 +1,5 @@
-# Cosmos DB Scenario-Based Labs
+# Cosmos DB scenario-based labs
 
-##  Scenerio 1 (IoT)
+##  Scenario 1 (IoT)
 
-##  Scenerio 2 (Retail)
-
+##  Scenario 2 (Retail)

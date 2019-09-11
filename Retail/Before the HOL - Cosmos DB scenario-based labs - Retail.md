@@ -1,5 +1,5 @@
 <div class="MCWHeader1">
-CosmosDB Scenerio 2 - Retail
+Cosmos DB scenario-based labs - Retail
 </div>
 
 <div class="MCWHeader2">
@@ -24,15 +24,15 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 <!-- TOC -->
 
--   [Scenerio 2 before the hands on-lab setup guide](#securing-the-iot-end-to-end-before-the-hands-on-lab-setup-guide)
-    - [Requirements](#requirements)
-    - [Before the hands-on lab](#before-the-hands-on-lab)
-      - [Task 1: Download GitHub resources](#task-1-download-github-resources)
-      - [Task 2: Deploy resources to Azure](#task-2-deploy-resources-to-azure)
+- [Cosmos DB scenario-based labs - IoT before the hands-on lab setup guide](#cosmos-db-scenario-based-labs---iot-before-the-hands-on-lab-setup-guide)
+  - [Requirements](#requirements)
+  - [Before the hands-on lab](#before-the-hands-on-lab)
+    - [Task 1: Download GitHub resources](#task-1-download-github-resources)
+    - [Task 2: Deploy resources to Azure](#task-2-deploy-resources-to-azure)
 
 <!-- /TOC -->
 
-# Scenerio 2 before the hands-on lab setup guide 
+# Cosmos DB scenario-based labs - IoT before the hands-on lab setup guide
 
 ## Requirements
 

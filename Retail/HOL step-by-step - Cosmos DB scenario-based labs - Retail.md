@@ -1,5 +1,5 @@
 <div class="MCWHeader1">
-CosmosDB Scenerio 2 - Retail
+Cosmos DB scenario-based labs - Retail
 </div>
 
 <div class="MCWHeader2">
@@ -25,35 +25,30 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 <!-- TOC -->
 
-- [Cosmos DB Scenerio 2 hands-on lab step-by-step](#securing-the-iot-end-to-end-hands-on-lab-step-by-step)
-    - [Abstract and learning objectives](#abstract-and-learning-objectives)
-    - [Overview](#overview)
-    - [Solution architecture](#solution-architecture-high-level)
-    - [Requirements](#requirements)
-    - [Before the hands-on lab](#before-the-hands-on-lab)
-    - [Exercise 1: Deployment and Setup](#exercise-1-secure-and-configure-iot-hub-and-device-provisioning-service)
-        - [Task 1: Blah](#task-1-blah)
-    - [Exercise 2: Creating and deploying rule calculations](#exercise-2-enroll-and-provision-iot-devices)
-        - [Task 1: Perform Association Rules Calculation](#exercise-2-enroll-and-provision-iot-devices)
-        - [Task 2: Deploying  Association Rules](#exercise-3-install-and-configure-iot-edge)
-        - [Task 3: Perform Collaborative Filtering Caculation](#exercise-4-install-azure-security-iot-agent)
-        - [Task 4: Deploy Collaborative Filtering Calculation](#exercise-5-simulate-iot-attacks)
-    - [Exercise 3: Simulate data and events](#exercise-6-configure-security-and-alerts)
-        - [Task 1: Run Data Generator](#task-1-blah)
-        - [Task 1: Observe data](#task-1-blah)
-    - [Exercise 4: Reporting with Stream Analytics and Power BI](#exercise-6-configure-security-and-alerts)
-        - [Task 1: Stream Analytics](#exercise-6-configure-security-and-alerts)
-        - [Task 1: Power BI](#task-1-blah)
-    - [Exercise 5: Email alerts using Logic Apps](#exercise-6-configure-security-and-alerts)
-        - [Task 1: Create a Logic App](#task-1-blah)
-    - [After the hands-on lab](#after-the-hands-on-lab)
-        - [Task 1: Delete resource group](#task-1-delete-resource-group)
+- [Cosmos DB scenario-based labs - IoT hands-on lab step-by-step](#cosmos-db-scenario-based-labs---iot-hands-on-lab-step-by-step)
+  - [Abstract and learning objectives](#abstract-and-learning-objectives)
+  - [Overview](#overview)
+  - [Solution architecture (High-level)](#solution-architecture-high-level)
+  - [Requirements](#requirements)
+  - [Before the hands-on lab](#before-the-hands-on-lab)
+  - [Exercise 1: Deployment and Setup](#exercise-1-deployment-and-setup)
+    - [Task 1: Blah](#task-1-blah)
+  - [Exercise 2: Creating and deploying rule calculations](#exercise-2-creating-and-deploying-rule-calculations)
+    - [Task 1: Blah](#task-1-blah-1)
+  - [Exercise 3: Simulate data and events](#exercise-3-simulate-data-and-events)
+    - [Task 1: Blah](#task-1-blah-2)
+  - [Exercise 4: Reporting with Stream Analytics and Power BI](#exercise-4-reporting-with-stream-analytics-and-power-bi)
+    - [Task 1: Blah](#task-1-blah-3)
+  - [Exercise 5: Email alerts using Logic Apps](#exercise-5-email-alerts-using-logic-apps)
+    - [Task 1: Blah](#task-1-blah-4)
+  - [After the hands-on lab](#after-the-hands-on-lab)
+    - [Task 1: Delete resource group](#task-1-delete-resource-group)
 
 <!-- /TOC -->
 
-# Scenerio 2 hands-on lab step-by-step 
+# Cosmos DB scenario-based labs - IoT hands-on lab step-by-step
 
-## Abstract and learning objectives 
+## Abstract and learning objectives
 
 In this hands-on-lab, TODO
 
