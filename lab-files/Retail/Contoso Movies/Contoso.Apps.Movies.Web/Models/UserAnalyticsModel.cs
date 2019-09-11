@@ -5,6 +5,21 @@ namespace Contoso.Apps.Movies.Web.Models
 {
     public class UserAnalyticsModel
     {
+        public UserAnalyticsModel()
+        {
+            this.RecommendProductsAssoc = new List<Item>();
+            this.RecommendProductsContentBased = new List<Item>();
+            this.RecommendProductsCollabBased = new List<Item>();
+            this.RecommendProductsMatrixFactor = new List<Item>();
+            this.RecommendProductsHybrid = new List<Item>();
+            this.RecommendProductsRanking = new List<Item>();
+
+            this.UsersJaccard = new List<User>();
+            this.UsersPearson = new List<User>();
+
+            this.Events = new List<CollectorLog>();
+
+        }
         public List<Item> RecommendProductsAssoc { get; set; }
 
         public List<Item> RecommendProductsContentBased { get; set; }

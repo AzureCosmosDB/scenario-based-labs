@@ -2,9 +2,11 @@
 {
     public class CartItemModel
     {
-        public string ItemId { get; set; }
+        public int ItemId { get; set; }
 
         public string CartId { get; set; }
+
+        public string CartItemId { get; set; }
 
         public int Quantity { get; set; }
 

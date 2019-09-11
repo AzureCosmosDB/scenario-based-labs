@@ -45,10 +45,9 @@ namespace ContosoFunctionApp
                     int itemId = group.TakeLast<Document>(1).FirstOrDefault().GetPropertyValue<int>("ContentId");
 
                     //get the product
-                    var database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
                     Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
 
-                    var query = client.CreateDocumentQuery<Item>(productCollectionUri, new SqlQuerySpec()
+                    var query = client.CreateDocumentQuery<Document>(productCollectionUri, new SqlQuerySpec()
                     {
                         QueryText = "SELECT * FROM item f WHERE (f.ItemId = @id)",
                         Parameters = new SqlParameterCollection()
@@ -57,16 +56,18 @@ namespace ContosoFunctionApp
                     }
                     }, DefaultOptions);
 
-                    Item product = query.ToList().FirstOrDefault();
+                    Document doc = query.ToList().FirstOrDefault();
 
-                    if (product != null)
+                    if (doc != null)
                     {
+                        Item product = (dynamic)doc;
+
                         //update the product
                         product.BuyCount += group.Where(p => p.GetPropertyValue<string>("Event") == "buy").Count<Document>();
                         product.ViewDetailsCount += group.Where(p => p.GetPropertyValue<string>("Event") == "details").Count<Document>();
                         product.AddToCartCount += group.Where(p => p.GetPropertyValue<string>("Event") == "addToCart").Count<Document>();
-
-                        var newItem = client.ReplaceDocumentAsync(productCollectionUri, product);
+                        
+                        var newItem = client.ReplaceDocumentAsync(doc.SelfLink,  product);
                     }
                 }
             }

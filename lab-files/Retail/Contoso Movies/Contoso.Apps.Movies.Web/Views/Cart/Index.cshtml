@@ -39,10 +39,12 @@
                             {
                                 <tr>
                                     <td>
-                                        <img src="@Url.Content("http://image.tmdb.org/t/p/w500/")@item.ProductImagePath" alt="@item.ProductProductName" class="center-block" style="width:100px">
+                                        <a href="@Url.Action("Details", "Store", new { id = item.ItemId })">
+                                            <img src="@Url.Content("http://image.tmdb.org/t/p/w500/")@item.ProductImagePath" alt="@item.ProductProductName" class="center-block" style="width:100px">
+                                        </a>
                                     </td>
                                     <td>
-                                        <a href="@Url.Action("Details", "Store", new { id = item.ProductId })">@Html.DisplayFor(modelItem => item.ProductProductName)</a>
+                                        <a href="@Url.Action("Details", "Store", new { id = item.ItemId })">@Html.DisplayFor(modelItem => item.ProductProductName)</a>
                                     </td>
                                     <td>
                                         @String.Format("{0:c}", item.ProductUnitPrice)
