@@ -9,22 +9,31 @@ using System.Web.Mvc;
 
 namespace Contoso.Apps.Movies.Controllers
 {
+    [AllowAnonymous]
     public class CollectController : BaseController
     {
         [HttpPost]
         public bool Log(string user_id, string content_id, string event_type, string session_id)
         {
-            CollectorLog log = new CollectorLog();
+            Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
+            
+            if (user != null)
+            {
+                string name = user.Email;
+                int userId = user.UserId;
 
-            log.UserId = int.Parse(user_id);
-            log.ContentId = content_id;
-            log.Event = event_type;
-            log.SessionId = session_id;
-            log.Created = DateTime.Now;
+                CollectorLog log = new CollectorLog();
 
-            //add to cosmos db
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "collector_log");
-            var item = client.UpsertDocumentAsync(collectionUri, log);
+                log.UserId = userId;
+                log.ContentId = content_id;
+                log.Event = event_type;
+                log.SessionId = session_id;
+                log.Created = DateTime.Now;
+
+                //add to cosmos db
+                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "event");
+                var item = client.UpsertDocumentAsync(collectionUri, log);
+            }
 
             return true;
         }
