@@ -23,48 +23,50 @@ namespace ContosoFunctionApp
         [FunctionName("ChangeFeed")]
         public static void Run(
             [CosmosDBTrigger(
-            databaseName: "MovieGeek",
-            collectionName: "events",
+            databaseName: "moviegeek",
+            collectionName: "event",
             ConnectionStringSetting = "CosmosDBConnection",
             LeaseCollectionName = "leases",
             CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> events,
             [CosmosDB(
-                databaseName: "MovieGeek",
-                collectionName: "events",
+                databaseName: "moviegeek",
+                collectionName: "item",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
             ILogger log)
         {
             FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
-            var databaseId = "MovieGeek";
+            var databaseId = "moviegeek";
 
             if (events != null && events.Count > 0)
             {
                 //do the aggregate for each product...
-                foreach (var group in events.GroupBy(singleEvent => singleEvent.GetPropertyValue<int>("ProductId")))
+                foreach (var group in events.GroupBy(singleEvent => singleEvent.GetPropertyValue<int>("ContentId")))
                 {
+                    int itemId = group.TakeLast<Document>(1).FirstOrDefault().GetPropertyValue<int>("ContentId");
+
                     //get the product
                     var database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
                     Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
 
                     var query = client.CreateDocumentQuery<Item>(productCollectionUri, new SqlQuerySpec()
                     {
-                        QueryText = "SELECT * FROM item f WHERE (f.ProductId = @id)",
+                        QueryText = "SELECT * FROM item f WHERE (f.ItemId = @id)",
                         Parameters = new SqlParameterCollection()
                     {
-                        new SqlParameter("@id", group.TakeLast<Document>(1).FirstOrDefault().GetPropertyValue<int>("ProductId"))
+                        new SqlParameter("@id", itemId)
                     }
-                    }, DefaultOptions); ;
+                    }, DefaultOptions);
 
                     Item product = query.ToList().FirstOrDefault();
 
                     if (product != null)
                     {
                         //update the product
-                        product.BuyCount += group.Where(p => p.GetPropertyValue<string>("event") == "buy").Count<Document>();
-                        product.ViewDetailsCount += group.Where(p => p.GetPropertyValue<string>("event") == "details").Count<Document>();
-                        product.AddToCartCount += group.Where(p => p.GetPropertyValue<string>("event") == "addToCart").Count<Document>();
+                        product.BuyCount += group.Where(p => p.GetPropertyValue<string>("Event") == "buy").Count<Document>();
+                        product.ViewDetailsCount += group.Where(p => p.GetPropertyValue<string>("Event") == "details").Count<Document>();
+                        product.AddToCartCount += group.Where(p => p.GetPropertyValue<string>("Event") == "addToCart").Count<Document>();
 
-                        client.UpsertDocumentAsync(productCollectionUri, product);
+                        var newItem = client.ReplaceDocumentAsync(productCollectionUri, product);
                     }
                 }
             }

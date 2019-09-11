@@ -29,9 +29,9 @@ namespace MovieDataImport
             client = new DocumentClient(new Uri(endpointUrl), authorizationKey, new ConnectionPolicy { ConnectionMode = ConnectionMode.Gateway, ConnectionProtocol = Protocol.Https });
             database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
 
-            //ImportUsers();
+            ImportUsers();
 
-            //ImportGenre();
+            ImportGenre();
 
             ImportMovies();
         }
