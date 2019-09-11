@@ -18,50 +18,42 @@ namespace Contoso.Apps.Movies.Controllers
      {
         public ActionResult User()
         {
-            Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
-            string name = user.Email;
-            int userId = user.UserId;
-
             UserAnalyticsModel m = new UserAnalyticsModel();
 
-            m.RecommendProductsAssoc = RecommendationHelper.GetViaFunction("assoc", userId, 12);
-            m.RecommendProductsCollabBased = new List<Item>();
-            m.RecommendProductsContentBased = new List<Item>();
-            m.RecommendProductsHybrid = new List<Item>();
-            m.RecommendProductsMatrixFactor = new List<Item>();
-            m.RecommendProductsRanking = new List<Item>();
+            Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
 
-            /*
-            m.RecommendProductsAssoc = RecommendationHelper.AssociationRecommendation(name, 12);
-            m.RecommendProductsCollabBased = RecommendationHelper.CollaborationBasedRecommendation(name, 12);
-            m.RecommendProductsContentBased = RecommendationHelper.ContentBasedRecommendation(name, 12);
-            m.RecommendProductsHybrid = RecommendationHelper.HybridRecommendation(name, 12);
-            m.RecommendProductsMatrixFactor = RecommendationHelper.MatrixFactorRecommendation(name, 12);
-            m.RecommendProductsRanking = RecommendationHelper.RankingRecommendation(name, 12);
-            */
-
-            m.UsersJaccard = new List<Data.Models.User>();
-            m.UsersPearson = new List<Data.Models.User>();
-
-            //get similar users...
-            /*
-            m.UsersJaccard = RecommendationHelper.JaccardRecommendation(userId);
-            m.UsersPearson = RecommendationHelper.PearsonRecommendation(userId);
-            */
-
-            //get the user events
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "collector_log");
-            var query = client.CreateDocumentQuery<CollectorLog>(collectionUri, new SqlQuerySpec()
+            if (user != null)
             {
-                QueryText = "SELECT * FROM collector_log f WHERE f.UserId = @id",
-                Parameters = new SqlParameterCollection()
+                string name = user.Email;
+                int userId = user.UserId;
+
+                m.RecommendProductsAssoc = RecommendationHelper.GetViaFunction("assoc", userId, 12);
+                m.RecommendProductsCollabBased = new List<Item>();
+                m.RecommendProductsContentBased = new List<Item>();
+                m.RecommendProductsHybrid = new List<Item>();
+                m.RecommendProductsMatrixFactor = new List<Item>();
+                m.RecommendProductsRanking = new List<Item>();
+
+                //get similar users...
+                /*
+                m.UsersJaccard = RecommendationHelper.JaccardRecommendation(userId);
+                m.UsersPearson = RecommendationHelper.PearsonRecommendation(userId);
+                */
+
+                //get the user events
+                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "event");
+                var query = client.CreateDocumentQuery<CollectorLog>(collectionUri, new SqlQuerySpec()
+                {
+                    QueryText = "SELECT * FROM event f WHERE f.UserId = @id",
+                    Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", user.UserId)
                     }
-            }, DefaultOptions);
+                }, DefaultOptions);
 
-            List<CollectorLog> logs = query.ToList().Take(100).ToList();
-            m.Events = logs;
+                List<CollectorLog> logs = query.ToList().Take(100).ToList();
+                m.Events = logs;
+            }
 
             return View(m);
         }

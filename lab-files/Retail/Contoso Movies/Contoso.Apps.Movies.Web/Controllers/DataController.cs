@@ -41,21 +41,25 @@ namespace Contoso.Apps.Movies.Web.Controllers
             List<CollectorLog> logs = new List<CollectorLog>();
 
             Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)HttpContext.Current.Session["User"];
-            string name = user.Email;
-            int userId = user.UserId;
 
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "collector_log");
+            if (user != null)
+            {
+                string name = user.Email;
+                int userId = user.UserId;
 
-            logs = client.CreateDocumentQuery<CollectorLog>(collectionUri,
-                new SqlQuerySpec(
-                    "SELECT * FROM collector_log r WHERE r.UserId = @userid",
-                    new SqlParameterCollection(new[]
-                    {
+                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "event");
+
+                logs = client.CreateDocumentQuery<CollectorLog>(collectionUri,
+                    new SqlQuerySpec(
+                        "SELECT * FROM event r WHERE r.UserId = @userid",
+                        new SqlParameterCollection(new[]
+                        {
                         new SqlParameter { Name = "@userid", Value = userId }
-                    }
-                    )
-                    ), DefaultOptions
-            ).ToList();
+                        }
+                        )
+                        ), DefaultOptions
+                ).ToList();
+            }
 
             return Json(logs);
         }

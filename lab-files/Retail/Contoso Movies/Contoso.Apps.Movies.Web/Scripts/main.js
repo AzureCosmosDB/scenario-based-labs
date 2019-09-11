@@ -16,7 +16,7 @@ function get_assoc_recs(count) {
     get_recs(url, element_name)
 }
 
-function get_logs(count) {
+function get_logs_recs(count) {
     url = '/api/logs?count=' + count;
     element_name = 'user_logs'
     get_logs(url, element_name)
@@ -57,7 +57,7 @@ function add_log(log, recs) {
     fig_div = document.createElement('div')
     
     spanLog = document.createElement('span')
-    spanLog.text = log.Event + ' - ' + log.ProductId;
+    spanLog.innerText = log.Created + ' - ' + log.Event + ' - ' + log.ContentId;
 
     fig_div.appendChild(spanLog);
     recs.appendChild(fig_div);
@@ -75,7 +75,7 @@ function add_movie(mov, recs) {
     itemImg_div.setAttribute('class', "item-img")
 
     img = document.createElement('img')
-    img.setAttribute('src', 'http://image.tmdb.org/t/p/w500' + mov.ImagePath)
+    img.setAttribute('src', 'https://image.tmdb.org/t/p/w500' + mov.ImagePath)
     img.setAttribute('alt', 'Add ' + mov.ProductName + ' to cart');
     img.setAttribute('class', "center-block")
     img.setAttribute('title', mov.ProductName)
