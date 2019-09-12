@@ -128,7 +128,7 @@ In this task, you will use the Azure Cloud Shell to create a new Azure Resource 
 
 Azure Cloud Shell allows you to create variables to store values that can be referenced when executing scripts. In this task, you will create variables in addition to the two you have already created. These variables will be used in the tasks that follow.
 
-1. Create variables to hold names of the following services: IoT Hub, Cosmos DB account, Event Hubs namespace, Azure Storage account, Azure Databricks, two Azure Function Apps, and Azure Key Vault.
+1. Create variables to hold names of the following services: IoT Hub, Cosmos DB account, Event Hubs namespace and event hub, Azure Storage accounts, Azure Databricks, two Azure Function Apps, a Web App with an App Service Plan, and Azure Key Vault.
 
    ```bash
    iothubname=iot-hub-$suffix
