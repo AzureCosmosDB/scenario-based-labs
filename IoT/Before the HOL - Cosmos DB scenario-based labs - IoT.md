@@ -29,7 +29,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Before the hands-on lab](#before-the-hands-on-lab)
     - [Task 1: Create an Azure resource group using Azure Cloud Shell](#task-1-create-an-azure-resource-group-using-azure-cloud-shell)
     - [Task 2: Create Cloud Shell variables](#task-2-create-cloud-shell-variables)
-    - [Task 3: Create IoT Hub and the Device Provisioning Service](#task-3-create-iot-hub-and-the-device-provisioning-service)
+    - [Task 3: Create IoT Hub](#task-3-create-iot-hub)
     - [Task 4: Create a Cosmos DB SQL API account](#task-4-create-a-cosmos-db-sql-api-account)
     - [Task 5: Create an Azure Key Vault](#task-5-create-an-azure-key-vault)
     - [Task 6: Create an event hub](#task-6-create-an-event-hub)
@@ -63,7 +63,7 @@ In this exercise, you will set up your environment for use in the rest of the ha
 In this task, you will use the Azure Cloud Shell to create a new Azure Resource Group for this lab.
 
 > To run the scripts below in Azure Cloud Shell:
-> 
+>
 > - Paste the code into the Cloud Shell session with **Ctrl+Shift+V** on Windows and Linux, or **Cmd+Shift+V** on macOS.
 > - Press **Enter** to run the code.
 
@@ -99,9 +99,9 @@ In this task, you will use the Azure Cloud Shell to create a new Azure Resource 
 
 7. Create a variable with random numbers that you will use to append to your Azure service names in the scripts that follow, to ensure the names are unique.
 
-    ```bash
-    let suffix=$RANDOM*$RANDOM
-    ```
+   ```bash
+   let suffix=$RANDOM*$RANDOM
+   ```
 
 8. Create a variable to hold your resource group name. This will be used when creating other resources. The `suffix` variable ensures uniqueness.
 
@@ -127,53 +127,34 @@ In this task, you will use the Azure Cloud Shell to create a new Azure Resource 
 
 Azure Cloud Shell allows you to create variables to store values that can be referenced when executing scripts. In this task, you will create variables in addition to the two you have already created. These variables will be used in the tasks that follow.
 
-1. Create variables to hold names of the following services: IoT Hub, IoT Hub Device Provisioning Service, Cosmos DB account, Event Hubs namespace, Azure Storage account, Azure Databricks, two Azure Function Apps, and Azure Key Vault.
+1. Create variables to hold names of the following services: IoT Hub, Cosmos DB account, Event Hubs namespace, Azure Storage account, Azure Databricks, two Azure Function Apps, and Azure Key Vault.
 
-    ```bash
-    iothubname=iot-hub-$suffix
-    iothubdpsname=iot-hub-dps-$suffix
-    cosmosdbname=cosmos-db-iot-$suffix
-    functionapp1=IoT-StreamProcessing-$suffix
-    functionapp2=IoT-CosmosDBProcessing-$suffix
-    namespace=iot-namespace-$suffix
-    storagename=iotstore$suffix
-    workspace=iot-databricks-$suffix
-    keyvault=iot-keyvault-$suffix
-    ```
+   ```bash
+   iothubname=iot-hub-$suffix
+   cosmosdbname=cosmos-db-iot-$suffix
+   functionapp1=IoT-StreamProcessing-$suffix
+   functionapp2=IoT-CosmosDBProcessing-$suffix
+   namespace=iot-namespace-$suffix
+   storagename=iotstore$suffix
+   workspace=iot-databricks-$suffix
+   keyvault=iot-keyvault-$suffix
+   ```
 
-### Task 3: Create IoT Hub and the Device Provisioning Service
+### Task 3: Create IoT Hub
 
-1. Create an IoT Hub to which the simulated vehicles will connect. We are using the Basic 1 (B1) SKU with four partitions.
+1. Create an IoT Hub to which the simulated vehicles will connect. We are using the Basic 1 (B1) SKU with four partitions and four units.
 
-    ```bash
-    az iot hub create --name $iothubname --sku B1 --partition-count 4 --resource-group $resourcegroup --location $location
-    ```
-
-2. Create a Device Provisioning Service.
-
-    ```bash
-    az iot dps create --name $iothubdpsname --resource-group $resourcegroup --location $location
-    ```
-
-3. Retrieve IoT hub's connection string to link it with the Device Provisioning Service. Execute the following to set the `hubConnectionString` variable to the value of the connection string for the primary key of the hub's _iothubowner_ policy.
-
-    ```bash
-    hubConnectionString=$(az iot hub show-connection-string --name $iothubname --key primary --query connectionString -o tsv)
-    ```
-
-4. Execute the following to link the IoT Hub and the Device Provisioning Service, using the `hubConnectionString` variable created in the previous step.
-
-    ```bash
-    az iot dps linked-hub create --dps-name $iothubdpsname --resource-group $resourcegroup --connection-string $hubConnectionString --location $location
-    ```
+   ```bash
+   az iot hub create --name $iothubname --sku B2 --partition-count 4 --unit 4 --resource-group $resourcegroup --location $location
+   ```
 
 ### Task 4: Create a Cosmos DB SQL API account
 
 1. Execute the following to create the Cosmos DB SQL API account with the Session consistency level.
 
-    ```bash
-    az cosmosdb create --name $cosmosdbname --resource-group $resourcegroup --kind GlobalDocumentDB --location $location --default-consistency-level "Session"
-    ```
+   ```bash
+   az cosmosdb create --name $cosmosdbname --resource-group $resourcegroup --kind GlobalDocumentDB --location $location --default-consistency-level "Session"
+   ```
 
 ### Task 5: Create an Azure Key Vault
 
@@ -215,17 +196,17 @@ The Azure Storage account will be used for cold storage of all telemetry events.
 
 1. Create the Function App that contains a function triggered from IoT Hub and writes to Cosmos DB.
 
-    ```bash
-    az functionapp create --resource-group $resourcegroup --consumption-plan-location $location \
-        --name $functionapp1 --storage-account iotstreamprocstore$suffix --runtime dotnet
-    ```
+   ```bash
+   az functionapp create --resource-group $resourcegroup --consumption-plan-location $location \
+       --name $functionapp1 --storage-account iotstreamprocstore$suffix --runtime dotnet
+   ```
 
 2. Create the Function App that contains functions triggered from the Cosmos DB change feed.
 
-    ```bash
-    az functionapp create --resource-group $resourcegroup --consumption-plan-location $location \
-        --name $functionapp2 --storage-account iotcosmosprocstore$suffix --runtime dotnet
-    ```
+   ```bash
+   az functionapp create --resource-group $resourcegroup --consumption-plan-location $location \
+       --name $functionapp2 --storage-account iotcosmosprocstore$suffix --runtime dotnet
+   ```
 
 ### Task 9: Create Azure Databricks workspace
 
@@ -233,13 +214,13 @@ In this task, you will use the Azure Cloud Shell to create a new Azure Databrick
 
 1. Execute the following command to create your Azure Databricks workspace with an ARM template:
 
-    ```bash
-    az group deployment create \
-        --name DatabricksWorkspaceDeployment \
-        --resource-group $resourcegroup \
-        --template-uri "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-databricks-workspace/azuredeploy.json" \
-        --parameters workspaceName=$workspace pricingTier=premium location=$location
-    ```
+   ```bash
+   az group deployment create \
+       --name DatabricksWorkspaceDeployment \
+       --resource-group $resourcegroup \
+       --template-uri "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-databricks-workspace/azuredeploy.json" \
+       --parameters workspaceName=$workspace pricingTier=premium location=$location
+   ```
 
 ### Task 10: Download the starter files
 
