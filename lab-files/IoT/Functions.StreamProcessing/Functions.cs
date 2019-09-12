@@ -15,7 +15,7 @@ namespace Functions.StreamProcessing
 {
     public static class Functions
     {
-        [FunctionName("EventHubTrigger")]
+        [FunctionName("IoTHubTrigger")]
         public static async Task EventHubTrigger([IoTHubTrigger("messages/events", Connection = "IoTHubConnection")] EventData[] vehicleEventData,
             [CosmosDB(
                 databaseName: "ContosoAuto",
@@ -25,7 +25,7 @@ namespace Functions.StreamProcessing
             ILogger log)
         {
             var exceptions = new List<Exception>();
-            log.LogInformation($"Event Hub trigger function processing {vehicleEventData.Length} events.");
+            log.LogInformation($"IoT Hub trigger function processing {vehicleEventData.Length} events.");
 
             foreach (var eventData in vehicleEventData)
             {
