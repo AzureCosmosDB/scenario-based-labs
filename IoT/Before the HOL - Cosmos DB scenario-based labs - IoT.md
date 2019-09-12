@@ -36,8 +36,8 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 7: Create an Azure Storage accounts](#task-7-create-an-azure-storage-accounts)
     - [Task 8: Create Azure Function Apps](#task-8-create-azure-function-apps)
     - [Task 9: Create an App Service Plan and Web App](#task-9-create-an-app-service-plan-and-web-app)
-    - [Task 9: Create Azure Databricks workspace](#task-9-create-azure-databricks-workspace)
-    - [Task 10: Download the starter files](#task-10-download-the-starter-files)
+    - [Task 10: Create Azure Databricks workspace](#task-10-create-azure-databricks-workspace)
+    - [Task 11: Download the starter files](#task-11-download-the-starter-files)
 
 <!-- /TOC -->
 
@@ -237,7 +237,7 @@ In this task, you will create three Azure Storage accounts. One is used for cold
    az webapp create -g $resourcegroup -p $appserviceplan -n $webapp
    ```
 
-### Task 9: Create Azure Databricks workspace
+### Task 10: Create Azure Databricks workspace
 
 In this task, you will use the Azure Cloud Shell to create a new Azure Databricks workspace with an Azure Resource Management (ARM) template. During the lab, you will create a Spark cluster within your Azure Databricks workspace to perform real-time stream processing against website clickstream data that is sent through Event Hubs using the Kafka protocol.
 
@@ -251,7 +251,7 @@ In this task, you will use the Azure Cloud Shell to create a new Azure Databrick
        --parameters workspaceName=$workspace pricingTier=premium location=$location
    ```
 
-### Task 10: Download the starter files
+### Task 11: Download the starter files
 
 Download a starter project that includes a vehicle simulator, Azure Function App projects, a Web App project, Azure Databricks notebooks, and data files used in the lab.
 
