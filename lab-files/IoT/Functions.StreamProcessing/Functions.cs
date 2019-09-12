@@ -9,14 +9,14 @@ using Microsoft.Azure.EventHubs.Processor;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using IoTHubTrigger = Microsoft.Azure.WebJobs.EventHubTriggerAttribute;
 
 namespace Functions.StreamProcessing
 {
     public static class Functions
     {
         [FunctionName("EventHubTrigger")]
-        public static async Task EventHubTrigger([EventHubTrigger("telemetry", Connection = "EventHubsConnection")] EventData[] vehicleEventData,
-            PartitionContext partitionContext,
+        public static async Task EventHubTrigger([IoTHubTrigger("messages/events", Connection = "IoTHubConnection")] EventData[] vehicleEventData,
             [CosmosDB(
                 databaseName: "ContosoAuto",
                 collectionName: "telemetry",

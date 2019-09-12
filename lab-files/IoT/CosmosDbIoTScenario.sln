@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Functions.StreamProcessing"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Functions.CosmosDB", "Functions.CosmosDB\Functions.CosmosDB.csproj", "{4599AFD0-D34B-43A1-AF8C-CED2CC41BFFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FleetManagementWebApp", "FleetManagementWebApp\FleetManagementWebApp.csproj", "{D3F45B89-F694-4AB6-8260-AACBE296D8DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FleetManagementWebApp", "FleetManagementWebApp\FleetManagementWebApp.csproj", "{D3F45B89-F694-4AB6-8260-AACBE296D8DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
+using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.EventHubs;
 using Newtonsoft.Json;
 
@@ -16,6 +17,10 @@ namespace FleetDataGenerator
     {
         // The amount of time to delay between sending telemetry.
         private readonly TimeSpan CycleTime = TimeSpan.FromMilliseconds(100);
+        private DeviceClient _DeviceClient;
+        private string _IotHubUri { get; set; }
+        public string DeviceId { get; set; }
+        public string DeviceKey { get; set; }
         private const string TelemetryEventHubName = "telemetry";
         private int _messagesSent = 0;
         private readonly int _vehicleNumber = 0;
@@ -36,8 +41,8 @@ namespace FleetDataGenerator
         public int MessagesSent => _messagesSent;
 
         public SimulatedVehicle(Trip trip, bool causeRefrigerationUnitFailure,
-            bool immediateRefrigerationUnitFailure, string eventHubsConnectionString,
-            int vehicleNumber)
+            bool immediateRefrigerationUnitFailure, int vehicleNumber,
+            string iotHubUri, string deviceId, string deviceKey)
         {
             _vehicleNumber = vehicleNumber;
             _trip = trip;
@@ -45,7 +50,10 @@ namespace FleetDataGenerator
             _distanceRemaining = trip.plannedTripDistance + 3; // Pad a little bit extra distance to ensure all events captured.
             _causeRefrigerationUnitFailure = causeRefrigerationUnitFailure;
             _immediateRefrigerationUnitFailure = immediateRefrigerationUnitFailure;
-            _eventHubClient = EventHubClient.CreateFromConnectionString(Helpers.CreateEventHubsConnectionString(eventHubsConnectionString, TelemetryEventHubName));
+            _IotHubUri = iotHubUri;
+            DeviceId = deviceId;
+            DeviceKey = deviceKey;
+            _DeviceClient = DeviceClient.Create(_IotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(DeviceId, DeviceKey));
         }
 
         /// <summary>
@@ -120,11 +128,12 @@ namespace FleetDataGenerator
         /// <returns>Task for async execution.</returns>
         private async Task SendEvent(string message, CancellationToken cancellationToken)
         {
-            using (var eventData = new EventData(Encoding.ASCII.GetBytes(message)))
+            using (var eventData = new Message(Encoding.ASCII.GetBytes(message)))
             {
-                // Send telemetry to Event Hubs, using the vehicle's VIN as the partition key to guarantee message ordering.
-                await _eventHubClient.SendAsync(eventData: eventData,
-                    partitionKey: _trip.vin).ConfigureAwait(false);
+                
+                // Send telemetry to IoT Hub. All messages are partitioned by the Device Id, guaranteeing message ordering.
+                var sendEventAsync = _DeviceClient?.SendEventAsync(eventData, cancellationToken);
+                if (sendEventAsync != null) await sendEventAsync.ConfigureAwait(false);
 
                 // Keep track of messages sent and update progress periodically.
                 var currCount = Interlocked.Increment(ref _messagesSent);

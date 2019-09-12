@@ -80,7 +80,7 @@ namespace FleetDataGenerator
             WriteLineInColor("Fleet Data Generator", ConsoleColor.White);
             Console.WriteLine("======");
             WriteLineInColor("Press Ctrl+C or Ctrl+Break to cancel.", ConsoleColor.Cyan);
-            Console.WriteLine("Statistics for generated vehicle and related telemetry data will be updated for every 500 sent");
+            Console.WriteLine("Statistics for generated vehicle and related telemetry data will be updated for every 50 messages sent");
             Console.WriteLine(string.Empty);
 
             // Handle Control+C or Control+Break.
@@ -121,7 +121,7 @@ namespace FleetDataGenerator
             {
                 // Start sending telemetry from simulated vehicles to Event Hubs:
                 _runningVehicleTasks = await SetupVehicleTelemetryRunTasks(arguments.NumberSimulatedTrucks,
-                    trips, arguments.EventHubConnectionString);
+                    trips, arguments.IoTHubConnectionString);
                 var tasks = _runningVehicleTasks.Select(t => t.Value).ToList();
                 while (tasks.Count > 0)
                 {
@@ -189,7 +189,7 @@ namespace FleetDataGenerator
         /// Creates the set of tasks that will send telemetry data to Event Hubs.
         /// </summary>
         /// <returns></returns>
-        private static async Task<Dictionary<string, Task>> SetupVehicleTelemetryRunTasks(int numberOfSimulatedTrucks, List<Trip> trips, string eventHubsConnectionString)
+        private static async Task<Dictionary<string, Task>> SetupVehicleTelemetryRunTasks(int numberOfSimulatedTrucks, IReadOnlyCollection<Trip> trips, string iotHubConnectionString)
         {
             var vehicleTelemetryRunTasks = new Dictionary<string, Task>();
             WriteLineInColor($"\nFound {trips.Count} trips. Setting up simulated vehicles...", ConsoleColor.Cyan);
@@ -197,12 +197,17 @@ namespace FleetDataGenerator
 
             foreach (var trip in trips)
             {
+                // Register vehicle IoT device, using its VIN as the device ID, then return the device key.
+                var deviceKey = await DeviceManager.RegisterDevicesAsync(iotHubConnectionString, trip.vin);
+
                 // 8% probability of a refrigeration unit failure.
                 var causeRefrigerationUnitFailure = DataGenerator.GetRandomWeightedBoolean(8);
                 // 30% of immediate vs. gradual failure if a failure occurs.
                 var immediateFailure = DataGenerator.GetRandomWeightedBoolean(30);
 
-                _simulatedVehicles.Add(new SimulatedVehicle(trip, causeRefrigerationUnitFailure, immediateFailure, eventHubsConnectionString, vehicleNumber));
+                // Add the simulated vehicle, acting as an AMQP device, and configure it with the trip data.
+                _simulatedVehicles.Add(new SimulatedVehicle(trip, causeRefrigerationUnitFailure, immediateFailure, vehicleNumber,
+                    DeviceManager.HostName, trip.vin, deviceKey));
 
                 vehicleNumber++;
             }
@@ -235,7 +240,7 @@ namespace FleetDataGenerator
         /// MillisecondsToRun: The maximum amount of time to allow the generator to run before stopping transmission of data. The default value is 14,400.
         /// MillisecondsToLead: The amount of time to wait before sending simulated data. Default value is 0.
         /// </returns>
-        private static (string EventHubConnectionString,
+        private static (string IoTHubConnectionString,
             string CosmosDbConnectionString,
             int NumberSimulatedTrucks,
             bool ContinuouslyAddThisManyTrucks,
@@ -245,7 +250,7 @@ namespace FleetDataGenerator
             try
             {
                 // The Configuration object will extract values either from the machine's environment variables, or the appsettings.json file.
-                var eventHubConnectionString = _configuration["EVENT_HUB_CONNECTION_STRING"];
+                var iotHubConnectionString = _configuration["IOT_HUB_CONNECTION_STRING"];
                 var cosmosDbConnectionString = _configuration["COSMOS_DB_CONNECTION_STRING"];
                 var numberOfMillisecondsToRun = (int.TryParse(_configuration["SECONDS_TO_RUN"], out var outputSecondToRun) ? outputSecondToRun : 0) * 1000;
                 var numberOfMillisecondsToLead = (int.TryParse(_configuration["SECONDS_TO_LEAD"], out var outputSecondsToLead) ? outputSecondsToLead : 0) * 1000;
@@ -257,9 +262,9 @@ namespace FleetDataGenerator
                     throw new ArgumentException("COSMOS_DB_CONNECTION_STRING must be provided");
                 }
 
-                if (string.IsNullOrWhiteSpace(eventHubConnectionString))
+                if (string.IsNullOrWhiteSpace(iotHubConnectionString))
                 {
-                    throw new ArgumentException("EVENT_HUB_CONNECTION_STRING must be provided");
+                    throw new ArgumentException("IOT_HUB_CONNECTION_STRING must be provided");
                 }
 
                 if (numberOfSimulatedTrucks < 1 || numberOfSimulatedTrucks > 1000)
@@ -267,7 +272,7 @@ namespace FleetDataGenerator
                     throw new ArgumentException("The NUMBER_SIMULATED_TRUCKS value must be a number between 1 and 1000");
                 }
 
-                return (eventHubConnectionString, cosmosDbConnectionString, numberOfSimulatedTrucks, continuouslyAddTrucks, numberOfMillisecondsToRun, numberOfMillisecondsToLead);
+                return (iotHubConnectionString, cosmosDbConnectionString, numberOfSimulatedTrucks, continuouslyAddTrucks, numberOfMillisecondsToRun, numberOfMillisecondsToLead);
             }
             catch (Exception e)
             {
