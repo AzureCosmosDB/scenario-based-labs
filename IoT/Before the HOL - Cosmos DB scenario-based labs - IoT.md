@@ -33,8 +33,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 4: Create a Cosmos DB SQL API account](#task-4-create-a-cosmos-db-sql-api-account)
     - [Task 5: Create an Azure Key Vault](#task-5-create-an-azure-key-vault)
     - [Task 6: Create an event hub](#task-6-create-an-event-hub)
-    - [Task 7: Create an Azure Storage account](#task-7-create-an-azure-storage-account)
+    - [Task 7: Create an Azure Storage accounts](#task-7-create-an-azure-storage-accounts)
     - [Task 8: Create Azure Function Apps](#task-8-create-azure-function-apps)
+    - [Task 9: Create an App Service Plan and Web App](#task-9-create-an-app-service-plan-and-web-app)
     - [Task 9: Create Azure Databricks workspace](#task-9-create-azure-databricks-workspace)
     - [Task 10: Download the starter files](#task-10-download-the-starter-files)
 
@@ -134,10 +135,14 @@ Azure Cloud Shell allows you to create variables to store values that can be ref
    cosmosdbname=cosmos-db-iot-$suffix
    functionapp1=IoT-StreamProcessing-$suffix
    functionapp2=IoT-CosmosDBProcessing-$suffix
+   functionapp1storage=iotfunc1$suffix
+   functionapp2storage=iotfunc2$suffix
    namespace=iot-namespace-$suffix
    storagename=iotstore$suffix
    workspace=iot-databricks-$suffix
    keyvault=iot-keyvault-$suffix
+   appserviceplan=IoTWebAppPlan-$suffix
+   webapp=IoTWebApp-$suffix
    ```
 
 ### Task 3: Create IoT Hub
@@ -150,10 +155,10 @@ Azure Cloud Shell allows you to create variables to store values that can be ref
 
 ### Task 4: Create a Cosmos DB SQL API account
 
-1. Execute the following to create the Cosmos DB SQL API account with the Session consistency level.
+1. Execute the following to create the Cosmos DB SQL API account.
 
    ```bash
-   az cosmosdb create --name $cosmosdbname --resource-group $resourcegroup --kind GlobalDocumentDB --location $location --default-consistency-level "Session"
+   az cosmosdb create --name $cosmosdbname --resource-group $resourcegroup --kind GlobalDocumentDB --locations regionName=$location
    ```
 
 ### Task 5: Create an Azure Key Vault
@@ -170,42 +175,66 @@ Azure Key Vault is a cloud service that works as a secure secrets store. You can
 
 In this task, you will first create an Event Hubs namespace, then add an event hub to it, which will be used to ingest data used for writing aggregates to Cosmos DB and Power BI. An Event Hubs namespace provides a unique scoping container, referenced by its fully qualified domain name, in which you create one or more event hubs.
 
-1. Enter the following to create your Kafka-enabled Event Hubs namespace:
+1. Enter the following to create your Event Hubs namespace:
 
    ```bash
-   az eventhubs namespace create --name $namespace --resource-group $resourcegroup -l $location
+   az eventhubs namespace create --name $namespace --resource-group $resourcegroup -l $location --sku Standard --enable-auto-inflate --maximum-throughput-units 4
    ```
 
 2. Enter the following to add an event hub named "reporting" to your namespace:
 
    ```bash
-   az eventhubs eventhub create --name reporting --resource-group $resourcegroup --namespace-name $namespace
+   az eventhubs eventhub create --name reporting --resource-group $resourcegroup --namespace-name $namespace --message-retention 4 --partition-count 4
    ```
 
-### Task 7: Create an Azure Storage account
+### Task 7: Create an Azure Storage accounts
 
-The Azure Storage account will be used for cold storage of all telemetry events.
+In this task, you will create three Azure Storage accounts. One is used for cold storage of all telemetry events, and the other two are used for your Function Apps.
 
-2. Enter the following to create a general-purpose v2 storage account with locally-redundant storage:
+2. Enter the following to create a general-purpose storage account used for cold storage of all telemetry events:
 
    ```bash
    az storage account create --name $storagename --resource-group $resourcegroup --location $location --sku Standard_LRS
    ```
 
-### Task 8: Create Azure Function Apps
-
-1. Create the Function App that contains a function triggered from IoT Hub and writes to Cosmos DB.
+3. Enter the following to create a general-purpose storage account for the first Function App:
 
    ```bash
-   az functionapp create --resource-group $resourcegroup --consumption-plan-location $location \
-       --name $functionapp1 --storage-account iotstreamprocstore$suffix --runtime dotnet
+   az storage account create --name $functionapp1storage --resource-group $resourcegroup --location $location --sku Standard_LRS
+   ```
+
+4. Enter the following to create a general-purpose storage account for the first Function App:
+
+   ```bash
+   az storage account create --name $functionapp2storage --resource-group $resourcegroup --location $location --sku Standard_LRS
+   ```
+
+### Task 8: Create Azure Function Apps
+
+1. Create the Function App that contains a function triggered from IoT Hub and writes to Cosmos DB. We are disabling Application Insights for both of these Function Apps temporarily so two separate Application Insights instances are not automatically created.
+
+   ```bash
+   az functionapp create --resource-group $resourcegroup --consumption-plan-location $location --name $functionapp1 --storage-account $functionapp1storage --runtime dotnet --disable-app-insights true
    ```
 
 2. Create the Function App that contains functions triggered from the Cosmos DB change feed.
 
    ```bash
-   az functionapp create --resource-group $resourcegroup --consumption-plan-location $location \
-       --name $functionapp2 --storage-account iotcosmosprocstore$suffix --runtime dotnet
+   az functionapp create --resource-group $resourcegroup --consumption-plan-location $location --name $functionapp2 --storage-account $functionapp2storage --runtime dotnet --disable-app-insights true
+   ```
+
+### Task 9: Create an App Service Plan and Web App
+
+1. Create the App Service Plan used to host the Web App.
+
+   ```bash
+   az appservice plan create -g $resourcegroup -n $appserviceplan --sku S1 --location $location
+   ```
+
+2. Create the Web App that will host the Fleet Management website.
+
+   ```bash
+   az webapp create -g $resourcegroup -p $appserviceplan -n $webapp
    ```
 
 ### Task 9: Create Azure Databricks workspace
