@@ -2,7 +2,7 @@
 
 namespace Contoso.Apps.Movies.Data.Models
 {
-    public class CartItem : IEntity
+    public class CartItem : DbObject, IEntity
     {
         [Key]
         public string CartItemId { get; set; }

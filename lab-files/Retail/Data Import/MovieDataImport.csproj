@@ -134,10 +134,6 @@
       <Project>{b74e00b2-7568-4990-81f8-b54aa6751600}</Project>
       <Name>Contoso.Apps.Movies.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Contoso Movies\Contoso.Apps.Movies.Logic\Contoso.Apps.Movies.Logic.csproj">
-      <Project>{a63c252a-9b05-4ebb-9e0f-3e38c0b60890}</Project>
-      <Name>Contoso.Apps.Movies.Logic</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\README.txt">

@@ -29,3 +29,12 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenera
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Web.WebPages.Razor.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Web.WebPages.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Web.WebPages.Deployment.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Buffers.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Memory.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Net.Http.WinHttpHandler.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Numerics.Vectors.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Buffers.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Memory.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Numerics.Vectors.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\DataGenerator\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml

@@ -39,17 +39,16 @@ namespace MovieDataImport
         async static void ImportUsers()
         {
             List<Contoso.Apps.Movies.Data.Models.User> users = new List<Contoso.Apps.Movies.Data.Models.User>();
-            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 1, Email = "horror@contosomovies.com", Name="Horror Fan" });
-            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 2, Email = "family@contosomovies.com", Name = "Family Fan" });
-            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 3, Email = "comedy@contosomovies.com", Name = "Comedy Fan" });
-            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 4, Email = "romance@contosomovies.com", Name = "Romance Fan" });
-            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 5, Email = "thriller@contosomovies.com", Name = "Thriller Fan" });
+
+            users = Contoso.Apps.Movies.Data.Models.User.GetUsers();
 
             Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "user");
 
             foreach (Contoso.Apps.Movies.Data.Models.User u in users)
             {
                 var blah = client.UpsertDocumentAsync(collectionUri, u).Result;
+
+                DbHelper.SaveObject(u);
             }
         }
 
@@ -68,6 +67,8 @@ namespace MovieDataImport
                 try
                 {
                     var blah = client.UpsertDocumentAsync(collectionUri, c).Result;
+
+                    DbHelper.SaveObject(c);
                 }
                 catch (Exception ex)
                 {
@@ -134,6 +135,8 @@ namespace MovieDataImport
                                 pc.CategoryId = int.Parse(category);
                                 var blah = client.UpsertDocumentAsync(productCatCollectionUri, pc);
 
+                                DbHelper.SaveObject(pc);
+
                                 p.CategoryId = pc.CategoryId;
                             }
                         }
@@ -179,6 +182,7 @@ namespace MovieDataImport
 
                     var item = client.UpsertDocumentAsync(productCollectionUri, p);
 
+                    DbHelper.SaveObject(p);
                 }
                 catch (Exception ex)
                 {

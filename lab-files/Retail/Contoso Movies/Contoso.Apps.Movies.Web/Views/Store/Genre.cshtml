@@ -18,7 +18,7 @@
                     {
                         <div class="figure @product.CategoryId">
                             <div class="item clearfix">
-                                <a class="item-img" href="@Url.Action("Details", "Store", new { id = product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'more_details', @product.ItemId, '@this.Session.SessionID','token')">
+                                <a class="item-img" href="@Url.Action("Details", "Store", new { id = product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'details', @product.ItemId, '@this.Session.SessionID','token')">
                                     <img src="@Url.Content("http://image.tmdb.org/t/p/w500/")@product.ImagePath" alt="@product.ProductName" class="center-block">
                                 </a>
                                 <div class="item-content">

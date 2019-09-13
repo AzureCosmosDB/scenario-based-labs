@@ -15,6 +15,9 @@ using Contoso.Apps.Movies.Data.Models;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using System.Linq;
+using Contoso.Apps.Common;
+using Microsoft.Azure.EventHubs;
+using Microsoft.Extensions.Configuration;
 
 namespace ContosoFunctionApp
 {
@@ -30,46 +33,85 @@ namespace ContosoFunctionApp
             CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> events,
             [CosmosDB(
                 databaseName: "moviegeek",
-                collectionName: "item",
+                collectionName: "object",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
-            ILogger log)
+            ILogger log, ExecutionContext ctx)
         {
             FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
             var databaseId = "moviegeek";
 
-            if (events != null && events.Count > 0)
+            //config
+            var config = new ConfigurationBuilder()
+                .SetBasePath(ctx.FunctionAppDirectory)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            //cosmob connection
+            DbHelper.client = client;
+            DbHelper.databaseId = databaseId;
+
+            try
             {
-                //do the aggregate for each product...
-                foreach (var group in events.GroupBy(singleEvent => singleEvent.GetPropertyValue<int>("ContentId")))
+                //event hub connection
+                EventHubClient eventHubClient;
+                string EventHubConnectionString = config["eventHubConnection"];
+                string EventHubName = "store";
+
+                var connectionStringBuilder = new EventHubsConnectionStringBuilder(EventHubConnectionString)
                 {
-                    int itemId = group.TakeLast<Document>(1).FirstOrDefault().GetPropertyValue<int>("ContentId");
+                    EntityPath = EventHubName
+                };
 
-                    //get the product
-                    Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+                eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
 
-                    var query = client.CreateDocumentQuery<Document>(productCollectionUri, new SqlQuerySpec()
+                foreach (var e in events)
+                {
+                    string data = JsonConvert.SerializeObject(e);
+                    var result = eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(data)));
+                }
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex.Message);
+            }
+
+            try
+            {
+                if (events != null && events.Count > 0)
+                {
+                    //do the aggregate for each product...
+                    foreach (var group in events.GroupBy(singleEvent => singleEvent.GetPropertyValue<int>("ItemId")))
                     {
-                        QueryText = "SELECT * FROM item f WHERE (f.ItemId = @id)",
-                        Parameters = new SqlParameterCollection()
-                    {
-                        new SqlParameter("@id", itemId)
-                    }
-                    }, DefaultOptions);
+                        int itemId = group.TakeLast<Document>(1).FirstOrDefault().GetPropertyValue<int>("ItemId");
 
-                    Document doc = query.ToList().FirstOrDefault();
+                        //get the item aggregate record
+                        Document doc = DbHelper.GetObject(itemId, "ItemAggregate");
 
-                    if (doc != null)
-                    {
-                        Item product = (dynamic)doc;
+                        ItemAggregate agg = new ItemAggregate();
 
-                        //update the product
-                        product.BuyCount += group.Where(p => p.GetPropertyValue<string>("Event") == "buy").Count<Document>();
-                        product.ViewDetailsCount += group.Where(p => p.GetPropertyValue<string>("Event") == "details").Count<Document>();
-                        product.AddToCartCount += group.Where(p => p.GetPropertyValue<string>("Event") == "addToCart").Count<Document>();
-                        
-                        var newItem = client.ReplaceDocumentAsync(doc.SelfLink,  product);
+                        if (doc != null)
+                        {
+                            agg = (dynamic)doc;
+                            doc.SetPropertyValue("BuyCount", agg.BuyCount += group.Where(p => p.GetPropertyValue<string>("Event") == "buy").Count<Document>());
+                            doc.SetPropertyValue("ViewDetailsCount", agg.ViewDetailsCount += group.Where(p => p.GetPropertyValue<string>("Event") == "details").Count<Document>());
+                            doc.SetPropertyValue("AddToCartCount", agg.AddToCartCount += group.Where(p => p.GetPropertyValue<string>("Event") == "addToCart").Count<Document>());
+                        }
+                        else
+                        {
+                            agg.ItemId = itemId;
+                            agg.BuyCount += group.Where(p => p.GetPropertyValue<string>("Event") == "buy").Count<Document>();
+                            agg.ViewDetailsCount += group.Where(p => p.GetPropertyValue<string>("Event") == "details").Count<Document>();
+                            agg.AddToCartCount += group.Where(p => p.GetPropertyValue<string>("Event") == "addToCart").Count<Document>();
+                        }
+
+                        DbHelper.SaveObject(doc, agg);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+
             }
         }        
     }

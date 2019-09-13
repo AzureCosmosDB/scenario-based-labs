@@ -6,7 +6,7 @@ using System;
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
-    public class Order : IEntity
+    public class Order : DbObject, IEntity
     {
         public int OrderId { get; set; }
 

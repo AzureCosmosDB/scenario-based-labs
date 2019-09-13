@@ -6,11 +6,11 @@ using System;
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
-    public class CollectorLog : IEntity
+    public class CollectorLog : DbObject, IEntity
     {
         public int UserId { get; set; }
 
-        public string ContentId { get; set; }
+        public string ItemId { get; set; }
 
         public string Event { get; set; }
 

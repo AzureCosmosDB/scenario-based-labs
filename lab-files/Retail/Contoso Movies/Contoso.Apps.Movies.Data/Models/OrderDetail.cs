@@ -5,7 +5,7 @@ using System;
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
-    public class OrderDetail : IEntity
+    public class OrderDetail : DbObject, IEntity
     {
         public int OrderDetailId { get; set; }
 

@@ -91,18 +91,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
-
-            var query = client.CreateDocumentQuery<Item>(productCollectionUri, new SqlQuerySpec()
-            {
-                QueryText = "SELECT * FROM item f WHERE (f.ItemId = @id)",
-                Parameters = new SqlParameterCollection()
-                    {
-                        new SqlParameter("@id", id)
-                    }
-            }, DefaultOptions);
-
-            Item product = query.ToList().FirstOrDefault();
+            Item product = DbHelper.GetItem(id);
 
             if (product == null)
             {

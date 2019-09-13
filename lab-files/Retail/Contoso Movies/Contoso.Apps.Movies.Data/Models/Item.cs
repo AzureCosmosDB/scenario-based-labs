@@ -5,10 +5,12 @@ using System;
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
-    public class Item : IEntity
+    public class Item : DbObject, IEntity
     {
         [ScaffoldColumn(false)]
         public int ItemId { get; set; }
+
+        new public string ObjectId { get { return this.EntityType + "_" + this.ItemId.ToString(); } }
 
         public int BuyCount { get; set; }
         public int ViewDetailsCount { get; set; }
