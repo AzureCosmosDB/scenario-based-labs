@@ -20,7 +20,7 @@ namespace DataGenerator
         public UserActor(int userId, int type)
         {
             this.Type = type;
-            this.UserId = UserId;
+            this.UserId = userId;
         }
 
         public void DoWork()
@@ -67,7 +67,7 @@ namespace DataGenerator
 
                     int failure = r.Next(10);
 
-                    //simulate a failure...
+                    //simulate a payment failure...
                     if (failure % 2 == 1 && count > 20)
                     {
                         DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "paymentFailure", sessionId.ToString().Replace("-", ""));

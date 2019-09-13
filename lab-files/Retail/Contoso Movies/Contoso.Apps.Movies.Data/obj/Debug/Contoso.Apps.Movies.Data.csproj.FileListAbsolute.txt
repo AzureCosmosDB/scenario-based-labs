@@ -73,8 +73,8 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Mo
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Data\bin\Debug\System.Memory.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Data\bin\Debug\System.Numerics.Vectors.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Data\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Data\obj\Debug\Contoso.Apps.Movies.Data.csprojAssemblyReference.cache
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Data\obj\Debug\Contoso.Apps.Movies.Data.csproj.CoreCompileInputs.cache
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Data\obj\Debug\Contoso.Apps.Movies.Data.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Data\obj\Debug\Contoso.Apps.Movies.Data.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Data\obj\Debug\Contoso.Apps.Movies.Data.pdb
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Data\obj\Debug\Contoso.Apps.Movies.Data.csprojAssemblyReference.cache

@@ -121,6 +121,8 @@
     <Compile Include="Models\CollectorLog.cs" />
     <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\Prediction.cs" />
+    <Compile Include="Models\Recommendation.cs" />
+    <Compile Include="Models\Rule.cs" />
     <Compile Include="Models\TopItemReport.cs" />
     <Compile Include="Models\Report.cs" />
     <Compile Include="Models\SimilarItem.cs" />

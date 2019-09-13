@@ -49,6 +49,23 @@ namespace Contoso.Apps.Common
             return doc;
         }
 
+        public static Document SaveObject(Document doc, DbObject o)
+        {
+            Document blah = null;
+            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
+
+            if (doc != null)
+            {
+                blah = client.ReplaceDocumentAsync(doc.SelfLink, doc).Result;
+            }
+            else
+            {
+                blah = client.UpsertDocumentAsync(collectionUri, o).Result;
+            }
+
+            return blah;
+        }
+
         public static Document SaveObject(DbObject o)
         {
             Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");

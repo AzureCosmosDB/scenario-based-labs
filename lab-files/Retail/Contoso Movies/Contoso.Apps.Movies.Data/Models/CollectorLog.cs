@@ -12,6 +12,8 @@ namespace Contoso.Apps.Movies.Data.Models
 
         public string ItemId { get; set; }
 
+        public string ContentId { get; set; }
+
         public string Event { get; set; }
 
         public string SessionId { get; set; }

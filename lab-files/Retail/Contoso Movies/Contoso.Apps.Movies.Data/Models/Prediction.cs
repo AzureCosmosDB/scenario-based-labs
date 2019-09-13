@@ -7,7 +7,7 @@ namespace Contoso.Apps.Movies.Data.Models
     [Serializable]
     public class PredictionModel
     {
-        public decimal Prediction { get; set; }
+        public double Prediction { get; set; }
 
         public List<SimilarItem> Items { get; set; }
 

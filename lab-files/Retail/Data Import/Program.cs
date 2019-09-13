@@ -29,11 +29,14 @@ namespace MovieDataImport
             client = new DocumentClient(new Uri(endpointUrl), authorizationKey, new ConnectionPolicy { ConnectionMode = ConnectionMode.Gateway, ConnectionProtocol = Protocol.Https });
             database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
 
+            DbHelper.client = client;
+            DbHelper.databaseId = databaseId;
+
             ImportUsers();
 
-            ImportGenre();
+            //ImportGenre();
 
-            ImportMovies();
+            //ImportMovies();
         }
 
         async static void ImportUsers()
@@ -46,9 +49,16 @@ namespace MovieDataImport
 
             foreach (Contoso.Apps.Movies.Data.Models.User u in users)
             {
-                var blah = client.UpsertDocumentAsync(collectionUri, u).Result;
+                try
+                {
+                    var blah = client.UpsertDocumentAsync(collectionUri, u).Result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
 
-                DbHelper.SaveObject(u);
+                DbHelper.SaveObject(null, u);
             }
         }
 
@@ -68,7 +78,7 @@ namespace MovieDataImport
                 {
                     var blah = client.UpsertDocumentAsync(collectionUri, c).Result;
 
-                    DbHelper.SaveObject(c);
+                    DbHelper.SaveObject(null, c);
                 }
                 catch (Exception ex)
                 {
@@ -135,7 +145,7 @@ namespace MovieDataImport
                                 pc.CategoryId = int.Parse(category);
                                 var blah = client.UpsertDocumentAsync(productCatCollectionUri, pc);
 
-                                DbHelper.SaveObject(pc);
+                                DbHelper.SaveObject(null, pc);
 
                                 p.CategoryId = pc.CategoryId;
                             }
@@ -182,7 +192,7 @@ namespace MovieDataImport
 
                     var item = client.UpsertDocumentAsync(productCollectionUri, p);
 
-                    DbHelper.SaveObject(p);
+                    DbHelper.SaveObject(null, p);
                 }
                 catch (Exception ex)
                 {

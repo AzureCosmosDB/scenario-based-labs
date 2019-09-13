@@ -7,7 +7,10 @@ namespace Contoso.Apps.Movies.Data.Models
     [Serializable]
     public class SimilarItem : Item
     {
-        public decimal Similarity { get; set; }
+        public double similarity { get; set; }
+
+        public string sourceItemId { get; set; }
+        public string targetItemId { get; set; }
 
         public int Target { get; set; }
 

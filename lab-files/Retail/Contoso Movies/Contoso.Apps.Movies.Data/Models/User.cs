@@ -25,11 +25,12 @@ namespace Contoso.Apps.Movies.Data.Models
         {
             List<User> users = new List<User>();
 
-            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 1, Email = "horror@contosomovies.com", Name = "Horror Fan", CategoryId = 27 });
-            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 2, Email = "family@contosomovies.com", Name = "Family Fan", CategoryId = 10751 });
-            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 3, Email = "comedy@contosomovies.com", Name = "Comedy Fan", CategoryId = 35 });
-            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 4, Email = "romance@contosomovies.com", Name = "Romance Fan", CategoryId = 10749 });
-            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 5, Email = "thriller@contosomovies.com", Name = "Thriller Fan", CategoryId = 53 });
+            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 400001, Email = "mixcomedy@contosomovies.com", Name = "Mixed Fan", CategoryId = 35 });
+            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 400002, Email = "mixaction@contosomovies.com", Name = "Mixed Fan", CategoryId = 28 });
+            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 400003, Email = "mixcomedy@contosomovies.com", Name = "Mixed Fan", CategoryId = 35 });
+            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 400004, Email = "action@contosomovies.com", Name = "Drama Fan", CategoryId = 28 });
+            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 400005, Email = "drama@contosomovies.com", Name = "Comedy Fan", CategoryId = 18 });
+            users.Add(new Contoso.Apps.Movies.Data.Models.User { UserId = 400006, Email = "comedy@contosomovies.com", Name = "Comedy Fan", CategoryId = 35 });
 
             return users;
         }

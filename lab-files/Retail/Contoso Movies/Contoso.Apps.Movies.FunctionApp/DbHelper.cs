@@ -94,6 +94,26 @@ namespace Contoso.Apps.Common
             var item = client.UpsertDocumentAsync(collectionUri, log);
         }
 
+        internal static Item GetItemByContentId(object id)
+        {
+            FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+
+            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+
+            var query = client.CreateDocumentQuery<Item>(productCollectionUri, new SqlQuerySpec()
+            {
+                QueryText = "SELECT * FROM item f WHERE (f.ItemId = @id)",
+                Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@id", id)
+                    }
+            }, defaultOptions);
+
+            Item product = query.ToList().FirstOrDefault();
+
+            return product;
+        }
+
         internal static Item GetItem(int itemId)
         {
             FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
@@ -132,6 +152,19 @@ namespace Contoso.Apps.Common
             Category product = query.ToList().FirstOrDefault();
 
             return product;
+        }
+
+        public IQueryable<T> GetQuery<T>(string type)
+        {
+            IQueryable<T> query = null;
+
+            switch(type)
+            {
+                case "user":
+                    break;
+            }
+
+            return query;
         }
     }
 

@@ -75,18 +75,86 @@ namespace Contoso.Apps.Movies.Logic
 
         public static List<Movies.Data.Models.Item> AssociationRecommendationByUser(int userId, int take)
         {
-            return GetRandom(take);
+            List<Item> items = new List<Item>();
 
-            //get the log events for the user.
+            //get 20 log events for the user.
+            List<CollectorLog> logs = GetUserLogs(userId, 20);
 
-            //take the last 20 events as the seed
+            if (logs.Count == 0)
+                return items;
+
+            List<Rule> rules = GetSeededRules(logs);
 
             //get the pre-seeded objects based on confidence
+            List<Recommendation> recs = new List<Recommendation>();
 
             //for each rule returned, evaluate the confidence
+            foreach (Rule r in rules)
+            {
+                Recommendation rec = new Recommendation();
+                rec.id = int.Parse(r.target);
+                rec.confidence = r.confidence;
+                recs.Add(rec);
+
+                items.Add(DbHelper.GetItemByContentId(rec.id));
+            }
 
             //return the "take" number of records
+            return items.Take(take).ToList();
+        }
 
+        private static List<Rule> GetSeededRules(List<CollectorLog> logs)
+        {
+            List<Rule> rules = new List<Rule>();
+            List<string> strKeys1 = new List<string>();
+
+            foreach(CollectorLog cl in logs)
+            {
+                strKeys1.Add(cl.ContentId);
+            }
+
+            try
+            {
+                FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
+
+                //get the product
+                Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "associations");
+
+                var query = client.CreateDocumentQuery<Rule>(objCollectionUri, options)
+                .Where(c => strKeys1.Contains(c.source) && !strKeys1.Contains(c.target))
+                .OrderByDescending(c=>c.confidence);
+
+                rules = query.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return rules;
+        }
+
+        private static List<CollectorLog> GetUserLogs(int userId, int take)
+        {
+            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
+            options.MaxItemCount = take;
+
+            //get the product
+            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
+
+            var query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, new SqlQuerySpec()
+            {
+                QueryText = $"SELECT * FROM events f WHERE (f.userId = @userid)",
+                Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@userid", userId.ToString())
+                    }
+            }, options);
+
+            if (take > 0)
+                return query.ToList().Take(take).ToList();
+            else
+                return query.ToList();
         }
 
         public static List<Movies.Data.Models.Item> ContentBasedRecommendation(int contentId, int take)
@@ -98,27 +166,30 @@ namespace Contoso.Apps.Movies.Logic
         public static List<PredictionModel> CollaborationBasedRecommendation(int userId, int take)
         {
             int neighborhoodSize = 15;
-            decimal minSim = 0.0m;
+            double minSim = 0.0;
             int maxCandidates = 100;
 
             //inside this we do the implict rating of events for the user...
             Hashtable userRatedItems = GetRatedItems(userId, 100);
-            
+
+            if (userRatedItems.Count == 0)
+                return new List<PredictionModel>();
+
             //this is the mean rating a user gave (python code looks odd and maybe wrong)
-            decimal ratingSum = 0;
+            double ratingSum = 0;
 
             foreach(Item r in userRatedItems.Values)
             {
                 ratingSum += r.Popularity;
             }
 
-            decimal userMean = ratingSum / userRatedItems.Count;
+            double userMean = ratingSum / userRatedItems.Count;
 
             //get similar items
             List<SimilarItem> candidateItems = GetCandidateItems(userRatedItems.Keys, userRatedItems.Keys, minSim);
 
             //sort by similarity desc, take only max candidates
-            candidateItems = candidateItems.OrderByDescending(c=>c.Similarity).Take(maxCandidates).ToList();
+            candidateItems = candidateItems.OrderByDescending(c=>c.similarity).Take(maxCandidates).ToList();
 
             Hashtable recs = new Hashtable();
 
@@ -127,8 +198,8 @@ namespace Contoso.Apps.Movies.Logic
             foreach(SimilarItem candidate in candidateItems)
             {
                 int target = candidate.Target;
-                decimal pre = 0;
-                decimal simSum = 0;
+                double pre = 0;
+                double simSum = 0;
 
                 List<SimilarItem> ratedItems = candidateItems.Where(c=>c.Target == target).Take(neighborhoodSize).ToList();
 
@@ -136,9 +207,9 @@ namespace Contoso.Apps.Movies.Logic
                 {
                     foreach(SimilarItem simItem in ratedItems)
                     {
-                        decimal r = 0; //rating of the movie - userMean;
-                        pre += simItem.Similarity * r;
-                        simSum += simItem.Similarity;
+                        double r = 0; //rating of the movie - userMean;
+                        pre += simItem.similarity * r;
+                        simSum += simItem.similarity;
 
                         if (simSum > 0)
                         {
@@ -157,47 +228,44 @@ namespace Contoso.Apps.Movies.Logic
             return sortedItems;
         }
 
-        private static List<SimilarItem> GetCandidateItems(ICollection keys1, ICollection keys2, decimal minSim)
+        private static List<SimilarItem> GetCandidateItems(ICollection keys1, ICollection keys2, double minSim)
         {
-            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
+            List<SimilarItem> items = new List<SimilarItem>();
 
-            //get the product
-            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "similarity");
+            List<string> strKeys1 = new List<string>();
+            List<string> strKeys2 = new List<string>();
 
-            var query = client.CreateDocumentQuery<SimilarItem>(objCollectionUri, new SqlQuerySpec()
+            foreach (object key in keys1)
+                strKeys1.Add(key.ToString());
+
+            foreach (object key in keys2)
+                strKeys2.Add(key.ToString());
+
+            try
             {
-                QueryText = $"SELECT * FROM similarity f WHERE CONTAINS(f.SourceId , @sourceIds) and CONTAINS(f.TargetId , @targetIds) and f.Similiarty > @minSim)",
-                Parameters = new SqlParameterCollection()
-                    {
-                        new SqlParameter("@sourceIds", keys1),
-                        new SqlParameter("@targetIds", keys2),
-                        new SqlParameter("@minSim", minSim)
-                    }
-            }, options);
+                FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
 
-            List<SimilarItem> items = query.ToList();
+                //get the product
+                Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "similarity");
+
+                //QueryText = $"SELECT * FROM similarity f WHERE f.sourceItemId = @sourceIds and f.targetItemId = @targetIds and f.Similiarty > @minSim",
+
+                var query = client.CreateDocumentQuery<SimilarItem>(objCollectionUri, options)
+                .Where(c => strKeys1.Contains(c.sourceItemId) && strKeys2.Contains(c.targetItemId) && c.similarity > minSim);
+
+                items = query.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             return items;
         }
 
         private static Hashtable GetRatedItems(int userId, int take)
         {
-            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
-            options.MaxItemCount = take;
-
-            //get the product
-            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "event");
-
-            var query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, new SqlQuerySpec()
-            {
-                QueryText = $"SELECT * FROM event f WHERE (f.UserId = @userid)",
-                Parameters = new SqlParameterCollection()
-                    {
-                        new SqlParameter("@userid", userId)
-                    }
-            }, options);
-
-            List<CollectorLog> ratedItems = query.ToList();
+            List<CollectorLog> ratedItems = GetUserLogs(userId, 0);
 
             Hashtable ht = new Hashtable();
 
@@ -219,13 +287,16 @@ namespace Contoso.Apps.Movies.Logic
                 switch(ir.Event)
                 {
                     case "buy":
-                        i.Popularity += 10;
+                        i.Popularity += 1;
                         break;
                     case "details":
-                        i.Popularity += 3;
+                        i.Popularity += 50;
                         break;
                     case "addToCart":
-                        i.Popularity += 5;
+                        i.Popularity += 10;
+                        break;
+                    case "genre":
+                        i.Popularity += 15;
                         break;
                 }
 
@@ -273,9 +344,12 @@ namespace Contoso.Apps.Movies.Logic
             {
                 case "assoc":
                 case "assocUser":
+
                     items = RecommendationHelper.AssociationRecommendationByUser(userId, take);
 
-                    List<PredictionModel> precRecs1 = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
+                    //fall back to top items...
+                    if (items.Count == 0)
+                        items = RecommendationHelper.TopRecommendation(userId, take);
 
                     break;
                 case "top":
@@ -289,6 +363,13 @@ namespace Contoso.Apps.Movies.Logic
                     break;
                 case "collab":
                     List<PredictionModel> precRecs2 = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
+
+                    /*
+                    items = GetItemsByIds(precRecs2.Select(c => c.Items.Select(i => i.ItemId)));
+
+                    if (items.Count == 0)
+                        items = RecommendationHelper.TopRecommendation(userId, take);
+                        */
 
                     break;
                 case "matrix":
@@ -305,10 +386,32 @@ namespace Contoso.Apps.Movies.Logic
             return items;
         }
 
+        private static List<Item> GetItemsByIds(List<int> itemIds)
+        {
+            List<Item> items = new List<Item>();
+
+            try
+            {
+                FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
+
+                //get the product
+                Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+
+                var query = client.CreateDocumentQuery<Item>(objCollectionUri, options)
+                .Where(c => itemIds.Contains(c.ItemId));
+
+                items = query.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return items;
+        }
+
         private static List<Item> TopRecommendation(int userId, int take)
         {
-            //return GetRandom(take);
-
             List<Item> items = new List<Item>();
 
             FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
