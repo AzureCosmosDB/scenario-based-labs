@@ -38,7 +38,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 9: Create an App Service Plan and Web App](#task-9-create-an-app-service-plan-and-web-app)
     - [Task 10: Create Azure Databricks workspace](#task-10-create-azure-databricks-workspace)
     - [Task 11: Create and configure Application Insights](#task-11-create-and-configure-application-insights)
-    - [Task 11: Download the starter files](#task-11-download-the-starter-files)
+    - [Task 12: Download the starter files](#task-12-download-the-starter-files)
 
 <!-- /TOC -->
 
@@ -343,7 +343,7 @@ Application Insights helps you visualize application performance, availability, 
 
     ![The Save button is highlighted.](media/web-app-save-app-settings.png 'Save Application settings')
 
-### Task 11: Download the starter files
+### Task 12: Download the starter files
 
 Download a starter project that includes a vehicle simulator, Azure Function App projects, a Web App project, Azure Databricks notebooks, and data files used in the lab.
 
