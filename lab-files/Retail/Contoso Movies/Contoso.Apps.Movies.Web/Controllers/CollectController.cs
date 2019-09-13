@@ -13,7 +13,7 @@ namespace Contoso.Apps.Movies.Controllers
     public class CollectController : BaseController
     {
         [HttpPost]
-        public bool Log(string user_id, string content_id, string event_type, string session_id)
+        public bool Log(string user_id, string item_id, string event_type, string session_id)
         {
             Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
             
@@ -25,7 +25,7 @@ namespace Contoso.Apps.Movies.Controllers
                 CollectorLog log = new CollectorLog();
 
                 log.UserId = userId;
-                log.ContentId = content_id;
+                log.ItemId = item_id;
                 log.Event = event_type;
                 log.SessionId = session_id;
                 log.Created = DateTime.Now;

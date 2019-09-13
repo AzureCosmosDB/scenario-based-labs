@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataGenerator
@@ -12,38 +13,33 @@ namespace DataGenerator
     {
         static void Main(string[] args)
         {
-            int[] types =  new int[] { 1, 2, 3 };
+            //28 = action
+            //12 = adventure
+            //35 = comedy
+            //18 = drama
+            //27 = horror
+
+            //int[] types =  new int[] { 27, 28, 12, 35, 18 };
+
+            int[] types = new int[] { 27 };
 
             //fire off many threads of different personalities...
-            DoWork(1);
-            DoWork(2);
-            DoWork(3);
+            foreach (int type in types)
+            {
+                DoWork(type);
+            }
         }
 
         static void DoWork(int personalityType)
         {
-            //execute actions of a user...
-            Guid sessionId = Guid.NewGuid();
+            List<User> users = User.GetUsers();
 
-            List<Item> movies = DbHelper.GetMoviesByType(personalityType); ;
+            User u = users.Where(u1 => u1.CategoryId == personalityType).FirstOrDefault();
 
-            //loop...
-            while (true)
-            {
-                //randomly get a movie
-                Item p = GetRandomMovie(movies);
+            UserActor ua = new UserActor(u.UserId, personalityType);
 
-                //randomly do this x times / 
-                DbHelper.GenerateAction(1, p.ItemId.ToString(), "details", sessionId.ToString().Replace("-", ""));
-                DbHelper.GenerateAction(1, p.ItemId.ToString(), "buy", sessionId.ToString().Replace("-", ""));
-                DbHelper.GenerateAction(1, p.ItemId.ToString(), "order", sessionId.ToString().Replace("-", ""));
-            }
-        }
-
-        static Item GetRandomMovie(List<Item> movieSet)
-        {
-            Random r = new Random();
-            return movieSet.Skip(r.Next(movieSet.Count)).Take(1).FirstOrDefault();
+            Thread t = new Thread(new ThreadStart(ua.DoWork));
+            t.Start();
         }
     }
 }

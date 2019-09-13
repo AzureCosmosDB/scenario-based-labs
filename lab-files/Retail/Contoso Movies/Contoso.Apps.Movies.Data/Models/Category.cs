@@ -5,8 +5,8 @@ using System;
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
-    public class Category : IEntity
-  {
+    public class Category : DbObject, IEntity
+    {
     [ScaffoldColumn(false)]
     public int CategoryId { get; set; }
 
@@ -16,7 +16,9 @@ namespace Contoso.Apps.Movies.Data.Models
     [Display(Name = "Product Description")]
     public string Description { get; set; }
 
-    public virtual ICollection<Item> Products { get; set; }
+        new public string ObjectId { get { return this.EntityType + "_" + this.CategoryId; } }
+
+        public virtual ICollection<Item> Products { get; set; }
 
         public string EntityType { get { return "Category"; } }
     }

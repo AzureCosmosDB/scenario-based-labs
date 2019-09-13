@@ -42,13 +42,10 @@ namespace ContosoFunctionApp
 
                 if (payload != null && payload.UserId != null)
                 {
-                    var base64EncodedData = payload.Order.Value;
-                    var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);                    
-
                     Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
 
                     if (items == null)
-                        items = client.CreateDocumentQuery<Item>(productCollectionUri, "SELECT * FROM product f ORDER BY f.BuyCount OFFSET 0 LIMIT 20 ", DefaultOptions).ToList();
+                        items = client.CreateDocumentQuery<Item>(productCollectionUri, "SELECT * FROM item f ORDER BY f.BuyCount desc OFFSET 0 LIMIT 20 ", DefaultOptions).ToList();
 
                     return new OkObjectResult(items);
                 }

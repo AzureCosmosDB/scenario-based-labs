@@ -29,7 +29,7 @@ namespace Contoso.Apps.Movies.Controllers
             }
             else
             {
-                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", 0, 10);
+                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 10);
                 vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("assoc", 0, 10);
             }
 

@@ -50,7 +50,6 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Impor
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.pdb
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Contoso.Apps.Common.dll
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Contoso.Apps.Movies.Logic.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Microsoft.Azure.Documents.Client.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Newtonsoft.Json.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\System.Buffers.dll
@@ -60,8 +59,6 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Impor
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Contoso.Apps.Movies.Data.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Contoso.Apps.Common.pdb
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Contoso.Apps.Movies.Logic.pdb
-C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Contoso.Apps.Movies.Logic.dll.config
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Microsoft.Azure.Documents.Client.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Newtonsoft.Json.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\System.Buffers.xml

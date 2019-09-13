@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Contoso.Apps.Common;
 using Contoso.Apps.Movies.Data.Models;
+using Microsoft.Azure.Documents.Client;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Web.Http;
@@ -24,6 +26,13 @@ namespace Contoso.Apps.Movies.Web
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             MovieHelper.ApiKey = ConfigurationManager.AppSettings["movieApiKey"];
+
+            string endpointUrl = ConfigurationManager.AppSettings["dbConnectionUrl"];
+            string authorizationKey = ConfigurationManager.AppSettings["dbConnectionKey"];
+            string databaseId = ConfigurationManager.AppSettings["databaseId"];
+
+            DbHelper.client = new DocumentClient(new Uri(endpointUrl), authorizationKey, new ConnectionPolicy { ConnectionMode = ConnectionMode.Gateway, ConnectionProtocol = Protocol.Https });
+            DbHelper.databaseId = databaseId;
 
             // Automapper configuration.
             // Products:

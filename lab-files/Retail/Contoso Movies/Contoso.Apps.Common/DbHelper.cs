@@ -11,8 +11,8 @@ namespace Contoso.Apps.Common
 {
     public class DbHelper
     {
-        static DocumentClient client;
-        static string databaseId;
+        public static DocumentClient client;
+        public static string databaseId;
 
         public static async Task<DocumentCollection> GetOrCreateCollectionAsync(string collectionId)
         {
@@ -27,24 +27,90 @@ namespace Contoso.Apps.Common
                 new RequestOptions { OfferThroughput = 400 });
         }
 
-        public static List<Item> GetMoviesByType(int v)
+        public static Document GetObject(object id, string type)
         {
-            throw new NotImplementedException();
+            FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+
+            //get the product
+            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
+
+            var query = client.CreateDocumentQuery<Document>(objCollectionUri, new SqlQuerySpec()
+            {
+                QueryText = "SELECT * FROM object f WHERE (f.ObjectId = @id and f.EntityType = @type)",
+                Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@id", id),
+                        new SqlParameter("@type", type)
+                    }
+            }, defaultOptions);
+
+            Document doc = query.ToList().FirstOrDefault();
+
+            return doc;
         }
 
-        public static void GenerateAction(int userId, string contentId, string eventType, string sessionId)
+        public static Document SaveObject(DbObject o)
         {
+            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
+
+            var blah = client.UpsertDocumentAsync(collectionUri, o).Result;
+
+            return blah;
+        }
+
+        public static List<Item> GetMoviesByType(int id)
+        {
+            FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+
+            //get the product
+            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+
+            var query = client.CreateDocumentQuery<Item>(objCollectionUri, new SqlQuerySpec()
+            {
+                QueryText = "SELECT * FROM item f WHERE (f.CategoryId = @id)",
+                Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@id", id)
+                    }
+            }, defaultOptions);
+
+            return query.ToList();
+        }
+
+        public static void GenerateAction(int userId, string itemId, string eventType, string sessionId)
+        {
+            Console.WriteLine($"{userId} performed {eventType}");
+
             CollectorLog log = new CollectorLog();
             log.UserId = userId;
-            log.ContentId = contentId;
+            log.ItemId = itemId;
             log.Event = eventType;
             log.SessionId = sessionId;
             log.Created = DateTime.Now;
 
             //add to cosmos db
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "collector_log");
+            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "event");
             var item = client.UpsertDocumentAsync(collectionUri, log);
         }
-    }
 
+        public static Item GetItem(int? itemId)
+        {
+            FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+
+            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+
+            var query = client.CreateDocumentQuery<Item>(productCollectionUri, new SqlQuerySpec()
+            {
+                QueryText = "SELECT * FROM item f WHERE (f.ItemId = @id)",
+                Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@id", itemId)
+                    }
+            }, defaultOptions);
+
+            Item product = query.ToList().FirstOrDefault();
+
+            return product;
+        }
+    }
 }

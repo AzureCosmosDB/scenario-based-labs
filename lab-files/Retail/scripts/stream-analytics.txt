@@ -1,0 +1,20 @@
+SELECT Count(*) as FailureCount
+ INTO failureCount
+ FROM s2event
+ WHERE Event = 'paymentFailure'
+ GROUP BY TumblingWindow(second,10) 
+
+SELECT Count(distinct UserId) as UserCount
+ INTO userCount
+ FROM s2event  
+ GROUP BY TumblingWindow(second,10) 
+
+SELECT System.TimeStamp AS Time, Count(*)
+ INTO eventCount  
+ FROM s2event  
+ GROUP BY TumblingWindow(second,10) 
+
+ SELECT System.TimeStamp AS Time, Event, Count(*)
+ INTO eventSummary
+ FROM s2event  
+ GROUP BY Event, TumblingWindow(second,10) 

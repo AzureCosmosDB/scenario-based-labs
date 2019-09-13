@@ -5,9 +5,9 @@ using System;
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
-    public class ItemRating : IEntity
+    public class ItemRating : DbObject, IEntity
     {
-        public int ProductId { get; set; }
+        public int ItemId { get; set; }
 
         public decimal Rating { get; set; }
 

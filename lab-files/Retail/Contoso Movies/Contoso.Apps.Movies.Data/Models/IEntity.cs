@@ -8,6 +8,7 @@ namespace Contoso.Apps.Movies.Data.Models
 {
     interface IEntity
     {
+        string ObjectId { get; }
         string EntityType { get; }
     }
 }

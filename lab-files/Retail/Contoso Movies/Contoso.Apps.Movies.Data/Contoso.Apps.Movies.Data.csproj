@@ -114,11 +114,15 @@
     <Compile Include="Logic\OrderActions.cs" />
     <Compile Include="Logic\ShoppingCartActions.cs" />
     <Compile Include="Models\CartItem.cs" />
+    <Compile Include="Models\DbObject.cs" />
+    <Compile Include="Models\ItemAggregate.cs" />
     <Compile Include="Models\ItemCategory.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\CollectorLog.cs" />
     <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\Prediction.cs" />
+    <Compile Include="Models\TopItemReport.cs" />
+    <Compile Include="Models\Report.cs" />
     <Compile Include="Models\SimilarItem.cs" />
     <Compile Include="Models\Rating.cs" />
     <Compile Include="Models\Order.cs" />
