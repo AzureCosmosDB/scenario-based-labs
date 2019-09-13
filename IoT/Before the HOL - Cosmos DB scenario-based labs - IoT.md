@@ -37,8 +37,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 8: Create Azure Function Apps](#task-8-create-azure-function-apps)
     - [Task 9: Create an App Service Plan and Web App](#task-9-create-an-app-service-plan-and-web-app)
     - [Task 10: Create Azure Databricks workspace](#task-10-create-azure-databricks-workspace)
-    - [Task 11: Create and configure Application Insights](#task-11-create-and-configure-application-insights)
-    - [Task 12: Download the starter files](#task-12-download-the-starter-files)
+    - [Task 11: Create Stream Analytics job](#task-11-create-stream-analytics-job)
+    - [Task 12: Create and configure Application Insights](#task-12-create-and-configure-application-insights)
+    - [Task 13: Download the starter files](#task-13-download-the-starter-files)
 
 <!-- /TOC -->
 
@@ -252,7 +253,30 @@ In this task, you will use the Azure Cloud Shell to create a new Azure Databrick
        --parameters workspaceName=$workspace pricingTier=premium location=$location
    ```
 
-### Task 11: Create and configure Application Insights
+### Task 11: Create Stream Analytics job
+
+In this task, you will use the Azure portal to create a new Stream Analytics job. This service is used in this lab for real-time event processing of vehicle telemetry data after it has been saved to Cosmos DB. You will use the Stream Analytics windowing query functions to perform aggregates on the data, pumping ovarall vehicle statistics to Power BI for display on a real-time dashboard, and saving individual vehicle aggregates back to Cosmos DB for reporting in Power BI.
+
+1. In the Azure portal (<https://portal.azure.com>), select **+ Create a resource**, then type **stream analytics** into the search box on top. Select **Stream Analytics job** from the results.
+
+   ![The Create a resource link is highlighted, and Stream Analytics is displayed in the search box.](media/new-stream-analytics-job.png 'Create a resource - Stream Analytics job')
+
+2. Select the **Create** button on the **Stream Analytics job overview** blade.
+
+3. On the New Stream Analytics job blade, specify the following configuration options:
+
+   1. **Job name**: Unique value for the name, similar to **Cosmos-DB-IoT-Analytics** (ensure the green check mark appears).
+   2. **Subscription**: Select the Azure subscription you are using for this lab.
+   3. **Resource Group**: Select the resource group you created above. The name will start with **cosmos-db-iot-** and end with a random series of numbers.
+   4. **Region**: Select the same region you selected for your other Azure resources above, or the closest region if that one is not available.
+   5. **Hosting environment**: Select **Cloud**.
+   6. **Stream units**: Select **3**.
+
+   ![The new Stream Analytics job form is displayed with the previously described settings.](media/new-stream-analytics-job-form.png 'Create Stream Analytics job')
+
+4. Select **Create**.
+
+### Task 12: Create and configure Application Insights
 
 Application Insights helps you visualize application performance, availability, and usage information. In this lab, we use it to watch data flow through our services in real time. In this task, we create a new Application Insights instance and configure our Azure Functions and Web App to send metrics and logging information by updating their configuration settings.
 
@@ -343,7 +367,7 @@ Application Insights helps you visualize application performance, availability, 
 
     ![The Save button is highlighted.](media/web-app-save-app-settings.png 'Save Application settings')
 
-### Task 12: Download the starter files
+### Task 13: Download the starter files
 
 Download a starter project that includes a vehicle simulator, Azure Function App projects, a Web App project, Azure Databricks notebooks, and data files used in the lab.
 
