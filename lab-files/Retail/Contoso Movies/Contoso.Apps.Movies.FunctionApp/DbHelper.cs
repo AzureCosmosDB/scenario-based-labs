@@ -113,6 +113,26 @@ namespace Contoso.Apps.Common
 
             return product;
         }
+
+        internal static Category GetCategory(int id)
+        {
+            FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+
+            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+
+            var query = client.CreateDocumentQuery<Category>(productCollectionUri, new SqlQuerySpec()
+            {
+                QueryText = "SELECT * FROM category f WHERE (f.CategoryId = @id)",
+                Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@id", id)
+                    }
+            }, defaultOptions);
+
+            Category product = query.ToList().FirstOrDefault();
+
+            return product;
+        }
     }
 
 }

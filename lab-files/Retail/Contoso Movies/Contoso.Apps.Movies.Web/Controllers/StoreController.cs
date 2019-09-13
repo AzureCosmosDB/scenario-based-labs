@@ -32,9 +32,9 @@ namespace Contoso.Apps.Movies.Web.Controllers
             //only take 10 products...
             if (user != null)
             {
-                    string name = user.Email;
-                    int userId = user.UserId;
-                    products = RecommendationHelper.GetViaFunction("assoc", userId, 12);
+                string name = user.Email;
+                int userId = user.UserId;
+                products = RecommendationHelper.GetViaFunction("assoc", userId, 12);
             }
             else
             {
@@ -97,20 +97,21 @@ namespace Contoso.Apps.Movies.Web.Controllers
             {
                 return HttpNotFound();
             }
+
             var productVm = Mapper.Map<Models.ProductModel>(product);
 
             //Get the simliar product to this item...
             var similarProducts = RecommendationHelper.GetViaFunction("content", 0, id.Value);
             var similarProductsVm = Mapper.Map<List<Models.ProductListModel>>(similarProducts);
 
-            // Find related products, based on the category:
+            // Find related products, based on the category
             var relatedProducts = items.ToList().Where(p => p.CategoryId == product.CategoryId && p.ItemId != product.ItemId).Take(10).ToList();
             var relatedProductsVm = Mapper.Map<List<Models.ProductListModel>>(relatedProducts);
 
-            // Retrieve category listing:
+            // Retrieve category listing
             var categoriesVm = Mapper.Map<List<Models.CategoryModel>>(categories);
 
-            // Retrieve "new products" as a list of three random products not equal to the displayed one:
+            // Retrieve "new products" as a list of three random products not equal to the displayed one
             var newProducts = items.ToList().Where(p => p.ItemId != product.ItemId).ToList().Shuffle().Take(3);
 
             var newProductsVm = Mapper.Map<List<Models.ProductListModel>>(newProducts);
@@ -133,6 +134,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
             {
                 
             }
+
             base.Dispose(disposing);
         }
     }

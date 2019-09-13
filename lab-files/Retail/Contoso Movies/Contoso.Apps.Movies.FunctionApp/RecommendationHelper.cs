@@ -95,17 +95,15 @@ namespace Contoso.Apps.Movies.Logic
         }
 
         //aka NeighborhoodBasedRecs
-        public static List<Movies.Data.Models.Item> CollaborationBasedRecommendation(int userId, int take)
+        public static List<PredictionModel> CollaborationBasedRecommendation(int userId, int take)
         {
             int neighborhoodSize = 15;
             decimal minSim = 0.0m;
             int maxCandidates = 100;
 
+            //inside this we do the implict rating of events for the user...
             Hashtable userRatedItems = GetRatedItems(userId, 100);
-
-            DateTime start = DateTime.Now;
-            int[] movieIds = null;
-
+            
             //this is the mean rating a user gave (python code looks odd and maybe wrong)
             decimal ratingSum = 0;
 
@@ -119,10 +117,12 @@ namespace Contoso.Apps.Movies.Logic
             //get similar items
             List<SimilarItem> candidateItems = GetCandidateItems(userRatedItems.Keys, userRatedItems.Keys, minSim);
 
-            //sort by similarity, take only max candidates
-            candidateItems = candidateItems.Take(maxCandidates).ToList();
+            //sort by similarity desc, take only max candidates
+            candidateItems = candidateItems.OrderByDescending(c=>c.Similarity).Take(maxCandidates).ToList();
 
             Hashtable recs = new Hashtable();
+
+            List<PredictionModel> precRecs = new List<PredictionModel>();
 
             foreach(SimilarItem candidate in candidateItems)
             {
@@ -130,7 +130,7 @@ namespace Contoso.Apps.Movies.Logic
                 decimal pre = 0;
                 decimal simSum = 0;
 
-                List<SimilarItem> ratedItems = null;
+                List<SimilarItem> ratedItems = candidateItems.Where(c=>c.Target == target).Take(neighborhoodSize).ToList();
 
                 if (ratedItems.Count > 1)
                 {
@@ -145,13 +145,16 @@ namespace Contoso.Apps.Movies.Logic
                             PredictionModel p = new PredictionModel();
                             p.Prediction = userMean + pre / simSum;
                             p.Items = ratedItems;
-                            recs.Add(target, p);
+                            precRecs.Add(p);
                         }
                     }
                 }
             }
 
-            return new List<Item>();
+            //sort based on the prediction, only take x of them
+            List<PredictionModel> sortedItems = precRecs.OrderBy(c => c.Prediction).Take(take).ToList();
+
+            return sortedItems;
         }
 
         private static List<SimilarItem> GetCandidateItems(ICollection keys1, ICollection keys2, decimal minSim)
@@ -183,11 +186,11 @@ namespace Contoso.Apps.Movies.Logic
             options.MaxItemCount = take;
 
             //get the product
-            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
+            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "event");
 
             var query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, new SqlQuerySpec()
             {
-                QueryText = $"SELECT * FROM event f WHERE (f.UserId = @userid) OFFSET 0 LIMIT {take}",
+                QueryText = $"SELECT * FROM event f WHERE (f.UserId = @userid)",
                 Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@userid", userId)
@@ -271,6 +274,9 @@ namespace Contoso.Apps.Movies.Logic
                 case "assoc":
                 case "assocUser":
                     items = RecommendationHelper.AssociationRecommendationByUser(userId, take);
+
+                    List<PredictionModel> precRecs1 = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
+
                     break;
                 case "top":
                     items = RecommendationHelper.TopRecommendation(userId, take);
@@ -282,7 +288,8 @@ namespace Contoso.Apps.Movies.Logic
                     items = RecommendationHelper.ContentBasedRecommendation(userId, take);
                     break;
                 case "collab":
-                    items = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
+                    List<PredictionModel> precRecs2 = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
+
                     break;
                 case "matrix":
                     items = RecommendationHelper.MatrixFactorRecommendation(userId, take);
