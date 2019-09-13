@@ -37,7 +37,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 8: Create Azure Function Apps](#task-8-create-azure-function-apps)
     - [Task 9: Create an App Service Plan and Web App](#task-9-create-an-app-service-plan-and-web-app)
     - [Task 10: Create Azure Databricks workspace](#task-10-create-azure-databricks-workspace)
-    - [Task 11: Download the starter files](#task-11-download-the-starter-files)
+    - [Task 11: Create Stream Analytics job](#task-11-create-stream-analytics-job)
+    - [Task 12: Create and configure Application Insights](#task-12-create-and-configure-application-insights)
+    - [Task 13: Download the starter files](#task-13-download-the-starter-files)
 
 <!-- /TOC -->
 
@@ -251,13 +253,127 @@ In this task, you will use the Azure Cloud Shell to create a new Azure Databrick
        --parameters workspaceName=$workspace pricingTier=premium location=$location
    ```
 
-### Task 11: Download the starter files
+### Task 11: Create Stream Analytics job
+
+In this task, you will use the Azure portal to create a new Stream Analytics job. This service is used in this lab for real-time event processing of vehicle telemetry data after it has been saved to Cosmos DB. You will use the Stream Analytics windowing query functions to perform aggregates on the data, pumping ovarall vehicle statistics to Power BI for display on a real-time dashboard, and saving individual vehicle aggregates back to Cosmos DB for reporting in Power BI.
+
+1. In the Azure portal (<https://portal.azure.com>), select **+ Create a resource**, then type **stream analytics** into the search box on top. Select **Stream Analytics job** from the results.
+
+   ![The Create a resource link is highlighted, and Stream Analytics is displayed in the search box.](media/new-stream-analytics-job.png 'Create a resource - Stream Analytics job')
+
+2. Select the **Create** button on the **Stream Analytics job overview** blade.
+
+3. On the New Stream Analytics job blade, specify the following configuration options:
+
+   1. **Job name**: Unique value for the name, similar to **Cosmos-DB-IoT-Analytics** (ensure the green check mark appears).
+   2. **Subscription**: Select the Azure subscription you are using for this lab.
+   3. **Resource Group**: Select the resource group you created above. The name will start with **cosmos-db-iot-** and end with a random series of numbers.
+   4. **Region**: Select the same region you selected for your other Azure resources above, or the closest region if that one is not available.
+   5. **Hosting environment**: Select **Cloud**.
+   6. **Stream units**: Select **3**.
+
+   ![The new Stream Analytics job form is displayed with the previously described settings.](media/new-stream-analytics-job-form.png 'Create Stream Analytics job')
+
+4. Select **Create**.
+
+### Task 12: Create and configure Application Insights
+
+Application Insights helps you visualize application performance, availability, and usage information. In this lab, we use it to watch data flow through our services in real time. In this task, we create a new Application Insights instance and configure our Azure Functions and Web App to send metrics and logging information by updating their configuration settings.
+
+1. In the Azure portal (<https://portal.azure.com>), select **+ Create a resource**, then type **application insights** into the search box on top. Select **Application Insights** from the results.
+
+   ![The Create a resource link is highlighted, and application insights is displayed in the search box.](media/new-application-insights.png 'Create a resource - Application Insights')
+
+2. Select the **Create** button on the **Application Insights overview** blade.
+
+3. On the Application Insights blade, specify the following configuration options:
+
+   1. **Subscription**: Select the Azure subscription you are using for this lab.
+   2. **Resource Group**: Select the resource group you created above. The name will start with **cosmos-db-iot-** and end with a random series of numbers.
+   3. **Name**: Unique value for the name, similar to **Cosmos-DB-IoT-Insights** (ensure the green check mark appears).
+   4. **Region**: Select the same region you selected for your other Azure resources above, or the closest region if that one is not available.
+
+   ![The new Application Insights form is displayed with the previously described settings.](media/new-application-insights-form.png 'Create Application Insights')
+
+4. Select **Review + create**, then select **Create** on the validation screen.
+
+5. You will be redirected to the Deployment screen, which shows the deployment status for Application Insights. When your deployment is complete, select **Go to resource**.
+
+   ![The deployment page is displayed, and the Go to resource button is highlighted.](media/application-insights-deployment-complete.png 'Your deployment is complete')
+
+6. In the Application Insights Overview blade, copy the **instrumentation key** value from the Essentials section at the top of the page.
+
+   ![The Instrumentation Key is highlighted in the Application Insights Overview blade.](media/application-insights-instrumentation-key.png 'Instrumentation Key')
+
+7. Navigate to your resource group by selecting the resource group name to the left of the instrumentation key, or by selecting Resource Groups on the portal's left-hand menu, then searching for it by its prefix (`cosmos-db-iot`).
+
+8. Select the Function App whose name starts with **IoT-CosmosDBProcessing**.
+
+   ![The IoT-CosmosDBProcessing Function App is highlighted in the resource group.](media/resource-group-function-app1.png 'Resource Group')
+
+9. Select **Configuration** on the Function App's Overview blade.
+
+   ![The Configuration link is highlighted.](media/function1-overview.png 'Overview blade')
+
+10. Select **+ New application setting**.
+
+    ![Thew New application setting link is highlighted.](media/functions-new-application-setting.png 'Application settings')
+
+11. In the Add/Edit application setting form, enter **APPINSIGHTS_INSTRUMENTATIONKEY** in the Name field, and paste your Application Insights **Instrumentation Key** you copied earlier into the Value field. Select **OK** to save the new application setting.
+
+    ![The new Application setting form is displayed.](media/function-app-insights-app-setting.png 'Application setting')
+
+12. Select **Save** at the top of Application settings to apply your changes.
+
+    ![The Save button is highlighted.](media/function-app-save-app-settings.png 'Save Application settings')
+
+13. Go back to the resource group and select the Function App whose name starts with **IoT-StreamProcessing**.
+
+    ![The IoT-StreamProcessing Function App is highlighted in the resource group.](media/resource-group-function-app2.png 'Resource Group')
+
+14. Select **Configuration** on the Function App's Overview blade.
+
+    ![The Configuration link is highlighted.](media/function2-overview.png 'Overview blade')
+
+15. Select **+ New application setting**.
+
+    ![Thew New application setting link is highlighted.](media/functions-new-application-setting.png 'Application settings')
+
+16. In the Add/Edit application setting form, enter **APPINSIGHTS_INSTRUMENTATIONKEY** in the Name field, and paste your Application Insights **Instrumentation Key** you copied earlier into the Value field. Select **OK** to save the new application setting.
+
+    ![The new Application setting form is displayed.](media/function-app-insights-app-setting.png 'Application setting')
+
+17. Select **Save** at the top of Application settings to apply your changes.
+
+    ![The Save button is highlighted.](media/function-app-save-app-settings.png 'Save Application settings')
+
+18. Go back to the resource group and select your Web App. Its name starts with **IoTWebApp**.
+
+    ![The IoTWebApp Web App is highlighted in the resource group.](media/resource-group-web-app.png 'Resource Group')
+
+19. Select **Configuration** in the left-hand menu under Settings.
+
+    ![The Configuration link is highlighted.](media/web-app-configuration-link.png 'Configuration link')
+
+20. Select **+ New application setting**.
+
+    ![The New application setting link is highlighted.](media/web-app-new-application-setting.png 'Application settings')
+
+21. In the Add/Edit application setting form, enter **APPINSIGHTS_INSTRUMENTATIONKEY** in the Name field, and paste your Application Insights **Instrumentation Key** you copied earlier into the Value field. Select **OK** to save the new application setting.
+
+    ![The new Application setting form is displayed.](media/function-app-insights-app-setting.png 'Application setting')
+
+22. Select **Save** at the top of Application settings to apply your changes.
+
+    ![The Save button is highlighted.](media/web-app-save-app-settings.png 'Save Application settings')
+
+### Task 13: Download the starter files
 
 Download a starter project that includes a vehicle simulator, Azure Function App projects, a Web App project, Azure Databricks notebooks, and data files used in the lab.
 
 1. From your lab computer, download the starter files by downloading a .zip copy of the Cosmos DB scenario-based labs GitHub repo.
 
-2. In a web browser, navigate to the [Cosmos DB scenario-based labs repo]().
+2. In a web browser, navigate to the [Cosmos DB scenario-based labs repo](https://github.com/solliancenet/cosmos-db-scenario-based-labs).
 
 3. On the repo page, select **Clone or download**, then select **Download ZIP**.
 
