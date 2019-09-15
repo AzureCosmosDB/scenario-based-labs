@@ -19,7 +19,7 @@
         "keyVaultName": "[concat('keyvault-', variables('name-suffix'))]",
         
         "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
-        "storageAccountStreamProcessing-website-contentshare": "[concat('iot-cosmosdbprocessing-', variables('name-suffix'))]",
+        "storageAccountStreamProcessing-website-contentshare": "[concat('iot-streamprocessing-', variables('name-suffix'))]",
 
         "storageAccountCosmosDBProcessingName": "[concat('iotfunc2', variables('name-suffix'))]",
         "storageAccountCosmosDBProcessing-website-contentshare": "[concat('iot-cosmosdbprocessing-', variables('name-suffix'))]",
@@ -550,6 +550,18 @@
                         {
                             "name": "WEBSITE_CONTENTSHARE",
                             "value": "[variables('storageAccountCosmosDBProcessing-website-contentshare')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
                         }
                     ]
                 }
@@ -585,11 +597,23 @@
                         },
                         {
                             "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountCosmosDBProcessingName'),'2019-04-01').keys[0].value)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
                         },
                         {
                             "name": "WEBSITE_CONTENTSHARE",
                             "value": "[variables('storageAccountStreamProcessing-website-contentshare')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
                         }
                     ]
                 }
