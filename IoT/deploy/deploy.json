@@ -16,7 +16,7 @@
         "functionAppStreamProcessingName": "[concat('IoT-StreamProcessing-', variables('name-suffix'))]",
         "functionAppCosmosDBProcessingName": "[concat('IoT-CosmosDBProcessing-', variables('name-suffix'))]",
         
-        "keyVaultName": "[concat('iot-keyvault-', variables('name-suffix'))]",
+        "keyVaultName": "[concat('keyvault-', variables('name-suffix'))]",
         
         "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
         "storageAccountCosmosDBProcessingName": "[concat('iotfunc2', variables('name-suffix'))]",
@@ -27,7 +27,9 @@
         "cosmosDbAccountName": "[concat('cosmos-db-iot-', variables('name-suffix'))]",
         "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('name-suffix'))]",
         
-        "streamAnalyticsJobName": "[concat('Cosmos-DB-IoT-Analytics-', variables('name-suffix'))]"
+        "streamAnalyticsJobName": "[concat('Cosmos-DB-IoT-Analytics-', variables('name-suffix'))]",
+
+        "databricksWorkspaceName": "[concat('iot-databricks-', variables('name-suffix'))]"
     },
     "resources": [
         {
@@ -448,8 +450,7 @@
                 "outputErrorPolicy": "Stop",
                 "eventsOutOfOrderMaxDelayInSeconds": 0,
                 "eventsLateArrivalMaxDelayInSeconds": 5,
-                "dataLocale": "en-US",
-                "compatibilityLevel": "1.1"
+                "dataLocale": "en-US"
             }
         },
         {
@@ -511,12 +512,12 @@
                     "appSettings": [
                         {
                             "name": "AzureWebJobsDashboard",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').key1)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
         
                         },
                         {
                             "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').key1)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
                         },
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
@@ -543,12 +544,12 @@
                     "appSettings": [
                         {
                             "name": "AzureWebJobsDashboard",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').key1)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
         
                         },
                         {
                             "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').key1)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
                         },
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
@@ -578,22 +579,6 @@
                         }
                     ]
                 }
-            }
-        },
-        {
-            "type": "Microsoft.EventHub/namespaces/AuthorizationRules",
-            "apiVersion": "2017-04-01",
-            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/RootManageSharedAccessKey')]",
-            "location": "[variables('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubsNamespaceIoTName'))]"
-            ],
-            "properties": {
-                "rights": [
-                    "Listen",
-                    "Manage",
-                    "Send"
-                ]
             }
         },
         {
@@ -634,6 +619,25 @@
                 "virtualNetworkRules": [],
                 "ipRules": []
             }
-        }
+        },
+
+        {
+            "name": "DatabricksWorkspaceDeployment",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-09-01",
+            "dependsOn": [],
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-databricks-workspace/azuredeploy.json",
+                "contentVersion": "1.0.0.0"
+              },
+              "parameters": {
+                "workspaceName": { "value": "[variables('databricksWorkspaceName')]" },
+                "pricingTier": { "value": "premium" },
+                "location": { "value": "[variables('location')]" }
+              }
+            }
+          }
     ]
 }
