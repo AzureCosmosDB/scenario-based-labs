@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverfarms_WestUSPlan_name": {
+            "value": null
+        },
+        "sites_IoTWebApp_31474745_name": {
+            "value": null
+        },
+        "IotHubs_iot_hub_31474745_name": {
+            "value": null
+        },
+        "vaults_iot_keyvault_31474745_name": {
+            "value": null
+        },
+        "serverfarms_IoTWebAppPlan_31474745_name": {
+            "value": null
+        },
+        "sites_IoT_StreamProcessing_31474745_name": {
+            "value": null
+        },
+        "storageAccounts_iotfunc131474745_name": {
+            "value": null
+        },
+        "storageAccounts_iotfunc231474745_name": {
+            "value": null
+        },
+        "storageAccounts_iotstore31474745_name": {
+            "value": null
+        },
+        "sites_IoT_CosmosDBProcessing_31474745_name": {
+            "value": null
+        },
+        "namespaces_iot_namespace_31474745_name": {
+            "value": null
+        },
+        "databaseAccounts_cosmos_db_iot_31474745_name": {
+            "value": null
+        },
+        "components_Cosmos_DB_IoT_Insights_31474745_name": {
+            "value": null
+        },
+        "streamingjobs_Cosmos_DB_IoT_Analytics_31474745_name": {
+            "value": null
+        }
+    }
+}
