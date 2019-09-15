@@ -19,7 +19,11 @@
         "keyVaultName": "[concat('keyvault-', variables('name-suffix'))]",
         
         "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
+        "storageAccountStreamProcessing-website-contentshare": "[concat('iot-cosmosdbprocessing-', variables('name-suffix'))]",
+
         "storageAccountCosmosDBProcessingName": "[concat('iotfunc2', variables('name-suffix'))]",
+        "storageAccountCosmosDBProcessing-website-contentshare": "[concat('iot-cosmosdbprocessing-', variables('name-suffix'))]",
+
         "storageAccountIoTStoreName": "[concat('iotstore', variables('name-suffix'))]",
 
         "eventHubsNamespaceIoTName": "[concat('iot-namespace-', variables('name-suffix'))]",
@@ -320,6 +324,14 @@
             }
         },
         {
+            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountStreamProcessingName'), '/default/', variables('storageAccountStreamProcessing-website-contentshare'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
+            ]
+        },
+        {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
             "name": "[variables('storageAccountCosmosDBProcessingName')]",
@@ -389,6 +401,14 @@
             "properties": {
                 "publicAccess": "None"
             }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountCosmosDBProcessingName'), '/default/', variables('storageAccountCosmosDBProcessing-website-contentshare'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
+            ]
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -512,16 +532,24 @@
                     "appSettings": [
                         {
                             "name": "AzureWebJobsDashboard",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountCosmosDBProcessingName'),'2019-04-01').keys[0].value)]"
         
                         },
                         {
                             "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountCosmosDBProcessingName'),'2019-04-01').keys[0].value)]"
                         },
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                             "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountCosmosDBProcessingName'),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('storageAccountCosmosDBProcessing-website-contentshare')]"
                         }
                     ]
                 }
@@ -554,6 +582,14 @@
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                             "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountCosmosDBProcessingName'),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('storageAccountStreamProcessing-website-contentshare')]"
                         }
                     ]
                 }
