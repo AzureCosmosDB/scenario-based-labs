@@ -21,10 +21,18 @@ using Microsoft.Extensions.Configuration;
 
 namespace ContosoFunctionApp
 {
-    public static class FuncChangeFeed
+    public class FuncChangeFeed
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        // Use Dependency Injection to inject the HttpClientFactory service that was configured in Startup.cs.
+        public FuncChangeFeed(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
         [FunctionName("ChangeFeed")]
-        public static void Run(
+        public async Task Run(
             [CosmosDBTrigger(
             databaseName: "moviegeek",
             collectionName: "events",
@@ -78,6 +86,30 @@ namespace ContosoFunctionApp
 
             try
             {
+                // Have the HttpClient factory create a new client instance.
+                var httpClient = _httpClientFactory.CreateClient("LogicAppClient");
+
+                // Create the payload to send to the Logic App.
+                foreach (var e in events)
+                {
+                    var payload = new LogicAppAlert
+                    {
+                        data = JsonConvert.SerializeObject(e),
+                        recipientEmail = Environment.GetEnvironmentVariable("RecipientEmail")
+                    };
+
+                    var postBody = JsonConvert.SerializeObject(payload);
+
+                    var httpResult = await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
+                }                
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex.Message);
+            }
+
+            try
+            {
                 if (events != null && events.Count > 0)
                 {
                     //do the aggregate for each product...
@@ -111,7 +143,7 @@ namespace ContosoFunctionApp
             }
             catch (Exception ex)
             {
-
+                log.LogError(ex.Message);
             }
         }        
     }

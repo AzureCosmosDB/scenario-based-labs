@@ -54,11 +54,11 @@ namespace Contoso.Apps.Movies.Web.Controllers
                         "SELECT * FROM events r WHERE r.userId = @userid",
                         new SqlParameterCollection(new[]
                         {
-                        new SqlParameter { Name = "@userid", Value = userId }
+                        new SqlParameter { Name = "@userid", Value = userId.ToString() }
                         }
                         )
                         ), DefaultOptions
-                ).ToList();
+                ).ToList().Take(100).ToList();
             }
 
             return Json(logs);

@@ -1,0 +1,109 @@
+﻿@model Contoso.Apps.Movies.Web.Models.CartModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@section HeaderOverlay {
+    
+}
+
+<section class="store">
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+
+                @if (Model.CartItems.Count > 0)
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>
+                                    Product Name
+                                </th>
+                                <th>
+                                    Price
+                                </th>
+                                <th>
+                                    Quantity
+                                </th>
+                                <th>
+                                    Total
+                                </th>
+                                @*<th></th>*@
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CartItems)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action("Details", "Store", new { id = item.ItemId })">
+                                            <img src="@Url.Content("http://image.tmdb.org/t/p/w500/")@item.ProductImagePath" alt="@item.ProductProductName" class="center-block" style="width:100px">
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Details", "Store", new { id = item.ItemId })">@Html.DisplayFor(modelItem => item.ProductProductName)</a>
+                                    </td>
+                                    <td>
+                                        @String.Format("{0:c}", item.ProductUnitPrice)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Quantity)
+                                    </td>
+                                    <td>
+                                        @String.Format("{0:c}", (item.ProductUnitPrice.HasValue ? Math.Round(item.ProductUnitPrice.Value * item.Quantity, 2) : 0))
+                                    </td>
+                                    @*<td>
+                                            @Html.ActionLink("Edit", "Edit", new { id = item.ItemId }) |
+                                            @Html.ActionLink("Details", "Details", new { id = item.ItemId }) |
+                                            @Html.ActionLink("Delete", "Delete", new { id = item.ItemId })
+                                        </td>*@
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-8 col-md-10 col-lg-11 text-right text-warning"><strong># of Items:</strong></div>
+                        <div class="col-xs-6 col-sm-4 col-md-2 col-lg-1 text-warning">@Model.ItemsTotal</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-8 col-md-10 col-lg-11 text-right text-warning"><strong>Total:</strong></div>
+                        <div class="col-xs-6 col-sm-4 col-md-2 col-lg-1 text-warning">@String.Format("{0:c}", Model.OrderTotal)</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-sm-12">
+                            &nbsp;
+                        </div>
+                    </div>
+
+                    <div class="pull-right">
+                        <a href="@Url.Action("Index", "Checkout")" class="btn btn-primary">Checkout</a>
+                    </div>
+
+                    <div class="pull-left">
+                        <a href="@Url.Action("Index", "Store")" class="btn trans-btn"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Keep shopping</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Your shopping cart is empty</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>Oops! You haven't added anything to your shopping cart yet!</p>
+                            <p>You may have forgotten to add something to the cart. How about <a href="@Url.Action("Index", "Store")" style="color: blue">you take another look</a> at our selection of awesome products to try again?</p>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</section>

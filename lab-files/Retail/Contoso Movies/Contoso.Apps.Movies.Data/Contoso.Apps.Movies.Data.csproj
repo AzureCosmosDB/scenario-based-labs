@@ -120,6 +120,7 @@
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\CollectorLog.cs" />
     <Compile Include="Models\IEntity.cs" />
+    <Compile Include="Models\LogicAppAlert.cs" />
     <Compile Include="Models\Prediction.cs" />
     <Compile Include="Models\Recommendation.cs" />
     <Compile Include="Models\Rule.cs" />

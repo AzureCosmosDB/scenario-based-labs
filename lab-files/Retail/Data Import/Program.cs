@@ -32,11 +32,11 @@ namespace MovieDataImport
             DbHelper.client = client;
             DbHelper.databaseId = databaseId;
 
-            PreCalculate();
+            //PreCalculate();
 
-            ImportUsers();
+            //ImportUsers();
 
-            ImportGenre();
+            //ImportGenre();
 
             ImportMovies(true);
         }
@@ -154,8 +154,6 @@ namespace MovieDataImport
 
         async static void ImportGenre()
         {
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "category");
-
             dynamic data = MovieHelper.GetMovieGenres();
 
             foreach(dynamic item in data.genres)
@@ -166,8 +164,6 @@ namespace MovieDataImport
 
                 try
                 {
-                    var blah = client.UpsertDocumentAsync(collectionUri, c).Result;
-
                     DbHelper.SaveObject(null, c);
                 }
                 catch (Exception ex)
@@ -198,9 +194,6 @@ namespace MovieDataImport
 
         async static void ImportMovies(bool usedOnly)
         {
-            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
-            Uri productCatCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item_category");
-
             string[] lines = System.IO.File.ReadAllLines("./Data/movies.csv");
 
             string[] usedOnlyLines = System.IO.File.ReadAllLines("./Data/UsedMovies.txt");
@@ -244,8 +237,7 @@ namespace MovieDataImport
                                 ItemCategory pc = new ItemCategory();
                                 pc.ItemId = p.ItemId;
                                 pc.CategoryId = int.Parse(category);
-                                var blah = client.UpsertDocumentAsync(productCatCollectionUri, pc);
-
+                                
                                 DbHelper.SaveObject(null, pc);
 
                                 p.CategoryId = pc.CategoryId;
@@ -291,8 +283,6 @@ namespace MovieDataImport
                     if (!p.UnitPrice.HasValue)
                         p.UnitPrice = 5.99;
 
-                    var item = client.UpsertDocumentAsync(productCollectionUri, p);
-
                     DbHelper.SaveObject(null, p);
                 }
                 catch (Exception ex)
@@ -311,7 +301,7 @@ namespace MovieDataImport
 
                 Item p = new Item();
                 p.ItemId = data.movie_results[0].id;
-                p.ImdbId = data.movie_results[0].id;
+                p.ImdbId = id;
                 p.ProductName = data.movie_results[0].title;
                 p.Description = data.movie_results[0].overview;
                 p.Popularity = data.movie_results[0].popularity;
@@ -324,7 +314,6 @@ namespace MovieDataImport
                 ItemCategory pc = new ItemCategory();
                 pc.ItemId = p.ItemId;
                 pc.CategoryId = p.CategoryId.Value;
-                var blah = client.UpsertDocumentAsync(productCatCollectionUri, pc);
 
                 DbHelper.SaveObject(null, pc);
 
@@ -355,8 +344,6 @@ namespace MovieDataImport
 
                 if (!p.UnitPrice.HasValue)
                     p.UnitPrice = 5.99;
-
-                var item = client.UpsertDocumentAsync(productCollectionUri, p);
 
                 DbHelper.SaveObject(null, p);
             }

@@ -79,6 +79,8 @@ namespace Contoso.Apps.Movies.Data.Models
 
         public List<OrderDetail> OrderDetails { get; set; }
 
+        public string ObjectId { get { return this.EntityType + "_" + this.OrderId; } }
+
         public string EntityType { get { return "Order"; } }
     }
 }

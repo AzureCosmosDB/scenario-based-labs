@@ -83,8 +83,7 @@ namespace Contoso.Apps.Movies.Data.Logic
         {
             //ShoppingCartId = GetCartId();
 
-            return shoppingCartItems.ToList().Where(
-                c => c.CartId == ShoppingCartId).ToList();
+            return shoppingCartItems.ToList();
         }
 
         public decimal GetTotal()
@@ -192,7 +191,7 @@ namespace Contoso.Apps.Movies.Data.Logic
             {
                 Document doc = client.CreateDocumentQuery(collectionUri,
                         new SqlQuerySpec(
-                            "SELECT * FROM object r WHERE r.CartId = @cartid and r.ItemId == @itemid and r.EntityType = 'CartItem'",
+                            "SELECT * FROM object r WHERE r.CartId = @cartid and r.ItemId = @itemid and r.EntityType = 'CartItem'",
                             new SqlParameterCollection(new[]
                             {
                                 new SqlParameter { Name = "@cartid", Value = cartItem.CartId },
@@ -200,7 +199,7 @@ namespace Contoso.Apps.Movies.Data.Logic
                             }
                             )
                             )
-                    ).FirstOrDefault();
+                    ).ToList().FirstOrDefault();
 
                 client.DeleteDocumentAsync(doc.SelfLink);
             }

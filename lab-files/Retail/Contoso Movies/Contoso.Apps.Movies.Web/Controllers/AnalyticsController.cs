@@ -20,6 +20,8 @@ namespace Contoso.Apps.Movies.Controllers
         {
             UserAnalyticsModel m = new UserAnalyticsModel();
 
+            //MOVED to JQUERY...
+            /*
             Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
 
             if (user != null)
@@ -35,11 +37,9 @@ namespace Contoso.Apps.Movies.Controllers
                 m.RecommendProductsRanking = new List<Item>();
 
                 //get similar users...
-                /*
                 m.UsersJaccard = RecommendationHelper.JaccardRecommendation(userId);
                 m.UsersPearson = RecommendationHelper.PearsonRecommendation(userId);
-                */
-
+                
                 //get the user events
                 Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
                 var query = client.CreateDocumentQuery<CollectorLog>(collectionUri, new SqlQuerySpec()
@@ -54,6 +54,7 @@ namespace Contoso.Apps.Movies.Controllers
                 List<CollectorLog> logs = query.ToList().Take(100).ToList();
                 m.Events = logs;
             }
+            */
 
             return View(m);
         }

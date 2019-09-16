@@ -45,6 +45,8 @@ namespace DataGenerator
 
             int count = 20;
 
+            DateTime stopOrdersDate = DateTime.Now;
+
             //loop...
             while (true)
             {
@@ -61,20 +63,26 @@ namespace DataGenerator
                 if (action == 0)
                     DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "details", sessionId.ToString().Replace("-", ""));
 
-                if (action == 1)
+                TimeSpan ts = DateTime.Now - stopOrdersDate;
+
+                //run fine for 30 sec...then stop orders...
+                if (ts.TotalSeconds < 30)
                 {
-                    DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "buy", sessionId.ToString().Replace("-", ""));
-
-                    int failure = r.Next(10);
-
-                    //simulate a payment failure...
-                    if (failure % 2 == 1 && count > 20)
+                    if (action == 1)
                     {
-                        DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "paymentFailure", sessionId.ToString().Replace("-", ""));
-                        count = 0;
-                    }
+                        DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "buy", sessionId.ToString().Replace("-", ""));
 
-                    count++;
+                        int failure = r.Next(10);
+
+                        //simulate a payment failure...
+                        if (failure % 2 == 1 && count > 20)
+                        {
+                            DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "paymentFailure", sessionId.ToString().Replace("-", ""));
+                            count = 0;
+                        }
+
+                        count++;
+                    }
                 }
 
                 if (action == 2)

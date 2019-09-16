@@ -90,8 +90,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                         myOrder.OrderDate = DateTime.UtcNow;
 
                         // Add order to DB.
-                        Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "order");
-                        client.UpsertDocumentAsync(collectionUri, myOrder);
+                        DbHelper.SaveObject(null, myOrder);                        
 
                         // Get the shopping cart items and process them.
                         using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, items, categories))
@@ -103,14 +102,15 @@ namespace Contoso.Apps.Movies.Web.Controllers
                             {
                                 // Create a new OrderDetail object.
                                 var myOrderDetail = new OrderDetail();
+                                myOrderDetail.OrderDetailId = i;
                                 myOrderDetail.OrderId = myOrder.OrderId;
                                 myOrderDetail.ProductId = myOrderList[i].ItemId;
                                 myOrderDetail.Quantity = myOrderList[i].Quantity;
                                 myOrderDetail.UnitPrice = myOrderList[i].Product.UnitPrice;
 
                                 // Add OrderDetail to DB.
-                                collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "orderdetail");
-                                client.UpsertDocumentAsync(collectionUri, myOrderDetail);
+
+                                DbHelper.SaveObject(null, myOrderDetail);
                             }
 
                             // Set OrderId.
@@ -213,28 +213,20 @@ namespace Contoso.Apps.Movies.Web.Controllers
                     {
                         currentOrderId = Convert.ToInt32(Session["currentOrderID"]);
                     }
-                    Order myCurrentOrder;
 
-                    Uri orderCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "order");
+                    Order myCurrentOrder;
 
                     if (currentOrderId >= 0)
                     {
-                        // Get the order based on order id.
-                        var query = client.CreateDocumentQuery<Order>(orderCollectionUri, new SqlQuerySpec()
-                        {
-                            QueryText = "SELECT * FROM order f WHERE (f.OrderId = @id)",
-                            Parameters = new SqlParameterCollection()
-                    {
-                        new SqlParameter("@id", currentOrderId)
-                    }
-                        }, DefaultOptions);
+                        Document doc = DbHelper.GetObject("Order_" + currentOrderId, "Order");
+                        myCurrentOrder = (dynamic)doc;
 
-                        myCurrentOrder = query.ToList().FirstOrDefault();
-                        
                         // Update the order to reflect payment has been completed.
+                        doc.SetPropertyValue("PaymentTransactionId", PaymentConfirmation );
+                        
                         myCurrentOrder.PaymentTransactionId = PaymentConfirmation;
 
-                        await client.UpsertDocumentAsync(orderCollectionUri, myCurrentOrder);
+                        DbHelper.SaveObject(doc, myCurrentOrder);
 
                         // Queue up a receipt generation request, asynchronously.
                         await new AzureQueueHelper().QueueReceiptRequest(myCurrentOrder);

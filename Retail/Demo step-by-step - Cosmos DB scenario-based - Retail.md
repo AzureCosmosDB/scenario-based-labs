@@ -1,9 +1,9 @@
 <div class="MCWHeader1">
-Cosmos DB scenario-based labs - Retail
+Cosmos DB scenario-based Demo - Retail
 </div>
 
 <div class="MCWHeader2">
-Hands-on lab step-by-step
+Hands-on demo step-by-step
 </div>
 
 <div class="MCWHeader3">
@@ -25,7 +25,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 <!-- TOC -->
 
-- [Cosmos DB scenario-based labs - IoT hands-on lab step-by-step](#cosmos-db-scenario-based-labs---iot-hands-on-lab-step-by-step)
+- [Cosmos DB scenario-based demo - Retail hands-on demo step-by-step](#cosmos-db-scenario-based-demo---retail-hands-on-lab-step-by-step)
   - [Abstract and learning objectives](#abstract-and-learning-objectives)
   - [Overview](#overview)
   - [Solution architecture (High-level)](#solution-architecture-high-level)
