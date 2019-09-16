@@ -27,7 +27,7 @@ namespace ContosoFunctionApp
         public static void Run(
             [CosmosDBTrigger(
             databaseName: "moviegeek",
-            collectionName: "event",
+            collectionName: "events",
             ConnectionStringSetting = "CosmosDBConnection",
             LeaseCollectionName = "leases",
             CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> events,

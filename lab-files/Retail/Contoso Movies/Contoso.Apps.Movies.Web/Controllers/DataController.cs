@@ -47,11 +47,11 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 string name = user.Email;
                 int userId = user.UserId;
 
-                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "event");
+                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
 
                 logs = client.CreateDocumentQuery<CollectorLog>(collectionUri,
                     new SqlQuerySpec(
-                        "SELECT * FROM event r WHERE r.UserId = @userid",
+                        "SELECT * FROM events r WHERE r.userId = @userid",
                         new SqlParameterCollection(new[]
                         {
                         new SqlParameter { Name = "@userid", Value = userId }

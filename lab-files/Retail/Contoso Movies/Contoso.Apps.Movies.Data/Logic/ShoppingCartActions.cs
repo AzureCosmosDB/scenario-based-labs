@@ -28,11 +28,11 @@ namespace Contoso.Apps.Movies.Data.Logic
             this.categories = categories;
             this.ShoppingCartId = cartId;
 
-            collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "shoppingcartitems");
+            collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
 
             shoppingCartItems = client.CreateDocumentQuery<CartItem>(collectionUri,
                 new SqlQuerySpec(
-                    "SELECT * FROM shoppingcartitems r WHERE r.CartId = @cartid",
+                    "SELECT * FROM object r WHERE r.CartId = @cartid and r.EntityType = 'CartItem'",
                     new SqlParameterCollection(new[]
                     {
                         new SqlParameter { Name = "@cartid", Value = cartId }
@@ -144,7 +144,7 @@ namespace Contoso.Apps.Movies.Data.Logic
                 {
                     Document doc = client.CreateDocumentQuery(collectionUri,
                         new SqlQuerySpec(
-                            "SELECT * FROM shoppingcartitems r WHERE r.CartId = @cartid and r.ProductID == @productid",
+                            "SELECT * FROM object r WHERE r.CartId = @cartid and r.ProductID == @productid and r.EntityType = 'CartItem'",
                             new SqlParameterCollection(new[] 
                             {
                                 new SqlParameter { Name = "@cartid", Value = removeCartID },
@@ -192,7 +192,7 @@ namespace Contoso.Apps.Movies.Data.Logic
             {
                 Document doc = client.CreateDocumentQuery(collectionUri,
                         new SqlQuerySpec(
-                            "SELECT * FROM shoppingcartitems r WHERE r.CartId = @cartid and r.ItemId == @itemid",
+                            "SELECT * FROM object r WHERE r.CartId = @cartid and r.ItemId == @itemid and r.EntityType = 'CartItem'",
                             new SqlParameterCollection(new[]
                             {
                                 new SqlParameter { Name = "@cartid", Value = cartItem.CartId },

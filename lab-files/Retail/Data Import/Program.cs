@@ -32,11 +32,101 @@ namespace MovieDataImport
             DbHelper.client = client;
             DbHelper.databaseId = databaseId;
 
+            PreCalculate();
+
             ImportUsers();
 
-            //ImportGenre();
+            ImportGenre();
 
-            //ImportMovies();
+            ImportMovies(true);
+        }
+
+        private static void PreCalculate()
+        {
+            //get all the buy events, create the buy aggregates...
+            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
+            
+            //get the product
+            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
+
+            var query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'buy')", options);
+
+            //do the aggregate for each product...
+            foreach (var group in query.ToList().GroupBy(singleEvent => singleEvent.ContentId))
+            {
+                int itemId = int.Parse(group.FirstOrDefault().ContentId);
+
+                //get the item aggregate record
+                Document doc = DbHelper.GetObject(itemId, "ItemAggregate");
+
+                ItemAggregate agg = new ItemAggregate();
+
+                if (doc != null)
+                {
+                    agg = (dynamic)doc;
+                    doc.SetPropertyValue("BuyCount", group.Count<CollectorLog>());
+                }
+                else
+                {
+                    agg.ItemId = itemId;
+                    agg.BuyCount = group.Count<CollectorLog>();
+                }
+
+                DbHelper.SaveObject(doc, agg);
+            }
+
+            query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'details')", options);
+
+            //do the aggregate for each product...
+            foreach (var group in query.ToList().GroupBy(singleEvent => singleEvent.ContentId))
+            {
+                int itemId = int.Parse(group.FirstOrDefault().ContentId);
+
+                //get the item aggregate record
+                Document doc = DbHelper.GetObject(itemId, "ItemAggregate");
+
+                ItemAggregate agg = new ItemAggregate();
+
+                if (doc != null)
+                {
+                    agg = (dynamic)doc;
+                    doc.SetPropertyValue("ViewDetailsCount", group.Count<CollectorLog>());
+                }
+                else
+                {
+                    agg.ItemId = itemId;
+                    agg.ViewDetailsCount=  group.Count<CollectorLog>();
+                }
+
+                DbHelper.SaveObject(doc, agg);
+            }
+
+            query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'addToCart')", options);
+
+            //do the aggregate for each product...
+            foreach (var group in query.ToList().GroupBy(singleEvent => singleEvent.ContentId))
+            {
+                int itemId = int.Parse(group.FirstOrDefault().ContentId);
+
+                //get the item aggregate record
+                Document doc = DbHelper.GetObject(itemId, "ItemAggregate");
+
+                ItemAggregate agg = new ItemAggregate();
+
+                if (doc != null)
+                {
+                    agg = (dynamic)doc;
+                    doc.SetPropertyValue("AddToCartCount", group.Count<CollectorLog>());
+                }
+                else
+                {
+                    agg.ItemId = itemId;
+                    agg.AddToCartCount = group.Count<CollectorLog>();
+                }
+
+                DbHelper.SaveObject(doc, agg);
+            }
+
         }
 
         async static void ImportUsers()
@@ -106,12 +196,20 @@ namespace MovieDataImport
             */
         }
 
-        async static void ImportMovies()
+        async static void ImportMovies(bool usedOnly)
         {
             Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
             Uri productCatCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item_category");
 
             string[] lines = System.IO.File.ReadAllLines("./Data/movies.csv");
+
+            string[] usedOnlyLines = System.IO.File.ReadAllLines("./Data/UsedMovies.txt");
+
+            List<string> itemIds = new List<string>();
+            foreach(string line in usedOnlyLines)
+            {
+                itemIds.Add(line.Trim());
+            }
 
             int count = 0;
             foreach (string line in lines)
@@ -130,6 +228,9 @@ namespace MovieDataImport
                     p.ImdbId = vals[2];
                     p.ProductName = vals[3];
                     p.Description = vals[4];
+
+                    if (usedOnly && !itemIds.Contains(vals[2]))
+                        continue;
 
                     if (vals.Length > 4)
                     {
@@ -198,6 +299,66 @@ namespace MovieDataImport
                 {
                     Console.WriteLine(ex.Message);
                 }
+            }
+
+            //fallback catch for anything not in the starting set
+            foreach(string id in itemIds)
+            {
+                dynamic data = MovieHelper.GetMovieDataByImdb(id);
+
+                if (data == null || data.movie_results.Count == 0)
+                    continue;
+
+                Item p = new Item();
+                p.ItemId = data.movie_results[0].id;
+                p.ImdbId = data.movie_results[0].id;
+                p.ProductName = data.movie_results[0].title;
+                p.Description = data.movie_results[0].overview;
+                p.Popularity = data.movie_results[0].popularity;
+                p.OriginalLanguage = data.movie_results[0].original_language;
+                p.ImagePath = data.movie_results[0].poster_path;
+
+                p.CategoryId = data.movie_results[0].genre_ids[0];
+
+                //add a product_category...
+                ItemCategory pc = new ItemCategory();
+                pc.ItemId = p.ItemId;
+                pc.CategoryId = p.CategoryId.Value;
+                var blah = client.UpsertDocumentAsync(productCatCollectionUri, pc);
+
+                DbHelper.SaveObject(null, pc);
+
+                if (data.movie_results[0].release_date == null)
+                    continue;
+
+                p.ReleaseDate = data.movie_results[0].release_date;
+                p.VoteAverage = data.movie_results[0].vote_average;
+                p.VoteCount = data.movie_results[0].vote_count;
+
+                p.BuyCount = 0;
+                p.AddToCartCount = 0;
+                p.ViewDetailsCount = 0;
+
+                TimeSpan ts = DateTime.Now - DateTime.Parse(p.ReleaseDate.ToString());
+
+                if (ts.TotalDays / 365 < 1)
+                    p.UnitPrice = 14.99;
+
+                if (ts.TotalDays / 365 < 2)
+                    p.UnitPrice = 12.99;
+
+                if (ts.TotalDays / 365 < 5)
+                    p.UnitPrice = 10.99;
+
+                if (ts.TotalDays / 365 < 10)
+                    p.UnitPrice = 7.99;
+
+                if (!p.UnitPrice.HasValue)
+                    p.UnitPrice = 5.99;
+
+                var item = client.UpsertDocumentAsync(productCollectionUri, p);
+
+                DbHelper.SaveObject(null, p);
             }
         }
     }

@@ -36,26 +36,24 @@ namespace Contoso.Apps.Common.Controllers
             client = new DocumentClient(new Uri(endpointUrl), authorizationKey, new ConnectionPolicy { ConnectionMode = ConnectionMode.Gateway, ConnectionProtocol = Protocol.Https });
             database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
 
-            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
 
             if (items == null)
-                items = client.CreateDocumentQuery<Item>(productCollectionUri, "SELECT * FROM item", DefaultOptions);
-
-            Uri catCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "category");
+                items = client.CreateDocumentQuery<Item>(objCollectionUri, "SELECT * FROM object o where o.EntityType = 'Item'", DefaultOptions);
 
             if (categories == null)
-                categories = client.CreateDocumentQuery<Category>(catCollectionUri, "SELECT * FROM category", DefaultOptions);
-
-            Uri userCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "user");
-            users = client.CreateDocumentQuery<Movies.Data.Models.User>(userCollectionUri, "SELECT * FROM user", DefaultOptions);
+                categories = client.CreateDocumentQuery<Category>(objCollectionUri, "SELECT * FROM object o where o.EntityType = 'Category'", DefaultOptions);
+            
+            if (users == null)
+                users = client.CreateDocumentQuery<Movies.Data.Models.User>(objCollectionUri, "SELECT * FROM object o where o.EntityType = 'User'", DefaultOptions);
         }
 
         public ActionResult SetUser(int userId)
         {
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "user");
+            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
             var query = client.CreateDocumentQuery<Movies.Data.Models.User>(collectionUri, new SqlQuerySpec()
             {
-                QueryText = "SELECT * FROM user f WHERE f.UserId = @id",
+                QueryText = "SELECT * FROM object f WHERE f.UserId = @id and f.EntityType = 'User'",
                 Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", userId)
@@ -70,7 +68,7 @@ namespace Contoso.Apps.Common.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public ActionResult NewUser(string email)
+            public ActionResult NewUser(string email)
         {
             Movies.Data.Models.User user = new Movies.Data.Models.User();
             user.Email = email;

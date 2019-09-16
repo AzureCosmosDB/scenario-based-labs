@@ -138,11 +138,11 @@ namespace Contoso.Apps.Common
         {
             FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
 
-            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
 
             var query = client.CreateDocumentQuery<Category>(productCollectionUri, new SqlQuerySpec()
             {
-                QueryText = "SELECT * FROM category f WHERE (f.CategoryId = @id)",
+                QueryText = "SELECT * FROM object f WHERE (f.CategoryId = @id) and f.EntityType = 'Category'",
                 Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", id)

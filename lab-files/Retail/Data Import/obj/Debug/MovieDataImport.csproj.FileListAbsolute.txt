@@ -84,3 +84,5 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Impor
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\System.Web.WebPages.Razor.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\System.Web.WebPages.xml
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\System.Web.WebPages.Deployment.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Data\UsedMovies.txt
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\Data\movies.dat

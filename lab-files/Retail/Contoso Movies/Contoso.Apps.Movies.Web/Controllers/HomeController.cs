@@ -25,12 +25,12 @@ namespace Contoso.Apps.Movies.Controllers
                 int userId = user.UserId;
 
                 vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", userId, 10);
-                vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("assoc", userId, 10);
+                vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", userId, 10);
             }
             else
             {
-                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 10);
-                vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("assoc", 0, 10);
+                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", 0, 10);
+                vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", 0, 10);
             }
 
             return View(vm);

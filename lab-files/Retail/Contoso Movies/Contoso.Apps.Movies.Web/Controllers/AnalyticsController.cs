@@ -41,10 +41,10 @@ namespace Contoso.Apps.Movies.Controllers
                 */
 
                 //get the user events
-                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "event");
+                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
                 var query = client.CreateDocumentQuery<CollectorLog>(collectionUri, new SqlQuerySpec()
                 {
-                    QueryText = "SELECT * FROM event f WHERE f.UserId = @id",
+                    QueryText = "SELECT * FROM events f WHERE f.userId = @id",
                     Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", user.UserId)

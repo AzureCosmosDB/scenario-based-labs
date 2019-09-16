@@ -60,7 +60,14 @@ namespace Contoso.Apps.Common
             }
             else
             {
-                blah = client.UpsertDocumentAsync(collectionUri, o).Result;
+                try
+                {
+                    blah = client.UpsertDocumentAsync(collectionUri, o).Result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
 
             return blah;
@@ -80,11 +87,11 @@ namespace Contoso.Apps.Common
             FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
 
             //get the product
-            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
 
             var query = client.CreateDocumentQuery<Item>(objCollectionUri, new SqlQuerySpec()
             {
-                QueryText = "SELECT * FROM item f WHERE (f.CategoryId = @id)",
+                QueryText = "SELECT * FROM object f WHERE (f.CategoryId = @id)",
                 Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", id)
@@ -106,19 +113,19 @@ namespace Contoso.Apps.Common
             log.Created = DateTime.Now;
 
             //add to cosmos db
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "event");
+            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
             var item = client.UpsertDocumentAsync(collectionUri, log);
         }
 
         public static Item GetItem(int? itemId)
         {
-            FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+            FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = false };
 
-            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
 
             var query = client.CreateDocumentQuery<Item>(productCollectionUri, new SqlQuerySpec()
             {
-                QueryText = "SELECT * FROM item f WHERE (f.ItemId = @id)",
+                QueryText = "SELECT * FROM object f WHERE f.ItemId = @id and f.EntityType = 'Item'",
                 Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", itemId)
@@ -128,6 +135,17 @@ namespace Contoso.Apps.Common
             Item product = query.ToList().FirstOrDefault();
 
             return product;
+        }
+
+        public void CreateCollections()
+        {
+            var col = GetOrCreateCollectionAsync("events");
+            col = GetOrCreateCollectionAsync("object");
+            col = GetOrCreateCollectionAsync("associations");
+            col = GetOrCreateCollectionAsync("order");
+            col = GetOrCreateCollectionAsync("orderdetail");
+            col = GetOrCreateCollectionAsync("shoppingcartitem");
+            col = GetOrCreateCollectionAsync("similarity");
         }
     }
 }

@@ -42,8 +42,6 @@ namespace Contoso.Apps.Movies.Logic
                 client = new DocumentClient(new Uri(endpointUrl), authorizationKey);
                 database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
 
-                Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
-                items = client.CreateDocumentQuery<Item>(productCollectionUri, "SELECT * FROM item", DefaultOptions);
 
                 DbHelper.client = client;
                 DbHelper.databaseId = databaseId;
@@ -56,8 +54,8 @@ namespace Contoso.Apps.Movies.Logic
 
         public static List<Item> GetRandom(int count)
         {
-            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
-            items = client.CreateDocumentQuery<Item>(productCollectionUri, "SELECT * FROM item", DefaultOptions);
+            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
+            items = client.CreateDocumentQuery<Item>(productCollectionUri, "SELECT * FROM object", DefaultOptions).Where(c => c.EntityType == "Item");
             Random r = new Random();
             int skip = r.Next(100);
             return items.ToList().Skip(skip).Take(count).ToList();
@@ -73,9 +71,11 @@ namespace Contoso.Apps.Movies.Logic
 
         }
 
-        public static List<Movies.Data.Models.Item> AssociationRecommendationByUser(int userId, int take)
+        public static List<Item> AssociationRecommendationByUser(int userId, int take)
         {
             List<Item> items = new List<Item>();
+
+            List<string> itemIds = new List<string>();
 
             //get 20 log events for the user.
             List<CollectorLog> logs = GetUserLogs(userId, 20);
@@ -96,8 +96,10 @@ namespace Contoso.Apps.Movies.Logic
                 rec.confidence = r.confidence;
                 recs.Add(rec);
 
-                items.Add(DbHelper.GetItemByContentId(rec.id));
+                itemIds.Add(rec.id.ToString());
             }
+
+            items = GetItemsByImdbIds(itemIds);
 
             //return the "take" number of records
             return items.Take(take).ToList();
@@ -149,7 +151,7 @@ namespace Contoso.Apps.Movies.Logic
                     {
                         new SqlParameter("@userid", userId.ToString())
                     }
-            }, options);
+            }, options).OrderByDescending(c=>c.Created);
 
             if (take > 0)
                 return query.ToList().Take(take).ToList();
@@ -163,7 +165,7 @@ namespace Contoso.Apps.Movies.Logic
         }
 
         //aka NeighborhoodBasedRecs
-        public static List<PredictionModel> CollaborationBasedRecommendation(int userId, int take)
+        public static List<string> CollaborationBasedRecommendation(int userId, int take)
         {
             int neighborhoodSize = 15;
             double minSim = 0.0;
@@ -173,9 +175,9 @@ namespace Contoso.Apps.Movies.Logic
             Hashtable userRatedItems = GetRatedItems(userId, 100);
 
             if (userRatedItems.Count == 0)
-                return new List<PredictionModel>();
+                return new List<string>();
 
-            //this is the mean rating a user gave (python code looks odd and maybe wrong)
+            //this is the mean rating a user gave
             double ratingSum = 0;
 
             foreach(Item r in userRatedItems.Values)
@@ -186,7 +188,7 @@ namespace Contoso.Apps.Movies.Logic
             double userMean = ratingSum / userRatedItems.Count;
 
             //get similar items
-            List<SimilarItem> candidateItems = GetCandidateItems(userRatedItems.Keys, userRatedItems.Keys, minSim);
+            List<SimilarItem> candidateItems = GetCandidateItems(userRatedItems.Keys, minSim);
 
             //sort by similarity desc, take only max candidates
             candidateItems = candidateItems.OrderByDescending(c=>c.similarity).Take(maxCandidates).ToList();
@@ -207,7 +209,11 @@ namespace Contoso.Apps.Movies.Logic
                 {
                     foreach(SimilarItem simItem in ratedItems)
                     {
-                        double r = 0; //rating of the movie - userMean;
+                        //TODO
+                        string source = userRatedItems[simItem.sourceItemId].ToString();
+                        source = "1.0";
+
+                        double r = double.Parse(source) - userMean; //rating of the movie - userMean;
                         pre += simItem.similarity * r;
                         simSum += simItem.similarity;
 
@@ -223,23 +229,34 @@ namespace Contoso.Apps.Movies.Logic
             }
 
             //sort based on the prediction, only take x of them
-            List<PredictionModel> sortedItems = precRecs.OrderBy(c => c.Prediction).Take(take).ToList();
+            List<PredictionModel> sortedItems = precRecs.OrderByDescending(c => c.Prediction).Take(take).ToList();
 
-            return sortedItems;
+            List<string> itemIds = new List<string>();
+
+            //get first model's items...
+            foreach(PredictionModel pm in sortedItems)
+            {
+                foreach(SimilarItem ri in pm.Items)
+                {
+                    if (ri.targetItemId != null)
+                    {
+                        itemIds.Add(ri.targetItemId.ToString());
+                        break;
+                    }
+                }
+            }
+
+            return itemIds;
         }
 
-        private static List<SimilarItem> GetCandidateItems(ICollection keys1, ICollection keys2, double minSim)
+        private static List<SimilarItem> GetCandidateItems(ICollection keys1, double minSim)
         {
             List<SimilarItem> items = new List<SimilarItem>();
 
             List<string> strKeys1 = new List<string>();
-            List<string> strKeys2 = new List<string>();
-
+            
             foreach (object key in keys1)
                 strKeys1.Add(key.ToString());
-
-            foreach (object key in keys2)
-                strKeys2.Add(key.ToString());
 
             try
             {
@@ -251,7 +268,7 @@ namespace Contoso.Apps.Movies.Logic
                 //QueryText = $"SELECT * FROM similarity f WHERE f.sourceItemId = @sourceIds and f.targetItemId = @targetIds and f.Similiarty > @minSim",
 
                 var query = client.CreateDocumentQuery<SimilarItem>(objCollectionUri, options)
-                .Where(c => strKeys1.Contains(c.sourceItemId) && strKeys2.Contains(c.targetItemId) && c.similarity > minSim);
+                .Where(c => strKeys1.Contains(c.sourceItemId) && !strKeys1.Contains(c.targetItemId) && c.similarity > minSim);
 
                 items = query.ToList();
             }
@@ -265,22 +282,35 @@ namespace Contoso.Apps.Movies.Logic
 
         private static Hashtable GetRatedItems(int userId, int take)
         {
-            List<CollectorLog> ratedItems = GetUserLogs(userId, 0);
-
             Hashtable ht = new Hashtable();
+            
+            //get from ratings collection (offline)
+            List<ItemRating> ratedItems = GetUserRanking(userId, take);
+
+            foreach(ItemRating ir in ratedItems)
+            {
+                ht.Add(ir.ItemId, ir.Rating);
+            }
+
+            return ht;
+
+            //online code
+            /*
+            List<CollectorLog> ratedItems = GetUserLogs(userId, 0);
 
             foreach(CollectorLog ir in ratedItems)
             {
                 Item i = null;
 
-                if (ht.ContainsKey(ir.ItemId))
+                if (ht.ContainsKey(ir.ContentId))
                 {
-                    i = (Item)ht[ir.ItemId];                    
+                    i = (Item)ht[ir.ContentId];                    
                 }
                 else
                 {
                     i = new Item();
-                    i.ItemId = int.Parse(ir.ItemId);
+                    i.ItemId = int.Parse(ir.ContentId);
+                    i.ImdbId = ir.ContentId;
                     i.Popularity = 0;
                 }
 
@@ -300,10 +330,34 @@ namespace Contoso.Apps.Movies.Logic
                         break;
                 }
 
-                ht[ir.ItemId] = i;
+                ht[ir.ContentId] = i;
             }
 
             return ht;
+            */
+        }
+
+        private static List<ItemRating> GetUserRanking(int userId, int take)
+        {
+            List<ItemRating> items = new List<ItemRating>();
+
+            try
+            {
+                FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
+
+                //get the product
+                Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "rating");
+
+                var query = client.CreateDocumentQuery<ItemRating>(objCollectionUri, options);
+
+                items = query.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return items;
         }
 
         public static List<Movies.Data.Models.Item> MatrixFactorRecommendation(int userId, int take)
@@ -355,6 +409,9 @@ namespace Contoso.Apps.Movies.Logic
                 case "top":
                     items = RecommendationHelper.TopRecommendation(userId, take);
                     break;
+                case "random":
+                    items = GetRandom(take);
+                    break;
                 case "assocContent":
                     items = RecommendationHelper.AssociationRecommendationByContent(userId, take);
                     break;
@@ -362,14 +419,13 @@ namespace Contoso.Apps.Movies.Logic
                     items = RecommendationHelper.ContentBasedRecommendation(userId, take);
                     break;
                 case "collab":
-                    List<PredictionModel> precRecs2 = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
+                    List<string> precRecs2 = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
 
-                    /*
-                    items = GetItemsByIds(precRecs2.Select(c => c.Items.Select(i => i.ItemId)));
+                    if (precRecs2.Count > 0)
+                        items = GetItemsByImdbIds(precRecs2);
 
                     if (items.Count == 0)
                         items = RecommendationHelper.TopRecommendation(userId, take);
-                        */
 
                     break;
                 case "matrix":
@@ -395,10 +451,36 @@ namespace Contoso.Apps.Movies.Logic
                 FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
 
                 //get the product
-                Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+                Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
 
                 var query = client.CreateDocumentQuery<Item>(objCollectionUri, options)
-                .Where(c => itemIds.Contains(c.ItemId));
+                .Where(c => itemIds.Contains(c.ItemId))
+                .Where(c => c.EntityType == "Item");
+
+                items = query.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return items;
+        }
+
+        private static List<Item> GetItemsByImdbIds(List<string> itemIds)
+        {
+            List<Item> items = new List<Item>();
+
+            try
+            {
+                FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
+
+                //get the product
+                Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
+
+                var query = client.CreateDocumentQuery<Item>(objCollectionUri, options)
+                .Where(c => itemIds.Contains(c.ImdbId))
+                .Where(c => c.EntityType == "Item");
 
                 items = query.ToList();
             }
@@ -429,26 +511,16 @@ namespace Contoso.Apps.Movies.Logic
                     }
             }, options);
 
-            List<Item> topItems = query.ToList().Take(take).ToList();
+            List<string> itemIds = new List<string>();
 
-            foreach(Item i in topItems)
+            foreach(Item i in query.ToList().Take(take).ToList())
             {
-                Item n = null;
-                Document doc = DbHelper.GetObject(i.ItemId, "Item");
-
-                if (doc != null)
-                {
-                    n = (dynamic)doc;
-                }
-                else
-                {
-                    n = DbHelper.GetItem(i.ItemId);
-                }
-
-                items.Add(n);
+                itemIds.Add(i.ItemId.ToString());
             }
 
-            return items;
+            List<Item> topItems = GetItemsByImdbIds(itemIds);
+
+            return topItems;
         }
     }
 }

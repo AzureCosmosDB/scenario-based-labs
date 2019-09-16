@@ -21,7 +21,7 @@ namespace DataGenerator
 
             //int[] types =  new int[] { 27, 28, 12, 35, 18 };
 
-            int[] types = new int[] { 27 };
+            int[] types = new int[] { 28 };
 
             //fire off many threads of different personalities...
             foreach (int type in types)

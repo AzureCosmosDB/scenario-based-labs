@@ -41,6 +41,8 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 products = RecommendationHelper.GetViaFunction("top", 0, 12);
             }
 
+            var randomVm = Mapper.Map<List<Models.ProductListModel>>(RecommendationHelper.GetViaFunction("random", 0, 12));
+            
             var productsVm = Mapper.Map<List<Models.ProductListModel>>(products);
 
             // Retrieve category listing:
@@ -48,6 +50,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
 
             var vm = new Models.StoreIndexModel
             {
+                RandomProducts = randomVm,
                 Products = productsVm,
                 Categories = categoriesVm
             };
@@ -57,10 +60,10 @@ namespace Contoso.Apps.Movies.Web.Controllers
 
         public ActionResult Genre(int categoryId)
         {
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
+            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
             var query = client.CreateDocumentQuery<Item>(collectionUri, new SqlQuerySpec()
             {
-                QueryText = "SELECT * FROM item f WHERE f.CategoryId = @id",
+                QueryText = "SELECT * FROM object f WHERE f.CategoryId = @id and f.EntityType = 'Item'",
                 Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", categoryId)
