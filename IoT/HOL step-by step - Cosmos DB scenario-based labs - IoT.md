@@ -33,9 +33,10 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 1: Create Cosmos DB database and container](#task-1-create-cosmos-db-database-and-container)
       - [About Cosmos DB throughput](#about-cosmos-db-throughput)
       - [About Cosmos DB partitioning](#about-cosmos-db-partitioning)
-    - [Task 2: Add Key Vault secrets](#task-2-add-key-vault-secrets)
-    - [Task 3: Create Azure Databricks cluster](#task-3-create-azure-databricks-cluster)
-    - [Task 4: Configure Key Vault-backed Databricks secret store](#task-4-configure-key-vault-backed-databricks-secret-store)
+    - [Task 2: Configure Cosmos DB container indexing and TTL](#task-2-configure-cosmos-db-container-indexing-and-ttl)
+    - [Task 3: Add Key Vault secrets](#task-3-add-key-vault-secrets)
+    - [Task 4: Create Azure Databricks cluster](#task-4-create-azure-databricks-cluster)
+    - [Task 5: Configure Key Vault-backed Databricks secret store](#task-5-configure-key-vault-backed-databricks-secret-store)
   - [Exercise 2: Deploy Azure functions and Web App](#exercise-2-deploy-azure-functions-and-web-app)
     - [Task 1: Open solution](#task-1-open-solution)
     - [Task 2: Code walk-through](#task-2-code-walk-through)
@@ -117,7 +118,7 @@ The solution for the IoT scenario centers around **Cosmos DB**, which acts as th
 
 ## Before the hands-on lab
 
-Refer to the Before the hands-on lab setup guide manual before continuing to the lab exercises.
+Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Cosmos%20DB%20scenario-based%20labs%20-%20IoT.md) manual before continuing to the lab exercises.
 
 ## Exercise 1: Configure environment
 
@@ -215,11 +216,15 @@ When you created each container, you were required to define a **partition key**
 
 Choosing an appropriate partition key for Cosmos DB is a critical step for ensuring balanced reads and writes, scaling, and, in the case of this solution, in-order change feed processing per partition. While there are no limits, per se, on the number of logical partitions, a single logical partition is allowed an upper limit of 10 GB of storage. Logical partitions cannot be split across physical partitions. For the same reason, if the partition key chosen is of bad cardinality, you could potentially have skewed storage distribution. For instance, if one logical partition becomes larger faster than the others and hits the maximum limit of 10 GB, while the others are nearly empty, the physical partition housing the maxed out logical partition cannot split and could cause an application downtime.
 
-### Task 2: Add Key Vault secrets
+### Task 2: Configure Cosmos DB container indexing and TTL
 
-### Task 3: Create Azure Databricks cluster
+In this task, you will review the default indexing set on your new containers, and configure the indexing for your `telemetry` container so it is optimized for write-heavy workloads. Next, you will enable time-to-live (TTL) on the `telemetry` container, allowing you to set the TTL value, in seconds, on individual documents stored in the container. This value tells Cosmos DB when to expire, or delete, the document(s) automatically. This setting can help save in storage costs by removing what you no longer need. Typically, this is used on hot data, or data that must be expired after a period of time due to regulatory requirements.
 
-### Task 4: Configure Key Vault-backed Databricks secret store
+### Task 3: Add Key Vault secrets
+
+### Task 4: Create Azure Databricks cluster
+
+### Task 5: Configure Key Vault-backed Databricks secret store
 
 ## Exercise 2: Deploy Azure functions and Web App
 
