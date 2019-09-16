@@ -1,0 +1,214 @@
+﻿@model Contoso.Apps.Movies.Web.Models.UserAnalyticsModel
+@{
+    ViewBag.Title = "User Analytics";
+}
+
+    <section class="store">
+
+        <div class="container">
+            <h2>Personalized recommendations</h2>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="wrapper clearfix">
+                    <aside class="content contact-wrap">
+                        <div class="store-details-wrap clearfix">
+                            <div class="shop-related clearfix">
+                                <h3>Association Rules</h3>
+                                <p><br /></p>
+
+                                <div id="assoc_recs">
+                                    Loading...
+                                </div>
+
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="wrapper clearfix">
+                    <aside class="content contact-wrap">
+                        <div class="store-details-wrap clearfix">
+                            <div class="shop-related clearfix">
+                                <h3>Collaboriative Based</h3>
+                                <p><br /></p>
+
+                                <div id="collab_recs">
+                                    Loading...
+                                </div>                                
+
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+
+        <!--
+
+
+        <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+                <aside class="content contact-wrap">
+                    <div class="store-details-wrap clearfix">
+                        <div class="shop-related clearfix">
+                            <h2>Content Based</h2>
+                            <p><br /></p>
+
+                            <div id="cb_recs">
+                                Loading...
+                            </div>
+
+                        @foreach (var product in Model.RecommendProductsContentBased)
+                        {
+                            @Html.Partial("_MoviesTeaser", product)
+                        }
+                        
+        </div>
+        </div>
+        </aside>
+        </div>
+        </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="wrapper clearfix">
+                    <aside class="content contact-wrap">
+                        <div class="store-details-wrap clearfix">
+                            <div class="shop-related clearfix">
+                                <h2>Matrix factorization</h2>
+                                <p><br /></p>
+
+                                @foreach (var product in Model.RecommendProductsMatrixFactor)
+                                {
+                                    @Html.Partial("_MoviesTeaser", product)
+                                }
+
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="wrapper clearfix">
+                    <aside class="content contact-wrap">
+                        <div class="store-details-wrap clearfix">
+                            <div class="shop-related clearfix">
+                                <h2>Hybrid Based</h2>
+                                <p><br /></p>
+
+                                @foreach (var product in Model.RecommendProductsHybrid)
+                                {
+                                    @Html.Partial("_MoviesTeaser", product)
+                                }
+
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="wrapper clearfix">
+                    <aside class="content contact-wrap">
+                        <div class="store-details-wrap clearfix">
+                            <div class="shop-related clearfix">
+                                <h3>Similar Users (Jaccard)</h3>
+                                <p><br /></p>
+
+                                <ul>
+                                    @foreach (Contoso.Apps.Movies.Data.Models.User e in Model.UsersJaccard)
+                                    {
+                                        <li>@e.UserId</li>
+                                    }
+                                </ul>
+
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="wrapper clearfix">
+                    <aside class="content contact-wrap">
+                        <div class="store-details-wrap clearfix">
+                            <div class="shop-related clearfix">
+                                <h3>Similar Users (Pearson)</h3>
+                                <p><br /></p>
+
+                                <ul>
+                                    @foreach (Contoso.Apps.Movies.Data.Models.User e in Model.UsersPearson)
+                                    {
+                                        <li>@e.UserId</li>
+                                    }
+                                </ul>
+
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+        -->
+
+        <div class="container">
+            <div class="row">
+                <div class="wrapper clearfix">
+                    <aside class="content contact-wrap">
+                        <div class="store-details-wrap clearfix">
+                            <div class="shop-related clearfix">
+                                <h3>User Events</h3>
+                                <p><br /></p>
+
+                                <div id="user_logs">
+                                    Loading...
+                                </div>
+
+                                <!--
+                                <ul>
+                                    @foreach (Contoso.Apps.Movies.Data.Models.CollectorLog e in Model.Events)
+                                    {
+                                        <li>@e.Event @e.ItemId @e.SessionId</li>
+                                    }
+                                </ul>
+                                    -->
+
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            get_assoc_recs(10);
+            get_cb_recs(10);
+            get_collab_recs(10);
+            get_logs_recs(10);
+
+        });
+
+    </script>
+}

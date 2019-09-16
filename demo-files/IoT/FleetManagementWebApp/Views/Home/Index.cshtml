@@ -1,0 +1,108 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Dashboard
+        <small>Fleet management</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Dashboard</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">Fleet Management Dashboard</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <p>
+                    Explore the options below to manage your fleet, view consignments and trips set up to deliver packages for those consignments, and view their overall status and package-related information.
+                </p>
+                <p>
+                    Trip information updates when the trip starts, and when there are delays or when the trip is completed.
+                </p>
+                <p>
+                    Explore basic CRUD (create, read, update, and delete) functionality in the <a class="nav-link text-dark" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles area</a>.
+                    You can also view a vehicle to see its trip status and make <strong>real-time</strong> predictions on its potential battery failure, using a deployed custom machine learning model.
+                </p>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+
+            </div>
+            <!-- /.box-footer -->
+        </div>
+    </div>
+
+    <!-- Info boxes -->
+    <div class="row">
+
+        <a class="nav-link text-black" asp-area="" asp-controller="Vehicles" asp-action="Index">
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="fa fa-truck"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Manage</span>
+                        <span class="info-box-number">Vehicles</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+        </a>
+
+        <a class="nav-link text-black" asp-area="" asp-controller="Consignments" asp-action="Index">
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-red"><i class="fa fa-user-circle"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">View</span>
+                        <span class="info-box-number">Consignments</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+            <!-- fix for small devices only -->
+            <div class="clearfix visible-sm-block"></div>
+        </a>
+
+        <a class="nav-link text-black" asp-area="" asp-controller="Trips" asp-action="Index">
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-map"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">View</span>
+                        <span class="info-box-number">Trips</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+        </a>
+
+    </div>
+    <!-- /.row -->
+
+</section>
+<!-- /.content -->

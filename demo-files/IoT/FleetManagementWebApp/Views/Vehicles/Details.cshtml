@@ -1,0 +1,221 @@
+﻿@model FleetManagementWebApp.ViewModels.VehicleDetailsViewModel
+
+@{
+    ViewData["Title"] = "Vehicle details";
+}
+
+<section class="content-header">
+    <h1>
+        @ViewData["Title"]
+        <small>View the truck details, its trips, and make a battery replacement prediction</small>
+    </h1>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+
+    @if (Model.Vehicle != null)
+    {
+        <div>
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Vehicle: <strong>@Model.Vehicle.vin</strong></h4>
+                </div>
+                <div class="col-md-8 pull-right">
+                    <a asp-action="Edit" asp-route-id="@Model.Vehicle.id" asp-route-pk="@Model.Vehicle.partitionKey" class="btn btn-success"><i class="fa fa-save"></i> &nbsp;Edit Vehicle</a>&nbsp;
+                    <a asp-action="Delete" asp-route-id="@Model.Vehicle.id" asp-route-pk="@Model.Vehicle.partitionKey" class="btn btn-danger"><i class="fa fa-trash"></i> &nbsp;Delete</a>
+                </div>
+            </div>
+            <hr />
+            <div class="col-md-6">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <i class="fa fa-truck"></i>
+
+                        <h3 class="box-title">Details</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <dl class="dl-horizontal" title="Battery status">
+                            <dt>Battery age (days)</dt>
+                            <dd>@Model.Vehicle.batteryAgeDays</dd>
+                            <dt>Battery's rated cycles</dt>
+                            <dd>@Model.Vehicle.batteryRatedCycles</dd>
+                            <dt>Lifetime cycles used</dt>
+                            <dd>@Model.Vehicle.lifetimeBatteryCyclesUsed</dd>
+                            <dt>Average daily trip duration</dt>
+                            <dd>@Model.Vehicle.averageDailyTripDuration</dd>
+                            <dt>Battery failure prediction</dt>
+                            <dd>@Html.Raw(Model.Vehicle.batteryFailurePredicted ? "Yes" : "No")</dd>
+                        </dl>
+                        <dl class="dl-horizontal" title="Maintenance">
+                            <dt>Date of last maintenance</dt>
+                            <dd>@Model.Vehicle.lastServiceDate</dd>
+                            <dt>State registered</dt>
+                            <dd>@Model.Vehicle.stateVehicleRegistered</dd>
+                        </dl>
+
+                        <a href="#" id="predict" class="btn btn-facebook"><i class="fa fa-battery-quarter" aria-hidden="true"></i> &nbsp;Predict battery failure</a>
+
+                        <p></p>
+
+                        <div id="batteryFailureNo" style="display: none;" class="info-box bg-green">
+                            <span class="info-box-icon"><i class="fa fa-battery-three-quarters"></i></span>
+
+                            <div class="info-box-content">
+                                <span class="info-box-text">Battery predicted to fail?</span>
+                                <span class="info-box-number">No!</span>
+                                <span class="progress-description">
+                                    The battery is <strong>not</strong> predicted to fail in the next 30 days.
+                                </span>
+                            </div>
+                            <!-- /.info-box-content -->
+                        </div>
+
+                        <div id="batteryFailureYes" style="display: none;" class="info-box bg-red">
+                            <span class="info-box-icon"><i class="fa fa-battery-quarter"></i></span>
+
+                            <div class="info-box-content">
+                                <span class="info-box-text">Battery predicted to fail?</span>
+                                <span class="info-box-number">Yes!</span>
+                                <span class="progress-description">
+                                    The battery is <strong>predicted to fail</strong> in the next 30 days.
+                                </span>
+                            </div>
+                            <!-- /.info-box-content -->
+                        </div>
+
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <div class="col-md-6">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <i class="fa fa-map"></i>
+
+                        <h3 class="box-title">Trips</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        @if (Model.Trips.Any())
+                        {
+
+                            @foreach (var trip in Model.Trips)
+                            {
+                                <div class="info-box bg-yellow">
+                                    <span class="info-box-icon"><i class="fa fa-user-circle"></i></span>
+
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Customer</span>
+                                        <span class="info-box-number">@trip.consignment.customer</span>
+                                        <span class="info-box-text">Due: @trip.consignment.deliveryDueDate</span>
+                                    </div>
+                                    <!-- /.info-box-content -->
+                                </div>
+                                <div class="info-box bg-green">
+                                    <span class="info-box-icon"><i class="fa fa-cubes"></i></span>
+
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Packages</span>
+                                        <span class="info-box-number">@trip.packages.Count() (@trip.packages.Min(x => x.storageTemperature) <super>&#8457;</super>)</span>
+                                        <span class="progress-description">
+                                            Required storage temperature
+                                        </span>
+                                    </div>
+                                    <!-- /.info-box-content -->
+                                </div>
+
+                                <dl class="dl-horizontal">
+                                    <dt>Status</dt>
+                                    <dd>@trip.status</dd>
+                                    <dt>Planned trip distance</dt>
+                                    <dd>@trip.plannedTripDistance</dd>
+                                    <dt>Location</dt>
+                                    <dd>@trip.location</dd>
+                                    <dt>Storage temp setting</dt>
+                                    <dd>@trip.temperatureSetting <super>&#8457;</super></dd>
+                                    <dt>When trip started</dt>
+                                    <dd>@trip.tripStarted</dd>
+                                    <dt>When trip ended</dt>
+                                    <dd>@trip.tripEnded</dd>
+                                    <dt>Beginning odometer</dt>
+                                    <dd>@trip.odometerBegin</dd>
+                                    <dt>Ending odometer</dt>
+                                    <dd>@trip.odometerEnd</dd>
+                                </dl>
+                            }
+
+                        }
+                        else
+                        {
+                            <div class="col-md-6">
+                                <div class="callout callout-warning">
+                                    <h4>No trips</h4>
+
+                                    <p>This vehicle has no assigned trips.</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-md-6">
+            <div class="callout callout-error">
+                <h4>Vehicle not found</h4>
+
+                <p>We could not locate the vehicle. Please go back to the list and try again.</p>
+            </div>
+        </div>
+    }
+
+    <div class="clearfix"></div>
+    <div>
+        <a asp-action="Index">Back to the list</a>
+    </div>
+
+</section>
+
+@section scripts {
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            $('#predict').click(function () {
+
+                var batteryInfo = {
+                    batteryAgeDays: @Model.Vehicle.batteryAgeDays,
+                    batteryRatedCycles: @Model.Vehicle.batteryRatedCycles,
+                    lifetimeBatteryCyclesUsed: @Model.Vehicle.lifetimeBatteryCyclesUsed,
+                    dailyTripDuration: @Model.Vehicle.averageDailyTripDuration
+                };
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/vehicles/batteryprediction/',
+                    contentType: 'application/json; charset=utf-8',
+                    data: batteryInfo,
+                    success: function (result) {
+                        if (result === true) {
+                            $('#batteryFailureYes').show();
+                            $('#batteryFailureNo').hide();
+                        } else {
+                            $('#batteryFailureNo').show();
+                            $('#batteryFailureYes').hide();
+                        }
+                    }
+                });
+            });
+
+        });
+
+    </script>
+
+}

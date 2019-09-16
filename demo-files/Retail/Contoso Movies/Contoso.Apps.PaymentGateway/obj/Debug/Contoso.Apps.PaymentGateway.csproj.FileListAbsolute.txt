@@ -1,0 +1,102 @@
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.Documents.ServiceInterop.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Cosmos.CRTCompat.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.PaymentGateway.dll.config
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.PaymentGateway.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.PaymentGateway.pdb
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Antlr3.Runtime.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Common.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.AppService.ApiApps.Service.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Microsoft.Web.Infrastructure.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Newtonsoft.Json.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Swashbuckle.Core.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.IdentityModel.Tokens.Jwt.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Net.Http.Formatting.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Cors.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Helpers.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Http.Cors.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Http.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Http.WebHost.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Mvc.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Optimization.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Razor.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.Deployment.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.Razor.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\WebActivatorEx.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\WebGrease.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.Documents.Client.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Common.pdb
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Antlr3.Runtime.pdb
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Newtonsoft.Json.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.IdentityModel.Tokens.Jwt.pdb
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.IdentityModel.Tokens.Jwt.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Net.Http.Formatting.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Helpers.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Http.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Http.Cors.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Http.WebHost.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Mvc.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Razor.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.Deployment.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.Razor.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\System.Web.Optimization.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.Documents.Client.xml
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.csprojAssemblyReference.cache
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.csproj.CoreCompileInputs.cache
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.csproj.CopyComplete
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.dll
+C:\temp\cosmos2\Contoso Sports League\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.Documents.ServiceInterop.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Cosmos.CRTCompat.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.PaymentGateway.dll.config
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.PaymentGateway.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.PaymentGateway.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Antlr3.Runtime.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Common.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.AppService.ApiApps.Service.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Web.Infrastructure.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Newtonsoft.Json.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Swashbuckle.Core.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.IdentityModel.Tokens.Jwt.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Net.Http.Formatting.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Cors.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Helpers.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Http.Cors.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Http.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Http.WebHost.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Mvc.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Optimization.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Razor.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.Deployment.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.Razor.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\WebActivatorEx.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\WebGrease.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.Documents.Client.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Movies.Data.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Common.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Common.dll.config
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Antlr3.Runtime.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Newtonsoft.Json.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.IdentityModel.Tokens.Jwt.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.IdentityModel.Tokens.Jwt.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Net.Http.Formatting.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Helpers.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Http.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Http.Cors.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Http.WebHost.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Mvc.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Razor.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.Deployment.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.WebPages.Razor.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\System.Web.Optimization.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.Documents.Client.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Movies.Data.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Contoso.Apps.Movies.Data.dll.config
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.csprojAssemblyReference.cache
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.csproj.CoreCompileInputs.cache
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.csproj.CopyComplete
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.pdb
