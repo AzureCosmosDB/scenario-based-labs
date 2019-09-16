@@ -30,11 +30,12 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
   - [Exercise 1: Configure environment](#exercise-1-configure-environment)
-    - [Task 1: Configure IoT Hub capture](#task-1-configure-iot-hub-capture)
-    - [Task 2: Create Cosmos DB database and container](#task-2-create-cosmos-db-database-and-container)
-    - [Task 3: Add Key Vault secrets](#task-3-add-key-vault-secrets)
-    - [Task 4: Create Azure Databricks cluster](#task-4-create-azure-databricks-cluster)
-    - [Task 5: Configure Key Vault-backed Databricks secret store](#task-5-configure-key-vault-backed-databricks-secret-store)
+    - [Task 1: Create Cosmos DB database and container](#task-1-create-cosmos-db-database-and-container)
+      - [About Cosmos DB throughput](#about-cosmos-db-throughput)
+      - [About Cosmos DB partitioning](#about-cosmos-db-partitioning)
+    - [Task 2: Add Key Vault secrets](#task-2-add-key-vault-secrets)
+    - [Task 3: Create Azure Databricks cluster](#task-3-create-azure-databricks-cluster)
+    - [Task 4: Configure Key Vault-backed Databricks secret store](#task-4-configure-key-vault-backed-databricks-secret-store)
   - [Exercise 2: Deploy Azure functions and Web App](#exercise-2-deploy-azure-functions-and-web-app)
     - [Task 1: Open solution](#task-1-open-solution)
     - [Task 2: Code walk-through](#task-2-code-walk-through)
@@ -84,9 +85,23 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 ## Overview
 
-TBD...
+![A big rig truck is displayed containing packages and telemetry sensors.](media/truck-with-sensors.png 'Truck with sensors')
+
+Contoso Auto is a high value cargo logistics organization that is collecting vehicle and package telemetry data and wants to use Azure Cosmos DB to rapidly ingest and store this data in its raw form, do some processing in near real-time to generate insights to support several business objectives and surface these to the most appropriate user communities within the organization. It is a fast growing organization and wants to be able to scale and manage the associated cost of its chosen technology to enable it to cope with its explosive growth and the inherent seasonality of the logistics business. This scenario includes applicability to both the vehicle telemetry and logistics use cases by focusing on trucking and inclusion of cargo sensing data. This additionally allows for many representative customer analytics scenarios.
+
+From a technology perspective Contoso would like to leverage Azure Cosmos DB as the core repository for its hot data path and leverage the Azure Cosmos DB Change Feed as a means to drive a solid and robust event sourcing architecture that would allowing Contoso developers to quickly enhance the solution. This achieved using a robust and agile serverless approach by leveraging events published by the Change Feed that reflect the state changes within the application (database).
+
+Ultimately Contoso would surface the raw and derived insights data to its users in one of three roles:
+
+- **Logistic Operations personnel** who are interested in the current state of the vehicles and cargo logistics and who would use a web app to quickly understand the status of any single vehicle or piece of cargo, be notified of alerts as well as load vehicle and cargo meta data into the system. What they would like to see on the dashboard are various visualizations of detected anomalies, like engines overheating, abnormal oil pressure, and aggressive driving.
+
+- **Management and Customer Reporting personnel** who would like to be in a position to see the current state of the vehicle fleet and customer consignment level information presented in on a Power BI report that automatically updates with new data as it flows in after being processed. What they would like to see are reports on bad driving behavior by driver and using visual components such as a map to show anomalies related to cities or areas, as well as various charts and graphs depicting aggregate fleet and consignment information in a clear way.
+
+In this experience, you will use Azure Cosmos DB to ingest streaming vehicle telemetry data as the entry point to a near real-time analytics pipeline built on Cosmos DB, Azure Functions, Event Hubs, Azure Databricks, Azure Storage, Azure Stream Analytics, Power BI, Azure Web Apps, and Logic Apps.
 
 ## Solution architecture
+
+Below is a diagram of the solution architecture you will build in this lab. Please study this carefully, so you understand the whole of the solution as you are working on the various components.
 
 ![A diagram showing the components of the solution is displayed.](media/solution-architecture.png 'Solution Architecture')
 
@@ -106,15 +121,105 @@ Refer to the Before the hands-on lab setup guide manual before continuing to the
 
 ## Exercise 1: Configure environment
 
-### Task 1: Configure IoT Hub capture
+**Duration**: 30 minutes
 
-### Task 2: Create Cosmos DB database and container
+You must provision a few resources in Azure before you start developing the solution. Ensure all resources use the same resource group for easier cleanup.
 
-### Task 3: Add Key Vault secrets
+In this exercise, you will configure your lab environment so you can start sending and processing generated vehicle, consignment, package, and trip data. You will begin by creating a Cosmos DB database and containers, then you will retrieve secrets used in the solution's application settings (such as connection strings) and securely store them in Azure Key Vault, then configure your Azure Databricks environment.
 
-### Task 4: Create Azure Databricks cluster
+### Task 1: Create Cosmos DB database and container
 
-### Task 5: Configure Key Vault-backed Databricks secret store
+In this task, you will create a Cosmos DB database and three SQL-based containers:
+
+- **telemetry**: Used for ingesting hot vehicle telemetry data with a 90-day lifespan (TTL).
+- **metadata**: Stores vehicle, consignment, package, trip, and aggregate event data.
+- **maintenance**: The batch battery failure predictions are stored here for reporting purposes.
+
+1. Using a new tab or instance of your browser, navigate to the Azure portal, <http://portal.azure.com>.
+
+2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
+
+   ![Resource groups is selected and the cosmos-db-iot resource group is displayed in the search results.](media/resource-group.png 'cosmos-db-iot resource group')
+
+3. Select your Azure Cosmos DB account. The name starts with `cosmos-db-iot`.
+
+   ![The Cosmos DB account is highlighted in the resource group.](media/resource-group-cosmos-db.png 'Cosmos DB in the Resource Group')
+
+4. Select **Data Explorer** in the left-hand menu, then select **New Container**.
+
+   ![The Cosmos DB Data Explorer is shown with the New Container button highlighted.](media/cosmos-new-container.png 'Data Explorer - New Container')
+
+5. On the **Add Container** blade, specify the following configuration options:
+
+   a. Enter **ContosoAuto** for the **Database id**.
+
+   b. Leave **Provision database throughput** unchecked.
+
+   c. Enter **metadata** for the **Container id**.
+
+   d. Partition key: **/partitionKey**
+
+   e. Throughput: **15000**
+
+   ![The New Container form is displayed with the previously described values.](media/cosmos-new-container-metadata.png 'New metadata container')
+
+6. Select **OK** to create the container.
+
+7. Select **New Container** once again in the Data Explorer.
+
+8. On the **Add Container** blade, specify the following configuration options:
+
+   a. **Database id**: Select **Use existing**, then select **ContosoAuto** from the list.
+
+   c. Enter **telemetry** for the **Container id**.
+
+   d. Partition key: **/partitionKey**
+
+   e. Throughput: **15000**
+
+   ![The New Container form is displayed with the previously described values.](media/cosmos-new-container-telemetry.png 'New telemetry container')
+
+9. Select **OK** to create the container.
+
+10. Select **New Container** once again in the Data Explorer.
+
+11. On the **Add Container** blade, specify the following configuration options:
+
+    a. **Database id**: Select **Use existing**, then select **ContosoAuto** from the list.
+
+    c. Enter **maintenance** for the **Container id**.
+
+    d. Partition key: **/vin**
+
+    e. Throughput: **400**
+
+    ![The New Container form is displayed with the previously described values.](media/cosmos-new-container-maintenance.png 'New maintenance container')
+
+12. Select **OK** to create the container.
+
+13. You should now have three containers listed in the Data Explorer.
+
+    ![The three new containers are shown in Data Explorer.](media/cosmos-three-containers.png 'Data Explorer')
+
+#### About Cosmos DB throughput
+
+You will notice that we have intentionally set the **throughput** in RU/s for each container, based on our anticipated event processing and reporting workloads. In Azure Cosmos DB, provisioned throughput is represented as request units/second (RUs). RUs measure the cost of both read and write operations against your Cosmos DB container. Because Cosmos DB is designed with transparent horizontal scaling (e.g., scale out) and multi-master replication, you can very quickly and easily increase or decrease the number of RUs to handle thousands to hundreds of millions of requests per second around the globe with a single API call.
+
+Cosmos DB allows you to increment/decrement the RUs in small increments of 1000 at the database level, and in even smaller increments of 100 RU/s at the container level. It is recommended that you configure throughput at the container granularity for guaranteed performance for the container all the time, backed by SLAs. Other guarantees that Cosmos DB delivers are 99.999% read and write availability all around the world, with those reads and writes being served in less than 10 milliseconds at the 99th percentile.
+
+When you set a number of RUs for a container, Cosmos DB ensures that those RUs are available in all regions associated with your Cosmos DB account. When you scale out the number of regions by adding a new one, Cosmos will automatically provision the same quantity of RUs in the newly added region. You cannot selectively assign different RUs to a specific region. These RUs are provisioned for a container (or database) for all associated regions.
+
+#### About Cosmos DB partitioning
+
+When you created each container, you were required to define a **partition key**. As you will see later in the lab when you review the solution source code, each document stored within a collection contains a `partitionKey` property. One of the most important decisions one must make when creating a new container is to select an appropriate partition key for the data. A partition key should provide even distribution of storage and throughput (measured in requests per second) at any given time to avoid storage and performance bottlenecks. For instance, vehicle metadata stores the VIN, which is a unique value for each vehicle, in the `partitionKey` field. Trip metadata also uses the VIN for the `partitionKey` field, since trips are most often queried by VIN, and trip documents are stored in the same logical partition as vehicle metadata since they are likely to be queried together, preventing fan-out, or cross-partition queries. Package metadata, on the other hand, use the Consignment ID value for the `partitionKey` field for the same purposes. The partition key should be present in the bulk of queries for read-heavy scenarios to avoid excessive fan-out across numerous partitions. This is because each document with a specific partition key value belongs to the same logical partition, and is also stored in and served from the same physical partition. Each physical partition is replicated across geographical regions, resulting in global distribution.
+
+Choosing an appropriate partition key for Cosmos DB is a critical step for ensuring balanced reads and writes, scaling, and, in the case of this solution, in-order change feed processing per partition. While there are no limits, per se, on the number of logical partitions, a single logical partition is allowed an upper limit of 10 GB of storage. Logical partitions cannot be split across physical partitions. For the same reason, if the partition key chosen is of bad cardinality, you could potentially have skewed storage distribution. For instance, if one logical partition becomes larger faster than the others and hits the maximum limit of 10 GB, while the others are nearly empty, the physical partition housing the maxed out logical partition cannot split and could cause an application downtime.
+
+### Task 2: Add Key Vault secrets
+
+### Task 3: Create Azure Databricks cluster
+
+### Task 4: Configure Key Vault-backed Databricks secret store
 
 ## Exercise 2: Deploy Azure functions and Web App
 

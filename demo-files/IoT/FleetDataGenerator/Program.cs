@@ -386,7 +386,10 @@ namespace FleetDataGenerator
 
             if (count == 0)
             {
-                WriteLineInColor("Generating data to seed database...", ConsoleColor.Cyan);
+                // Scale up the requested throughput (RU/s) for the metadata container prior to bulk import:
+                WriteLineInColor($"No data currently exists in the {MetadataContainerName} container. Scaling up the container RU/s to 50,000 prior to bulk data insert...", ConsoleColor.Cyan);
+                await ChangeContainerPerformance(container, 50000);
+                WriteLineInColor("Container RU/s adjusted. Generating data to seed database...", ConsoleColor.Cyan);
 
                 var bulkImporter = new BulkImporter(cosmosDbConnectionString);
                 var vehicles = DataGenerator.GenerateVehicles().ToList();
