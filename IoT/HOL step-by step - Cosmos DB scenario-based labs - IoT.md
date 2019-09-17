@@ -35,7 +35,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
       - [About Cosmos DB partitioning](#about-cosmos-db-partitioning)
     - [Task 2: Configure Cosmos DB container indexing and TTL](#task-2-configure-cosmos-db-container-indexing-and-ttl)
       - [About the Cosmos DB indexing policies](#about-the-cosmos-db-indexing-policies)
-  - [Task 3: Create a Logic App workflow for email alerts](#task-3-create-a-logic-app-workflow-for-email-alerts)
+    - [Task 3: Create a Logic App workflow for email alerts](#task-3-create-a-logic-app-workflow-for-email-alerts)
     - [Task 4: Add Key Vault secrets](#task-4-add-key-vault-secrets)
     - [Task 4: Create Azure Databricks cluster](#task-4-create-azure-databricks-cluster)
     - [Task 5: Configure Key Vault-backed Databricks secret store](#task-5-configure-key-vault-backed-databricks-secret-store)
@@ -46,37 +46,34 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 4: Deploy Change Feed consumer Function App](#task-4-deploy-change-feed-consumer-function-app)
     - [Task 5: Deploy Web App](#task-5-deploy-web-app)
     - [Task 6: Configure application settings in Azure](#task-6-configure-application-settings-in-azure)
-  - [Exercise 3: Configure Logic App for e-mail alerts](#exercise-3-configure-logic-app-for-e-mail-alerts)
-    - [Task 1: Create new workflow](#task-1-create-new-workflow)
-    - [Task 2: Configure email service](#task-2-configure-email-service)
-  - [Exercise 4: Explore and execute data generator](#exercise-4-explore-and-execute-data-generator)
+  - [Exercise 3: Explore and execute data generator](#exercise-3-explore-and-execute-data-generator)
     - [Task 1: Open solution](#task-1-open-solution-1)
     - [Task 2: Update application configuration](#task-2-update-application-configuration)
     - [Task 3: Code walk-through](#task-3-code-walk-through)
     - [Task 4: Run generator](#task-4-run-generator)
-  - [Exercise 5: Observe data using Cosmos DB Data Explorer and Web App](#exercise-5-observe-data-using-cosmos-db-data-explorer-and-web-app)
+  - [Exercise 4: Observe data using Cosmos DB Data Explorer and Web App](#exercise-4-observe-data-using-cosmos-db-data-explorer-and-web-app)
     - [Task 1: View data in Cosmos DB Data Explorer](#task-1-view-data-in-cosmos-db-data-explorer)
     - [Task 2: Search and view data in Web App](#task-2-search-and-view-data-in-web-app)
-  - [Exercise 6: Performing CRUD operations using the Web App](#exercise-6-performing-crud-operations-using-the-web-app)
+  - [Exercise 5: Performing CRUD operations using the Web App](#exercise-5-performing-crud-operations-using-the-web-app)
     - [Task 1: Update vehicle metadata](#task-1-update-vehicle-metadata)
     - [Task 2: View consignment, package, and trip data](#task-2-view-consignment-package-and-trip-data)
-  - [Exercise 7: Observe Change Feed using Azure Functions and App Insights](#exercise-7-observe-change-feed-using-azure-functions-and-app-insights)
+  - [Exercise 6: Observe Change Feed using Azure Functions and App Insights](#exercise-6-observe-change-feed-using-azure-functions-and-app-insights)
     - [Task 1: Open App Insights Live View](#task-1-open-app-insights-live-view)
-  - [Exercise 8: Running the predictive maintenance batch scoring](#exercise-8-running-the-predictive-maintenance-batch-scoring)
+  - [Exercise 7: Running the predictive maintenance batch scoring](#exercise-7-running-the-predictive-maintenance-batch-scoring)
     - [Task 1: Import lab notebooks into Azure Databricks](#task-1-import-lab-notebooks-into-azure-databricks)
     - [Task 2: Run batch scoring notebook](#task-2-run-batch-scoring-notebook)
     - [Task 3: Create scheduled notebook job](#task-3-create-scheduled-notebook-job)
-  - [Exercise 9: Deploying the predictive maintenance web service](#exercise-9-deploying-the-predictive-maintenance-web-service)
+  - [Exercise 8: Deploying the predictive maintenance web service](#exercise-8-deploying-the-predictive-maintenance-web-service)
     - [Task 1: Run deployment notebook](#task-1-run-deployment-notebook)
-  - [Exercise 10: Configure windowed queries in Stream Analytics](#exercise-10-configure-windowed-queries-in-stream-analytics)
+  - [Exercise 9: Configure windowed queries in Stream Analytics](#exercise-9-configure-windowed-queries-in-stream-analytics)
     - [Task 1: Add Stream Analytics Event Hubs input](#task-1-add-stream-analytics-event-hubs-input)
     - [Task 2: Add Stream Analytics outputs](#task-2-add-stream-analytics-outputs)
     - [Task 3: Create Stream Analytics query](#task-3-create-stream-analytics-query)
     - [Task 4: Run query](#task-4-run-query)
-  - [Exercise 11: Creating the Fleet status real-time dashboard in Power BI](#exercise-11-creating-the-fleet-status-real-time-dashboard-in-power-bi)
+  - [Exercise 10: Creating the Fleet status real-time dashboard in Power BI](#exercise-10-creating-the-fleet-status-real-time-dashboard-in-power-bi)
     - [Task 1: Log in to Power BI online](#task-1-log-in-to-power-bi-online)
     - [Task 2: Create real-time dashboard](#task-2-create-real-time-dashboard)
-  - [Exercise 12: Creating the Predictive Maintenance & Trip/Consignment Status reports in Power BI](#exercise-12-creating-the-predictive-maintenance--tripconsignment-status-reports-in-power-bi)
+  - [Exercise 11: Creating the Predictive Maintenance & Trip/Consignment Status reports in Power BI](#exercise-11-creating-the-predictive-maintenance--tripconsignment-status-reports-in-power-bi)
     - [Task 1: Add Cosmos DB data sources to Power BI Desktop](#task-1-add-cosmos-db-data-sources-to-power-bi-desktop)
     - [Task 2: Create new report in Power BI Desktop](#task-2-create-new-report-in-power-bi-desktop)
   - [After the hands-on lab](#after-the-hands-on-lab)
@@ -524,13 +521,7 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
 
 ### Task 6: Configure application settings in Azure
 
-## Exercise 3: Configure Logic App for e-mail alerts
-
-### Task 1: Create new workflow
-
-### Task 2: Configure email service
-
-## Exercise 4: Explore and execute data generator
+## Exercise 3: Explore and execute data generator
 
 ### Task 1: Open solution
 
@@ -540,23 +531,23 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
 
 ### Task 4: Run generator
 
-## Exercise 5: Observe data using Cosmos DB Data Explorer and Web App
+## Exercise 4: Observe data using Cosmos DB Data Explorer and Web App
 
 ### Task 1: View data in Cosmos DB Data Explorer
 
 ### Task 2: Search and view data in Web App
 
-## Exercise 6: Performing CRUD operations using the Web App
+## Exercise 5: Performing CRUD operations using the Web App
 
 ### Task 1: Update vehicle metadata
 
 ### Task 2: View consignment, package, and trip data
 
-## Exercise 7: Observe Change Feed using Azure Functions and App Insights
+## Exercise 6: Observe Change Feed using Azure Functions and App Insights
 
 ### Task 1: Open App Insights Live View
 
-## Exercise 8: Running the predictive maintenance batch scoring
+## Exercise 7: Running the predictive maintenance batch scoring
 
 ### Task 1: Import lab notebooks into Azure Databricks
 
@@ -564,11 +555,11 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
 
 ### Task 3: Create scheduled notebook job
 
-## Exercise 9: Deploying the predictive maintenance web service
+## Exercise 8: Deploying the predictive maintenance web service
 
 ### Task 1: Run deployment notebook
 
-## Exercise 10: Configure windowed queries in Stream Analytics
+## Exercise 9: Configure windowed queries in Stream Analytics
 
 ### Task 1: Add Stream Analytics Event Hubs input
 
@@ -578,13 +569,13 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
 
 ### Task 4: Run query
 
-## Exercise 11: Creating the Fleet status real-time dashboard in Power BI
+## Exercise 10: Creating the Fleet status real-time dashboard in Power BI
 
 ### Task 1: Log in to Power BI online
 
 ### Task 2: Create real-time dashboard
 
-## Exercise 12: Creating the Predictive Maintenance & Trip/Consignment Status reports in Power BI
+## Exercise 11: Creating the Predictive Maintenance & Trip/Consignment Status reports in Power BI
 
 ### Task 1: Add Cosmos DB data sources to Power BI Desktop
 
