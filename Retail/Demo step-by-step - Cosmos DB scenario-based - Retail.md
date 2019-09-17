@@ -51,13 +51,11 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 ## Abstract and learning objectives
 
-In this hands-on-lab, TODO
-
-At the end of this lab you will TODO
+In this demo you will show your audience how to uiltize Azure services to host a movie retail store with custom AI models and CosmosDb.  Several other PaaS based technologies will be used to show how Azure can be used to migrate legacy applications to the cloud.
 
 ## Overview
 
-Contoso Movies, Ltd. has TODO
+Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services including CosmosDb, Functions, EventHubs, Stream Analytics, Power BI and Logic Apps.  As part of this redesign they have also implemented a new recommendation system based on custom AI models.  These AI models are done **offline** and stored in CosmosDb for reference when users are browing a site.  User events will immplicitly rank the items they are clicking on and then modify their recommendations based on these events.
 
 ## Solution architecture (High-level)
 
@@ -90,6 +88,12 @@ Synopsis:  In this exercise you will TODO
 ### Task 3: Configure resources
 
 1.  Set all the Azure resource configurations
+
+### Task 4: Get a Movie Api Key
+
+1.  Open a browser window to **https://api.themoviedb.org**
+
+2.  Create an account and copy your API Key for later use
 
 ## Exercise 2: Explore Contoso Movie Store
 

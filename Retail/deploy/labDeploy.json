@@ -1,0 +1,692 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		
+    },
+    "variables": {
+        "location": "westus",
+        "name-suffix": "[uniqueString(resourceGroup().id)]",
+        "appServicePlan": "[concat('s2webplan-', variables('name-suffix'))]",
+        "appServicePlanFunctionAppsName": "[concat('s2funcplan', variables('name-suffix'))]",
+		
+		"webAppName": "[concat('s2web', variables('name-suffix'))]",
+        
+        
+		"functionAppStreamProcessingName": "[concat('s2streamprocessing', variables('name-suffix'))]",
+        "functionAppCosmosDBProcessingName": "[concat('s2cosmosdb', variables('name-suffix'))]",        
+        
+		"keyVaultName": "[concat('keyvault-', variables('name-suffix'))]",
+		
+		"storageAccountStoreName": "[concat('s2data1', variables('name-suffix'))]",
+		
+        "storageAccountStreamProcessingName": "[concat('s2data2', variables('name-suffix'))]",
+        "storageAccountStreamProcessing-website-contentshare": "[concat('s2streamprocessing', variables('name-suffix'))]",
+
+        "storageAccountCosmosDBProcessingName": "[concat('s2data3', variables('name-suffix'))]",
+        "storageAccountCosmosDBProcessing-website-contentshare": "[concat('s2cosmosdbprocessing', variables('name-suffix'))]",
+
+        "eventHubsNamespaceIoTName": "[concat('s2ns', variables('name-suffix'))]",
+
+        "cosmosDbAccountName": "[concat('s2cosmosdb', variables('name-suffix'))]",
+
+        "appInsightsName": "[concat('s2_appinsights_', variables('name-suffix'))]",
+        
+        "streamAnalyticsJobName": "[concat('s2_analytics_', variables('name-suffix'))]",
+
+        "databricksWorkspaceName": "[concat('s2_databricks_', variables('name-suffix'))]",
+		
+		"connections_office365_name" : "[concat('s2_o365_', variables('name-suffix'))]",
+		
+		"workflows_s2scenerio_name" : "[concat('s2_logicapp_', variables('name-suffix'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts",
+            "apiVersion": "2015-04-08",
+            "name": "[variables('cosmosDbAccountName')]",
+            "location": "[variables('location')]",
+            "kind": "GlobalDocumentDB",
+            "properties": {
+                "enableAutomaticFailover": false,
+                "enableMultipleWriteLocations": false,
+                "isVirtualNetworkFilterEnabled": false,
+                "virtualNetworkRules": [],
+                "databaseAccountOfferType": "Standard",
+                "consistencyPolicy": {
+                    "defaultConsistencyLevel": "Session",
+                    "maxIntervalInSeconds": 5,
+                    "maxStalenessPrefix": 100
+                },
+                "locations": [
+                    {
+                        "locationName": "[variables('location')]",
+                        "provisioningState": "Succeeded",
+                        "failoverPriority": 0,
+                        "isZoneRedundant": false
+                    }
+                ],
+                "capabilities": []
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces",
+            "apiVersion": "2018-01-01-preview",
+            "name": "[variables('eventHubsNamespaceIoTName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard",
+                "tier": "Standard",
+                "capacity": 1
+            },
+            "properties": {
+                "zoneRedundant": false,
+                "isAutoInflateEnabled": true,
+                "maximumThroughputUnits": 4,
+                "kafkaEnabled": false
+            }
+        },
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2015-05-01",
+            "name": "[variables('appInsightsName')]",
+            "location": "[variables('location')]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "name": "[variables('keyVaultName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "standard"
+                },
+                "tenantId": "bafd4066-3e66-4e2e-aa8d-ee093097beda",
+                "accessPolicies": [
+                    {
+                        "tenantId": "bafd4066-3e66-4e2e-aa8d-ee093097beda",
+                        "objectId": "b3907bfd-df36-490d-b7cd-d21a3ecf28d7",
+                        "permissions": {
+                            "keys": [
+                                "get",
+                                "create",
+                                "delete",
+                                "list",
+                                "update",
+                                "import",
+                                "backup",
+                                "restore",
+                                "recover"
+                            ],
+                            "secrets": [
+                                "get",
+                                "list",
+                                "set",
+                                "delete",
+                                "backup",
+                                "restore",
+                                "recover"
+                            ],
+                            "certificates": [
+                                "get",
+                                "list",
+                                "delete",
+                                "create",
+                                "import",
+                                "update",
+                                "managecontacts",
+                                "getissuers",
+                                "listissuers",
+                                "setissuers",
+                                "deleteissuers",
+                                "manageissuers",
+                                "recover"
+                            ],
+                            "storage": [
+                                "get",
+                                "list",
+                                "delete",
+                                "set",
+                                "update",
+                                "regeneratekey",
+                                "setsas",
+                                "listsas",
+                                "getsas",
+                                "deletesas"
+                            ]
+                        }
+                    }
+                ],
+                "enabledForDeployment": false
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('storageAccountStreamProcessingName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountStreamProcessingName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountStreamProcessingName'), '/default/azure-webjobs-hosts')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountStreamProcessingName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountStreamProcessingName'), '/default/azure-webjobs-secrets')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountStreamProcessingName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountStreamProcessingName'), '/default/', variables('storageAccountStreamProcessing-website-contentshare'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('storageAccountCosmosDBProcessingName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountCosmosDBProcessingName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountCosmosDBProcessingName'), '/default/azure-webjobs-hosts')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountCosmosDBProcessingName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountCosmosDBProcessingName'), '/default/azure-webjobs-secrets')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountCosmosDBProcessingName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountCosmosDBProcessingName'), '/default/', variables('storageAccountCosmosDBProcessing-website-contentshare'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('storageAccountStoreName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(variables('storageAccountStoreName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStoreName'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.StreamAnalytics/streamingjobs",
+            "apiVersion": "2016-03-01",
+            "name": "[variables('streamAnalyticsJobName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "sku": {
+                    "name": "Standard"
+                },
+                "eventsOutOfOrderPolicy": "Adjust",
+                "outputErrorPolicy": "Stop",
+                "eventsOutOfOrderMaxDelayInSeconds": 0,
+                "eventsLateArrivalMaxDelayInSeconds": 5,
+                "dataLocale": "en-US"
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2016-09-01",
+            "name": "[variables('appServicePlan')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 1
+            },
+            "kind": "app",
+            "properties": {
+                "name": "[variables('appServicePlan')]",
+                "perSiteScaling": false,
+                "reserved": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2016-09-01",
+            "name": "[variables('appServicePlanFunctionAppsName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "properties": {
+                "name": "[variables('appServicePlanFunctionAppsName')]",
+                "perSiteScaling": false,
+                "reserved": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[variables('functionAppCosmosDBProcessingName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanFunctionAppsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]",
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+            ],
+            "kind": "functionapp",
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanFunctionAppsName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountCosmosDBProcessingName'),'2019-04-01').keys[0].value)]"
+        
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountCosmosDBProcessingName'),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(variables('storageAccountCosmosDBProcessingName'),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('storageAccountCosmosDBProcessing-website-contentshare')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[variables('functionAppStreamProcessingName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanFunctionAppsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]",
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+            ],
+            "kind": "functionapp",
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanFunctionAppsName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
+        
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('storageAccountStreamProcessing-website-contentshare')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[variables('webAppName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlan'))]",
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+            ],
+            "kind": "app",
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlan'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs",
+            "apiVersion": "2017-04-01",
+            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/reporting')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubsNamespaceIoTName'))]"
+            ],
+            "properties": {
+                "messageRetentionInDays": 4,
+                "partitionCount": 4,
+                "status": "Active"
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+            "apiVersion": "2017-04-01",
+            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/reporting/$Default')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', variables('eventHubsNamespaceIoTName'), 'reporting')]",
+                "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubsNamespaceIoTName'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/NetworkRuleSets",
+            "apiVersion": "2018-01-01-preview",
+            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/default')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubsNamespaceIoTName'))]"
+            ],
+            "properties": {
+                "defaultAction": "Deny",
+                "virtualNetworkRules": [],
+                "ipRules": []
+            }
+        },
+
+        {
+            "name": "DatabricksWorkspaceDeployment",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-09-01",
+            "dependsOn": [],
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-databricks-workspace/azuredeploy.json",
+                "contentVersion": "1.0.0.0"
+              },
+              "parameters": {
+                "workspaceName": { "value": "[variables('databricksWorkspaceName')]" },
+                "pricingTier": { "value": "premium" },
+                "location": { "value": "[variables('location')]" }
+              }
+            }
+          },
+		  {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('connections_office365_name')]",
+            "location": "westus2",
+            "properties": {
+                "displayName": "chris@solliance.net",
+                "customParameterValues": {},
+                "api": {
+                    "id": "[concat('/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/providers/Microsoft.Web/locations/westus2/managedApis/', variables('connections_office365_name'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[variables('workflows_s2scenerio_name')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', variables('connections_office365_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "manual": {
+                            "type": "Request",
+                            "kind": "Http",
+                            "inputs": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Send_an_email": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "Thanks for your order!",
+                                    "Subject": "Thanks for your order!",
+                                    "To": "chris@solliance.net"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['office365']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/Mail"
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "office365": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('connections_office365_name'))]",
+                                "connectionName": "office365",
+                                "id": "/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/providers/Microsoft.Web/locations/westus2/managedApis/office365"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
