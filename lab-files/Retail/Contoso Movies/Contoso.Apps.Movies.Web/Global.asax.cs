@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contoso.Apps.Common;
 using Contoso.Apps.Movies.Data.Models;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents.Client;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace Contoso.Apps.Movies.Web
             string authorizationKey = ConfigurationManager.AppSettings["dbConnectionKey"];
             string databaseId = ConfigurationManager.AppSettings["databaseId"];
 
-            DbHelper.client = new DocumentClient(new Uri(endpointUrl), authorizationKey, new ConnectionPolicy { ConnectionMode = ConnectionMode.Gateway, ConnectionProtocol = Protocol.Https });
+            DbHelper.client = new CosmosClient(endpointUrl, authorizationKey);
             DbHelper.databaseId = databaseId;
 
             // Automapper configuration.

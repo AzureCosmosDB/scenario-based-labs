@@ -112,7 +112,7 @@ function add_movie(mov, recs) {
 
     p = document.createElement('p')
     a = document.createElement('a')
-    a.setAttribute('href', '/Cart/AddToCart?productId=')
+    a.setAttribute('href', '/Cart/AddToCart?itemId=' + mov.ProductId)
     a.setAttribute('alt', 'Add @Model.ProductName to cart')
     a.setAttribute('onclick', "add_impression('', 'buy', '" + mov.ProductId + "', '', '')")
     a.setAttribute('class', "btn trans-btn")

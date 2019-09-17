@@ -14,7 +14,7 @@
                 <span>@String.Format("{0:c}", Model.UnitPrice)</span>
             </div>
             <p>
-                <a href="@Url.Action("AddToCart", "Cart", new { productId = Model.ItemId })" class="btn trans-btn" onclick="add_impression('@this.User.Identity.Name', 'buy', @Model.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
+                <a href="@Url.Action("AddToCart", "Cart", new { itemId = Model.ItemId })" class="btn trans-btn" onclick="add_impression('@this.User.Identity.Name', 'buy', @Model.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
             </p>
         </div>
     </div>

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Contoso.Apps.Movies.Web.Controllers
@@ -60,7 +61,13 @@ namespace Contoso.Apps.Movies.Web.Controllers
 
         public ActionResult Genre(int categoryId)
         {
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
+            var container = client.GetContainer(databaseId, "object");
+
+            //Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
+
+            var query = container.GetItemLinqQueryable<Item>(true).Where(c=>c.CategoryId == categoryId && c.EntityType == "Item");
+
+            /*
             var query = client.CreateDocumentQuery<Item>(collectionUri, new SqlQuerySpec()
             {
                 QueryText = "SELECT * FROM object f WHERE f.CategoryId = @id and f.EntityType = 'Item'",
@@ -71,6 +78,9 @@ namespace Contoso.Apps.Movies.Web.Controllers
             }, DefaultOptions);
 
             List<Item> products = query.ToList().Take(12).ToList();
+            */
+
+            List<Item> products = query.ToList();
 
             var productsVm = Mapper.Map<List<Models.ProductListModel>>(products);
 
@@ -87,14 +97,14 @@ namespace Contoso.Apps.Movies.Web.Controllers
         }
 
         // GET: Store/Details/5
-        public ActionResult Details(int? id)
+        public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Item product = DbHelper.GetItem(id);
+            Item product = await DbHelper.GetItem(id);
 
             if (product == null)
             {
@@ -108,14 +118,14 @@ namespace Contoso.Apps.Movies.Web.Controllers
             var similarProductsVm = Mapper.Map<List<Models.ProductListModel>>(similarProducts);
 
             // Find related products, based on the category
-            var relatedProducts = items.ToList().Where(p => p.CategoryId == product.CategoryId && p.ItemId != product.ItemId).Take(10).ToList();
+            var relatedProducts = items.Where(p => p.CategoryId == product.CategoryId && p.ItemId != product.ItemId).Take(10).ToList();
             var relatedProductsVm = Mapper.Map<List<Models.ProductListModel>>(relatedProducts);
 
             // Retrieve category listing
             var categoriesVm = Mapper.Map<List<Models.CategoryModel>>(categories);
 
             // Retrieve "new products" as a list of three random products not equal to the displayed one
-            var newProducts = items.ToList().Where(p => p.ItemId != product.ItemId).ToList().Shuffle().Take(3);
+            var newProducts = items.Where(p => p.ItemId != product.ItemId).Take(50).ToList().Shuffle().Take(3);
 
             var newProductsVm = Mapper.Map<List<Models.ProductListModel>>(newProducts);
 

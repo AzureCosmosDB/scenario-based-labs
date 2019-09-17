@@ -32,21 +32,22 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
   - [Exercise 1: Deployment and Setup](#exercise-1-deployment-and-setup)
-    - [Task 1: Blah](#task-1-blah)
-  - [Exercise 2: Creating and deploying rule calculations](#exercise-2-creating-and-deploying-rule-calculations)
-    - [Task 1: Blah](#task-1-blah-1)
-  - [Exercise 3: Simulate data and events](#exercise-3-simulate-data-and-events)
-    - [Task 1: Blah](#task-1-blah-2)
-  - [Exercise 4: Reporting with Stream Analytics and Power BI](#exercise-4-reporting-with-stream-analytics-and-power-bi)
-    - [Task 1: Blah](#task-1-blah-3)
-  - [Exercise 5: Email alerts using Logic Apps](#exercise-5-email-alerts-using-logic-apps)
-    - [Task 1: Blah](#task-1-blah-4)
+    - [Task 1: Deploy ARM Template](#task-1-blah)
+    - [Task 2: Initialize and populate the Cosmos DB instance](#task-1-blah)
+    - [Task 3: Configure resources](#task-1-blah)
+  - [Exercise 2: Explore Contoso Movie Store](#exercise-2-explore-contoso-movie-store)
+    - [Task 1: Explore the Contoso Movie Store](#task-1-blah-1)
+  - [Exercise 3: Simulate data and events using Stream Analytics and Power BI](#exercise-3-simulate-data-and-events-using-stream-analytics-and-power-bi)
+    - [Task 1: Open the Power BI Dashboard](#task-1-blah-2)
+    - [Task 2: Start Stream Analytics and run the Data Generator](#task-2-blah-2)
+  - [Exercise 4: Email alerts using Logic Apps](#exercise-4-email-alerts-using-logic-apps)
+    - [Task 1: Review the Logic App and Emails](#task-1-review-the-logic-app-and-emails)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete resource group](#task-1-delete-resource-group)
 
 <!-- /TOC -->
 
-# Cosmos DB scenario-based labs - IoT hands-on lab step-by-step
+# Cosmos DB scenario-based labs - Retail hands-on lab step-by-step
 
 ## Abstract and learning objectives
 
@@ -60,7 +61,7 @@ Contoso Movies, Ltd. has TODO
 
 ## Solution architecture (High-level)
 
-![The proposed solution utilizing Azure Security Center for IoT and its agents to monitor and secure the IoT Devcies.  Log data is forwarded to Log Analytics where alerts and logic apps will execute to start investigation and remediation.](../Media/solution-diagram-1.png "Solution Architecture")
+![TODO.](../Media/solution-diagram-1.png "Solution Architecture")
 
 ## Requirements
 
@@ -74,53 +75,73 @@ Refer to the Before the hands-on lab setup guide manual before continuing to the
 
 ## Exercise 1: Deployment and Setup
 
-Duration: 30 minutes
+Duration: 60 minutes
 
 Synopsis:  In this exercise you will TODO
 
-### Task 1: Blah
+### Task 1: Deploy ARM Template
 
-1.  TODO
+1.  Deploy the provided ARM template
 
-## Exercise 2: Creating and deploying rule calculations
+### Task 2: Initalize and populate the Cosmos DB instance
 
-Duration: 30 minutes
+1.  Run the MovieDataImport
+
+### Task 3: Configure resources
+
+1.  Set all the Azure resource configurations
+
+## Exercise 2: Explore Contoso Movie Store
+
+Duration: 15 minutes
 
 Synopsis: TODO
 
-### Task 1: Blah
+### Task 1: Explore the Contoso Movie Store
 
-1.  Blah
+1.  Open the web site
 
-## Exercise 3: Simulate data and events
+2.  Mention that you are not logged in as any user and the results that are being displayed are based on the **top** purchased items in the Cosmso database.
 
-Duration: 30 minutes
+3.  In the top navigation, cLick the **Login** link
 
-In this exercise you will TODO
+4.  Mention that there are several pre-populated *personalities*.  Select the **comedy@contosomovies.com** personality
 
-### Task 1: Blah
+5.  Mention that you now have targeted movies based on two different algorithms
 
-1.  Blah
-
-## Exercise 4: Reporting with Stream Analytics and Power BI
+## Exercise 3: Simulate data and events using Stream Analytics and Power BI
 
 Duration: 30 minutes
 
 In this exercise you will TODO
 
-### Task 1: Blah
+### Task 1: Open the Power BI dashboard
 
-1.  Blah
+1.  Browse to your PowerBI dashboard and open the Movie Dashboard
 
-## Exercise 5: Email alerts using Logic Apps
+### Task 2: Start Stream Analytics and run the Data Generator
+
+1.  Browse to your Stream Analytics service, click **Start**
+
+2.  Open the **DataGenerator** project
+
+3.  Update the app.config settings, then run the **DataGenerator** project, after a few moments, notice that your dashboard is being updated
+
+4.  After 30 seconds, you will notice the **buy** events has stopped.
+
+## Exercise 4: Email alerts using Logic Apps
 
 Duration: 30 minutes
 
 In this exercise you will TODO
 
-### Task 1: Blah
+### Task 1: Review the Logic App and Emails
 
-1.  Blah
+1.  Open the Logic App, review the single logic app that is available
+
+2.  Ensure that your email is set and re-execute the DataGenerator project
+
+3.  You should recieve emails based on the **buy** event
 
 ## After the hands-on lab 
 

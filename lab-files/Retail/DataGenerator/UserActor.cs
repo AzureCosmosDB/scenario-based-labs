@@ -1,5 +1,6 @@
 ﻿using Contoso.Apps.Common;
 using Contoso.Apps.Movies.Data.Models;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using System;
@@ -23,7 +24,7 @@ namespace DataGenerator
             this.UserId = userId;
         }
 
-        public void DoWork()
+        public async void DoWork()
         {
             //execute actions of a user...
             Guid sessionId = Guid.NewGuid();
@@ -33,9 +34,8 @@ namespace DataGenerator
             string authorizationKey = ConfigurationManager.AppSettings["dbConnectionKey"];
             string databaseId = ConfigurationManager.AppSettings["databaseId"];
 
-            DocumentClient client = new DocumentClient(new Uri(endpointUrl), authorizationKey, new ConnectionPolicy { ConnectionMode = ConnectionMode.Gateway, ConnectionProtocol = Protocol.Https });
-            Database database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
-
+            CosmosClient client = new CosmosClient(endpointUrl, authorizationKey);
+            
             DbHelper.client = client;
             DbHelper.databaseId = databaseId;
 

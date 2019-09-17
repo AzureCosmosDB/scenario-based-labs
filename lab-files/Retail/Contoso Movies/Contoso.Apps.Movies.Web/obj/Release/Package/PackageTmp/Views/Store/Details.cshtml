@@ -27,7 +27,7 @@
                                         <span>availability:</span>
                                         <span>available</span>
                                     </div>
-                                    <a class="btn btn-small btn-red" href="@Url.Action("AddToCart", "Cart", new { productId = Model.Product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'buy', @Model.Product.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
+                                    <a class="btn btn-small btn-red" href="@Url.Action("AddToCart", "Cart", new { itemId = Model.Product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'buy', @Model.Product.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
                                 </div>
                             </aside>
                         </div>

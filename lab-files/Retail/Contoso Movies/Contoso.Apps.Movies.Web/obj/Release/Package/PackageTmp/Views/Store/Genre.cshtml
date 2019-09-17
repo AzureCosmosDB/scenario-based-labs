@@ -30,7 +30,7 @@
                                             </div>
                                         </div>
                                         <div class="footer-button">
-                                            <a class="btn trans-btn" href="@Url.Action("AddToCart", "Cart", new { productId = product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'buy', @product.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
+                                            <a class="btn trans-btn" href="@Url.Action("AddToCart", "Cart", new { itemId = product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'buy', @product.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
                                         </div>
                                     </div>
                                 </div>

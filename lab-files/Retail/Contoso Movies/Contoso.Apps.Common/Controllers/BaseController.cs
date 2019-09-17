@@ -1,11 +1,13 @@
 ﻿using Contoso.Apps.Common;
 using Contoso.Apps.Movies.Data.Models;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -14,18 +16,15 @@ namespace Contoso.Apps.Common.Controllers
     [System.Web.Mvc.Authorize]
     public class BaseController : Controller
     {
-        protected DocumentClient client;
+        protected CosmosClient client;
         protected Database database;
         protected string databaseId;
-        protected DocumentCollection productColl, shoppingCartItems;
+        //protected DocumentCollection productColl, shoppingCartItems;
 
         static protected IQueryable<Item> items;
         static protected IQueryable<Category> categories;
-
-        protected IQueryable<Order> orders;
-        protected IQueryable<Movies.Data.Models.User> users;
-
-        protected static readonly FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+        static protected IQueryable<Order> orders;
+        static protected IQueryable<Movies.Data.Models.User> users;
 
         public BaseController()
         {
@@ -33,23 +32,26 @@ namespace Contoso.Apps.Common.Controllers
             string authorizationKey = ConfigurationManager.AppSettings["dbConnectionKey"];
             databaseId = ConfigurationManager.AppSettings["databaseId"];
 
-            client = new DocumentClient(new Uri(endpointUrl), authorizationKey, new ConnectionPolicy { ConnectionMode = ConnectionMode.Gateway, ConnectionProtocol = Protocol.Https });
-            database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
+            CosmosClientOptions options = new CosmosClientOptions();
+            options.ConnectionMode = ConnectionMode.Gateway;
 
-            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
+            client = new CosmosClient(endpointUrl, authorizationKey);
 
-            if (items == null)
-                items = client.CreateDocumentQuery<Item>(objCollectionUri, "SELECT * FROM object o where o.EntityType = 'Item'", DefaultOptions);
+            var container = client.GetContainer(databaseId, "object");
+
+            if (items == null)            
+                items = container.GetItemLinqQueryable<Item>(true).Where(c=>c.EntityType == "Item");
 
             if (categories == null)
-                categories = client.CreateDocumentQuery<Category>(objCollectionUri, "SELECT * FROM object o where o.EntityType = 'Category'", DefaultOptions);
+                categories = container.GetItemLinqQueryable<Category>(true).Where(c => c.EntityType == "Category");
             
             if (users == null)
-                users = client.CreateDocumentQuery<Movies.Data.Models.User>(objCollectionUri, "SELECT * FROM object o where o.EntityType = 'User'", DefaultOptions);
+                users = container.GetItemLinqQueryable<User>(true).Where(c => c.EntityType == "User");
         }
 
-        public ActionResult SetUser(int userId)
+        public async Task<ActionResult> SetUser(int userId)
         {
+            /*
             Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
             var query = client.CreateDocumentQuery<Movies.Data.Models.User>(collectionUri, new SqlQuerySpec()
             {
@@ -61,6 +63,9 @@ namespace Contoso.Apps.Common.Controllers
             }, DefaultOptions);
 
             Movies.Data.Models.User user = query.ToList().FirstOrDefault();
+            */
+
+            Movies.Data.Models.User user = await DbHelper.GetObject<User>("User_" + userId, "User");
             Session["User"] = user;
 
             this.HttpContext.User = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity(user.Email), new string[] { /* fill roles if any */ });
@@ -71,11 +76,12 @@ namespace Contoso.Apps.Common.Controllers
             public ActionResult NewUser(string email)
         {
             Movies.Data.Models.User user = new Movies.Data.Models.User();
-            user.Email = email;
+            user.Email = "newuser@contosomovies.com";
+            user.UserId = 1;
 
             Session["User"] = user;
 
-            this.HttpContext.User = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity(email), new string[] { /* fill roles if any */ });
+            this.HttpContext.User = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity(user.Email), new string[] { /* fill roles if any */ });
 
             return RedirectToAction("Index", "Home");
         }

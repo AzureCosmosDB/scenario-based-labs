@@ -67,7 +67,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         // POST: Checkout/Start
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Review(CheckoutModel data)
+        public async Task<ActionResult> Review(CheckoutModel data)
         {
             if (ModelState.IsValid)
             {
@@ -90,7 +90,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                         myOrder.OrderDate = DateTime.UtcNow;
 
                         // Add order to DB.
-                        DbHelper.SaveObject(null, myOrder);                        
+                        await DbHelper.SaveObject(myOrder);                        
 
                         // Get the shopping cart items and process them.
                         using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, items, categories))
@@ -109,8 +109,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                                 myOrderDetail.UnitPrice = myOrderList[i].Product.UnitPrice;
 
                                 // Add OrderDetail to DB.
-
-                                DbHelper.SaveObject(null, myOrderDetail);
+                                await DbHelper.SaveObject(myOrderDetail);
                             }
 
                             // Set OrderId.
@@ -126,6 +125,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                             TelemetryHelper.TrackEvent("SuccessfulPaymentAuth", eventProperties);
 
                             data.Order.OrderId = myOrder.OrderId;
+
                             if (data.Order.CreditCardNumber.Length > 4)
                             {
                                 // Only show the last 4 digits of the credit card number:
@@ -218,15 +218,18 @@ namespace Contoso.Apps.Movies.Web.Controllers
 
                     if (currentOrderId >= 0)
                     {
-                        Document doc = DbHelper.GetObject("Order_" + currentOrderId, "Order");
-                        myCurrentOrder = (dynamic)doc;
+                        myCurrentOrder = await DbHelper.GetObject<Order>("Order_" + currentOrderId, "Order");
+
+                        //myCurrentOrder = (dynamic)doc;
 
                         // Update the order to reflect payment has been completed.
-                        doc.SetPropertyValue("PaymentTransactionId", PaymentConfirmation );
+                        //doc.SetPropertyValue("PaymentTransactionId", PaymentConfirmation );
                         
                         myCurrentOrder.PaymentTransactionId = PaymentConfirmation;
 
-                        DbHelper.SaveObject(doc, myCurrentOrder);
+                        //DbHelper.SaveObject(doc, myCurrentOrder);
+
+                        DbHelper.SaveObject(myCurrentOrder);
 
                         // Queue up a receipt generation request, asynchronously.
                         await new AzureQueueHelper().QueueReceiptRequest(myCurrentOrder);
