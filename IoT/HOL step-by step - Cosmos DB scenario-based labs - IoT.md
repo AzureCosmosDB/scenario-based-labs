@@ -34,7 +34,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
       - [About Cosmos DB throughput](#about-cosmos-db-throughput)
       - [About Cosmos DB partitioning](#about-cosmos-db-partitioning)
     - [Task 2: Configure Cosmos DB container indexing and TTL](#task-2-configure-cosmos-db-container-indexing-and-ttl)
-    - [Task 3: Add Key Vault secrets](#task-3-add-key-vault-secrets)
+      - [About the Cosmos DB indexing policies](#about-the-cosmos-db-indexing-policies)
+  - [Task 3: Create a Logic App workflow for email alerts](#task-3-create-a-logic-app-workflow-for-email-alerts)
+    - [Task 4: Add Key Vault secrets](#task-4-add-key-vault-secrets)
     - [Task 4: Create Azure Databricks cluster](#task-4-create-azure-databricks-cluster)
     - [Task 5: Configure Key Vault-backed Databricks secret store](#task-5-configure-key-vault-backed-databricks-secret-store)
   - [Exercise 2: Deploy Azure functions and Web App](#exercise-2-deploy-azure-functions-and-web-app)
@@ -144,7 +146,7 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 You must provision a few resources in Azure before you start developing the solution. Ensure all resources use the same resource group for easier cleanup.
 
-In this exercise, you will configure your lab environment so you can start sending and processing generated vehicle, consignment, package, and trip data. You will begin by creating a Cosmos DB database and containers, then you will retrieve secrets used in the solution's application settings (such as connection strings) and securely store them in Azure Key Vault, then configure your Azure Databricks environment.
+In this exercise, you will configure your lab environment so you can start sending and processing generated vehicle, consignment, package, and trip data. You will begin by creating a Cosmos DB database and containers, then you will create a new Logic App and create a workflow for sending email notifications, then retrieve secrets used in the solution's application settings (such as connection strings) and securely store them in Azure Key Vault, and finally configure your Azure Databricks environment.
 
 ### Task 1: Create Cosmos DB database and container
 
@@ -154,7 +156,7 @@ In this task, you will create a Cosmos DB database and three SQL-based container
 - **metadata**: Stores vehicle, consignment, package, trip, and aggregate event data.
 - **maintenance**: The batch battery failure predictions are stored here for reporting purposes.
 
-1. Using a new tab or instance of your browser, navigate to the Azure portal, <http://portal.azure.com>.
+1. Using a new tab or instance of your browser, navigate to the Azure portal, <https://portal.azure.com>.
 
 2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
 
@@ -297,7 +299,212 @@ In this task, you will review the default indexing set on your new containers, a
 
 5. Select **Save** to apply your changes.
 
-### Task 3: Add Key Vault secrets
+#### About the Cosmos DB indexing policies
+
+In this task, we updated the indexing policy for the `telemetry` container, but left the other two containers with the default policy. The default indexing policy for newly created containers indexes every property of every item, enforcing range indexes for any string or number, and spatial indexes for any GeoJSON object of type Point. This allows you to get high query performance without having to think about indexing and index management upfront. Since the `metadata` and `maintenance` containers have more read-heavy workloads than `telemetry`, it makes sense to use the default indexing policy where query performance is optimized. The indexing mode for all three containers is set to **Consistent**. This means the index is updated synchronously as items are added, updated, or deleted, enforcing the consistency level configured for the account for read queries. The other indexing mode one could choose is None, which disables indexing on the container. Usually this mode is used when your container acts as a pure key-value store, and you do not need indexes for any of the other properties. It is possible to dynamically change the consistency mode prior to executing bulk operations, then changing the mode back to Consistent afterwards, if the potential performance increase warrants the temporary change.
+
+## Task 3: Create a Logic App workflow for email alerts
+
+In this task, you will create a new Logic App workflow and configure it to send email alerts through its HTTP trigger. This trigger will be called by one of your Azure functions that gets triggered by the Cosmos DB change feed, any time a notification event occurs, such as completing a trip. You will need to have an Office 365 or Outlook.com account to send the emails.
+
+1. In the [Azure portal](https://portal.azure.com), select **+ Create a resource**, then enter **logic app** into the search box on top. Select **Logic App** from the results.
+
+   ![The Create a resource button and search box are highlighted in the Azure portal.](media/portal-new-logic-app.png 'Azure portal')
+
+2. Select the **Create** button on the **Logic App overview** blade.
+
+3. On the **Create Logic App** blade, specify the following configuration options:
+
+   1. **Name**: Unique value for the name, such as `Cosmos-IoT-Logic` (ensure the green check mark appears).
+   2. **Subscription**: Select the Azure subscription you are using for this lab.
+   3. **Resource group**: Select your lab resource group. The name should start with `cosmos-db-iot`.
+   4. **Location**: Select the same location as your resource group.
+   5. **Log Analytics**: Select **Off**.
+
+   ![The form is displayed with the previously described values.](media/portal-new-logic-app-form.png 'New Logic App')
+
+4. Select **Create**.
+
+5. After the Logic App is created, navigate to it by opening your resource group and selecting the new Logic App.
+
+6. In the Logic App Designer, scroll through the page until you locate the Start with a common trigger section. Select the **When a HTTP request is received** trigger.
+
+   ![The HTTP common trigger option is highlighted.](media/logic-app-http-trigger.png 'Logic App Designer')
+
+7. Paste the following JSON into the **Request Body JSON Schema** field. This defines the shape of the data the Azure function will send in the body of the HTTP request when an alert needs to be sent:
+
+   ```json
+   {
+     "properties": {
+       "consignmentId": {
+         "type": "string"
+       },
+       "customer": {
+         "type": "string"
+       },
+       "deliveryDueDate": {
+         "type": "string"
+       },
+       "distanceDriven": {
+         "type": "number"
+       },
+       "hasHighValuePackages": {
+         "type": "boolean"
+       },
+       "id": {
+         "type": "string"
+       },
+       "lastRefrigerationUnitTemperatureReading": {
+         "type": "integer"
+       },
+       "location": {
+         "type": "string"
+       },
+       "lowestPackageStorageTemperature": {
+         "type": "integer"
+       },
+       "odometerBegin": {
+         "type": "integer"
+       },
+       "odometerEnd": {
+         "type": "number"
+       },
+       "plannedTripDistance": {
+         "type": "number"
+       },
+       "recipientEmail": {
+         "type": "string"
+       },
+       "status": {
+         "type": "string"
+       },
+       "temperatureSetting": {
+         "type": "integer"
+       },
+       "tripEnded": {
+         "type": "string"
+       },
+       "tripStarted": {
+         "type": "string"
+       },
+       "vin": {
+         "type": "string"
+       }
+     },
+     "type": "object"
+   }
+   ```
+
+   ![The Request Body JSON Schema is displayed.](media/logic-app-schema.png 'Request Body JSON Schema')
+
+8. Select **+ New step** underneath the HTTP trigger.
+
+   ![The new step button is highlighted.](media/logic-app-new-step.png 'New step')
+
+9. Within the new action box, type `send email` in the search box, then select **Send an email - Office 365 Outlook** from the list of actions below. **Note**: If you do not have an Office 365 Outlook account, you may try one of the other email service options.
+
+   ![Send email is typed in the search box and Send an email - Office 365 Outlook is highlighted below.](media/logic-app-send-email.png 'Choose an action')
+
+10. Select the **Sign in** button. Sign in to your account in the window that appears.
+
+    ![The Sign in button is highlighted.](media/logic-app-sign-in-button.png 'Office 365 Outlook')
+
+11. After signing in, the action box will display as the **Send an email** action form. Select the **To** field. The **Dynamic content** box will display after selecting To. To see the full list of dynamic values from the HTTP request trigger, select **See more** next to "When a HTTP request is received".
+
+    ![The To field is selected, and the See more link is highlighted in the Dynamic content window.](media/logic-app-dynamic-content-see-more.png 'Dynamic content')
+
+12. In the list of dynamic content, select **recipientEmail**. This will add the dynamic value to the **To** field.
+
+    ![The recipientEmail dynamic value is added to the To field.](media/logic-app-recipientemail.png 'Dynamic content - recipientEmail')
+
+13. In the **Subject** field, enter the following: `Contoso Auto trip status update:`, making sure you add a space at the end. Select the **status** dynamic content to append the trip status to the end of the subject.
+
+    ![The Subject field is filled in with the status dynamic content appended to the end.](media/logic-app-status.png 'Dynamic content - status')
+
+14. Paste the following into the **Body** field. The dynamic content will automatically be added:
+
+    ```text
+    Here are the details of the trip and consignment:
+
+    CONSIGNMENT INFORMATION:
+
+    Customer: @{triggerBody()?['customer']}
+    Delivery Due Date: @{triggerBody()?['deliveryDueDate']}
+    Location: @{triggerBody()?['location']}
+    Status: @{triggerBody()?['status']}
+
+    TRIP INFORMATION:
+
+    Trip Start Time: @{triggerBody()?['tripStarted']}
+    Trip End Time: @{triggerBody()?['tripEnded']}
+    Vehicle (VIN): @{triggerBody()?['vin']}
+    Planned Trip Distance: @{triggerBody()?['plannedTripDistance']}
+    Distance Driven: @{triggerBody()?['distanceDriven']}
+    Start Odometer Reading: @{triggerBody()?['odometerBegin']}
+    End Odometer Reading: @{triggerBody()?['odometerEnd']}
+
+    PACKAGE INFORMATION:
+
+    Has High Value Packages: @{triggerBody()?['hasHighValuePackages']}
+    Lowest Package Storage Temp (F): @{triggerBody()?['lowestPackageStorageTemperature']}
+    Trip Temp Setting (F): @{triggerBody()?['temperatureSetting']}
+    Last Refrigeration Unit Temp Reading (F): @{triggerBody()?['lastRefrigerationUnitTemperatureReading']}
+
+    REFERENCE INFORMATION:
+
+    Trip ID: @{triggerBody()?['id']}
+    Consignment ID: @{triggerBody()?['consignmentId']}
+    Vehicle VIN: @{triggerBody()?['vin']}
+
+    Regards,
+    Contoso Auto Bot
+    ```
+
+15. Your Logic App workflow should now look like the following:
+
+    ![The Logic App workflow is complete.](media/logic-app-completed-workflow.png 'Logic App')
+
+16. Select **Save** at the top of the designer to save your workflow.
+
+17. After saving, the URL for the HTTP trigger will generate. Expand the HTTP trigger in the workflow, then copy the **HTTP POST URL** value and save it to Notepad or similar text application for a later step.
+
+    ![The http post URL is highlighted.](media/logic-app-url.png 'Logic App')
+
+### Task 4: Add Key Vault secrets
+
+Azure Key Vault is used to Securely store and tightly control access to tokens, passwords, certificates, API keys, and other secrets. In addition, secrets that are stored in Azure Key Vault are centralized, giving the added benefits of only needing to update secrets in one place, such as an application key value after recycling the key for security purposes. In this task, we will store application secrets in Azure Key Vault, then configure the Function Apps and Web App to securely connect to Azure Key Vault by performing the following steps:
+
+- Add secrets to the provisioned Key Vault.
+- Create a system-assigned managed identity for each Azure Function App and the Web App to read from the vault.
+- Create an access policy in Key Vault with the "Get" secret permission, assigned to each of these application identities.
+
+> We recommend that you open two browser tabs for these steps. One to copy secrets from each Azure service, and the other to add the secrets to Key Vault.
+
+1. Using a new tab or instance of your browser, navigate to the Azure portal, <https://portal.azure.com>.
+
+2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
+
+3. Open the your **Key Vault**. The name should begin with `iot-keyvault`.
+
+   ![The Key Vault is highlighted in the resource group.](media/resource-group-keyvault.png 'Resource group')
+
+4. Select **Secrets** in the left-hand menu, then select **+ Generate/Import** to create a new secret.
+
+   ![The Secrets menu item is highlighted, and the Generate/Import button is selected.](media/key-vault-secrets-generate.png 'Key Vault Secrets')
+
+5. Use the table below for the Name / Value pairs to use when creating the secrets. You only need to populate the **Name** and **Value** fields for each secret, and can leave the other fields at their default values.
+
+   | **Name**            |                                                                          **Value**                                                                          |
+   | ------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
+   | CosmosDBConnection  |                            Your Cosmos DB connection string found here: **Cosmos DB account > Keys > Primary Connection String**                            |
+   | IoTHubConnection    |                         Your IoT Hub connection string found here: **IoT Hub > Built-in endpoints > Event Hub-compatible endpoint**                         |
+   | ColdStorageAccount  |  Connection string to the Azure Storage account whose name starts with `iotstore`, found here: **Storage account > Access keys > key1 Connection string**   |
+   | EventHubsConnection | Your Event Hubs connection string found here: **Event Hubs namespace > Shared access policies > RootManageSharedAccessKey > Connection string-primary key** |
+   | LogicAppUrl         |                         Your Logic App's HTTP Post URL found here: **Logic App Designer > Select the HTTP trigger > HTTP POST URL**                         |
+
+   When you are finished creating the secrets, your list should look similar to the following:
+
+   ![The list of secrets is displayed.](media/key-vault-keys.png 'Key Vault Secrets')
 
 ### Task 4: Create Azure Databricks cluster
 
