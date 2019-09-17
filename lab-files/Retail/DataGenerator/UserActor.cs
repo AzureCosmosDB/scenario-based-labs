@@ -1,5 +1,6 @@
 ﻿using Contoso.Apps.Common;
 using Contoso.Apps.Movies.Data.Models;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using System;
@@ -23,7 +24,7 @@ namespace DataGenerator
             this.UserId = userId;
         }
 
-        public void DoWork()
+        public async void DoWork()
         {
             //execute actions of a user...
             Guid sessionId = Guid.NewGuid();
@@ -33,9 +34,8 @@ namespace DataGenerator
             string authorizationKey = ConfigurationManager.AppSettings["dbConnectionKey"];
             string databaseId = ConfigurationManager.AppSettings["databaseId"];
 
-            DocumentClient client = new DocumentClient(new Uri(endpointUrl), authorizationKey, new ConnectionPolicy { ConnectionMode = ConnectionMode.Gateway, ConnectionProtocol = Protocol.Https });
-            Database database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
-
+            CosmosClient client = new CosmosClient(endpointUrl, authorizationKey);
+            
             DbHelper.client = client;
             DbHelper.databaseId = databaseId;
 
@@ -44,6 +44,8 @@ namespace DataGenerator
             Random r = new Random();
 
             int count = 20;
+
+            DateTime stopOrdersDate = DateTime.Now;
 
             //loop...
             while (true)
@@ -61,20 +63,26 @@ namespace DataGenerator
                 if (action == 0)
                     DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "details", sessionId.ToString().Replace("-", ""));
 
-                if (action == 1)
+                TimeSpan ts = DateTime.Now - stopOrdersDate;
+
+                //run fine for 30 sec...then stop orders...
+                if (ts.TotalSeconds < 30)
                 {
-                    DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "buy", sessionId.ToString().Replace("-", ""));
-
-                    int failure = r.Next(10);
-
-                    //simulate a payment failure...
-                    if (failure % 2 == 1 && count > 20)
+                    if (action == 1)
                     {
-                        DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "paymentFailure", sessionId.ToString().Replace("-", ""));
-                        count = 0;
-                    }
+                        DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "buy", sessionId.ToString().Replace("-", ""));
 
-                    count++;
+                        int failure = r.Next(10);
+
+                        //simulate a payment failure...
+                        if (failure % 2 == 1 && count > 20)
+                        {
+                            DbHelper.GenerateAction(UserId, p.ItemId.ToString(), "paymentFailure", sessionId.ToString().Replace("-", ""));
+                            count = 0;
+                        }
+
+                        count++;
+                    }
                 }
 
                 if (action == 2)

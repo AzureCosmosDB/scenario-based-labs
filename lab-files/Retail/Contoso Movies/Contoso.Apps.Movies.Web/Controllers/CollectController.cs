@@ -31,8 +31,13 @@ namespace Contoso.Apps.Movies.Controllers
                 log.Created = DateTime.Now;
 
                 //add to cosmos db
-                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "event");
+                var container = client.GetContainer(databaseId, "events");
+                container.UpsertItemAsync(log);
+
+                /*
+                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
                 var item = client.UpsertDocumentAsync(collectionUri, log);
+                */
             }
 
             return true;

@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 
 namespace Contoso.Apps.Movies.Data.Models
 {
-    public class DbObject
+    public class DbObject : IEntity
     {
-        public string ObjectId { get; set; }        
+        virtual public string ObjectId { get; set; }
+
+        virtual public string EntityType { get; set; }
+
+        public string id { get; set; }
 
         public string _rid { get; set; }
 

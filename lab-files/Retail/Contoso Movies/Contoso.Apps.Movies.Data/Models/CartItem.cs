@@ -17,6 +17,8 @@ namespace Contoso.Apps.Movies.Data.Models
 
         public virtual Item Product { get; set; }
 
-        public string EntityType { get { return "CartItem"; } }
+        public override string ObjectId { get { return this.EntityType + "_" + this.CartId + "_" + this.ItemId; } }
+
+        public override string EntityType { get { return "CartItem"; } }
     }
 }

@@ -12,8 +12,6 @@
 
         public System.DateTime DateCreated { get; set; }
 
-        public int ProductId { get; set; }
-
         public string ProductProductName { get; set; }
 
         public string ProductImagePath { get; set; }

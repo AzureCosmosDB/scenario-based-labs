@@ -1,5 +1,6 @@
 ﻿using Contoso.Apps.Common;
 using Contoso.Apps.Movies.Data.Models;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using System;
@@ -13,8 +14,7 @@ namespace MovieDataImport
 {
     class Program
     {
-        static protected DocumentClient client;
-        static protected Database database;
+        static protected CosmosClient client;
         static protected string databaseId;
         
         static void Main(string[] args)
@@ -26,9 +26,8 @@ namespace MovieDataImport
             string authorizationKey = ConfigurationManager.AppSettings["dbConnectionKey"];
             databaseId = ConfigurationManager.AppSettings["databaseId"];
 
-            client = new DocumentClient(new Uri(endpointUrl), authorizationKey, new ConnectionPolicy { ConnectionMode = ConnectionMode.Gateway, ConnectionProtocol = Protocol.Https });
-            database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
-
+            client = new CosmosClient(endpointUrl, authorizationKey);
+            
             DbHelper.client = client;
             DbHelper.databaseId = databaseId;
 
@@ -41,15 +40,17 @@ namespace MovieDataImport
             ImportMovies(true);
         }
 
-        private static void PreCalculate()
+        private async static Task PreCalculate()
         {
             //get all the buy events, create the buy aggregates...
-            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
-            
-            //get the product
-            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
+            //FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
 
-            var query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'buy')", options);
+            //get the product
+            //Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
+
+            //var query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'buy')", options);
+            var container = client.GetContainer(databaseId, "events");
+            var query = container.GetItemLinqQueryable<CollectorLog>(true).Where(c=>c.Event == "buy");
 
             //do the aggregate for each product...
             foreach (var group in query.ToList().GroupBy(singleEvent => singleEvent.ContentId))
@@ -57,14 +58,16 @@ namespace MovieDataImport
                 int itemId = int.Parse(group.FirstOrDefault().ContentId);
 
                 //get the item aggregate record
-                Document doc = DbHelper.GetObject(itemId, "ItemAggregate");
+                ItemAggregate doc = await DbHelper.GetObject<ItemAggregate>("ItemAggregate_" + itemId, "ItemAggregate");
 
                 ItemAggregate agg = new ItemAggregate();
 
                 if (doc != null)
                 {
-                    agg = (dynamic)doc;
-                    doc.SetPropertyValue("BuyCount", group.Count<CollectorLog>());
+                    doc.BuyCount = group.Count<CollectorLog>();
+
+                    //agg = (dynamic)doc;
+                    //doc.SetPropertyValue("BuyCount", group.Count<CollectorLog>());
                 }
                 else
                 {
@@ -72,10 +75,11 @@ namespace MovieDataImport
                     agg.BuyCount = group.Count<CollectorLog>();
                 }
 
-                DbHelper.SaveObject(doc, agg);
+                await DbHelper.SaveObject(agg);
             }
 
-            query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'details')", options);
+            //query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'details')", options);
+            query = container.GetItemLinqQueryable<CollectorLog>(true).Where(c => c.Event == "details");
 
             //do the aggregate for each product...
             foreach (var group in query.ToList().GroupBy(singleEvent => singleEvent.ContentId))
@@ -83,14 +87,16 @@ namespace MovieDataImport
                 int itemId = int.Parse(group.FirstOrDefault().ContentId);
 
                 //get the item aggregate record
-                Document doc = DbHelper.GetObject(itemId, "ItemAggregate");
+                ItemAggregate doc = await DbHelper.GetObject<ItemAggregate>("ItemAggregate_" + itemId, "ItemAggregate");
 
                 ItemAggregate agg = new ItemAggregate();
 
                 if (doc != null)
                 {
-                    agg = (dynamic)doc;
-                    doc.SetPropertyValue("ViewDetailsCount", group.Count<CollectorLog>());
+                    doc.ViewDetailsCount = group.Count<CollectorLog>();
+
+                    //agg = (dynamic)doc;
+                    //doc.SetPropertyValue("ViewDetailsCount", group.Count<CollectorLog>());
                 }
                 else
                 {
@@ -98,10 +104,11 @@ namespace MovieDataImport
                     agg.ViewDetailsCount=  group.Count<CollectorLog>();
                 }
 
-                DbHelper.SaveObject(doc, agg);
+                await DbHelper.SaveObject(agg);
             }
 
-            query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'addToCart')", options);
+            //query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'addToCart')", options);
+            query = container.GetItemLinqQueryable<CollectorLog>(true).Where(c => c.Event == "addToCart");
 
             //do the aggregate for each product...
             foreach (var group in query.ToList().GroupBy(singleEvent => singleEvent.ContentId))
@@ -109,14 +116,16 @@ namespace MovieDataImport
                 int itemId = int.Parse(group.FirstOrDefault().ContentId);
 
                 //get the item aggregate record
-                Document doc = DbHelper.GetObject(itemId, "ItemAggregate");
+                ItemAggregate doc = await DbHelper.GetObject<ItemAggregate>("ItemAggregate_" + itemId, "ItemAggregate");
 
                 ItemAggregate agg = new ItemAggregate();
 
                 if (doc != null)
                 {
-                    agg = (dynamic)doc;
-                    doc.SetPropertyValue("AddToCartCount", group.Count<CollectorLog>());
+                    doc.AddToCartCount = group.Count<CollectorLog>();
+
+                    //agg = (dynamic)doc;
+                    //doc.SetPropertyValue("AddToCartCount", group.Count<CollectorLog>());
                 }
                 else
                 {
@@ -124,7 +133,7 @@ namespace MovieDataImport
                     agg.AddToCartCount = group.Count<CollectorLog>();
                 }
 
-                DbHelper.SaveObject(doc, agg);
+                await DbHelper.SaveObject(agg);
             }
 
         }
@@ -135,27 +144,14 @@ namespace MovieDataImport
 
             users = Contoso.Apps.Movies.Data.Models.User.GetUsers();
 
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "user");
-
             foreach (Contoso.Apps.Movies.Data.Models.User u in users)
             {
-                try
-                {
-                    var blah = client.UpsertDocumentAsync(collectionUri, u).Result;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-
-                DbHelper.SaveObject(null, u);
+                await DbHelper.SaveObject(u);
             }
         }
 
         async static void ImportGenre()
         {
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "category");
-
             dynamic data = MovieHelper.GetMovieGenres();
 
             foreach(dynamic item in data.genres)
@@ -166,9 +162,7 @@ namespace MovieDataImport
 
                 try
                 {
-                    var blah = client.UpsertDocumentAsync(collectionUri, c).Result;
-
-                    DbHelper.SaveObject(null, c);
+                    await DbHelper.SaveObject(c);
                 }
                 catch (Exception ex)
                 {
@@ -198,9 +192,6 @@ namespace MovieDataImport
 
         async static void ImportMovies(bool usedOnly)
         {
-            Uri productCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item");
-            Uri productCatCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "item_category");
-
             string[] lines = System.IO.File.ReadAllLines("./Data/movies.csv");
 
             string[] usedOnlyLines = System.IO.File.ReadAllLines("./Data/UsedMovies.txt");
@@ -244,9 +235,8 @@ namespace MovieDataImport
                                 ItemCategory pc = new ItemCategory();
                                 pc.ItemId = p.ItemId;
                                 pc.CategoryId = int.Parse(category);
-                                var blah = client.UpsertDocumentAsync(productCatCollectionUri, pc);
-
-                                DbHelper.SaveObject(null, pc);
+                                
+                                await DbHelper.SaveObject(pc);
 
                                 p.CategoryId = pc.CategoryId;
                             }
@@ -291,9 +281,7 @@ namespace MovieDataImport
                     if (!p.UnitPrice.HasValue)
                         p.UnitPrice = 5.99;
 
-                    var item = client.UpsertDocumentAsync(productCollectionUri, p);
-
-                    DbHelper.SaveObject(null, p);
+                    await DbHelper.SaveObject(p);
                 }
                 catch (Exception ex)
                 {
@@ -311,7 +299,7 @@ namespace MovieDataImport
 
                 Item p = new Item();
                 p.ItemId = data.movie_results[0].id;
-                p.ImdbId = data.movie_results[0].id;
+                p.ImdbId = id;
                 p.ProductName = data.movie_results[0].title;
                 p.Description = data.movie_results[0].overview;
                 p.Popularity = data.movie_results[0].popularity;
@@ -324,9 +312,8 @@ namespace MovieDataImport
                 ItemCategory pc = new ItemCategory();
                 pc.ItemId = p.ItemId;
                 pc.CategoryId = p.CategoryId.Value;
-                var blah = client.UpsertDocumentAsync(productCatCollectionUri, pc);
 
-                DbHelper.SaveObject(null, pc);
+                await DbHelper.SaveObject(pc);
 
                 if (data.movie_results[0].release_date == null)
                     continue;
@@ -356,9 +343,7 @@ namespace MovieDataImport
                 if (!p.UnitPrice.HasValue)
                     p.UnitPrice = 5.99;
 
-                var item = client.UpsertDocumentAsync(productCollectionUri, p);
-
-                DbHelper.SaveObject(null, p);
+                await DbHelper.SaveObject(p);
             }
         }
     }

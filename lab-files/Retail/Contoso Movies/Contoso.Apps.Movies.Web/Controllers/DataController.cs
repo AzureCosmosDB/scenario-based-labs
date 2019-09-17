@@ -1,5 +1,7 @@
-﻿using Contoso.Apps.Movies.Data.Models;
+﻿using Contoso.Apps.Common;
+using Contoso.Apps.Movies.Data.Models;
 using Contoso.Apps.Movies.Logic;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using System;
@@ -17,12 +19,12 @@ namespace Contoso.Apps.Movies.Web.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class DataController : ApiController
     {
-        protected DocumentClient client;
+        protected CosmosClient client;
         protected Database database;
         protected string databaseId;
-        protected DocumentCollection productColl, shoppingCartItems;
 
-        protected static readonly FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+        //protected DocumentCollection productColl, shoppingCartItems;
+        //protected static readonly FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
 
         public DataController()
         {
@@ -30,8 +32,12 @@ namespace Contoso.Apps.Movies.Web.Controllers
             string authorizationKey = ConfigurationManager.AppSettings["dbConnectionKey"];
             databaseId = ConfigurationManager.AppSettings["databaseId"];
 
-            client = new DocumentClient(new Uri(endpointUrl), authorizationKey, new ConnectionPolicy { ConnectionMode = ConnectionMode.Gateway, ConnectionProtocol = Protocol.Https });
-            database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId }).Result;
+            CosmosClientOptions options = new CosmosClientOptions();
+            options.ConnectionMode = ConnectionMode.Gateway;
+            
+            client = new CosmosClient(endpointUrl, authorizationKey, options);
+
+            database = client.CreateDatabaseIfNotExistsAsync( databaseId ).Result;
         }
 
         [HttpGet]
@@ -47,18 +53,9 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 string name = user.Email;
                 int userId = user.UserId;
 
-                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
+                //Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
 
-                logs = client.CreateDocumentQuery<CollectorLog>(collectionUri,
-                    new SqlQuerySpec(
-                        "SELECT * FROM events r WHERE r.userId = @userid",
-                        new SqlParameterCollection(new[]
-                        {
-                        new SqlParameter { Name = "@userid", Value = userId }
-                        }
-                        )
-                        ), DefaultOptions
-                ).ToList();
+                logs = DbHelper.GetUserLogs(userId, 100);
             }
 
             return Json(logs);

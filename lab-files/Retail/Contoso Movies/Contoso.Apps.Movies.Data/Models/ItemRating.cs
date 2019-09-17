@@ -10,7 +10,7 @@ namespace Contoso.Apps.Movies.Data.Models
     {
 
         [JsonProperty(PropertyName = "itemId")]
-        public int ItemId { get; set; }
+        public string ItemId { get; set; }
 
         [JsonProperty(PropertyName = "userId")]
         public int UserId { get; set; }

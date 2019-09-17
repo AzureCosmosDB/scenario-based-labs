@@ -1,9 +1,12 @@
-﻿using Contoso.Apps.Movies.Data.Models;
+﻿using Contoso.Apps.Common;
+using Contoso.Apps.Movies.Data.Models;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Contoso.Apps.Movies.Data.Logic
 {
@@ -15,12 +18,11 @@ namespace Contoso.Apps.Movies.Data.Logic
         protected IQueryable<CartItem> shoppingCartItems;
 
         protected string databaseId;
-        protected DocumentClient client;
-        Uri collectionUri;
+        protected CosmosClient client;
+        
+        //protected static readonly FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
 
-        protected static readonly FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
-
-        public ShoppingCartActions(string cartId, string databaseId, DocumentClient client, IQueryable<Item> items, IQueryable<Category> categories)
+        public ShoppingCartActions(string cartId, string databaseId, CosmosClient client, IQueryable<Item> items, IQueryable<Category> categories)
         {
             this.databaseId = databaseId;
             this.client = client;
@@ -28,8 +30,12 @@ namespace Contoso.Apps.Movies.Data.Logic
             this.categories = categories;
             this.ShoppingCartId = cartId;
 
-            collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
+            //collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
 
+            var container = client.GetContainer(databaseId, "object");
+            shoppingCartItems = container.GetItemLinqQueryable<CartItem>(true).Where(c => c.CartId == cartId && c.EntityType == "CartItem");
+
+            /*
             shoppingCartItems = client.CreateDocumentQuery<CartItem>(collectionUri,
                 new SqlQuerySpec(
                     "SELECT * FROM object r WHERE r.CartId = @cartid and r.EntityType = 'CartItem'",
@@ -40,11 +46,12 @@ namespace Contoso.Apps.Movies.Data.Logic
                     )
                     ),DefaultOptions
             );
+            */
         }
 
         public string ShoppingCartId { get; private set; }
 
-        public void AddToCart(int id)
+        public async Task AddToCart(int id)
         {
             // Retrieve the product from the database.           
             //ShoppingCartId = GetCartId();
@@ -53,19 +60,23 @@ namespace Contoso.Apps.Movies.Data.Logic
                 c => c.CartId == ShoppingCartId
                 && c.ItemId == id);
 
-            if (cartItem == null) {
+            if (cartItem == null)
+            {
+                Item p = await DbHelper.GetItem(id);
+
                 // Create a new cart item if no cart item exists.                 
                 cartItem = new CartItem {
                     CartItemId = Guid.NewGuid().ToString(),
                     ItemId = id,
                     CartId = ShoppingCartId,
-                    Product = items.ToList().Where(
-                     p => p.ItemId == id).FirstOrDefault(),
+                    Product = p,
                     Quantity = 1,
                     DateCreated = DateTime.Now
                 };
 
-                client.UpsertDocumentAsync(collectionUri, cartItem);
+                await DbHelper.SaveObject(cartItem);
+
+                //client.UpsertDocumentAsync(collectionUri, cartItem);
             }
             else {
                 // If the item does exist in the cart,                  
@@ -83,8 +94,7 @@ namespace Contoso.Apps.Movies.Data.Logic
         {
             //ShoppingCartId = GetCartId();
 
-            return shoppingCartItems.ToList().Where(
-                c => c.CartId == ShoppingCartId).ToList();
+            return shoppingCartItems.ToList();
         }
 
         public decimal GetTotal()
@@ -142,9 +152,12 @@ namespace Contoso.Apps.Movies.Data.Logic
 
                 if (myItem != null)
                 {
+                    DbHelper.DeleteObject(myItem);
+
+                    /*
                     Document doc = client.CreateDocumentQuery(collectionUri,
                         new SqlQuerySpec(
-                            "SELECT * FROM object r WHERE r.CartId = @cartid and r.ProductID == @productid and r.EntityType = 'CartItem'",
+                            "SELECT * FROM object r WHERE r.CartId = @cartid and r.ItemId == @productid and r.EntityType = 'CartItem'",
                             new SqlParameterCollection(new[] 
                             {
                                 new SqlParameter { Name = "@cartid", Value = removeCartID },
@@ -155,6 +168,7 @@ namespace Contoso.Apps.Movies.Data.Logic
                     ).FirstOrDefault();
 
                     client.DeleteDocumentAsync(doc.SelfLink);
+                    */
                 }
             }
             catch (Exception exp)
@@ -172,7 +186,10 @@ namespace Contoso.Apps.Movies.Data.Logic
                 {
                     myItem.Quantity = quantity;
 
-                    client.UpsertDocumentAsync(collectionUri, myItem);
+                    var container = client.GetContainer(databaseId, "object");
+                    container.UpsertItemAsync(myItem);
+
+                    //client.UpsertDocumentAsync(collectionUri, myItem);
                 }
             }
             catch (Exception exp)
@@ -182,7 +199,7 @@ namespace Contoso.Apps.Movies.Data.Logic
 
         }
 
-        public void EmptyCart()
+        public async void EmptyCart()
         {
             //ShoppingCartId = GetCartId();
             var cartItems = shoppingCartItems.ToList().Where(
@@ -190,9 +207,13 @@ namespace Contoso.Apps.Movies.Data.Logic
 
             foreach (var cartItem in cartItems)
             {
+                CartItem ci = await DbHelper.GetObject<CartItem>(cartItem.ObjectId, "CartItem");
+                DbHelper.DeleteObject(ci);
+
+                /*
                 Document doc = client.CreateDocumentQuery(collectionUri,
                         new SqlQuerySpec(
-                            "SELECT * FROM object r WHERE r.CartId = @cartid and r.ItemId == @itemid and r.EntityType = 'CartItem'",
+                            "SELECT * FROM object r WHERE r.CartId = @cartid and r.ItemId = @itemid and r.EntityType = 'CartItem'",
                             new SqlParameterCollection(new[]
                             {
                                 new SqlParameter { Name = "@cartid", Value = cartItem.CartId },
@@ -200,9 +221,10 @@ namespace Contoso.Apps.Movies.Data.Logic
                             }
                             )
                             )
-                    ).FirstOrDefault();
+                    ).ToList().FirstOrDefault();
 
                 client.DeleteDocumentAsync(doc.SelfLink);
+                */
             }
         }
 

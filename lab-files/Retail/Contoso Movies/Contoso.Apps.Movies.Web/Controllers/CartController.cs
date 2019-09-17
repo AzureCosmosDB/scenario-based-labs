@@ -4,7 +4,6 @@ using Contoso.Apps.Movies.Data.Logic;
 using Contoso.Apps.Movies.Data.Models;
 using Contoso.Apps.Movies.Web.Models;
 using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Linq;
 using Microsoft.Azure.Documents.Client;
 using System;
 using System.Collections.Generic;
@@ -13,6 +12,7 @@ using System.Net;
 using System.Web.Mvc;
 using System.Linq;
 using Contoso.Apps.Common.Controllers;
+using System.Threading.Tasks;
 
 namespace Contoso.Apps.Movies.Web.Controllers
 {
@@ -43,29 +43,34 @@ namespace Contoso.Apps.Movies.Web.Controllers
             return View(vm);
         }
 
-        public RedirectResult AddToCart(int productId)
+        public async Task<RedirectResult> AddToCart(int itemId)
         {
             var cartId = new Helpers.CartHelpers().GetCartId();
+
             using (ShoppingCartActions usersShoppingCart = new ShoppingCartActions(cartId, databaseId, client, items, categories))
             {
-                usersShoppingCart.AddToCart(productId);
+                await usersShoppingCart.AddToCart(itemId);
             }
+
             return Redirect("Index");
         }
 
         // GET: Cart/Details/5
-        public ActionResult Details(string id)
+        public async Task<ActionResult> Details(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "shoppingcartitems");
+            //Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
 
+            CartItem cartItem = await DbHelper.GetObject<CartItem>(id, "CartItem");
+
+            /*
             var query = client.CreateDocumentQuery<CartItem>(collectionUri, new SqlQuerySpec()
             {
-                QueryText = "SELECT * FROM shoppingcartitems f WHERE (f.id = @id)",
+                QueryText = "SELECT * FROM object f WHERE (f.id = @id)",
                 Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", id)
@@ -73,6 +78,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
             }, DefaultOptions);
 
             CartItem cartItem = query.ToList().FirstOrDefault();
+            */
 
             if (cartItem == null)
             {
@@ -93,33 +99,41 @@ namespace Contoso.Apps.Movies.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CartItemId,CartId,Quantity,DateCreated,ItemId")] CartItem cartItem)
+        public async Task<ActionResult> Create([Bind(Include = "CartItemId,CartId,Quantity,DateCreated,ItemId")] CartItem cartItem)
         {
             if (ModelState.IsValid)
             {
+                /*
                 Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "shoppingcartitems");
                 client.UpsertDocumentAsync(collectionUri, cartItem);
+                */
+
+                await DbHelper.SaveObject(cartItem);
 
                 return RedirectToAction("Index");
             }
 
             ViewBag.ProductId = new SelectList(items, "ItemId", "ProductName", cartItem.ItemId);
+
             return View(cartItem);
         }
 
         // GET: Cart/Edit/5
-        public ActionResult Edit(string id)
+        public async Task<ActionResult> Edit(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "shoppingcartitems");
+            //Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "shoppingcartitems");
 
+            CartItem cartItem = await DbHelper.GetObject<CartItem>(id, "CartItem");
+
+            /*
             var query = client.CreateDocumentQuery<CartItem>(collectionUri, new SqlQuerySpec()
             {
-                QueryText = "SELECT * FROM shoppingcartitems f WHERE (f.id = @id)",
+                QueryText = "SELECT * FROM object f WHERE (f.id = @id) and f.EntityType = 'CartItem'",
                 Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", id)
@@ -127,6 +141,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
             }, DefaultOptions);
 
             CartItem cartItem = query.ToList().FirstOrDefault();
+            */
 
             if (cartItem == null)
             {
@@ -145,8 +160,12 @@ namespace Contoso.Apps.Movies.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "shoppingcartitems");
-                client.UpsertDocumentAsync(collectionUri, cartItem);
+                //Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "shoppingcartitems");
+
+                DbHelper.SaveObject(cartItem);
+
+                //client.UpsertDocumentAsync(collectionUri, cartItem);
+
                 return RedirectToAction("Index");
             }
             ViewBag.ProductId = new SelectList(items, "ItemId", "ProductName", cartItem.ItemId);
@@ -154,18 +173,21 @@ namespace Contoso.Apps.Movies.Web.Controllers
         }
 
         // GET: Cart/Delete/5
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "shoppingcartitems");
+            //Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "shoppingcartitems");
 
+            CartItem cartItem = await DbHelper.GetObject<CartItem>(id, "CartItem");
+
+            /*
             var query = client.CreateDocumentQuery<CartItem>(collectionUri, new SqlQuerySpec()
             {
-                QueryText = "SELECT * FROM shoppingcartitems f WHERE (f.id = @id)",
+                QueryText = "SELECT * FROM object f WHERE (f.id = @id)",
                 Parameters = new SqlParameterCollection()
                     {
                         new SqlParameter("@id", id)
@@ -173,22 +195,30 @@ namespace Contoso.Apps.Movies.Web.Controllers
             }, DefaultOptions);
 
             CartItem cartItem = query.ToList().FirstOrDefault();
+            */
 
             if (cartItem == null)
             {
                 return HttpNotFound();
             }
+
             return View(cartItem);
         }
 
         // POST: Cart/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(string id)
+        public async Task<ActionResult> DeleteConfirmed(string id)
         {
+            CartItem ci = await DbHelper.GetObject<CartItem>(id, "CartItem");
+
+            await DbHelper.DeleteObject(ci);
+
+            /*
             client.DeleteDocumentAsync(
                 UriFactory.CreateDocumentUri(databaseId, "shoppingcartitems", id),
                 new RequestOptions { PartitionKey = new PartitionKey("id") });
+                */
             
             return RedirectToAction("Index");
         }

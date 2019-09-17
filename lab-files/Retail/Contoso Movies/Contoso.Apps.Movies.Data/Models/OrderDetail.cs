@@ -36,6 +36,8 @@ namespace Contoso.Apps.Movies.Data.Models
         [ReadOnly(true)]
         public Item Product { get; set; }
 
+        public string ObjectId { get { return this.EntityType + "_" + this.OrderDetailId; } }
+
         public string EntityType { get { return "OrderDetail"; } }
     }
 }
