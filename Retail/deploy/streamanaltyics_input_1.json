@@ -1,0 +1,26 @@
+{
+    "properties": {
+        "type": "Stream",
+        "datasource": {
+            "type": "Microsoft.Devices/IotHubs",
+            "properties": {
+                "iotHubNamespace": "MyASAIoTHub",
+                "sharedAccessPolicyName": "iothubowner",
+                "sharedAccessPolicyKey": "accesspolicykey",
+                "endpoint": "messages/events",
+                "consumerGroupName": "$Default"
+                }
+        },
+        "compression": {
+            "type": "None"
+        },
+        "serialization": {
+            "type": "Json",
+            "properties": {
+                "encoding": "UTF8"
+            }
+        }
+    },
+    "name": "IoTHubInput",
+    "type": "Microsoft.StreamAnalytics/streamingjobs/inputs"
+}

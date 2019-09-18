@@ -1,0 +1,9 @@
+{
+    "name":"MyTransformation",
+    "type":"Microsoft.StreamAnalytics/streamingjobs/transformations",
+    "properties":{
+        "streamingUnits":1,
+        "script":null,
+        "query":" SELECT * INTO BlobOutput FROM IoTHubInput HAVING Temperature > 27"
+    }
+}
