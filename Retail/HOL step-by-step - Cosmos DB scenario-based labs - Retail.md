@@ -90,15 +90,41 @@ Synopsis: We have pregenerated a set of events that include **buy** events.  Bas
 
 ### Task 1: Implement the Top Items recommendation
 
-1.  Blah
+1.  Open the **todo** solution
 
-### Task 2: Add the Function App code
+1.  In the **todo** project, open the **todod** file
 
-1.  Blah
+1.  Find the todo task #1 and complete it with the following:
 
-### Task 3: Deploy the applications
+```csharp
 
-1.  Blah
+```
+
+1.  In the **todo** project, open the **todo** file
+
+1.  Find the todo task #2 and complete it with the following:
+
+```csharp
+
+```
+
+### Task 2: Deploy the applications
+
+1.  Right-click the **todo** function app project, select **Publish**
+
+1.  Select the Azure Subscription, Resource group and Function App to deploy too
+
+1.  Right-click the **todo** web app project, select **Publish**
+
+1.  Select the Azure Subscription, Resource group and Web App to deploy too
+
+### Task 3: Test the applications
+
+1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see the following:
+
+**TODO**
+
+>NOTE:  These are simply suggestions based on the top purchased items from the pre-generated events.
 
 ## Exercise 3: Perform and deploy association rules calculation for offline algorithms
 
@@ -106,13 +132,65 @@ Duration: 30 minutes
 
 Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-defined personality types (Comedy fan, Drama fan, etc), you will implement and deploy an algorithm that will generate these associations and put them in Cosmos DB for offline processing by the web and function applications.
 
-### Task 1: Blah
+### Task 1: Implement the Association Rules
 
-1.  Blah
+1.  Open your Azure DataBricks instance
 
-### Task 2: Blah
+1.  Run the following
 
-1.  Blah
+1.  TODO
+
+### Task 2: Review the data generated
+
+1.  Open your Cosmos DB instance
+
+1.  Open the **associations** collection, review the items in the collection
+
+>NOTE:  These items are created from the ...
+
+## Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)
+
+Duration: 30 minutes
+
+Synopsis: Now that we have data for our association calculations, we will add code to the web app and function app to support this new recommendation engine.
+
+### Task 1: Implement the Associations recommendation
+
+1.  In the **todo** project, open the **todod** file
+
+1.  Find the todo task #3 and complete it with the following:
+
+```csharp
+
+```
+
+1.  In the **todo** project, open the **todo** file
+
+1.  Find the todo task #4 and complete it with the following:
+
+```csharp
+
+```
+
+### Task 2: Deploy the applications
+
+1.  Right-click the **todo** function app project, select **Publish**
+
+1.  Select the Azure Subscription, Resource group and Function App to deploy too
+
+1.  Right-click the **todo** web app project, select **Publish**
+
+1.  Select the Azure Subscription, Resource group and Web App to deploy too
+
+### Task 3: Test the applications
+
+1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see the same results as you received previously.
+
+2.  Click **login**, select the **comedy@contosomovies.com** account
+
+3.  Notice the main page now has different recommendations that what you received earlier:
+
+**TODO**
 
 ## Exercise 4: Perform and deploy collaborative filtering rules calculation
 
@@ -120,23 +198,23 @@ Duration: 30 minutes
 
 In this exercise you will TODO
 
-### Task 1: Blah
+### Task 1: Implement the Collaborative Rules
 
-1.  Blah
+1.  Open your Azure DataBricks instance
 
-## Exercise 5: Explore Cosmos DB data
+1.  Run the following
 
-Duration: 30 minutes
+1.  TODO
 
-In this exercise you will TODO
+### Task 2: Review the data generated
 
-### Task 1: Explore Cosmos DB Collections
+1.  Open your Cosmos DB instance
 
-1.  Open your Cosmos DB resource in the Azure Portal
+1.  Open the **similarity** collection, review the items in the collection
 
-2.  Click **
+>NOTE:  These items are created from the ...
 
-## Exercise 6: Reporting with Stream Analytics and Power BI
+## Exercise 5: Reporting with Stream Analytics and Power BI
 
 Duration: 30 minutes
 
@@ -144,19 +222,47 @@ In this exercise you will TODO
 
 ### Task 1: Setup Stream Analytics 
 
-1.  Blah
+1.  Open the Azure Portal, navigate to your Stream Analytics job that was created for you in the setup script
 
-### Task 1: Setup Power BI Dashabord 
+1.  Click **Inputs**
 
-1.  Blah
+1.  CLick **Outputs**
 
-## Exercise 7: Email alerts using Logic Apps
+1.  Update the query to the following:
+
+```sql
+
+```
+
+1.  Click **Overview**, in the menu, click **Run**
+
+### Task 2: Setup Power BI Dashabord 
+
+1.  Open a new window to [Power BI](https://www.powerbi.com)
+
+1.  CLick **Dashboards**
+
+1.  Click **New**
+
+1.  Click **+Add tile** then select **Stream Data**
+
+1.  
+
+## Exercise 6: Email alerts using Logic Apps
 
 Duration: 30 minutes
 
 In this exercise you will TODO
 
-### Task 1: Blah
+### Task 1: Setup Logic App
+
+1.  Blah
+
+### Task 2: Update and deploy function app
+
+1.  Blah
+
+### Task 3: Test order email delivery
 
 1.  Blah
 
