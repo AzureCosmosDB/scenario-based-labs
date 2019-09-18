@@ -67,7 +67,6 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Exercise 8: Running the predictive maintenance batch scoring](#exercise-8-running-the-predictive-maintenance-batch-scoring)
     - [Task 1: Import lab notebooks into Azure Databricks](#task-1-import-lab-notebooks-into-azure-databricks)
     - [Task 2: Run batch scoring notebook](#task-2-run-batch-scoring-notebook)
-    - [Task 3: Create scheduled notebook job](#task-3-create-scheduled-notebook-job)
   - [Exercise 9: Deploying the predictive maintenance web service](#exercise-9-deploying-the-predictive-maintenance-web-service)
     - [Task 1: Run deployment notebook](#task-1-run-deployment-notebook)
   - [Exercise 10: Creating the Fleet status real-time dashboard in Power BI](#exercise-10-creating-the-fleet-status-real-time-dashboard-in-power-bi)
@@ -119,7 +118,7 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
 
 - Advanced analytics and ML model training:
 
-  **Azure Databricks** is used to train a machine learning model to predict vehicle battery failure, based on historic information. It saves a trained model locally for batch predictions, and deploys a model and scoring web service to **Azure Kubernetes Service** or **Azure Container Instances** for real-time predictions. Azure Databricks also uses the **Spark Cosmos DB connector** to pull down each day's trip information to make batch predictions on battery failure and store the predictions in the maintenance container.
+  **Azure Databricks** is used to train a machine learning model to predict vehicle battery failure, based on historic information. It saves a trained model locally for batch predictions, and deploys a model and scoring web service to **Azure Kubernetes Service (AKS)** or **Azure Container Instances (ACI)** for real-time predictions. Azure Databricks also uses the **Spark Cosmos DB connector** to pull down each day's trip information to make batch predictions on battery failure and store the predictions in the maintenance container.
 
 - Fleet management web app, security, and monitoring:
 
@@ -778,6 +777,12 @@ Next, we will start the Stream Analytics job so we can begin processing event da
 
 ## Exercise 8: Running the predictive maintenance batch scoring
 
+**Duration**: 20 minutes
+
+In this exercise, you will import Databricks notebooks into your Azure Databricks workspace. A notebook is interactive and runs in any web browser, mixing markup (formatted text with instructions), executable code, and outputs from running the code.
+
+Next, you will run the Batch Scoring notebook to make battery failure predictions on vehicles, using vehicle and trip data stored in Cosmos DB.
+
 ### Task 1: Import lab notebooks into Azure Databricks
 
 In this task, you will import the Databricks notebooks into your workspace.
@@ -804,11 +809,52 @@ In this task, you will import the Databricks notebooks into your workspace.
 
 ### Task 2: Run batch scoring notebook
 
-### Task 3: Create scheduled notebook job
+In this task, you will run the `Batch Scoring` notebook, using a pre-trained machine learning (ML) model to determine if the battery needs to be replaced on several vehicles within the next 30 days. The notebook performs the following actions:
+
+1. Installs required Python libraries.
+2. Connects to Azure Machine Learning service (Azure ML).
+3. Downloads a pre-trained ML model, saves it to Azure ML, then uses that model for batch scoring.
+4. Uses the Cosmos DB Spark connector to retrieve completed Trips and Vehicle metadata from the `metadata` Cosmos DB container, prepares the data using SQL queries, then surfaces the data as temporary views.
+5. Applies predictions against the data, using the pre-trained model.
+6. Saves the prediction results in the Cosmos DB `maintenance` container for reporting purposes.
+
+To run this notebook, perform the following steps:
+
+1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
+
+2. Select the `01 IoT (clean)` folder, then select the **Batch Scoring** notebook to open it.
+
+   ![The Batch Scoring notebook is highlighted.](media/databricks-batch-scoring-notebook.png 'Workspace')
+
+3. Before you can execute the cells in this or the other notebooks for this lab, you must first attach your Databricks cluster. Expand the dropdown at the top of the notebook where you see **Detached**. Select your lab cluster to attach it to the notebook. If it is not currently running, you will see an option to start the cluster.
+
+   ![The screenshot displays the lab cluster selected for attaching to the notebook.](media/databricks-notebook-attach-cluster.png 'Attach cluster')
+
+4. You may use keyboard shortcuts to execute the cells, such as **Ctrl+Enter** to execute a single cell, or **Shift+Enter** to execute a cell and move to the next one below.
+
+> If you wish to execute this notebook on a scheduled basis, such as every evening, you can use the Jobs feature in Azure Databricks to accomplish this.
 
 ## Exercise 9: Deploying the predictive maintenance web service
 
+**Duration**: 20 minutes
+
+In addition to batch scoring, Contoso Auto would like to predict battery failures on-demand in real time for any given vehicle. They want to be able to call the model from their Fleet Management website when looking at a vehicle to predict whether that vehicle's battery may fail in the next 30 days.
+
+In the previous task, you executed a notebook that used a pre-trained ML model to predict battery failures for all vehicles with trip data in a batch process. But how do you take that same model and deploy it (in data science terms, this is called "operationalization") to a web service for this purpose?
+
+In this task, you will run the `Model Deployment` notebook to deploy the pre-trained model to a web service hosted by Azure Container Instances (ACI), using your Azure ML workspace. While it is possible to deploy the model to a web service running in Azure Kubernetes Service (AKS), we are deploying to ACI instead since doing so saves 10-20 minutes. However, once deployed, the process used to call the web service is the same, as are most of the steps to do the deployment.
+
 ### Task 1: Run deployment notebook
+
+To run this notebook, perform the following steps:
+
+1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
+
+2. Select the `01 IoT (clean)` folder, then select the **Model Deployment** notebook to open it.
+
+   ![The Model Deployment notebook is highlighted.](media/databricks-model-deployment-notebook.png 'Workspace')
+
+3. As with the Batch Scoring notebook, be sure to attach your lab cluster before executing cells.
 
 ## Exercise 10: Creating the Fleet status real-time dashboard in Power BI
 
