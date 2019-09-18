@@ -16,7 +16,7 @@
 		"functionAppStreamProcessingName": "[concat('s2streamprocessing', variables('name-suffix'))]",
         "functionAppCosmosDBProcessingName": "[concat('s2cosmosdb', variables('name-suffix'))]",        
         
-		"keyVaultName": "[concat('keyvault-', variables('name-suffix'))]",
+		"keyVaultName": "[concat('s2keyvault-', variables('name-suffix'))]",
 		
 		"storageAccountStoreName": "[concat('s2data1', variables('name-suffix'))]",
 		
@@ -688,5 +688,11 @@
                 }
             }
         }
-    ]
+    ],
+	"outputs": {
+		"hash" {
+			"type" : "string",
+			"value" : "[variables('name-suffix')]"
+		}
+	}
 }
