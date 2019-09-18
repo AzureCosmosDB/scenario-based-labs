@@ -37,8 +37,8 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
       - [About the Cosmos DB indexing policies](#about-the-cosmos-db-indexing-policies)
     - [Task 3: Create a Logic App workflow for email alerts](#task-3-create-a-logic-app-workflow-for-email-alerts)
     - [Task 4: Add Key Vault secrets](#task-4-add-key-vault-secrets)
-    - [Task 4: Create Azure Databricks cluster](#task-4-create-azure-databricks-cluster)
-    - [Task 5: Configure Key Vault-backed Databricks secret store](#task-5-configure-key-vault-backed-databricks-secret-store)
+    - [Task 5: Create Azure Databricks cluster](#task-5-create-azure-databricks-cluster)
+    - [Task 6: Configure Key Vault-backed Databricks secret store](#task-6-configure-key-vault-backed-databricks-secret-store)
   - [Exercise 2: Deploy Azure functions and Web App](#exercise-2-deploy-azure-functions-and-web-app)
     - [Task 1: Open solution](#task-1-open-solution)
     - [Task 2: Code walk-through](#task-2-code-walk-through)
@@ -503,9 +503,73 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
 
    ![The list of secrets is displayed.](media/key-vault-keys.png 'Key Vault Secrets')
 
-### Task 4: Create Azure Databricks cluster
+### Task 5: Create Azure Databricks cluster
 
-### Task 5: Configure Key Vault-backed Databricks secret store
+Contoso Auto wants to use the valuable data they are collecting from their vehicles to make predictions about the health of their fleet to reduce downtime due to maintenance-related issues. One of the predictions they would like to make is whether a vehicle's battery is likely to fail within the next 30 days, based on historical data. They would like to run a nightly batch process to identify vehicles that should be serviced, based on these predictions. They also want to have a way to make a prediction in real time when viewing a vehicle on their fleet management website.
+
+To support this requirement, you will use Apache Spark on Azure Databricks, a fully managed Apache Spark platform optimized to run on Azure. Spark is a unified big data and advanced analytics platform that enables data scientists and data engineers to explore and prepare large amounts of structured and unstructured data, then use that data to train, use, and deploy machine learning models at scale. We will read and write to Cosmos DB, using the `azure-cosmosdb-spark` connector (<https://github.com/Azure/azure-cosmosdb-spark>).
+
+In this task, you will create a new cluster on which data exploration and model deployment tasks will be executed in later exercises.
+
+1. In the [Azure portal](https://portal.azure.com), open your lab resource group, then open your **Azure Databricks Service**. The name should start with `iot-databricks`.
+
+   ![The Azure Databricks Service is highlighted in the resource group.](media/resource-group-databricks.png 'Resource Group')
+
+2. Select **Launch Workspace**. Azure Databricks will automatically sign you in through its Azure Active Directory integration.
+
+   ![Launch Workspace](media/databricks-launch-workspace.png 'Launch Workspace')
+
+3. Once in the workspace, select **Clusters** in the left-hand menu, then select **+ Create Cluster**.
+
+   ![Create Cluster is highlighted.](media/databricks-clusters.png 'Clusters')
+
+4. In the **New Cluster** form, specify the following configuration options:
+
+   1. **Cluster Name**: Enter **lab**.
+   2. **Cluster Mode**: Select **Standard**.
+   3. **Pool**: Select **None**.
+   4. **Databricks Runtime Version**: Select **Runtime 5.5 LTS (Scala 2.11, Spark 2.4.3)**.
+   5. **Python Version**: Enter **3**.
+   6. **Autopilot Options**: Check **Enable autoscaling** and **Terminate after...**, with a value of **120** minutes.
+   7. **Worker Type**: Select **Standard_DS3_v2**.
+   8. **Driver Type**: Select **Same as worker**.
+   9. Enter **2** and **8** into **Min Workers** and **Max Workers**, respectively.
+
+   ![The New Cluster form is displayed with the previously described values.](media/databricks-new-cluster.png 'New Cluster')
+
+5. Select **Create Cluster**.
+
+### Task 6: Configure Key Vault-backed Databricks secret store
+
+In an earlier task, you added application secrets to Key Vault, such as the Cosmos DB connection string. In this task, you will configure the Key Vault-backed Databricks secret store to securely access these secrets.
+
+Azure Databricks has two types of secret scopes: Key Vault-backed and Databricks-backed. These secret scopes allow you to store secrets, such as database connection strings, securely. If someone tries to output a secret to a notebook, it is replaced by `[REDACTED]`. This helps prevent someone from viewing the secret or accidentally leaking it when displaying or sharing the notebook.
+
+1. Return to the [Azure portal](https://portal.azure.com), which should still be open in another browser tab, then navigate to your Key Vault account and select **Properties** on the left-hand menu.
+
+2. Copy the **DNS Name** and **Resource ID** property values and paste them to Notepad or some other text application that you can reference in a moment.
+
+   ![Properties is selected on the left-hand menu, and DNS Name and Resource ID are highlighted to show where to copy the values from.](media/key-vault-properties.png 'Key Vault properties')
+
+3. Navigate back to the Azure Databricks workspace.
+
+4. In your browser's URL bar, append **#secrets/createScope** to your Azure Databricks base URL (for example, <https://eastus.azuredatabricks.net#secrets/createScope>).
+
+5. Enter `key-vault-secrets` for the name of the secret scope.
+
+6. Select **Creator** within the Manage Principal drop-down to specify only the creator (which is you) of the secret scope has the MANAGE permission.
+
+   > MANAGE permission allows users to read and write to this secret scope, and, in the case of accounts on the Azure Databricks Premium Plan, to change permissions for the scope.
+
+   > Your account must have the Azure Databricks Premium Plan for you to be able to select Creator. This is the recommended approach: grant MANAGE permission to the Creator when you create the secret scope, and then assign more granular access permissions after you have tested the scope.
+
+7. Enter the **DNS Name** (for example, <https://iot-keyvault.vault.azure.net/>) and **Resource ID** you copied earlier during the Key Vault creation step, for example: `/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/cosmos-db-iot/providers/Microsoft.KeyVault/vaults/iot-keyvault`.
+
+   ![Create Secret Scope form](media/create-secret-scope.png 'Create Secret Scope')
+
+8. Select **Create**.
+
+After a moment, you will see a dialog verifying that the secret scope has been created.
 
 ## Exercise 2: Deploy Azure functions and Web App
 
