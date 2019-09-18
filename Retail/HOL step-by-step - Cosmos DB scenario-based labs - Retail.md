@@ -231,7 +231,32 @@ In this exercise you will TODO
 1.  Update the query to the following:
 
 ```sql
+SELECT Count(*) as FailureCount
+ INTO failureCount
+ FROM s2event
+ WHERE Event = 'paymentFailure'
+ GROUP BY TumblingWindow(second,10) 
 
+SELECT Count(distinct UserId) as UserCount
+ INTO userCount
+ FROM s2event  
+ GROUP BY TumblingWindow(second,10) 
+
+SELECT System.TimeStamp AS Time, Count(*)
+ INTO eventCount  
+ FROM s2event  
+ GROUP BY TumblingWindow(second,10) 
+
+ SELECT System.TimeStamp AS Time, Event, Count(*)
+ INTO eventSummary
+ FROM s2event  
+ GROUP BY Event, TumblingWindow(second,10) 
+
+ select DateAdd(second,-10,System.Timestamp()) AS WinStartTime, System.Timestamp() AS WinEndTime,0 as Min, Count(*) as Count, 10 as Target
+ into eventOrdersLastHour
+ from s2event
+ where event = 'buy'
+ GROUP BY SlidingWindow(second,10) 
 ```
 
 1.  Click **Overview**, in the menu, click **Run**
@@ -246,7 +271,18 @@ In this exercise you will TODO
 
 1.  Click **+Add tile** then select **Stream Data**
 
+### Task 3: Generate user events
+
+1.  Right-click the **DataGenerator** project, select **Set as startup project**
+
+1.  Press **F5** to run the project
+
+1.  Notice events will be generated based on a set of users and their preferred movie type
+
+1.  Buy events will be generated for the first 30 seconds, after that you will notice the orders per hour will fall below the target of 10.  This would signify that something is wrong with the front end web site or order processing.
+
 1.  
+
 
 ## Exercise 6: Email alerts using Logic Apps
 
@@ -256,11 +292,29 @@ In this exercise you will TODO
 
 ### Task 1: Setup Logic App
 
-1.  Blah
+1.  Open the Azure Portal to your resource group and select the Logic App
+
+1.  Click **Edit**
+
+1.  Set the email address to your email
+
+1.  Click **Save**
 
 ### Task 2: Update and deploy function app
 
-1.  Blah
+1.  Open the **todo** function app project
+
+1.  Add the following code:
+
+1.  Publish the function app
+
+### Task 2: Update and deploy function app
+
+1.  Open the **todo** function app project
+
+1.  Add the following code:
+
+1.  Publish the function app
 
 ### Task 3: Test order email delivery
 
