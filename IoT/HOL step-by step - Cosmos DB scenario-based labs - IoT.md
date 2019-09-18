@@ -494,6 +494,8 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
    | **Name**            |                                                                          **Value**                                                                          |
    | ------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
    | CosmosDBConnection  |                            Your Cosmos DB connection string found here: **Cosmos DB account > Keys > Primary Connection String**                            |
+   | CosmosDBEndpoint    |                                           Your Cosmos DB endpoint found here: **Cosmos DB account > Keys > URI**                                            |
+   | CosmosDBPrimaryKey  |                                      Your Cosmos DB primary key found here: **Cosmos DB account > Keys > Primary Key**                                      |
    | IoTHubConnection    |                         Your IoT Hub connection string found here: **IoT Hub > Built-in endpoints > Event Hub-compatible endpoint**                         |
    | ColdStorageAccount  |  Connection string to the Azure Storage account whose name starts with `iotstore`, found here: **Storage account > Access keys > key1 Connection string**   |
    | EventHubsConnection | Your Event Hubs connection string found here: **Event Hubs namespace > Shared access policies > RootManageSharedAccessKey > Connection string-primary key** |
@@ -627,15 +629,15 @@ In this task, you will import the Databricks notebooks into your workspace.
 
 3. Select **Workspace**, select **Users**, select the dropdown to the right of your username, then select **Import**.
 
-    ![The Import link is highlighted in the Workspace.](media/databricks-import-link.png "Workspace")
+   ![The Import link is highlighted in the Workspace.](media/databricks-import-link.png 'Workspace')
 
 4. Select **URL** next to **Import from**, paste the following into the text box: `https://github.com/solliancenet/cosmos-db-scenario-based-labs/blob/master/lab-files/IoT/Notebooks/01%20IoT.dbc`, then select **Import**.
 
-    ![The URL has been entered in the import form.](media/databricks-import.png "Import Notebooks")
+   ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
 
 5. After importing, select your username. You will see a new folder named `01 IoT (clean)`, which contains two notebooks.
 
-    ![The imported notebooks are displayed.](media/databricks-notebooks.png "Imported notebooks")
+   ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
 
 ### Task 2: Run batch scoring notebook
 
