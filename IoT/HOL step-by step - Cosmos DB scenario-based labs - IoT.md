@@ -615,6 +615,28 @@ After a moment, you will see a dialog verifying that the secret scope has been c
 
 ### Task 1: Import lab notebooks into Azure Databricks
 
+In this task, you will import the Databricks notebooks into your workspace.
+
+1. In the [Azure portal](https://portal.azure.com), open your lab resource group, then open your **Azure Databricks Service**. The name should start with `iot-databricks`.
+
+   ![The Azure Databricks Service is highlighted in the resource group.](media/resource-group-databricks.png 'Resource Group')
+
+2. Select **Launch Workspace**. Azure Databricks will automatically sign you in through its Azure Active Directory integration.
+
+   ![Launch Workspace](media/databricks-launch-workspace.png 'Launch Workspace')
+
+3. Select **Workspace**, select **Users**, select the dropdown to the right of your username, then select **Import**.
+
+    ![The Import link is highlighted in the Workspace.](media/databricks-import-link.png "Workspace")
+
+4. Select **URL** next to **Import from**, paste the following into the text box: `https://github.com/solliancenet/cosmos-db-scenario-based-labs/blob/master/lab-files/IoT/Notebooks/01%20IoT.dbc`, then select **Import**.
+
+    ![The URL has been entered in the import form.](media/databricks-import.png "Import Notebooks")
+
+5. After importing, select your username. You will see a new folder named `01 IoT (clean)`, which contains two notebooks.
+
+    ![The imported notebooks are displayed.](media/databricks-notebooks.png "Imported notebooks")
+
 ### Task 2: Run batch scoring notebook
 
 ### Task 3: Create scheduled notebook job
