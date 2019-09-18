@@ -72,12 +72,12 @@ function ConvertObjectToJson($data)
 
 #################
 #
-# Run to get the lasest AZ powershell commands...
+# Run to get the lasest AZ powershell commands (for stream analytics)
 #
 #################
 #Install-Module -Name Az -AllowClobber -Scope CurrentUser
 #################
-
+$mode = "lab"  #can be 'lab' or 'demo'
 $subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
 $subName = "Solliance MPN 12K"
 $suffix = "mi4tatni3b2y4"
@@ -248,7 +248,7 @@ SetupStreamAnalytics $suffix;
 
 ########################
 #
-#setup the cosmosdb (run the import tool to create collections and import data)
+#setup the cosmosdb (run the import tool to create collections and import initial event data)
 #
 ########################
 
@@ -259,5 +259,5 @@ SetupStreamAnalytics $suffix;
 #run the data bricks notebook
 #
 ########################
-
+#Done in the labs
 
