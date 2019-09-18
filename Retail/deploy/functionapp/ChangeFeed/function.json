@@ -1,0 +1,22 @@
+{
+  "generatedBy": "Microsoft.NET.Sdk.Functions-1.0.29",
+  "configurationSource": "attributes",
+  "bindings": [
+    {
+      "type": "cosmosDBTrigger",
+      "connectionStringSetting": "CosmosDBConnection",
+      "leaseCollectionName": "leases",
+      "createLeaseCollectionIfNotExists": true,
+      "startFromBeginning": true,
+      "collectionName": "events",
+      "databaseName": "moviegeek",
+      "leaseDatabaseName": "moviegeek",
+      "useMultipleWriteLocations": false,
+      "useDefaultJsonSerialization": false,
+      "name": "events"
+    }
+  ],
+  "disabled": false,
+  "scriptFile": "../bin/Contoso.Apps.FunctionApp.ChangeFeed.dll",
+  "entryPoint": "ContosoFunctionApp.FuncChangeFeed.Run"
+}

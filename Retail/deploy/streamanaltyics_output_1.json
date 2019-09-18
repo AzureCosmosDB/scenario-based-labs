@@ -1,0 +1,12 @@
+{
+  "properties": {
+	"datasource": {
+	  "type": "OutputDataSource"
+	},
+	"diagnostics": {
+	  "conditions": []
+	}
+  },
+  "name": "eventCount",
+  "type": "Microsoft.StreamAnalytics/streamingjobs/outputs"
+}

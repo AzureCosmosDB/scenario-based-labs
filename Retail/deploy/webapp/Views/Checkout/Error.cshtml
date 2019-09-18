@@ -1,0 +1,47 @@
+﻿@model Contoso.Apps.Movies.Web.Models.CheckoutErrorModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@section HeaderOverlay {
+    
+}
+
+<section class="store">
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Something went wrong...</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p><h2>Uh, oh! Something happened, and it might have been my fault...</h2></p>
+                        <p><br /></p>
+                        <p>Here are some potentially helpful details about what went wrong:</p>
+                        <p>
+                            <strong>@Model.ErrorCode</strong><br />
+                            @Model.ShortMessage<br />
+                            @Model.LongMessage
+                        </p>
+                        <p>Try <a href="@Url.Action("Index", "Store")" class="goback" style="color: blue">going back</a> and attempting again.</p>
+                    </div>
+                </div>
+
+                @section Scripts {
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            $('.goback').click(function (e) {
+                                e.preventDefault();
+                                history.back(1);
+                            });
+                        });
+                    </script>
+                }
+
+            </div>
+        </div>
+    </div>
+</section>

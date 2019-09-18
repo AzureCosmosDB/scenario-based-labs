@@ -78,21 +78,43 @@ Duration: 30 minutes
 
 Synopsis:  In this exercise you will TODO
 
-### Task 1: Blah
+### Task 1: Deploy the Azure Resources
 
-1.  TODO
+1.  Run the Deploy.ps1 script to deploy the ARM template and do some time saving  setup and configuration.
 
-## Exercise 2: Creating and deploying rule calculations
+## Exercise 2: Complete and deploy Web App and Function Apps
 
 Duration: 30 minutes
 
-Synopsis: TODO
+Synopsis: We have pregenerated a set of events that include **buy** events.  Based on this information, a **Top Items** recommendation will be made to users that are new to the site.  You will implement this code in the web application and function applications, then deploy the applications to test the functionality.
+
+### Task 1: Implement the Top Items recommendation
+
+1.  Blah
+
+### Task 2: Add the Function App code
+
+1.  Blah
+
+### Task 3: Deploy the applications
+
+1.  Blah
+
+## Exercise 3: Perform and deploy association rules calculation for offline algorithms
+
+Duration: 30 minutes
+
+Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-defined personality types (Comedy fan, Drama fan, etc), you will implement and deploy an algorithm that will generate these associations and put them in Cosmos DB for offline processing by the web and function applications.
 
 ### Task 1: Blah
 
 1.  Blah
 
-## Exercise 3: Simulate data and events
+### Task 2: Blah
+
+1.  Blah
+
+## Exercise 4: Perform and deploy collaborative filtering rules calculation
 
 Duration: 30 minutes
 
@@ -102,17 +124,33 @@ In this exercise you will TODO
 
 1.  Blah
 
-## Exercise 4: Reporting with Stream Analytics and Power BI
+## Exercise 5: Explore Cosmos DB data
 
 Duration: 30 minutes
 
 In this exercise you will TODO
 
-### Task 1: Blah
+### Task 1: Explore Cosmos DB Collections
+
+1.  Open your Cosmos DB resource in the Azure Portal
+
+2.  Click **
+
+## Exercise 6: Reporting with Stream Analytics and Power BI
+
+Duration: 30 minutes
+
+In this exercise you will TODO
+
+### Task 1: Setup Stream Analytics 
 
 1.  Blah
 
-## Exercise 5: Email alerts using Logic Apps
+### Task 1: Setup Power BI Dashabord 
+
+1.  Blah
+
+## Exercise 7: Email alerts using Logic Apps
 
 Duration: 30 minutes
 
