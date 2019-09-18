@@ -255,7 +255,7 @@ In this task, you will use the Azure Cloud Shell to create a new Azure Databrick
 
 ### Task 11: Create Stream Analytics job
 
-In this task, you will use the Azure portal to create a new Stream Analytics job. This service is used in this lab for real-time event processing of vehicle telemetry data after it has been saved to Cosmos DB. You will use the Stream Analytics windowing query functions to perform aggregates on the data, pumping ovarall vehicle statistics to Power BI for display on a real-time dashboard, and saving individual vehicle aggregates back to Cosmos DB for reporting in Power BI.
+In this task, you will use the Azure portal to create a new Stream Analytics job. This service is used in this lab for real-time event processing of vehicle telemetry data after it has been saved to Cosmos DB. You will use the Stream Analytics windowing query functions to perform aggregates on the data, pumping overall vehicle statistics to Power BI for display on a real-time dashboard, and saving individual vehicle aggregates back to Cosmos DB for reporting in Power BI.
 
 1. In the Azure portal (<https://portal.azure.com>), select **+ Create a resource**, then type **stream analytics** into the search box on top. Select **Stream Analytics job** from the results.
 

@@ -47,7 +47,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 5: Deploy Web App](#task-5-deploy-web-app)
     - [Task 6: Configure application settings in Azure](#task-6-configure-application-settings-in-azure)
   - [Exercise 3: Explore and execute data generator](#exercise-3-explore-and-execute-data-generator)
-    - [Task 1: Open solution](#task-1-open-solution-1)
+    - [Task 1: Open the data generator project](#task-1-open-the-data-generator-project)
     - [Task 2: Update application configuration](#task-2-update-application-configuration)
     - [Task 3: Code walk-through](#task-3-code-walk-through)
     - [Task 4: Run generator](#task-4-run-generator)
@@ -143,7 +143,7 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 You must provision a few resources in Azure before you start developing the solution. Ensure all resources use the same resource group for easier cleanup.
 
-In this exercise, you will configure your lab environment so you can start sending and processing generated vehicle, consignment, package, and trip data. You will begin by creating a Cosmos DB database and containers, then you will create a new Logic App and create a workflow for sending email notifications, then retrieve secrets used in the solution's application settings (such as connection strings) and securely store them in Azure Key Vault, and finally configure your Azure Databricks environment.
+In this exercise, you will configure your lab environment so you can start sending and processing generated vehicle, consignment, package, and trip data. You will begin by creating a Cosmos DB database and containers, then you will create a new Logic App and create a workflow for sending email notifications, create an Application Insights service for real-time monitoring of your solution, then retrieve secrets used in the solution's application settings (such as connection strings) and securely store them in Azure Key Vault, and finally configure your Azure Databricks environment.
 
 ### Task 1: Create Cosmos DB database and container
 
@@ -523,7 +523,7 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
 
 ## Exercise 3: Explore and execute data generator
 
-### Task 1: Open solution
+### Task 1: Open the data generator project
 
 ### Task 2: Update application configuration
 
