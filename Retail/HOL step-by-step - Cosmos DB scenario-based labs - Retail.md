@@ -72,7 +72,89 @@ Contoso Movies, Ltd. has express their desire to move to a more modern and cloud
 
 Refer to the Before the hands-on lab setup guide manual before continuing to the lab exercises.
 
-## Exercise 1: Complete and deploy Web App and Function Apps
+## Exercise 1: Configure Databricks and generate event data
+
+Duration: 30 minutes
+
+Synopsis: We have pregenerated a set of events that include **buy** events.  Based on this information, a **Top Items** recommendation will be made to users that are new to the site.  You will implement this code in the web application and function applications, then deploy the applications to test the functionality.
+
+### Task 1: Configure Azure Databricks
+
+1.  Open the Azure Portal, navigate to your Azure DataBricks instance
+
+1.  Click **Launch Workspace**, if prompted, login as the account you used to create your environment
+
+1.  Click **Cluster**
+
+1.  Click **Create Cluster**
+
+1.  On the create cluster form, provide the following:
+
+   - **Cluster Name**: small
+
+   - **Cluster Type**: Standard
+
+   - **Databricks Runtime Version**: Runtime: 5.5 (Scala 2.11, Spark 2.4.3) (**Note**: the runtime version may have **LTS** after the version. This is also a valid selection.)
+
+   - **Python Version**: 3
+
+   - **Enable Autoscaling**: Uncheck this option.
+
+   - **Auto Termination**: Check the box and enter 120
+
+   - **Worker Type**: Standard_DS3_v2
+
+   - **Driver Type**: Same as worker
+
+   - **Workers**: 1
+
+1.  Select **Create Cluster**.
+
+1.  Before continuing to the next step, verify that your new cluster is running.  Wait for the state to change from **Pending** to **Running**
+
+1.  Click the **small** cluster, then click **Libraries**
+
+1. If you **do not** see the **Maven** already installed on the cluster, continue to the next step. Otherwise, continue to Task 2.
+
+1. Select **Install New**.
+
+1. In the Install Library dialog, select **Maven** for the Library Source, then enter the following in the Coordinates field: `com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1`. Select **Install**.
+
+1. **Wait** until the library's status shows as **Installed** before continuing.
+
+### Task 2: Populate event data
+
+1. Within Azure Databricks, select **Workspace** on the menu, then **Users**, select your user, then select the down arrow on the top of your user workspace. Select **Import**.
+
+1. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it (/lab-files/Retail/Notebooks/02 Retail.dbc)
+
+1.  Click **Import**
+
+1. After importing, expand the new **02 Retail** folder.
+
+1.  Select **Event Generator**
+
+1. Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
+
+1.  Update the configuration settings for both the **readConfig** and the **writeConfig**, set the following:
+
+- Endpoint = Cosmos DB endpoint
+- Masterkey = Cosmos DB master key
+- Database = Database id of the cosmos db
+
+1.  Click **Run All**
+
+>NOTE:  This total process will take up to 30 minutes to generate the event data.
+
+### Task 3: Review the data generated
+
+1.  Open your Cosmos DB instance
+
+1.  Open the **events** collection, review the items in the collection
+
+>NOTE:  These items are created from the data bricks solution and include a random set of generated events for each user personality type.  You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated (via the contentId field) with the event.
+
+## Exercise 2: Complete and deploy Web App and Function Apps
 
 Duration: 30 minutes
 
@@ -156,85 +238,11 @@ Duration: 30 minutes
 
 Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-defined personality types (Comedy fan, Drama fan, etc), you will implement and deploy an algorithm that will generate these associations and put them in Cosmos DB for offline processing by the web and function applications.
 
-### Task 1: Configure Azure Databricks
+### Task 1: Generate the Associations 
 
-1.  Open the Azure Portal, navigate to your Azure DataBricks instance
+1.  Switch back to your Databricks workspace, select **Association Rules**
 
-1.  Click **Launch Workspace**, if prompted, login as the account you used to create your environment
-
-1.  Click **Cluster**
-
-1.  Click **Create Cluster**
-
-1.  On the create cluster form, provide the following:
-
-   - **Cluster Name**: small
-
-   - **Cluster Type**: Standard
-
-   - **Databricks Runtime Version**: Runtime: 5.5 (Scala 2.11, Spark 2.4.3) (**Note**: the runtime version may have **LTS** after the version. This is also a valid selection.)
-
-   - **Python Version**: 3
-
-   - **Enable Autoscaling**: Uncheck this option.
-
-   - **Auto Termination**: Check the box and enter 120
-
-   - **Worker Type**: Standard_DS3_v2
-
-   - **Driver Type**: Same as worker
-
-   - **Workers**: 1
-
-1.  Select **Create Cluster**.
-
-1.  Before continuing to the next step, verify that your new cluster is running.  Wait for the state to change from **Pending** to **Running**
-
-1.  Click the **small** cluster, then click **Libraries**
-
-1. If you **do not** see the **Maven** already installed on the cluster, continue to the next step. Otherwise, continue to Task 2.
-
-1. Select **Install New**.
-
-1. In the Install Library dialog, select **Maven** for the Library Source, then enter the following in the Coordinates field: `com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1`. Select **Install**.
-
-1. **Wait** until the library's status shows as **Installed** before continuing.
-
-### Task 2: Implement the Association Rules
-
-1. Within Azure Databricks, select **Workspace** on the menu, then **Users**, select your user, then select the down arrow on the top of your user workspace. Select **Import**.
-
-1. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it (/lab-files/Retail/Notebooks/02 Retail.dbc)
-
-1.  Click **Import**
-
-1. After importing, expand the new **02 Retail** folder.
-
-1.  Select **Event Generator**
-
-1. Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
-
-1.  Update the configuration settings for both the **readConfig** and the **writeConfig**, set the following:
-
-- Endpoint = Cosmos DB endpoint
-- Masterkey = Cosmos DB master key
-- Database = Database id of the cosmos db
-
-1.  Click **Run All**
-
->NOTE:  This total process will take up to 30 minutes to generate the event data.
-
-### Task 3: Review the data generated
-
-1.  Open your Cosmos DB instance
-
-1.  Open the **events** collection, review the items in the collection
-
->NOTE:  These items are created from the data bricks solution and include a random set of generated events for each user personality type.  You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated (via the contentId field) with the event.
-
-1.  Select **Association Rules**
-
-1. Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
+1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
 
 1.  Update the configuration settings for both the **readEventsConfig** AND the **writeAssociationConfig**, set the following:
 
@@ -244,13 +252,39 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 1. Run each cell of the **Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
-### Task 4: Review the data generated
+### Task 2: Review the data generated
 
-1.  Open your Cosmos DB instance
+1.  Switch back to your Cosmos DB instance
 
 1.  Open the **associations** collection, review the items in the collection
 
 >NOTE:  These items are created from the data bricks solution and include the association confidence level as compared from one movie to another movie.
+
+**TODO IMAGE**
+
+### Task 3: Generate the Ratings
+
+1.  Switch back to your Databricks workspace, select **Ratings**
+
+1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
+
+1.  Update the configuration settings for both the **readEventsConfig** AND the **writeAssociationConfig**, set the following:
+
+- Endpoint = Cosmos DB endpoint
+- Masterkey = Cosmos DB master key
+- Database = Database id of the cosmos db
+
+1. Run each cell of the **Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+
+>NOTE:  These ratings are generated as part of this notebook as an 'offline' operation.  If you collect a significant amount of user data, you would need to reevaluate the events using this notebook and populate the ratings collection again for the online calculations to utilize.
+
+### Task 4: Review the data generated
+
+1.  Switch back to your Cosmos DB instance
+
+1.  Open the **ratings** collection, review the items in the collection
+
+>NOTE:  These items are created from the data bricks solution and include the implict item ratings of a user based on their activites on the web site.
 
 **TODO IMAGE**
 
@@ -264,7 +298,7 @@ Synopsis: Now that we have data for our association calculations, we will add co
 
 1.  In the **Contoso.Apps.FunctionApp.Recommend** project, open the **RecommendationHelper.cs** file
 
-1.  Find the todo task #3 and complete it with the following:
+1.  In the **CollaborativeBasedRecommendation** method, find the todo task #3 and complete it with the following:
 
 ```csharp
 int neighborhoodSize = 15;
@@ -352,9 +386,9 @@ foreach(PredictionModel pm in sortedItems)
 }
 ```
 
-1.  In the **Contoso.Apps.FunctionApp.Recommend** project, open the **RecommendationHelper.cs** file
+1.  In the **Contoso.Apps.Movies.Web** project, open the **HomeController.cs** file
 
-1.  Find the todo task #4 and complete it with the following:
+1.  In the **Index** method, find the todo task #4 and complete it with the following:
 
 ```csharp
 vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("assoc", 0, 0);
@@ -392,13 +426,18 @@ In this exercise you will TODO
 
 1.  Open the **Ratings** notebook
 
-1.  Set the cluster and then run the notebook
+1.  Set the cluster
+
+1. Run each cell of the **Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
 ### Task 2: Implement the Collaborative Rules
 
 1.  Open the **Similarity** notebook
 
-1.  Set the cluster and then run the notebook
+1.  Set the cluster
+
+1. Run each cell of the **Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+
 
 ### Task 2: Review the data generated
 
@@ -424,7 +463,7 @@ In this exercise you will TODO
 
 1.  Click **+Add stream input**, then select **Event Hub**
 
-1.  For the alias, type **s2events**
+1.  For the alias, type **s2event**
 
 1.  Select your subscription
 
@@ -440,11 +479,53 @@ In this exercise you will TODO
 
 1.  Click **+Add**, then select **Power BI**
 
-1.  For the output alias, type **todo**
+1.  For the output alias, type **eventCount**
 
-1.  For the dataset, type **todo**
+1.  For the dataset, type **store**
 
-1.  For the table name, type **todo**
+1.  For the table name, type **eventCount**
+
+1.  Click **Authorize**, login to your Power BI instance
+
+1.  Click **Save**
+
+1.  Click **+Add**, then select **Power BI**
+
+1.  For the output alias, type **eventOrdersLastHour**
+
+1.  For the dataset, type **store**
+
+1.  For the table name, type **eventOrdersLastHour**
+
+1.  Click **Authorize**, login to your Power BI instance
+
+1.  Click **+Add**, then select **Power BI**
+
+1.  For the output alias, type **eventSummary**
+
+1.  For the dataset, type **store**
+
+1.  For the table name, type **eventSummary**
+
+1.  Click **Authorize**, login to your Power BI instance
+
+1.  Click **+Add**, then select **Power BI**
+
+1.  For the output alias, type **failureCount**
+
+1.  For the dataset, type **store**
+
+1.  For the table name, type **failureCount**
+
+1.  Click **Authorize**, login to your Power BI instance
+
+1.  Click **+Add**, then select **Power BI**
+
+1.  For the output alias, type **userCount**
+
+1.  For the dataset, type **store**
+
+1.  For the table name, type **userCount**
 
 1.  Click **Authorize**, login to your Power BI instance
 
@@ -483,19 +564,9 @@ SELECT System.TimeStamp AS Time, Count(*)
  GROUP BY SlidingWindow(second,10) 
 ```
 
-1.  Click **Overview**, in the menu, click **Run**
+1.  Click **Overview**, in the menu, click **Start** to start your stream analytics job
 
-### Task 2: Setup Power BI Dashabord 
-
-1.  Open a new window to [Power BI](https://www.powerbi.com)
-
-1.  CLick **Dashboards**
-
-1.  Click **New**
-
-1.  Click **+Add tile** then select **Stream Data**
-
-### Task 3: Configure the ChangeFeed Function
+### Task 2: Configure the ChangeFeed Function
 
 1.  In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file
 
@@ -541,7 +612,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 >NOTE:  This method will forward the change feed events to the event hub where stream analytics will be monitoring and then forwarding data to a Power BI dashboard
 
-### Task 4: Deploy the ChangeFeed Function
+### Task 3: Deploy the ChangeFeed Function
 
 1.  Right-click the **Consoto.Apps.FunctionApp.ChangeFeed** function app project, select **Publish**
 
@@ -553,7 +624,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Click **OK**
 
-### Task 5: Generate user events
+### Task 4: Generate user events
 
 1.  Right-click the **DataGenerator** project, select **Set as startup project**
 
@@ -563,7 +634,29 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Buy events will be generated for the first 30 seconds, after that you will notice the orders per hour will fall below the target of 10.  This would signify that something is wrong with the front end web site or order processing.
 
-1.  Switch to your Power BI dashboard, you should see it update with the event data
+### Task 5: Setup Power BI Dashabord 
+
+1.  Open a new window to [Power BI](https://www.powerbi.com)
+
+1.  Click on **My workspace**
+
+1.  Click **+Create**, then select **Dashboard**
+
+1.  For the name, type **Contoso Movies**, click **Create**
+
+1.  Click the **...** ellipses, then select **+Add tile**
+
+1.  Select **Custom Streaming Data**, click **Next**
+
+1.  Select the **eventCount** data set
+
+### Task 4: Generate more user events
+
+1.  Switch back to Visual Studio, press **F5** to run the data generator project
+
+1.  Switch to your Power BI dashboard, you should see it update with the event data:
+
+TODO
 
 ## Exercise 6: Email alerts using Logic Apps
 

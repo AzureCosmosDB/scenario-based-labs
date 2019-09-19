@@ -4,6 +4,7 @@ using Contoso.Apps.Movies.Web.Controllers;
 using Contoso.Apps.Movies.Web.Models;
 using Microsoft.Azure.Documents.Client;
 using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 
@@ -13,7 +14,7 @@ namespace Contoso.Apps.Movies.Controllers
     public class CollectController : BaseController
     {
         [HttpPost]
-        public bool Log(string user_id, string item_id, string event_type, string session_id)
+        public async Task<bool> Log(string user_id, string item_id, string event_type, string session_id)
         {
             Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
             
@@ -32,12 +33,7 @@ namespace Contoso.Apps.Movies.Controllers
 
                 //add to cosmos db
                 var container = client.GetContainer(databaseId, "events");
-                container.UpsertItemAsync(log);
-
-                /*
-                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
-                var item = client.UpsertDocumentAsync(collectionUri, log);
-                */
+                await container.UpsertItemAsync(log);                
             }
 
             return true;
