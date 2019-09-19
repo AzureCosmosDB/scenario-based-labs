@@ -16,7 +16,7 @@ namespace Functions.StreamProcessing
     public static class Functions
     {
         [FunctionName("IoTHubTrigger")]
-        public static async Task EventHubTrigger([IoTHubTrigger("messages/events", Connection = "IoTHubConnection")] EventData[] vehicleEventData,
+        public static async Task IoTHubTrigger([IoTHubTrigger("messages/events", Connection = "IoTHubConnection")] EventData[] vehicleEventData,
             [CosmosDB(
                 databaseName: "ContosoAuto",
                 collectionName: "telemetry",
@@ -43,14 +43,9 @@ namespace Functions.StreamProcessing
                     // (2) Ensuring efficient routing on queries on a given VIN - you can spread these across
                     // time, e.g. SELECT * FROM c WHERE c.partitionKey IN (“VIN123-2019-01”, “VIN123-2019-02”, …)
                     // (3) Scale beyond the 10GB quota for a single partition key value.
-                    vehicleEvent.partitionKey = $"{vehicleEvent.vin}-{DateTime.UtcNow:yyyy-MM}";
-                    // Set the TTL to expire the document after 60 days.
-                    vehicleEvent.ttl = 60 * 60 * 24 * 60;
-                    vehicleEvent.timestamp = DateTime.UtcNow;
+                    // TODO 7: Set the VehicleEvent partition key value as described in the comments above, set the TTL to 60 days, set the timestamp to now, then add it to the Cosmos DB output collection.
+                    // Complete: vehicleEvent.partitionKey = ...; vehicleEvent.ttl = ...; vehicleEvent.timestamp = ...; await vehicleTelemetryOut ...;
 
-                    await vehicleTelemetryOut.AddAsync(vehicleEvent);
-
-                    //await Task.Yield();
                 }
                 catch (Exception e)
                 {

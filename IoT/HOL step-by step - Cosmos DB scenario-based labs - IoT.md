@@ -986,6 +986,10 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     ![The View menu in Visual Studio is displayed, and the Task List item is highlighted.](media/vs-view-tasklist.png "View Task List")
 
+    The Task List appears at the bottom of the window:
+
+    ![The Task List is displayed.](media/vs-tasklist.png "Task List")
+
 2. Open **Startup.cs** within the **Functions.CosmosDB** project and complete the code beneath **TODO 1** by pasting the following:
 
     ```csharp
@@ -1010,7 +1014,9 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     Since we are using the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/), and dependency injection is supported starting with Function Apps v2, we are using a [singleton Azure Cosmos DB client for the lifetime of the application](https://docs.microsoft.com/azure/cosmos-db/performance-tips#sdk-usage). This is injected into the `Functions` class through its constructor, as you will see in the next TODO block.
 
-3. Open **Functions.cs** within the **Functions.CosmosDB** project and complete the code beneath **TODO 2** by pasting the following:
+3. **Save** the **Startup.cs** file.
+
+4. Open **Functions.cs** within the **Functions.CosmosDB** project and complete the code beneath **TODO 2** by pasting the following:
 
     ```csharp
     public Functions(IHttpClientFactory httpClientFactory, CosmosClient cosmosClient)
@@ -1022,7 +1028,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     Adding the code above allows the `HttpClientFactory` and the `CosmosClient` to be injected into the function code, which allows these services to manage their own connections and lifecycle to improve performance and prevent thread starvation and other issues caused by incorrectly creating too many instances of expensive objects. The `HttpClientFactory` was already configured in `Startup.cs` where you made your previous code change. It is used to send alerts to the Logic App endpoint, and uses [Polly](https://github.com/App-vNext/Polly) to employ a gradual back-off wait and retry policy in case the Logic App is overloaded or has other issues causing calls to the HTTP endpoint to fail.
 
-4. Look at the first function code below the constructor code you just completed:
+5. Look at the first function code below the constructor code you just completed:
 
     ```csharp
     [FunctionName("TripProcessor")]
@@ -1040,7 +1046,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     The `FunctionName` attribute defines how the function name appears within the Function App, and can be different from the C# method name. This `TripProcessor` function uses the `CosmosDBTrigger` to fire on every Cosmos DB change feed event. The events arrive in batches, whose size depends on factors such as how many Insert, Update, or Delete events there are for the container. The `databaseName` and `collectionName` properties define which container's change feed triggers the function. The `ConnectionStringSetting` indicates the name of the Function App's application setting from which to pull the Cosmos DB connection string. In our case, the connection string value will draw from the Key Vault secret you created. The `LeaseCollection` properties define the name of the lease container and the prefix applied to lease data for this function, and whether to create the lease container if it does not exist. `StartFromBeginning` is set to `true`, ensuring that all events since the function last run are processed. The function outputs the change feed documents into an `IReadOnlyList` collection.
 
-5. Scroll down a little further in the function and complete the code beneath **TODO 3** by pasting the following:
+6. Scroll down a little further in the function and complete the code beneath **TODO 3** by pasting the following:
 
     ```csharp
     var vin = group.Key;
@@ -1051,7 +1057,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     We have grouped the events by vehicle VIN, so we assign a local `vin` variable to hold the group key (VIN). Next, we use the `group.Max` aggregate function to calculate the max odometer value, and use the `group.Average` function to calculate the average refrigeration unit temperature. We will use the `odometerHigh` value to calculate the trip distance and determine whether the trip is completed, based on the planned trip distance from the `Trip` record in the Cosmos DB `metadata` container. The `averageRefrigerationUnitTemp` is added in the alert that gets sent to the Logic App, if needed.
 
-6. Review the code that is just below the new code you added:
+7. Review the code that is just below the new code you added:
 
     ```csharp
     // First, retrieve the metadata Cosmos DB container reference:
@@ -1082,7 +1088,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     Since we have the Consignment ID, we can use the `ReadItemAsync` method to retrieve a single Consignment record. Here we also pass the partition key to minimize fan-out. Within a Cosmos DB container, a document's unique ID is a combination of the `id` field and the partition key value.
 
-7. Scroll down a little further in the function and complete the code beneath **TODO 4** by pasting the following:
+8. Scroll down a little further in the function and complete the code beneath **TODO 4** by pasting the following:
 
     ```csharp
     if (updateTrip)
@@ -1098,7 +1104,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     The `ReplaceItemAsync` method updates the Cosmos DB document with the passed in object with the associated `id` and partition key value.
 
-8. Scroll down and complete the code beneath **TODO 5** by pasting the following:
+9. Scroll down and complete the code beneath **TODO 5** by pasting the following:
 
     ```csharp
     await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
@@ -1106,7 +1112,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     Here we are using the `HttpClient` created by the injected `HttpClientFactory` to post the serialized `LogicAppAlert` object to the Logic App. The `Environment.GetEnvironmentVariable("LogicAppUrl")` method extracts the Logic App URL from the Function App's application settings and, using the special Key Vault access string you added to the app setting, extracts the encrypted value from the Key Vault secret.
 
-9. Scroll to the bottom of the file to find and complete **TODO 6** with the following code:
+10. Scroll to the bottom of the file to find and complete **TODO 6** with the following code:
 
     ```csharp
     // Convert to a VehicleEvent class.
@@ -1119,6 +1125,126 @@ The Function App and Web App projects contain blocks of code that need to be com
     The `ReadAsAsync` method is an extension method located in `CosmosDbIoTScenario.Common.ExtensionMethods` that converts a Cosmos DB Document to a class; in this case, a `VehicleEvent` class. Currently, the `CosmosDBTrigger` on a function only supports returning an `IReadOnlyList` of `Documents`, requiring a conversion to another class if you want to work with your customer classes instead of a Document for now. This extension method automates the process.
 
     The `AddAsync` method asynchronously adds to the `IAsyncCollector<EventData>` collection defined in the function attributes, which takes care of sending the collection items to the defined Event Hub endpoint.
+
+11. **Save** the **Functions.cs** file.
+
+12. Open **Functions.cs** within the **Functions.StreamProcessing** project. Let us first review the function parameters:
+
+    ```csharp
+    [FunctionName("IoTHubTrigger")]
+    public static async Task IoTHubTrigger([IoTHubTrigger("messages/events", Connection = "IoTHubConnection")] EventData[] vehicleEventData,
+        [CosmosDB(
+            databaseName: "ContosoAuto",
+            collectionName: "telemetry",
+            ConnectionStringSetting = "CosmosDBConnection")]
+        IAsyncCollector<VehicleEvent> vehicleTelemetryOut,
+        ILogger log)
+    {
+    ```
+
+    This function is defined with the `IoTHubTrigger`. Each time the IoT devices send data to IoT Hub, this function gets triggered and sent the event data in batches (`EventData[] vehicleEventData`). The `CosmosDB` attribute is an output attribute, simplifying writing Cosmos DB documents to the defined database and container; in our case, the `ContosoAuto` database and `telemetry` container, respectively.
+
+13. Scroll down in the function code to find and complete **TODO 7** with the following code:
+
+    ```csharp
+    vehicleEvent.partitionKey = $"{vehicleEvent.vin}-{DateTime.UtcNow:yyyy-MM}";
+    // Set the TTL to expire the document after 60 days.
+    vehicleEvent.ttl = 60 * 60 * 24 * 60;
+    vehicleEvent.timestamp = DateTime.UtcNow;
+
+    await vehicleTelemetryOut.AddAsync(vehicleEvent);
+    ```
+
+    The `partitionKey` property represents a synthetic composite partition key for the Cosmos DB container, consisting of the VIN + current year/month. Using a composite key instead of simply the VIN provides us with the following benefits:
+    
+    1. Distributing the write workload at any given point in time over a high cardinality of partition keys.
+    2. Ensuring efficient routing on queries on a given VIN - you can spread these across time, e.g. `SELECT * FROM c WHERE c.partitionKey IN ("VIN123-2019-01", "VIN123-2019-02", …)`
+    3. Scale beyond the 10GB quota for a single partition key value.
+
+    The `ttl` property sets the time-to-live for the document to 60 days, after which Cosmos DB will delete the document, since the `telemetry` container is our hot path storage.
+
+    When we asynchronously add the class to the `vehicleTelemetryOut` collection, the Cosmos DB output binding on the function automatically handles writing the data to the defined Cosmos DB database and container, managing the implementation details for us.
+
+14. **Save** the **Functions.cs** file.
+
+15. Open **Startup.cs** within the **FleetManagementWebApp** project. Scroll down to the bottom of the file to find and complete **TODO 8** with the following code:
+
+    ```csharp
+    CosmosClientBuilder clientBuilder = new CosmosClientBuilder(cosmosDbConnectionString.ServiceEndpoint.OriginalString, cosmosDbConnectionString.AuthKey);
+    CosmosClient client = clientBuilder
+        .WithConnectionModeDirect()
+        .Build();
+    CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
+    ```
+
+    This code uses the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) to initialize the `CosmosClient` instance that is added to the `IServiceCollection` as a singleton for dependency injection and object lifetime management.
+
+16. Open **CosmosDBService.cs** under the **Services** folder of the **FleetManagementWebApp** project to find and complete **TODO 9** with the following code:
+
+    ```csharp
+    var setIterator = query.Where(predicate).Skip(itemIndex).Take(pageSize).ToFeedIterator();
+    ```
+
+    Here we are using the newly added `Skip` and `Take` methods on the `IOrderedQueryable` object (`query`) to retrieve just the records for the requested page. The `predicate` represents the LINQ expression passed in to the `GetItemsWithPagingAsync` method to apply filtering.
+
+17. Scroll down a little further to find and complete **TODO 10** with the following code:
+
+    ```csharp
+    var count = this._container.GetItemLinqQueryable<T>(allowSynchronousQueryExecution: true, requestOptions: !string.IsNullOrWhiteSpace(partitionKey) ? new QueryRequestOptions { PartitionKey = new PartitionKey(partitionKey) } : null)
+        .Where(predicate).Count();
+    ```
+
+    In order to know how many pages we need to navigate, we must know the total item count with the current filter applied. To do this, we retrieve a new `IOrderedQueryable` results from the `Container`, pass the filter predicate to the `Where` method, and return the `Count` to the `count` variable. For this to work, you must set `allowSynchronousQueryExecution` to true, which we do with our first parameter to the `GetItemLinqQueryable` method.
+
+18. Open **VehiclesController.cs** under the **Controllers** folder of the **FleetManagementWebApp** project to review the following code:
+
+    ```csharp
+    private readonly ICosmosDbService _cosmosDbService;
+    private readonly IHttpClientFactory _clientFactory;
+    private readonly IConfiguration _configuration;
+    private readonly Random _random = new Random();
+
+    public VehiclesController(ICosmosDbService cosmosDbService, IHttpClientFactory clientFactory, IConfiguration configuration)
+    {
+        _cosmosDbService = cosmosDbService;
+        _clientFactory = clientFactory;
+        _configuration = configuration;
+    }
+
+    public async Task<IActionResult> Index(int page = 1, string search = "")
+    {
+        if (search == null) search = "";
+        //var query = new QueryDefinition("SELECT TOP @limit * FROM c WHERE c.entityType = @entityType")
+        //    .WithParameter("@limit", 100)
+        //    .WithParameter("@entityType", WellKnown.EntityTypes.Vehicle);
+        // await _cosmosDbService.GetItemsAsync<Vehicle>(query);
+
+        var vm = new VehicleIndexViewModel
+        {
+            Search = search,
+            Vehicles = await _cosmosDbService.GetItemsWithPagingAsync<Vehicle>(
+                x => x.entityType == WellKnown.EntityTypes.Vehicle &&
+                      (string.IsNullOrWhiteSpace(search) ||
+                      (x.vin.ToLower().Contains(search.ToLower()) || x.stateVehicleRegistered.ToLower() == search.ToLower())), page, 10)
+        };
+
+        return View(vm);
+    }
+    ```
+
+    We are using dependency injection with this controller, just as we did with onr of our Function Apps earlier. The `ICosmosDbService`, `IHttpClientFactory`, and `IConfiguration` services are injected into the controller through the controller's constructor. The `CosmosDbService` is the class whose code you updated in the previous step. The `CosmosClient` is injected into it through its constructor.
+
+    The `Index` controller action method uses paging, which it implements by calling the `ICosmosDbService.GetItemsWithPagingAsync` method you updated in the previous step. Using this service in the controller helps abstract the Cosmos DB query implementation details and business rules from the code in the action methods, keeping the controller lightweight and the code in the service reusable across all the controllers.
+
+    Notice that the paging query does not include a partition key, making the Cosmos DB query cross-partition, which is needed to be able to query across all the documents. If this query ends up being used a lot with the passed in `search` value, causing a higher than desired RU usage on the container per execution, then you might want to consider alternate strategies for the partition key, such as a combination of `vin` and `stateVehicleRegistered`. However, since most of our access patterns for vehicles in this container use the VIN, we are using it as the partition key right now. You will see code further down in the method that explicitly pass the partition key value.
+
+19. Scroll down in the `VehiclesController.cs` file to find and complete **TODO 11** with the following code:
+
+    ```csharp
+    await _cosmosDbService.DeleteItemAsync<Vehicle>(item.id, item.partitionKey);
+    ```
+
+    Here we are doing a hard delete by completely removing the item. In a real-world scenario, we would most likely perform a soft delete, which means updating the document with a `deleted` property and ensuring all filters exclude items with this property. Plus, we'd soft delete related records, such as trips. Soft deletions make it much easier to recover a deleted item if needed in the future.
 
 ### Task 5 Deploy Stream Processing Function App
 

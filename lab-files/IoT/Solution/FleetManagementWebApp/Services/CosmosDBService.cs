@@ -112,7 +112,8 @@ namespace FleetManagementWebApp.Services
             var query = this._container.GetItemLinqQueryable<T>(requestOptions: !string.IsNullOrWhiteSpace(partitionKey) ? new QueryRequestOptions { PartitionKey = new PartitionKey(partitionKey) } : null);
 
             // Implement paging:
-            var setIterator = query.Where(predicate).Skip(itemIndex).Take(pageSize).ToFeedIterator();
+            // TODO 9: Define a FeedIterator on the IOrderedQueryable query object, making sure to implement paging by skipping and taking from the results.
+            // Complete: var setIterator = query.Where ...;
             
             var list = new List<T>();
             while (setIterator.HasMoreResults)
@@ -123,8 +124,8 @@ namespace FleetManagementWebApp.Services
             }
 
             // Get total item count from the database:
-            var count = this._container.GetItemLinqQueryable<T>(allowSynchronousQueryExecution: true, requestOptions: !string.IsNullOrWhiteSpace(partitionKey) ? new QueryRequestOptions { PartitionKey = new PartitionKey(partitionKey) } : null)
-                .Where(predicate).Count();
+            // TODO 10: Get the total item count with the query applied, from the database. You must allow synchronous query execution.
+            // Complete: var count = this._container.GetItemLinqQueryable<T>( ... ;
 
             var results = list.ToPagerList();
             results.TotalItemCount = count;
