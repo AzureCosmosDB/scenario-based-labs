@@ -47,16 +47,17 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 3: Create Stream Analytics query](#task-3-create-stream-analytics-query)
     - [Task 4: Run Stream Analytics job](#task-4-run-stream-analytics-job)
   - [Exercise 3: Deploy Azure functions and Web App](#exercise-3-deploy-azure-functions-and-web-app)
-    - [Task 1: Open solution](#task-1-open-solution)
-    - [Task 2: Code walk-through](#task-2-code-walk-through)
-    - [Task 3: Deploy Event Hub consumer Function App](#task-3-deploy-event-hub-consumer-function-app)
-    - [Task 4: Deploy Change Feed consumer Function App](#task-4-deploy-change-feed-consumer-function-app)
-    - [Task 5: Deploy Web App](#task-5-deploy-web-app)
-    - [Task 6: Configure application settings in Azure](#task-6-configure-application-settings-in-azure)
+    - [Task 1: Retrieve the URI for each Key Vault secret](#task-1-retrieve-the-uri-for-each-key-vault-secret)
+    - [Task 1: Configure application settings in Azure](#task-1-configure-application-settings-in-azure)
+    - [Task 2: Open solution](#task-2-open-solution)
+    - [Task 3: Code walk-through](#task-3-code-walk-through)
+    - [Task 4: Deploy Event Hub consumer Function App](#task-4-deploy-event-hub-consumer-function-app)
+    - [Task 5: Deploy Change Feed consumer Function App](#task-5-deploy-change-feed-consumer-function-app)
+    - [Task 6: Deploy Web App](#task-6-deploy-web-app)
   - [Exercise 4: Explore and execute data generator](#exercise-4-explore-and-execute-data-generator)
     - [Task 1: Open the data generator project](#task-1-open-the-data-generator-project)
-    - [Task 2: Update application configuration](#task-2-update-application-configuration)
-    - [Task 3: Code walk-through](#task-3-code-walk-through)
+    - [Task 2: Code walk-through](#task-2-code-walk-through)
+    - [Task 3: Update application configuration](#task-3-update-application-configuration)
     - [Task 4: Run generator](#task-4-run-generator)
   - [Exercise 5: Observe data using Cosmos DB Data Explorer and Web App](#exercise-5-observe-data-using-cosmos-db-data-explorer-and-web-app)
     - [Task 1: View data in Cosmos DB Data Explorer](#task-1-view-data-in-cosmos-db-data-explorer)
@@ -514,21 +515,21 @@ In order for your Function Apps and Web App to be able to access Key Vault to re
 
 2. Select **Identity**.
 
-    ![Identity is highlighted in the platform features tab.](media/function-app-platform-features-identity.png "Platform features")
+   ![Identity is highlighted in the platform features tab.](media/function-app-platform-features-identity.png 'Platform features')
 
 3. Within the **System assigned** tab, switch **Status** to **On**. Select **Save**.
 
-    ![The Function App Identity value is set to On.](media/function-app-identity.png "Identity")
+   ![The Function App Identity value is set to On.](media/function-app-identity.png 'Identity')
 
 4. Open the Azure Function App whose name begins with **IoT-StreamProcessing** and navigate to **Platform features**.
 
 5. Select **Identity**.
 
-    ![Identity is highlighted in the platform features tab.](media/function-app-platform-features-identity.png "Platform features")
+   ![Identity is highlighted in the platform features tab.](media/function-app-platform-features-identity.png 'Platform features')
 
 6. Within the **System assigned** tab, switch **Status** to **On**. Select **Save**.
 
-    ![The Function App Identity value is set to On.](media/function-app-identity.png "Identity")
+   ![The Function App Identity value is set to On.](media/function-app-identity.png 'Identity')
 
 7. Open the Web App (App Service) whose name begins with **IoTWebApp**.
 
@@ -536,7 +537,7 @@ In order for your Function Apps and Web App to be able to access Key Vault to re
 
 9. Within the **System assigned** tab, switch **Status** to **On**. Select **Save**.
 
-    ![The Web App Identity value is set to On.](media/web-app-identity.png "Identity")
+   ![The Web App Identity value is set to On.](media/web-app-identity.png 'Identity')
 
 ### Task 6: Add Function Apps and Web App to Key Vault access policy
 
@@ -548,61 +549,61 @@ Perform these steps to create an access policy that enables the "Get" secret per
 
 3. Select **+ Add Access Policy**.
 
-    ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png "Access policies")
+   ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png 'Access policies')
 
 4. Select the **Select principal** section on the Add access policy form.
 
-    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png "Add access policy")
+   ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
 5. In the Principal blade, search for your `IoT-CosmosDBProcessing` Function App's service principal, select it, then select the **Select** button.
 
-    ![The Function App's principal is selected.](media/key-vault-principal-function1.png "Principal")
+   ![The Function App's principal is selected.](media/key-vault-principal-function1.png 'Principal')
 
 6. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
 
-    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png "Add access policy")
+   ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
 7. Select **Add** to add the new access policy.
 
 8. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
 
-    ![Key Vault access policies.](media/key-vault-access-policies-function1.png "Access policies")
+   ![Key Vault access policies.](media/key-vault-access-policies-function1.png 'Access policies')
 
 9. Select the **Select principal** section on the Add access policy form.
 
-    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png "Add access policy")
+   ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
 10. In the Principal blade, search for your `IoT-StreamProcessing` Function App's service principal, select it, then select the **Select** button.
 
-    ![The Function App's principal is selected.](media/key-vault-principal-function2.png "Principal")
+    ![The Function App's principal is selected.](media/key-vault-principal-function2.png 'Principal')
 
 11. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
 
-    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png "Add access policy")
+    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
 12. Select **Add** to add the new access policy.
 
 13. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
 
-    ![Key Vault access policies.](media/key-vault-access-policies-function2.png "Access policies")
+    ![Key Vault access policies.](media/key-vault-access-policies-function2.png 'Access policies')
 
 14. Select the **Select principal** section on the Add access policy form.
 
-    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png "Add access policy")
+    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
 15. In the Principal blade, search for your `IoTWebApp` Web App's service principal, select it, then select the **Select** button.
 
-    ![The Web App's principal is selected.](media/key-vault-principal-webapp.png "Principal")
+    ![The Web App's principal is selected.](media/key-vault-principal-webapp.png 'Principal')
 
 16. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
 
-    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png "Add access policy")
+    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
 17. Select **Add** to add the new access policy.
 
 18. When you are done, you should have an access policy for the Web App's managed identity. Select **Save** to save your new access policies.
 
-    ![Key Vault access policies.](media/key-vault-access-policies-webapp.png "Access policies")
+    ![Key Vault access policies.](media/key-vault-access-policies-webapp.png 'Access policies')
 
 ### Task 7: Create Azure Databricks cluster
 
@@ -837,25 +838,79 @@ Next, we will start the Stream Analytics job so we can begin processing event da
 
 ## Exercise 3: Deploy Azure functions and Web App
 
-### Task 1: Open solution
+**Duration**: 30 minutes
 
-### Task 2: Code walk-through
+In the architecture for this scenario, Azure functions play a major role in event processing. These functions execute within an Azure Function App, Microsoft's serverless solution for easily running small pieces of code, or "functions," in the cloud. You can write just the code you need for the problem at hand, without worrying about a whole application or the infrastructure to run it. Functions can make development even more productive, and you can use your development language of choice, such as C#, F#, Node.js, Java, or PHP.
 
-### Task 3: Deploy Event Hub consumer Function App
+Before we dive into this exercise, let's go over how the functions and Web App fit into our architecture.
 
-### Task 4: Deploy Change Feed consumer Function App
+There are three Function Apps and one Web App in the solution. The Function Apps handle event processing within two stages of the data pipeline, and the Web App is used to perform CRUD operations against data stored in Cosmos DB.
 
-### Task 5: Deploy Web App
+![The two Function Apps and Web App are highlighted.](media/solution-diagram-function-apps-web-app.png 'Solution diagram')
 
-### Task 6: Configure application settings in Azure
+You may wonder, if a Function App contains several functions within, _why do we need two Function Apps instead of one_? The primary reason for using two Function Apps is due to how functions scale to meet demand. When you use the Azure Functions consumption plan, you only pay for the time your code runs. More importantly, Azure automatically handles scaling your functions to meet demand. It scales using an internal scale controller that evaluates the type of trigger the functions are using, and applies heuristics to determine when to scale out to multiple instances. The important thing to know is that functions scale at the Function App level. Meaning, if you have one very busy function and the rest are mostly idle, that one busy function causes the entire Function App to scale. Think about this when designing your solution. It is a good idea to **divide extremely high-load functions into separate Function Apps**.
+
+Now let's introduce the Function Apps and Web App and how they contribute to the architecture.
+
+- **IoT-StreamProcessing Function App**: This is the Stream Processing Function App. It contains a single function, named `IoTHubTrigger`, which is automatically triggered by the IoT Hub's Event Hub endpoint as vehicle telemetry is sent by the data generator. The function performs some light processing to the data by defining the partition key value, the document's TTL, adds a timestamp value, then saves the information to Cosmos DB.
+
+  ![The Event Processing function is shown.](media/solution-architecture-function1.png 'Solution architecture')
+
+- **IoT-CosmosDBProcessing Function App**: This is the Trip Processing Function App. It contains three functions, each triggered by the Cosmos DB Change Feed on the `telemetry` container. Because the Cosmos DB Change Feed supports multiple consumers, these three functions can run in parallel, processing the same information simultaneously without conflicting with one another. When we define the `CosmosDBTrigger` for each of these functions, we configure the trigger settings to connect to a Cosmos DB collection named `leases` to keep track of which change feed events they have processed. We also set the `LeaseCollectionPrefix` value for each function with a unique prefix so one function does not attempt to retrieve or update the lease information for another. The following functions are in this Function App:
+
+  - **TripProcessor**: This function groups vehicle telemetry data by VIN, retrieves the associated Trip record from the `metadata` container, updates the Trip record with a trip start timestamp, an end timestamp if completed, and a status showing whether the trip has started, is delayed, or has completed. It also updates the associated Consignment record with the status, and triggers the Logic App with the trip information if an alert needs to be emailed to the recipient defined in the Function App's app settings (`RecipientEmail`).
+  - **ColdStorage**: This function connects to the Azure Storage account (`ColdStorageAccount`) and writes the raw vehicle telemetry data for cold storage in the following time-sliced path format: `telemetry/custom/scenario1/yyyy/MM/dd/HH/mm/ss-fffffff.json`.
+  - **SendToEventHubsForReporting**: This function simply sends the vehicle telemetry data straight to Event Hubs, allowing Stream Analytics to apply windowed aggregates and save those aggregates in batches to Power BI and to the Cosmos DB `metadata` container.
+
+  ![The Trip Processing function is shown.](media/solution-architecture-function2.png 'Solution architecture')
+
+- **IoTWebApp**: The Web App provides a Fleet Management portal, allowing users to perform CRUD operations on vehicle data, make real-time battery failure predictions for a vehicle against the deployed machine learning model, and view consignments, packages, and trips. It connects to the Cosmos DB `metadata` container, using the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/).
+
+  ![The Web App is shown.](media/solution-architecture-webapp.png 'Solution architecture')
+
+### Task 1: Retrieve the URI for each Key Vault secret
+
+When you set the App Settings for the Function Apps and Web App in the next task, you will need to reference the URI of a secret in Key Vault, including the version number. To do this, perform the following steps for each secret and **copy the values** to Notepad or similar text application.
+
+1. Open your Key Vault instance in the portal.
+
+2. Select **Secrets** under Settings in the left-hand menu.
+
+3. Select the secret whose URI value you wish to obtain.
+
+4. Select the **Current Version** of the secret.
+
+   ![The secret's current version is displayed.](media/key-vault-secret-current-version.png 'Current Version')
+
+5. Copy the **Secret Identifier**.
+
+   ![The Secret Identifier is highlighted.](media/key-vault-secret-identifier.png 'Secret Identifier')
+
+   When you add the Key Vault reference to this secret within a Function App's App Settings, you will use the following format: `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is replaced by the Secret Identifier (URI) value above.
+
+   For example, a complete reference would look like the following:
+
+   `@Microsoft.KeyVault(SecretUri=https://iot-keyvault-501993860.vault.azure.net/secrets/CosmosDBConnection/794f93084861483d823d37233569561d)`
+
+### Task 1: Configure application settings in Azure
+
+### Task 2: Open solution
+
+### Task 3: Code walk-through
+
+### Task 4: Deploy Event Hub consumer Function App
+
+### Task 5: Deploy Change Feed consumer Function App
+
+### Task 6: Deploy Web App
 
 ## Exercise 4: Explore and execute data generator
 
 ### Task 1: Open the data generator project
 
-### Task 2: Update application configuration
+### Task 2: Code walk-through
 
-### Task 3: Code walk-through
+### Task 3: Update application configuration
 
 ### Task 4: Run generator
 
