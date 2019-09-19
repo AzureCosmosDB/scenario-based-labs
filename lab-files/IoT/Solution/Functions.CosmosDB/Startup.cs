@@ -47,19 +47,9 @@ namespace Functions.CosmosDB
             }));
 
             // Register the Cosmos DB client as a Singleton.
-            builder.Services.AddSingleton((s) => {
-                var connectionString = configuration["CosmosDBConnection"];
-                var cosmosDbConnectionString = new CosmosDbConnectionString(connectionString);
-
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    throw new ArgumentNullException("Please specify a value for CosmosDBConnection in the local.settings.json file or your Azure Functions Settings.");
-                }
-
-                CosmosClientBuilder configurationBuilder = new CosmosClientBuilder(cosmosDbConnectionString.ServiceEndpoint.OriginalString, cosmosDbConnectionString.AuthKey);
-                return configurationBuilder
-                    .Build();
-            });
+            // TODO 1: Register the Cosmos DB client as a Singleton so it can be injected into the Function App code.
+            // Complete: builder.Services.AddSingleton((s) => { ... }
+            
         }
     }
 }

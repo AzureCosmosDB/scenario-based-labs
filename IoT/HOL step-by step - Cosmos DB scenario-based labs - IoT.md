@@ -48,12 +48,12 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 4: Run Stream Analytics job](#task-4-run-stream-analytics-job)
   - [Exercise 3: Deploy Azure functions and Web App](#exercise-3-deploy-azure-functions-and-web-app)
     - [Task 1: Retrieve the URI for each Key Vault secret](#task-1-retrieve-the-uri-for-each-key-vault-secret)
-    - [Task 1: Configure application settings in Azure](#task-1-configure-application-settings-in-azure)
-    - [Task 2: Open solution](#task-2-open-solution)
-    - [Task 3: Code walk-through](#task-3-code-walk-through)
-    - [Task 4: Deploy Event Hub consumer Function App](#task-4-deploy-event-hub-consumer-function-app)
-    - [Task 5: Deploy Change Feed consumer Function App](#task-5-deploy-change-feed-consumer-function-app)
-    - [Task 6: Deploy Web App](#task-6-deploy-web-app)
+    - [Task 2: Configure application settings in Azure](#task-2-configure-application-settings-in-azure)
+    - [Task 3: Open solution](#task-3-open-solution)
+    - [Task 4: Code completion and walk-through](#task-4-code-completion-and-walk-through)
+    - [Task 5 Deploy Stream Processing Function App](#task-5-deploy-stream-processing-function-app)
+    - [Task 6: Deploy Cosmos DB Processing Function App](#task-6-deploy-cosmos-db-processing-function-app)
+    - [Task 7: Deploy Web App](#task-7-deploy-web-app)
   - [Exercise 4: Explore and execute data generator](#exercise-4-explore-and-execute-data-generator)
     - [Task 1: Open the data generator project](#task-1-open-the-data-generator-project)
     - [Task 2: Code walk-through](#task-2-code-walk-through)
@@ -65,16 +65,17 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Exercise 6: Performing CRUD operations using the Web App](#exercise-6-performing-crud-operations-using-the-web-app)
     - [Task 1: Update vehicle metadata](#task-1-update-vehicle-metadata)
     - [Task 2: View consignment, package, and trip data](#task-2-view-consignment-package-and-trip-data)
-  - [Exercise 7: Observe Change Feed using Azure Functions and App Insights](#exercise-7-observe-change-feed-using-azure-functions-and-app-insights)
-    - [Task 1: Open App Insights Live View](#task-1-open-app-insights-live-view)
-  - [Exercise 8: Running the predictive maintenance batch scoring](#exercise-8-running-the-predictive-maintenance-batch-scoring)
-    - [Task 1: Import lab notebooks into Azure Databricks](#task-1-import-lab-notebooks-into-azure-databricks)
-    - [Task 2: Run batch scoring notebook](#task-2-run-batch-scoring-notebook)
-  - [Exercise 9: Deploying the predictive maintenance web service](#exercise-9-deploying-the-predictive-maintenance-web-service)
-    - [Task 1: Run deployment notebook](#task-1-run-deployment-notebook)
-  - [Exercise 10: Creating the Fleet status real-time dashboard in Power BI](#exercise-10-creating-the-fleet-status-real-time-dashboard-in-power-bi)
+  - [Exercise 7: Creating the Fleet status real-time dashboard in Power BI](#exercise-7-creating-the-fleet-status-real-time-dashboard-in-power-bi)
     - [Task 1: Log in to Power BI online](#task-1-log-in-to-power-bi-online)
     - [Task 2: Create real-time dashboard](#task-2-create-real-time-dashboard)
+  - [Exercise 8: Observe Change Feed using Azure Functions and App Insights](#exercise-8-observe-change-feed-using-azure-functions-and-app-insights)
+    - [Task 1: Open App Insights Live View](#task-1-open-app-insights-live-view)
+  - [Exercise 9: Running the predictive maintenance batch scoring](#exercise-9-running-the-predictive-maintenance-batch-scoring)
+    - [Task 1: Import lab notebooks into Azure Databricks](#task-1-import-lab-notebooks-into-azure-databricks)
+    - [Task 2: Run batch scoring notebook](#task-2-run-batch-scoring-notebook)
+  - [Exercise 10: Deploying the predictive maintenance web service](#exercise-10-deploying-the-predictive-maintenance-web-service)
+    - [Task 1: Run deployment notebook](#task-1-run-deployment-notebook)
+    - [Task 2: Call the deployed scoring web service from the Web App](#task-2-call-the-deployed-scoring-web-service-from-the-web-app)
   - [Exercise 11: Creating the Predictive Maintenance & Trip/Consignment Status reports in Power BI](#exercise-11-creating-the-predictive-maintenance--tripconsignment-status-reports-in-power-bi)
     - [Task 1: Add Cosmos DB data sources to Power BI Desktop](#task-1-add-cosmos-db-data-sources-to-power-bi-desktop)
     - [Task 2: Create new report in Power BI Desktop](#task-2-create-new-report-in-power-bi-desktop)
@@ -300,7 +301,9 @@ In this task, you will review the default indexing set on your new containers, a
 
 #### About the Cosmos DB indexing policies
 
-In this task, we updated the indexing policy for the `telemetry` container, but left the other two containers with the default policy. The default indexing policy for newly created containers indexes every property of every item, enforcing range indexes for any string or number, and spatial indexes for any GeoJSON object of type Point. This allows you to get high query performance without having to think about indexing and index management upfront. Since the `metadata` and `maintenance` containers have more read-heavy workloads than `telemetry`, it makes sense to use the default indexing policy where query performance is optimized. The indexing mode for all three containers is set to **Consistent**. This means the index is updated synchronously as items are added, updated, or deleted, enforcing the consistency level configured for the account for read queries. The other indexing mode one could choose is None, which disables indexing on the container. Usually this mode is used when your container acts as a pure key-value store, and you do not need indexes for any of the other properties. It is possible to dynamically change the consistency mode prior to executing bulk operations, then changing the mode back to Consistent afterwards, if the potential performance increase warrants the temporary change.
+In this task, we updated the indexing policy for the `telemetry` container, but left the other two containers with the default policy. The default indexing policy for newly created containers indexes every property of every item, enforcing range indexes for any string or number, and spatial indexes for any GeoJSON object of type Point. This allows you to get high query performance without having to think about indexing and index management upfront. Since the `metadata` and `maintenance` containers have more read-heavy workloads than `telemetry`, it makes sense to use the default indexing policy where query performance is optimized. Since we need faster writes for `telemetry`, we exclude unused paths. The use of indexing paths can offer improved write performance and lower index storage for scenarios in which the query patterns are known beforehand, as indexing costs are directly correlated to the number of unique paths indexed.
+
+The indexing mode for all three containers is set to **Consistent**. This means the index is updated synchronously as items are added, updated, or deleted, enforcing the consistency level configured for the account for read queries. The other indexing mode one could choose is None, which disables indexing on the container. Usually this mode is used when your container acts as a pure key-value store, and you do not need indexes for any of the other properties. It is possible to dynamically change the consistency mode prior to executing bulk operations, then changing the mode back to Consistent afterwards, if the potential performance increase warrants the temporary change.
 
 ### Task 3: Create a Logic App workflow for email alerts
 
@@ -957,11 +960,169 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
 ### Task 3: Open solution
 
-### Task 4: Code walk-through
+In this task, you will open the Visual Studio solution for this lab. It contains projects for both Function Apps, the Web App, and the data generator.
 
-### Task 5 Deploy Event Hub consumer Function App
+1. Open Windows Explorer and navigate to the location you extracted the solution ZIP file in the _Before the HOL_ guide. If you extracted the ZIP file directly to `C:\`, you need to open the following folder: `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Solution`. Open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
 
-### Task 6: Deploy Change Feed consumer Function App
+    ![The Visual Studio Solution file is displayed in Windows Explorer.](media/vs-solution-file.png "Visual Studio Solution")
+
+2. After opening the solution, observe the included projects in the **Solution Explorer**:
+
+    1. **Functions.CosmosDB**: Project for the **IoT-CosmosDBProcessing** Function App.
+    2. **Functions.StreamProcessing**: Project for the **IoT-StreamProcessing** Function App.
+    3. **CosmosDbIoTScenario.Common**: Contains entity models, extensions, and helpers used by the other projects.
+    4. **FleetDataGenerator**: The data generator seeds the Cosmos DB `metadata` container with data and simulates vehicles, connects them to IoT Hub, then sends generated telemetry data.
+    5. **FleetManagementWebApp**: Project for the **IoTWebApp** Web App.
+
+    ![The Visual Studio Solution Explorer is displayed.](media/vs-solution-explorer.png "Solution Explorer")
+
+3. Right-click on the `CosmosDbIoTScenario` solution in Solution Explorer, then select **Restore NuGet Packages**. The packages may have already been restored upon opening the solution.
+
+### Task 4: Code completion and walk-through
+
+The Function App and Web App projects contain blocks of code that need to be completed before you can deploy them. The reason for this is to help guide you through the solution, and to better understand the code by completing small fragments.
+
+1. In Visual Studio, select **View**, then select **Task List**. This will display the list of **TODO** items, helping you navigate to each one.
+
+    ![The View menu in Visual Studio is displayed, and the Task List item is highlighted.](media/vs-view-tasklist.png "View Task List")
+
+2. Open **Startup.cs** within the **Functions.CosmosDB** project and complete the code beneath **TODO 1** by pasting the following:
+
+    ```csharp
+    builder.Services.AddSingleton((s) => {
+        var connectionString = configuration["CosmosDBConnection"];
+        var cosmosDbConnectionString = new CosmosDbConnectionString(connectionString);
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new ArgumentNullException("Please specify a value for CosmosDBConnection in the local.settings.json file or your Azure Functions Settings.");
+        }
+
+        CosmosClientBuilder configurationBuilder = new CosmosClientBuilder(cosmosDbConnectionString.ServiceEndpoint.OriginalString, cosmosDbConnectionString.AuthKey);
+        return configurationBuilder
+            .Build();
+    });
+    ```
+
+    Your completed code should look as follows:
+
+    ![The TODO 1 code is completed.](media/vs-todo1.png "TODO 1")
+
+    Since we are using the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/), and dependency injection is supported starting with Function Apps v2, we are using a [singleton Azure Cosmos DB client for the lifetime of the application](https://docs.microsoft.com/azure/cosmos-db/performance-tips#sdk-usage). This is injected into the `Functions` class through its constructor, as you will see in the next TODO block.
+
+3. Open **Functions.cs** within the **Functions.CosmosDB** project and complete the code beneath **TODO 2** by pasting the following:
+
+    ```csharp
+    public Functions(IHttpClientFactory httpClientFactory, CosmosClient cosmosClient)
+    {
+        _httpClientFactory = httpClientFactory;
+        _cosmosClient = cosmosClient;
+    }
+    ```
+
+    Adding the code above allows the `HttpClientFactory` and the `CosmosClient` to be injected into the function code, which allows these services to manage their own connections and lifecycle to improve performance and prevent thread starvation and other issues caused by incorrectly creating too many instances of expensive objects. The `HttpClientFactory` was already configured in `Startup.cs` where you made your previous code change. It is used to send alerts to the Logic App endpoint, and uses [Polly](https://github.com/App-vNext/Polly) to employ a gradual back-off wait and retry policy in case the Logic App is overloaded or has other issues causing calls to the HTTP endpoint to fail.
+
+4. Look at the first function code below the constructor code you just completed:
+
+    ```csharp
+    [FunctionName("TripProcessor")]
+    public async Task TripProcessor([CosmosDBTrigger(
+        databaseName: "ContosoAuto",
+        collectionName: "telemetry",
+        ConnectionStringSetting = "CosmosDBConnection",
+        LeaseCollectionName = "leases",
+        LeaseCollectionPrefix = "trips",
+        CreateLeaseCollectionIfNotExists = true,
+        StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
+        ILogger log)
+    {
+    ```
+
+    The `FunctionName` attribute defines how the function name appears within the Function App, and can be different from the C# method name. This `TripProcessor` function uses the `CosmosDBTrigger` to fire on every Cosmos DB change feed event. The events arrive in batches, whose size depends on factors such as how many Insert, Update, or Delete events there are for the container. The `databaseName` and `collectionName` properties define which container's change feed triggers the function. The `ConnectionStringSetting` indicates the name of the Function App's application setting from which to pull the Cosmos DB connection string. In our case, the connection string value will draw from the Key Vault secret you created. The `LeaseCollection` properties define the name of the lease container and the prefix applied to lease data for this function, and whether to create the lease container if it does not exist. `StartFromBeginning` is set to `true`, ensuring that all events since the function last run are processed. The function outputs the change feed documents into an `IReadOnlyList` collection.
+
+5. Scroll down a little further in the function and complete the code beneath **TODO 3** by pasting the following:
+
+    ```csharp
+    var vin = group.Key;
+    var odometerHigh = group.Max(item => item.GetPropertyValue<double>("odometer"));
+    var averageRefrigerationUnitTemp =
+        group.Average(item => item.GetPropertyValue<double>("refrigerationUnitTemp"));
+    ```
+
+    We have grouped the events by vehicle VIN, so we assign a local `vin` variable to hold the group key (VIN). Next, we use the `group.Max` aggregate function to calculate the max odometer value, and use the `group.Average` function to calculate the average refrigeration unit temperature. We will use the `odometerHigh` value to calculate the trip distance and determine whether the trip is completed, based on the planned trip distance from the `Trip` record in the Cosmos DB `metadata` container. The `averageRefrigerationUnitTemp` is added in the alert that gets sent to the Logic App, if needed.
+
+6. Review the code that is just below the new code you added:
+
+    ```csharp
+    // First, retrieve the metadata Cosmos DB container reference:
+    var container = _cosmosClient.GetContainer(database, metadataContainer);
+
+    // Create a query, defining the partition key so we don't execute a fan-out query (saving RUs), where the entity type is a Trip and the status is not Completed, Canceled, or Inactive.
+    var query = container.GetItemLinqQueryable<Trip>(requestOptions: new QueryRequestOptions { PartitionKey = new Microsoft.Azure.Cosmos.PartitionKey(vin) })
+        .Where(p => p.status != WellKnown.Status.Completed
+                    && p.status != WellKnown.Status.Canceled
+                    && p.status != WellKnown.Status.Inactive
+                    && p.entityType == WellKnown.EntityTypes.Trip)
+        .ToFeedIterator();
+
+    if (query.HasMoreResults)
+    {
+        // Only retrieve the first result.
+        var trip = (await query.ReadNextAsync()).FirstOrDefault();
+        
+        if (trip != null)
+        {
+            // Retrieve the Consignment record.
+            var document = await container.ReadItemAsync<Consignment>(trip.consignmentId,
+                new Microsoft.Azure.Cosmos.PartitionKey(trip.consignmentId));
+            var consignment = document.Resource;
+    ```
+
+    Here we are using the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) by retrieving a Cosmos DB container reference with the CosmosClient (`_cosmosClient`) that was injected into the class. We use the container's `GetItemLinqQueryable` with the `Trip` class type to query the container using LINQ syntax and binding the results to a new collection of type `Trip`. Note how we are passing the **partition key**, in this case the VIN, to prevent executing a cross-partion, fan-out query, saving RU/s. We also define the type of document we want to retrieve by setting the `entityType` document property in the query to Trip, since other entity types can also have the same partition key, such as the Vehicle type.
+
+    Since we have the Consignment ID, we can use the `ReadItemAsync` method to retrieve a single Consignment record. Here we also pass the partition key to minimize fan-out. Within a Cosmos DB container, a document's unique ID is a combination of the `id` field and the partition key value.
+
+7. Scroll down a little further in the function and complete the code beneath **TODO 4** by pasting the following:
+
+    ```csharp
+    if (updateTrip)
+    {
+        await container.ReplaceItemAsync(trip, trip.id, new Microsoft.Azure.Cosmos.PartitionKey(trip.partitionKey));
+    }
+
+    if (updateConsignment)
+    {
+        await container.ReplaceItemAsync(consignment, consignment.id, new Microsoft.Azure.Cosmos.PartitionKey(consignment.partitionKey));
+    }
+    ```
+
+    The `ReplaceItemAsync` method updates the Cosmos DB document with the passed in object with the associated `id` and partition key value.
+
+8. Scroll down and complete the code beneath **TODO 5** by pasting the following:
+
+    ```csharp
+    await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
+    ```
+
+    Here we are using the `HttpClient` created by the injected `HttpClientFactory` to post the serialized `LogicAppAlert` object to the Logic App. The `Environment.GetEnvironmentVariable("LogicAppUrl")` method extracts the Logic App URL from the Function App's application settings and, using the special Key Vault access string you added to the app setting, extracts the encrypted value from the Key Vault secret.
+
+9. Scroll to the bottom of the file to find and complete **TODO 6** with the following code:
+
+    ```csharp
+    // Convert to a VehicleEvent class.
+    var vehicleEventOut = await vehicleEvent.ReadAsAsync<VehicleEvent>();
+    // Add to the Event Hub output collection.
+    await vehicleEventsOut.AddAsync(new EventData(
+        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleEventOut))));
+    ```
+
+    The `ReadAsAsync` method is an extension method located in `CosmosDbIoTScenario.Common.ExtensionMethods` that converts a Cosmos DB Document to a class; in this case, a `VehicleEvent` class. Currently, the `CosmosDBTrigger` on a function only supports returning an `IReadOnlyList` of `Documents`, requiring a conversion to another class if you want to work with your customer classes instead of a Document for now. This extension method automates the process.
+
+    The `AddAsync` method asynchronously adds to the `IAsyncCollector<EventData>` collection defined in the function attributes, which takes care of sending the collection items to the defined Event Hub endpoint.
+
+### Task 5 Deploy Stream Processing Function App
+
+### Task 6: Deploy Cosmos DB Processing Function App
 
 ### Task 7: Deploy Web App
 
@@ -987,11 +1148,17 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
 ### Task 2: View consignment, package, and trip data
 
-## Exercise 7: Observe Change Feed using Azure Functions and App Insights
+## Exercise 7: Creating the Fleet status real-time dashboard in Power BI
+
+### Task 1: Log in to Power BI online
+
+### Task 2: Create real-time dashboard
+
+## Exercise 8: Observe Change Feed using Azure Functions and App Insights
 
 ### Task 1: Open App Insights Live View
 
-## Exercise 8: Running the predictive maintenance batch scoring
+## Exercise 9: Running the predictive maintenance batch scoring
 
 **Duration**: 20 minutes
 
@@ -1050,7 +1217,7 @@ To run this notebook, perform the following steps:
 
 > If you wish to execute this notebook on a scheduled basis, such as every evening, you can use the Jobs feature in Azure Databricks to accomplish this.
 
-## Exercise 9: Deploying the predictive maintenance web service
+## Exercise 10: Deploying the predictive maintenance web service
 
 **Duration**: 20 minutes
 
@@ -1101,12 +1268,6 @@ Now that the web service is deployed to ACI, we can call it to make predictions 
     ![The prediction results show that the battery is is predicted to fail in the next 30 days.](media/web-prediction-yes.png "Vehicle details with prediction")
 
     This vehicle has a high number of **Lifetime cycles used**, which is closer to the battery's rated 200 cycle lifespan. The model predicted that the battery will fail within the next 30 days.
-
-## Exercise 10: Creating the Fleet status real-time dashboard in Power BI
-
-### Task 1: Log in to Power BI online
-
-### Task 2: Create real-time dashboard
 
 ## Exercise 11: Creating the Predictive Maintenance & Trip/Consignment Status reports in Power BI
 
