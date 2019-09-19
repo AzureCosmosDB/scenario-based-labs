@@ -37,8 +37,10 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
       - [About the Cosmos DB indexing policies](#about-the-cosmos-db-indexing-policies)
     - [Task 3: Create a Logic App workflow for email alerts](#task-3-create-a-logic-app-workflow-for-email-alerts)
     - [Task 4: Add Key Vault secrets](#task-4-add-key-vault-secrets)
-    - [Task 5: Create Azure Databricks cluster](#task-5-create-azure-databricks-cluster)
-    - [Task 6: Configure Key Vault-backed Databricks secret store](#task-6-configure-key-vault-backed-databricks-secret-store)
+    - [Task 5: Create system-assigned managed identities for your Function Apps and Web App to connect to Key Vault](#task-5-create-system-assigned-managed-identities-for-your-function-apps-and-web-app-to-connect-to-key-vault)
+    - [Task 6: Add Function Apps and Web App to Key Vault access policy](#task-6-add-function-apps-and-web-app-to-key-vault-access-policy)
+    - [Task 7: Create Azure Databricks cluster](#task-7-create-azure-databricks-cluster)
+    - [Task 8: Configure Key Vault-backed Databricks secret store](#task-8-configure-key-vault-backed-databricks-secret-store)
   - [Exercise 2: Configure windowed queries in Stream Analytics](#exercise-2-configure-windowed-queries-in-stream-analytics)
     - [Task 1: Add Stream Analytics Event Hubs input](#task-1-add-stream-analytics-event-hubs-input)
     - [Task 2: Add Stream Analytics outputs](#task-2-add-stream-analytics-outputs)
@@ -138,7 +140,7 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 ## Exercise 1: Configure environment
 
-**Duration**: 30 minutes
+**Duration**: 45 minutes
 
 You must provision a few resources in Azure before you start developing the solution. Ensure all resources use the same resource group for easier cleanup.
 
