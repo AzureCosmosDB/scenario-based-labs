@@ -16,7 +16,7 @@ namespace Functions.StreamProcessing
     public static class Functions
     {
         [FunctionName("IoTHubTrigger")]
-        public static async Task EventHubTrigger([IoTHubTrigger("messages/events", Connection = "IoTHubConnection")] EventData[] vehicleEventData,
+        public static async Task IoTHubTrigger([IoTHubTrigger("messages/events", Connection = "IoTHubConnection")] EventData[] vehicleEventData,
             [CosmosDB(
                 databaseName: "ContosoAuto",
                 collectionName: "telemetry",
@@ -41,7 +41,7 @@ namespace Functions.StreamProcessing
                     // (1) Distributing the write workload at any given point in time over a high cardinality
                     // of partition keys.
                     // (2) Ensuring efficient routing on queries on a given VIN - you can spread these across
-                    // time, e.g. SELECT * FROM c WHERE c.partitionKey IN (“VIN123-2019-01”, “VIN123-2019-02”, …)
+                    // time, e.g. SELECT * FROM c WHERE c.partitionKey IN (ï¿½VIN123-2019-01ï¿½, ï¿½VIN123-2019-02ï¿½, ï¿½)
                     // (3) Scale beyond the 10GB quota for a single partition key value.
                     vehicleEvent.partitionKey = $"{vehicleEvent.vin}-{DateTime.UtcNow:yyyy-MM}";
                     // Set the TTL to expire the document after 60 days.
