@@ -78,10 +78,17 @@ namespace FleetDataGenerator
             };
 
             WriteLineInColor("Fleet Data Generator", ConsoleColor.White);
-            Console.WriteLine("======");
+            Console.WriteLine(string.Empty);
             WriteLineInColor("Press Ctrl+C or Ctrl+Break to cancel.", ConsoleColor.Cyan);
             Console.WriteLine("Statistics for generated vehicle and related telemetry data will be updated for every 50 messages sent");
             Console.WriteLine(string.Empty);
+            Console.WriteLine("=============");
+            WriteLineInColor("** Enter 1 to generate and send data for 1 vehicle.", ConsoleColor.Green);
+            WriteLineInColor("** Enter 2 to generate and send data for 10 vehicles.", ConsoleColor.Green);
+            WriteLineInColor("** Enter 3 to generate and send data for 50 vehicles.", ConsoleColor.Green);
+            WriteLineInColor("** Enter 4 to generate and send data for 100 vehicles.", ConsoleColor.Green);
+            WriteLineInColor("** Enter 5 to generate and send data for the number of vehicles defined in the application settings/environment variables.", ConsoleColor.Green);
+            Console.WriteLine("=============");
 
             // Handle Control+C or Control+Break.
             Console.CancelKeyPress += (o, e) =>
@@ -93,62 +100,110 @@ namespace FleetDataGenerator
                 WaitHandle.Set();
             };
 
-            // Instantiate Cosmos DB client and start sending messages:
-            using (_cosmosDbClient = new CosmosClient(cosmosDbConnectionString.ServiceEndpoint.OriginalString,
-                cosmosDbConnectionString.AuthKey, connectionPolicy))
+            var userInput = "";
+            var numberSimulatedTrucks = arguments.NumberSimulatedTrucks;
+            var runGenerator = true;
+
+            while (true)
             {
-                await InitializeCosmosDb();
+                Console.Write("Enter the number of the operation you would like to perform > ");
 
-                // Find and output the container details, including # of RU/s.
-                var container = _database.GetContainer(MetadataContainerName);
-
-                var offer = await container.ReadThroughputAsync(cancellationToken);
-
-                if (offer != null)
+                var input = Console.ReadLine();
+                if (input != null && (input.Equals("1", StringComparison.InvariantCultureIgnoreCase) ||
+                                      input.Equals("2", StringComparison.InvariantCultureIgnoreCase) ||
+                                      input.Equals("3", StringComparison.InvariantCultureIgnoreCase) ||
+                                      input.Equals("4", StringComparison.InvariantCultureIgnoreCase) ||
+                                      input.Equals("5", StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    var currentCollectionThroughput = offer ?? 0;
-                    WriteLineInColor(
-                        $"Found collection `{MetadataContainerName}` with {currentCollectionThroughput} RU/s.",
-                        ConsoleColor.Green);
+                    userInput = input.Trim();
+                    break;
                 }
 
-                // Initially seed the Cosmos DB database with metadata if empty.
-                await SeedDatabase(cosmosDbConnectionString, cancellationToken);
-                trips = await GetTripsFromDatabase(arguments.NumberSimulatedTrucks, container);
+                Console.WriteLine("Invalid input entered. Please enter either 1, 2, 3, 4, or 5.");
             }
 
-            try
+            switch (userInput)
             {
-                // Start sending telemetry from simulated vehicles to Event Hubs:
-                _runningVehicleTasks = await SetupVehicleTelemetryRunTasks(arguments.NumberSimulatedTrucks,
-                    trips, arguments.IoTHubConnectionString);
-                var tasks = _runningVehicleTasks.Select(t => t.Value).ToList();
-                while (tasks.Count > 0)
+                case "1":
+                    numberSimulatedTrucks = 1;
+                    break;
+                case "2":
+                    numberSimulatedTrucks = 10;
+                    break;
+                case "3":
+                    numberSimulatedTrucks = 50;
+                    break;
+                case "4":
+                    numberSimulatedTrucks = 100;
+                    break;
+                case "5":
+                    numberSimulatedTrucks = arguments.NumberSimulatedTrucks;
+                    break;
+                default:
+                    // Exit.
+                    runGenerator = false;
+                    break;
+            }
+
+            if (runGenerator)
+            {
+                // Instantiate Cosmos DB client and start sending messages:
+                using (_cosmosDbClient = new CosmosClient(cosmosDbConnectionString.ServiceEndpoint.OriginalString,
+                    cosmosDbConnectionString.AuthKey, connectionPolicy))
                 {
-                    try
+                    await InitializeCosmosDb();
+
+                    // Find and output the container details, including # of RU/s.
+                    var container = _database.GetContainer(MetadataContainerName);
+
+                    var offer = await container.ReadThroughputAsync(cancellationToken);
+
+                    if (offer != null)
                     {
-                        Task.WhenAll(tasks).Wait(cancellationToken);
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        //expected
+                        var currentCollectionThroughput = offer ?? 0;
+                        WriteLineInColor(
+                            $"Found collection `{MetadataContainerName}` with {currentCollectionThroughput} RU/s.",
+                            ConsoleColor.Green);
                     }
 
-                    tasks = _runningVehicleTasks.Where(t => !t.Value.IsCompleted).Select(t => t.Value).ToList();
-                    
+                    // Initially seed the Cosmos DB database with metadata if empty.
+                    await SeedDatabase(cosmosDbConnectionString, cancellationToken);
+                    trips = await GetTripsFromDatabase(numberSimulatedTrucks, container);
                 }
+
+                try
+                {
+                    // Start sending telemetry from simulated vehicles to Event Hubs:
+                    _runningVehicleTasks = await SetupVehicleTelemetryRunTasks(numberSimulatedTrucks,
+                        trips, arguments.IoTHubConnectionString);
+                    var tasks = _runningVehicleTasks.Select(t => t.Value).ToList();
+                    while (tasks.Count > 0)
+                    {
+                        try
+                        {
+                            Task.WhenAll(tasks).Wait(cancellationToken);
+                        }
+                        catch (TaskCanceledException)
+                        {
+                            //expected
+                        }
+
+                        tasks = _runningVehicleTasks.Where(t => !t.Value.IsCompleted).Select(t => t.Value).ToList();
+
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    Console.WriteLine("The vehicle telemetry operation was canceled.");
+                    // No need to throw, as this was expected.
+                }
+
+                CancelAll();
+                Console.WriteLine();
+                WriteLineInColor("Done sending generated vehicle telemetry data", ConsoleColor.Cyan);
+                Console.WriteLine();
+                Console.WriteLine();
             }
-            catch (OperationCanceledException)
-            {
-                Console.WriteLine("The vehicle telemetry operation was canceled.");
-                // No need to throw, as this was expected.
-            }
-            
-            CancelAll();
-            Console.WriteLine();
-            WriteLineInColor("Done sending generated vehicle telemetry data", ConsoleColor.Cyan);
-            Console.WriteLine();
-            Console.WriteLine();
 
             // Keep the console open.
             Console.ReadLine();
@@ -205,6 +260,13 @@ namespace FleetDataGenerator
                 // 30% of immediate vs. gradual failure if a failure occurs.
                 var immediateFailure = DataGenerator.GetRandomWeightedBoolean(30);
 
+                // If we are only sending telemetry for a single vehicle, always cause a refrigeration unit failure.
+                if (numberOfSimulatedTrucks == 1)
+                {
+                    causeRefrigerationUnitFailure = true;
+                    immediateFailure = false;
+                }
+
                 // Add the simulated vehicle, acting as an AMQP device, and configure it with the trip data.
                 _simulatedVehicles.Add(new SimulatedVehicle(trip, causeRefrigerationUnitFailure, immediateFailure, vehicleNumber,
                     DeviceManager.HostName, trip.vin, deviceKey));
@@ -236,14 +298,12 @@ namespace FleetDataGenerator
         /// EventHubConnectionString: The primary Event Hubs connection string for sending telemetry.
         /// CosmosDbConnectionString: The primary or secondary connection string copied from your Cosmos DB properties.
         /// NumberSimulatedTrucks: The number of trucks to simulate. Must be a number between 1 and 1,000.
-        /// ContinuouslyAddThisManyTrucks: If true, once a truck completes its trip, another is added in its place. Otherwise, the generator stops sending events once all trucks have completed their trip.
         /// MillisecondsToRun: The maximum amount of time to allow the generator to run before stopping transmission of data. The default value is 14,400.
         /// MillisecondsToLead: The amount of time to wait before sending simulated data. Default value is 0.
         /// </returns>
         private static (string IoTHubConnectionString,
             string CosmosDbConnectionString,
             int NumberSimulatedTrucks,
-            bool ContinuouslyAddThisManyTrucks,
             int MillisecondsToRun,
             int MillisecondsToLead) ParseArguments()
         {
@@ -255,7 +315,6 @@ namespace FleetDataGenerator
                 var numberOfMillisecondsToRun = (int.TryParse(_configuration["SECONDS_TO_RUN"], out var outputSecondToRun) ? outputSecondToRun : 0) * 1000;
                 var numberOfMillisecondsToLead = (int.TryParse(_configuration["SECONDS_TO_LEAD"], out var outputSecondsToLead) ? outputSecondsToLead : 0) * 1000;
                 var numberOfSimulatedTrucks = int.TryParse(_configuration["NUMBER_SIMULATED_TRUCKS"], out var outputSimulatedTrucks) ? outputSimulatedTrucks : 0;
-                var continuouslyAddTrucks = bool.TryParse(_configuration["CONTINUOUSLY_ADD_THIS_MANY_TRUCKS"], out var outputContinuouslyAdd) && outputContinuouslyAdd;
 
                 if (string.IsNullOrWhiteSpace(cosmosDbConnectionString))
                 {
@@ -272,7 +331,7 @@ namespace FleetDataGenerator
                     throw new ArgumentException("The NUMBER_SIMULATED_TRUCKS value must be a number between 1 and 1000");
                 }
 
-                return (iotHubConnectionString, cosmosDbConnectionString, numberOfSimulatedTrucks, continuouslyAddTrucks, numberOfMillisecondsToRun, numberOfMillisecondsToLead);
+                return (iotHubConnectionString, cosmosDbConnectionString, numberOfSimulatedTrucks, numberOfMillisecondsToRun, numberOfMillisecondsToLead);
             }
             catch (Exception e)
             {
