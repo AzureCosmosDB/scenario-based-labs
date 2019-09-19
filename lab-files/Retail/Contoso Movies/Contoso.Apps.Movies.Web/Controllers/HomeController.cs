@@ -19,19 +19,11 @@ namespace Contoso.Apps.Movies.Controllers
 
             Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
 
-            if (user != null)
-            {
-                string name = user.Email;
-                int userId = user.UserId;
+            //TODO #1 - replace the following line
+            vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 
-                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", userId, 10);
-                vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", userId, 10);
-            }
-            else
-            {
-                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", 0, 10);
-                vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", 0, 10);
-            }
+            //TODO #4 - replace the following line
+            vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("assoc", 0, 0);
 
             return View(vm);
         }

@@ -72,17 +72,7 @@ Contoso Movies, Ltd. has TODO
 
 Refer to the Before the hands-on lab setup guide manual before continuing to the lab exercises.
 
-## Exercise 1: Deployment and Setup
-
-Duration: 30 minutes
-
-Synopsis:  In this exercise you will TODO
-
-### Task 1: Deploy the Azure Resources
-
-1.  Run the Deploy.ps1 script to deploy the ARM template and do some time saving  setup and configuration.
-
-## Exercise 2: Complete and deploy Web App and Function Apps
+## Exercise 1: Complete and deploy Web App and Function Apps
 
 Duration: 30 minutes
 
@@ -90,33 +80,67 @@ Synopsis: We have pregenerated a set of events that include **buy** events.  Bas
 
 ### Task 1: Implement the Top Items recommendation
 
-1.  Open the **todo** solution
+1.  Browse to the **/lab-files/Retail/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
-1.  In the **todo** project, open the **todod** file
+1.  In the **Contoso.Apps.Movies.Web** project, open the **/Controllers/HomeController.cs** file
 
 1.  Find the todo task #1 and complete it with the following:
 
 ```csharp
-
+vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 ```
 
-1.  In the **todo** project, open the **todo** file
+1.  In the **Contoso.Apps.FunctionApp.Recommend** project, open the **RecommendationHelper.cs** file
 
 1.  Find the todo task #2 and complete it with the following:
 
 ```csharp
+var container = client.GetContainer(databaseId, "object");
 
+var query = container.GetItemLinqQueryable<Item>(true)
+    .Where(c => c.EntityType == "ItemAggregation")
+    .OrderByDescending(c => c.BuyCount)
+    .Take(take);
+
+items = query.ToList();
+
+foreach(Item i in items)
+{
+    itemIds.Add(i.ItemId.ToString());
+}
+
+topItems = GetItemsByImdbIds(itemIds);
 ```
+
+1.  Review the code, notice the following:
+
+- We are querying an "object" collection for an entity type called 'ItemAggregation' and sorting it by the 'BuyCount'.  Essentially these are the top purchased items.
+
+- We are then querying the object collection for all the top items to get their metadata
+
+1.  Compile the solution, fix any errors
 
 ### Task 2: Deploy the applications
 
-1.  Right-click the **todo** function app project, select **Publish**
+1.  Right-click the **Consoto.Apps.FunctionApp.Recommed** function app project, select **Publish**
 
-1.  Select the Azure Subscription, Resource group and Function App to deploy too
+1.  Click **New**, then ensure that **Azure Functions Consumption Plan** is selected
 
-1.  Right-click the **todo** web app project, select **Publish**
+1.  Click **Select Existing**, then click **Publish**
 
-1.  Select the Azure Subscription, Resource group and Web App to deploy too
+1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2recommend...***
+
+1.  Click **OK**
+
+1.  Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
+
+1.  Click **New**, then ensure that **App Service** is selected
+
+1.  Click **Select Existing**, then click **Publish**
+
+1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2rweb...***
+
+1.  Click **OK**, the application will publish and the site should be displayed:
 
 ### Task 3: Test the applications
 
@@ -132,21 +156,103 @@ Duration: 30 minutes
 
 Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-defined personality types (Comedy fan, Drama fan, etc), you will implement and deploy an algorithm that will generate these associations and put them in Cosmos DB for offline processing by the web and function applications.
 
-### Task 1: Implement the Association Rules
+### Task 1: Configure Azure Databricks
 
-1.  Open your Azure DataBricks instance
+1.  Open the Azure Portal, navigate to your Azure DataBricks instance
 
-1.  Run the following
+1.  Click **Launch Workspace**, if prompted, login as the account you used to create your environment
 
-1.  TODO
+1.  Click **Cluster**
 
-### Task 2: Review the data generated
+1.  Click **Create Cluster**
+
+1.  On the create cluster form, provide the following:
+
+   - **Cluster Name**: small
+
+   - **Cluster Type**: Standard
+
+   - **Databricks Runtime Version**: Runtime: 5.5 (Scala 2.11, Spark 2.4.3) (**Note**: the runtime version may have **LTS** after the version. This is also a valid selection.)
+
+   - **Python Version**: 3
+
+   - **Enable Autoscaling**: Uncheck this option.
+
+   - **Auto Termination**: Check the box and enter 120
+
+   - **Worker Type**: Standard_DS3_v2
+
+   - **Driver Type**: Same as worker
+
+   - **Workers**: 1
+
+1.  Select **Create Cluster**.
+
+1.  Before continuing to the next step, verify that your new cluster is running.  Wait for the state to change from **Pending** to **Running**
+
+1.  Click the **small** cluster, then click **Libraries**
+
+1. If you **do not** see the **Maven** already installed on the cluster, continue to the next step. Otherwise, continue to Task 2.
+
+1. Select **Install New**.
+
+1. In the Install Library dialog, select **Maven** for the Library Source, then enter the following in the Coordinates field: `com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1`. Select **Install**.
+
+1. **Wait** until the library's status shows as **Installed** before continuing.
+
+### Task 2: Implement the Association Rules
+
+1. Within Azure Databricks, select **Workspace** on the menu, then **Users**, select your user, then select the down arrow on the top of your user workspace. Select **Import**.
+
+1. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it (/lab-files/Retail/Notebooks/02 Retail.dbc)
+
+1.  Click **Import**
+
+1. After importing, expand the new **02 Retail** folder.
+
+1.  Select **Event Generator**
+
+1. Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
+
+1.  Update the configuration settings for both the **readConfig** and the **writeConfig**, set the following:
+
+- Endpoint = Cosmos DB endpoint
+- Masterkey = Cosmos DB master key
+- Database = Database id of the cosmos db
+
+1.  Click **Run All**
+
+>NOTE:  This total process will take up to 30 minutes to generate the event data.
+
+### Task 3: Review the data generated
+
+1.  Open your Cosmos DB instance
+
+1.  Open the **events** collection, review the items in the collection
+
+>NOTE:  These items are created from the data bricks solution and include a random set of generated events for each user personality type.  You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated (via the contentId field) with the event.
+
+1.  Select **Association Rules**
+
+1. Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
+
+1.  Update the configuration settings for both the **readEventsConfig** AND the **writeAssociationConfig**, set the following:
+
+- Endpoint = Cosmos DB endpoint
+- Masterkey = Cosmos DB master key
+- Database = Database id of the cosmos db
+
+1. Run each cell of the **Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+
+### Task 4: Review the data generated
 
 1.  Open your Cosmos DB instance
 
 1.  Open the **associations** collection, review the items in the collection
 
->NOTE:  These items are created from the ...
+>NOTE:  These items are created from the data bricks solution and include the association confidence level as compared from one movie to another movie.
+
+**TODO IMAGE**
 
 ## Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)
 
@@ -156,31 +262,113 @@ Synopsis: Now that we have data for our association calculations, we will add co
 
 ### Task 1: Implement the Associations recommendation
 
-1.  In the **todo** project, open the **todod** file
+1.  In the **Contoso.Apps.FunctionApp.Recommend** project, open the **RecommendationHelper.cs** file
 
 1.  Find the todo task #3 and complete it with the following:
 
 ```csharp
+int neighborhoodSize = 15;
+double minSim = 0.0;
+int maxCandidates = 100;
 
+//inside this we do the implict rating of events for the user...
+Hashtable userRatedItems = GetRatedItems(userId, 100);
+
+if (userRatedItems.Count == 0)
+    return new List<string>();
+
+//this is the mean rating a user gave
+double ratingSum = 0;
+
+foreach(double r in userRatedItems.Values)
+{
+    ratingSum += r;
+}
+
+double userMean = ratingSum / userRatedItems.Count;
+
+//get similar items
+List<SimilarItem> candidateItems = GetCandidateItems(userRatedItems.Keys, minSim);
+
+//sort by similarity desc, take only max candidates
+candidateItems = candidateItems.OrderByDescending(c=>c.similarity).Take(maxCandidates).ToList();
+
+Hashtable recs = new Hashtable();
+
+List<PredictionModel> precRecs = new List<PredictionModel>();
+
+foreach(SimilarItem candidate in candidateItems)
+{
+    int target = candidate.Target;
+    double pre = 0;
+    double simSum = 0;
+
+    List<SimilarItem> ratedItems = candidateItems.Where(c=>c.Target == target).Take(neighborhoodSize).ToList();
+
+    if (ratedItems.Count > 1)
+    {
+        foreach (SimilarItem simItem in ratedItems)
+        {
+            try
+            {
+                string source = userRatedItems[simItem.sourceItemId].ToString();
+
+                //rating of the movie - userMean;
+                double r = double.Parse(source) - userMean;
+
+                pre += simItem.similarity * r;
+                simSum += simItem.similarity;
+
+                if (simSum > 0)
+                {
+                    PredictionModel p = new PredictionModel();
+                    p.Prediction = userMean + pre / simSum;
+                    p.Items = ratedItems;
+                    precRecs.Add(p);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+    }
+}
+
+//sort based on the prediction, only take x of them
+List<PredictionModel> sortedItems = precRecs.OrderByDescending(c => c.Prediction).Take(take).ToList();
+
+//get first model's items...
+foreach(PredictionModel pm in sortedItems)
+{
+    foreach(SimilarItem ri in pm.Items)
+    {
+        if (ri.targetItemId != null)
+        {
+            itemIds.Add(ri.targetItemId.ToString());
+            break;
+        }
+    }
+}
 ```
 
-1.  In the **todo** project, open the **todo** file
+1.  In the **Contoso.Apps.FunctionApp.Recommend** project, open the **RecommendationHelper.cs** file
 
 1.  Find the todo task #4 and complete it with the following:
 
 ```csharp
-
+vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("assoc", 0, 0);
 ```
 
 ### Task 2: Deploy the applications
 
-1.  Right-click the **todo** function app project, select **Publish**
+1.  Right-click the **Consoto.Apps.FunctionApp.Recommed** function app project, select **Publish**
 
-1.  Select the Azure Subscription, Resource group and Function App to deploy too
+1.  Click **Publish**
 
-1.  Right-click the **todo** web app project, select **Publish**
+1.  Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
 
-1.  Select the Azure Subscription, Resource group and Web App to deploy too
+1.  Click **Publish**, the site should load.
 
 ### Task 3: Test the applications
 
@@ -190,7 +378,7 @@ Synopsis: Now that we have data for our association calculations, we will add co
 
 3.  Notice the main page now has different recommendations that what you received earlier:
 
-**TODO**
+**TODO IMAGE**
 
 ## Exercise 4: Perform and deploy collaborative filtering rules calculation
 
@@ -198,13 +386,19 @@ Duration: 30 minutes
 
 In this exercise you will TODO
 
-### Task 1: Implement the Collaborative Rules
+### Task 1: Compute the user implict ratings
 
-1.  Open your Azure DataBricks instance
+1.  Switch to your Azure DataBricks instance
 
-1.  Run the following
+1.  Open the **Ratings** notebook
 
-1.  TODO
+1.  Set the cluser and then run the notebook
+
+### Task 2: Implement the Collaborative Rules
+
+1.  Open the **Similarity** notebook
+
+1.  Set the cluser and then run the notebook
 
 ### Task 2: Review the data generated
 
@@ -212,7 +406,9 @@ In this exercise you will TODO
 
 1.  Open the **similarity** collection, review the items in the collection
 
->NOTE:  These items are created from the ...
+>NOTE:  These items are created from the data bricks solution and include the similarity of one movie, the source, to another, the target.
+
+**TODO**
 
 ## Exercise 5: Reporting with Stream Analytics and Power BI
 

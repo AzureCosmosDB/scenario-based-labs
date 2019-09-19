@@ -64,7 +64,7 @@ namespace Contoso.Apps.Common
         }
         */
 
-        public async static Task<DbObject> SaveObject(DbObject o)
+        public async static Task SaveObject(DbObject o)
         {
             var container = client.GetContainer(databaseId, "object");
             
@@ -81,15 +81,13 @@ namespace Contoso.Apps.Common
                 try
                 {
                     o.id = Guid.NewGuid().ToString();
-                    blah = await container.CreateItemAsync(o);
+                    await container.CreateItemAsync(o);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
             }
-
-            return blah;
         }
 
         public static List<CollectorLog> GetUserLogs(int userId, int v)

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>System.Net.Http.WinHttpHandler</name>
+  </assembly>
+  <members>
+    <member name="T:System.Net.Http.AutomaticRedirectionPolicy"></member>
+    <member name="F:System.Net.Http.AutomaticRedirectionPolicy.Always">
+      <summary />
+    </member>
+    <member name="F:System.Net.Http.AutomaticRedirectionPolicy.DisallowHttpsToHttp">
+      <summary />
+    </member>
+    <member name="F:System.Net.Http.AutomaticRedirectionPolicy.Never">
+      <summary />
+    </member>
+    <member name="T:System.Net.Http.CookieUsePolicy"></member>
+    <member name="F:System.Net.Http.CookieUsePolicy.IgnoreCookies">
+      <summary />
+    </member>
+    <member name="F:System.Net.Http.CookieUsePolicy.UseInternalCookieStoreOnly">
+      <summary />
+    </member>
+    <member name="F:System.Net.Http.CookieUsePolicy.UseSpecifiedCookieContainer">
+      <summary />
+    </member>
+    <member name="T:System.Net.Http.WindowsProxyUsePolicy"></member>
+    <member name="F:System.Net.Http.WindowsProxyUsePolicy.DoNotUseProxy">
+      <summary />
+    </member>
+    <member name="F:System.Net.Http.WindowsProxyUsePolicy.UseCustomProxy">
+      <summary />
+    </member>
+    <member name="F:System.Net.Http.WindowsProxyUsePolicy.UseWinHttpProxy">
+      <summary />
+    </member>
+    <member name="F:System.Net.Http.WindowsProxyUsePolicy.UseWinInetProxy">
+      <summary />
+    </member>
+    <member name="T:System.Net.Http.WinHttpHandler"></member>
+    <member name="M:System.Net.Http.WinHttpHandler.#ctor"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.AutomaticDecompression"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.AutomaticRedirectionPolicy"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.CheckCertificateRevocationList"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.ClientCertificateOption"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.ClientCertificates"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.ConnectTimeout"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.CookieContainer"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.CookieUsePolicy"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.DefaultProxyCredentials"></member>
+    <member name="M:System.Net.Http.WinHttpHandler.Dispose(System.Boolean)"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.MaxAutomaticRedirections"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.MaxConnectionsPerServer"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.MaxRequestContentBufferSize"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.MaxResponseDrainSize"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.MaxResponseHeadersLength"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.PreAuthenticate"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.Proxy"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.ReceiveDataTimeout"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.ReceiveHeadersTimeout"></member>
+    <member name="M:System.Net.Http.WinHttpHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.SendTimeout"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.ServerCertificateValidationCallback"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.ServerCredentials"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.SslProtocols"></member>
+    <member name="P:System.Net.Http.WinHttpHandler.WindowsProxyUsePolicy"></member>
+  </members>
+</doc>
