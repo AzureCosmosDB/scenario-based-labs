@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
 using CosmosDbIoTScenario.Common.Models.Alerts;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
@@ -16,17 +18,21 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PartitionKey = Microsoft.Azure.Documents.PartitionKey;
+using RequestOptions = Microsoft.Azure.Documents.Client.RequestOptions;
 
 namespace Functions.CosmosDB
 {
     public class Functions
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly CosmosClient _cosmosClient;
 
-        // Use Dependency Injection to inject the HttpClientFactory service that was configured in Startup.cs.
-        public Functions(IHttpClientFactory httpClientFactory)
+        // Use Dependency Injection to inject the HttpClientFactory service and Cosmos DB client that were configured in Startup.cs.
+        public Functions(IHttpClientFactory httpClientFactory, CosmosClient cosmosClient)
         {
             _httpClientFactory = httpClientFactory;
+            _cosmosClient = cosmosClient;
         }
 
         [FunctionName("TripProcessor")]
@@ -38,10 +44,6 @@ namespace Functions.CosmosDB
             LeaseCollectionPrefix = "trips",
             CreateLeaseCollectionIfNotExists = true,
             StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
-            [CosmosDB(
-                databaseName: "ContosoAuto",
-                collectionName: "metadata",
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
             ILogger log)
         {
             log.LogInformation($"Evaluating {vehicleEvents.Count} events from Cosmos DB to optionally update Trip and Consignment metadata.");
@@ -63,27 +65,28 @@ namespace Functions.CosmosDB
                     var averageRefrigerationUnitTemp =
                         group.Average(item => item.GetPropertyValue<double>("refrigerationUnitTemp"));
 
+                    // First, retrieve the metadata Cosmos DB container reference:
+                    var container = _cosmosClient.GetContainer(database, metadataContainer);
+
                     // Create a query, defining the partition key so we don't execute a fan-out query (saving RUs), where the entity type is a Trip and the status is not Completed, Canceled, or Inactive.
-                    var query = client.CreateDocumentQuery<Trip>(collectionUri,
-                            new FeedOptions { PartitionKey = new PartitionKey(vin) })
+                    var query = container.GetItemLinqQueryable<Trip>(requestOptions: new QueryRequestOptions { PartitionKey = new Microsoft.Azure.Cosmos.PartitionKey(vin) })
                         .Where(p => p.status != WellKnown.Status.Completed
                                     && p.status != WellKnown.Status.Canceled
                                     && p.status != WellKnown.Status.Inactive
                                     && p.entityType == WellKnown.EntityTypes.Trip)
-                        .AsDocumentQuery();
+                        .ToFeedIterator();
 
                     if (query.HasMoreResults)
                     {
                         // Only retrieve the first result.
-                        var result = await query.ExecuteNextAsync<Trip>();
-                        var trip = result.FirstOrDefault();
+                        var trip = (await query.ReadNextAsync()).FirstOrDefault();
                         
                         if (trip != null)
                         {
                             // Retrieve the Consignment record.
-                            var document = await client.ReadDocumentAsync<Consignment>(UriFactory.CreateDocumentUri(database, metadataContainer, trip.consignmentId),
-                                new RequestOptions { PartitionKey = new PartitionKey(trip.consignmentId) });
-                            var consignment = document.Document;
+                            var document = await container.ReadItemAsync<Consignment>(trip.consignmentId,
+                                new Microsoft.Azure.Cosmos.PartitionKey(trip.consignmentId));
+                            var consignment = document.Resource;
                             var updateTrip = false;
                             var updateConsignment = false;
 
@@ -136,12 +139,12 @@ namespace Functions.CosmosDB
                             // Update the trip and consignment records.
                             if (updateTrip)
                             {
-                                await client.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(database, metadataContainer, trip.id), trip);
+                                await container.ReplaceItemAsync(trip, trip.id, new Microsoft.Azure.Cosmos.PartitionKey(trip.partitionKey));
                             }
 
                             if (updateConsignment)
                             {
-                                await client.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(database, metadataContainer, consignment.id), consignment);
+                                await container.ReplaceItemAsync(consignment, consignment.id, new Microsoft.Azure.Cosmos.PartitionKey(consignment.partitionKey));
                             }
 
                             // Send a trip alert.
@@ -174,7 +177,7 @@ namespace Functions.CosmosDB
 
                                 var postBody = JsonConvert.SerializeObject(payload);
 
-                                var httpResult = await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
+                                await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
                             }
                         }
                     }
