@@ -912,15 +912,48 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
 6. Scroll to the **Application settings** section. Use the **+ New application setting** link to create the following additional Key/Value pairs (the key names must exactly match those found in the table below):
 
-| **Application Key**      |                                                                          **Value**                                                                          |
-| ------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| CosmosDBConnection     | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **CosmosDBConnection** Key Vault secret |
-| ColdStorageAccount     | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **ColdStorageAccount** Key Vault secret                                                                   |
-| EventHubsConnection   | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **EventHubsConnection** Key Vault secret |
-| LogicAppUrl        | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **LogicAppUrl** Key Vault secret |
-| RecipientEmail      | Enter a **valid email address** you want to receive notification emails from the Logic App. |
+    | **Application Key**      |                                                                          **Value**                                                                          |
+    | ------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
+    | CosmosDBConnection     | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **CosmosDBConnection** Key Vault secret |
+    | ColdStorageAccount     | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **ColdStorageAccount** Key Vault secret                                                                   |
+    | EventHubsConnection   | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **EventHubsConnection** Key Vault secret |
+    | LogicAppUrl        | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **LogicAppUrl** Key Vault secret |
+    | RecipientEmail      | Enter a **valid email address** you want to receive notification emails from the Logic App. |
 
-![In the Application Settings section, the previously mentioned key / value pairs are displayed.](media/application-settings-cosmosdb-function.png 'Application Settings section')
+    ![In the Application Settings section, the previously mentioned key / value pairs are displayed.](media/application-settings-cosmosdb-function.png 'Application Settings section')
+
+7. Select **Save** to apply your changes.
+
+8. Open the Azure Function App whose name begins with **IoT-StreamProcessing**.
+
+9. Select **Configuration** on the Overview pane.
+
+10. Scroll to the **Application settings** section. Use the **+ New application setting** link to create the following additional Key/Value pairs (the key names must exactly match those found in the table below):
+
+    | **Application Key**      |                                                                          **Value**                                                                          |
+    | ------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
+    | CosmosDBConnection     | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **CosmosDBConnection** Key Vault secret |
+    | IoTHubConnection     | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **IoTHubConnection** Key Vault secret |
+
+    ![In the Application Settings section, the previously mentioned key / value pairs are displayed.](media/application-settings-stream-function.png 'Application Settings section')
+
+11. Select **Save** to apply your changes.
+
+12. Open the Web App (App Service) whose name begins with **IoTWebApp**.
+
+13. Select **Configuration** in the left-hand menu.
+
+14. Scroll to the **Application settings** section. Use the **+ New application setting** link to create the following additional Key/Value pairs (the key names must exactly match those found in the table below):
+
+    | **Application Key**      |                                                                          **Value**                                                                          |
+    | ------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
+    | CosmosDBConnection     | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **CosmosDBConnection** Key Vault secret |
+    | DatabaseName     | Enter `ContosoAuto` |
+    | ContainerName     | Enter `metadata` |
+
+    ![In the Application Settings section, the previously mentioned key / value pairs are displayed.](media/application-settings-web-app.png 'Application Settings section')
+
+15. Select **Save** to apply your changes.
 
 ### Task 3: Open solution
 
