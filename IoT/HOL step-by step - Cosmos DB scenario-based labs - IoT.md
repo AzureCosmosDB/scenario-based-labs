@@ -37,39 +37,40 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
       - [About the Cosmos DB indexing policies](#about-the-cosmos-db-indexing-policies)
     - [Task 3: Create a Logic App workflow for email alerts](#task-3-create-a-logic-app-workflow-for-email-alerts)
     - [Task 4: Add Key Vault secrets](#task-4-add-key-vault-secrets)
-    - [Task 5: Create Azure Databricks cluster](#task-5-create-azure-databricks-cluster)
-    - [Task 6: Configure Key Vault-backed Databricks secret store](#task-6-configure-key-vault-backed-databricks-secret-store)
-  - [Exercise 2: Deploy Azure functions and Web App](#exercise-2-deploy-azure-functions-and-web-app)
+    - [Task 5: Create system-assigned managed identities for your Function Apps and Web App to connect to Key Vault](#task-5-create-system-assigned-managed-identities-for-your-function-apps-and-web-app-to-connect-to-key-vault)
+    - [Task 6: Add Function Apps and Web App to Key Vault access policy](#task-6-add-function-apps-and-web-app-to-key-vault-access-policy)
+    - [Task 7: Create Azure Databricks cluster](#task-7-create-azure-databricks-cluster)
+    - [Task 8: Configure Key Vault-backed Databricks secret store](#task-8-configure-key-vault-backed-databricks-secret-store)
+  - [Exercise 2: Configure windowed queries in Stream Analytics](#exercise-2-configure-windowed-queries-in-stream-analytics)
+    - [Task 1: Add Stream Analytics Event Hubs input](#task-1-add-stream-analytics-event-hubs-input)
+    - [Task 2: Add Stream Analytics outputs](#task-2-add-stream-analytics-outputs)
+    - [Task 3: Create Stream Analytics query](#task-3-create-stream-analytics-query)
+    - [Task 4: Run Stream Analytics job](#task-4-run-stream-analytics-job)
+  - [Exercise 3: Deploy Azure functions and Web App](#exercise-3-deploy-azure-functions-and-web-app)
     - [Task 1: Open solution](#task-1-open-solution)
     - [Task 2: Code walk-through](#task-2-code-walk-through)
     - [Task 3: Deploy Event Hub consumer Function App](#task-3-deploy-event-hub-consumer-function-app)
     - [Task 4: Deploy Change Feed consumer Function App](#task-4-deploy-change-feed-consumer-function-app)
     - [Task 5: Deploy Web App](#task-5-deploy-web-app)
     - [Task 6: Configure application settings in Azure](#task-6-configure-application-settings-in-azure)
-  - [Exercise 3: Explore and execute data generator](#exercise-3-explore-and-execute-data-generator)
+  - [Exercise 4: Explore and execute data generator](#exercise-4-explore-and-execute-data-generator)
     - [Task 1: Open the data generator project](#task-1-open-the-data-generator-project)
     - [Task 2: Update application configuration](#task-2-update-application-configuration)
     - [Task 3: Code walk-through](#task-3-code-walk-through)
     - [Task 4: Run generator](#task-4-run-generator)
-  - [Exercise 4: Observe data using Cosmos DB Data Explorer and Web App](#exercise-4-observe-data-using-cosmos-db-data-explorer-and-web-app)
+  - [Exercise 5: Observe data using Cosmos DB Data Explorer and Web App](#exercise-5-observe-data-using-cosmos-db-data-explorer-and-web-app)
     - [Task 1: View data in Cosmos DB Data Explorer](#task-1-view-data-in-cosmos-db-data-explorer)
     - [Task 2: Search and view data in Web App](#task-2-search-and-view-data-in-web-app)
-  - [Exercise 5: Performing CRUD operations using the Web App](#exercise-5-performing-crud-operations-using-the-web-app)
+  - [Exercise 6: Performing CRUD operations using the Web App](#exercise-6-performing-crud-operations-using-the-web-app)
     - [Task 1: Update vehicle metadata](#task-1-update-vehicle-metadata)
     - [Task 2: View consignment, package, and trip data](#task-2-view-consignment-package-and-trip-data)
-  - [Exercise 6: Observe Change Feed using Azure Functions and App Insights](#exercise-6-observe-change-feed-using-azure-functions-and-app-insights)
+  - [Exercise 7: Observe Change Feed using Azure Functions and App Insights](#exercise-7-observe-change-feed-using-azure-functions-and-app-insights)
     - [Task 1: Open App Insights Live View](#task-1-open-app-insights-live-view)
-  - [Exercise 7: Running the predictive maintenance batch scoring](#exercise-7-running-the-predictive-maintenance-batch-scoring)
+  - [Exercise 8: Running the predictive maintenance batch scoring](#exercise-8-running-the-predictive-maintenance-batch-scoring)
     - [Task 1: Import lab notebooks into Azure Databricks](#task-1-import-lab-notebooks-into-azure-databricks)
     - [Task 2: Run batch scoring notebook](#task-2-run-batch-scoring-notebook)
-    - [Task 3: Create scheduled notebook job](#task-3-create-scheduled-notebook-job)
-  - [Exercise 8: Deploying the predictive maintenance web service](#exercise-8-deploying-the-predictive-maintenance-web-service)
+  - [Exercise 9: Deploying the predictive maintenance web service](#exercise-9-deploying-the-predictive-maintenance-web-service)
     - [Task 1: Run deployment notebook](#task-1-run-deployment-notebook)
-  - [Exercise 9: Configure windowed queries in Stream Analytics](#exercise-9-configure-windowed-queries-in-stream-analytics)
-    - [Task 1: Add Stream Analytics Event Hubs input](#task-1-add-stream-analytics-event-hubs-input)
-    - [Task 2: Add Stream Analytics outputs](#task-2-add-stream-analytics-outputs)
-    - [Task 3: Create Stream Analytics query](#task-3-create-stream-analytics-query)
-    - [Task 4: Run query](#task-4-run-query)
   - [Exercise 10: Creating the Fleet status real-time dashboard in Power BI](#exercise-10-creating-the-fleet-status-real-time-dashboard-in-power-bi)
     - [Task 1: Log in to Power BI online](#task-1-log-in-to-power-bi-online)
     - [Task 2: Create real-time dashboard](#task-2-create-real-time-dashboard)
@@ -119,7 +120,7 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
 
 - Advanced analytics and ML model training:
 
-  **Azure Databricks** is used to train a machine learning model to predict vehicle battery failure, based on historic information. It saves a trained model locally for batch predictions, and deploys a model and scoring web service to **Azure Kubernetes Service** or **Azure Container Instances** for real-time predictions. Azure Databricks also uses the **Spark Cosmos DB connector** to pull down each day's trip information to make batch predictions on battery failure and store the predictions in the maintenance container.
+  **Azure Databricks** is used to train a machine learning model to predict vehicle battery failure, based on historic information. It saves a trained model locally for batch predictions, and deploys a model and scoring web service to **Azure Kubernetes Service (AKS)** or **Azure Container Instances (ACI)** for real-time predictions. Azure Databricks also uses the **Spark Cosmos DB connector** to pull down each day's trip information to make batch predictions on battery failure and store the predictions in the maintenance container.
 
 - Fleet management web app, security, and monitoring:
 
@@ -139,7 +140,7 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 ## Exercise 1: Configure environment
 
-**Duration**: 30 minutes
+**Duration**: 45 minutes
 
 You must provision a few resources in Azure before you start developing the solution. Ensure all resources use the same resource group for easier cleanup.
 
@@ -505,7 +506,105 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
 
    ![The list of secrets is displayed.](media/key-vault-keys.png 'Key Vault Secrets')
 
-### Task 5: Create Azure Databricks cluster
+### Task 5: Create system-assigned managed identities for your Function Apps and Web App to connect to Key Vault
+
+In order for your Function Apps and Web App to be able to access Key Vault to read the secrets, you must [create a system-assigned managed identity](https://docs.microsoft.com/azure/app-service/overview-managed-identity#adding-a-system-assigned-identity) for each, and [create an access policy in Key Vault](https://docs.microsoft.com/azure/key-vault/key-vault-secure-your-key-vault#key-vault-access-policies) for the application identities.
+
+1. Open the Azure Function App whose name begins with **IoT-CosmosDBProcessing** and navigate to **Platform features**.
+
+2. Select **Identity**.
+
+    ![Identity is highlighted in the platform features tab.](media/function-app-platform-features-identity.png "Platform features")
+
+3. Within the **System assigned** tab, switch **Status** to **On**. Select **Save**.
+
+    ![The Function App Identity value is set to On.](media/function-app-identity.png "Identity")
+
+4. Open the Azure Function App whose name begins with **IoT-StreamProcessing** and navigate to **Platform features**.
+
+5. Select **Identity**.
+
+    ![Identity is highlighted in the platform features tab.](media/function-app-platform-features-identity.png "Platform features")
+
+6. Within the **System assigned** tab, switch **Status** to **On**. Select **Save**.
+
+    ![The Function App Identity value is set to On.](media/function-app-identity.png "Identity")
+
+7. Open the Web App (App Service) whose name begins with **IoTWebApp**.
+
+8. Select **Identity** in the left-hand menu.
+
+9. Within the **System assigned** tab, switch **Status** to **On**. Select **Save**.
+
+    ![The Web App Identity value is set to On.](media/web-app-identity.png "Identity")
+
+### Task 6: Add Function Apps and Web App to Key Vault access policy
+
+Perform these steps to create an access policy that enables the "Get" secret permission:
+
+1. Open your Key Vault service.
+
+2. Select **Access policies** in the left-hand menu.
+
+3. Select **+ Add Access Policy**.
+
+    ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png "Access policies")
+
+4. Select the **Select principal** section on the Add access policy form.
+
+    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png "Add access policy")
+
+5. In the Principal blade, search for your `IoT-CosmosDBProcessing` Function App's service principal, select it, then select the **Select** button.
+
+    ![The Function App's principal is selected.](media/key-vault-principal-function1.png "Principal")
+
+6. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
+
+    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png "Add access policy")
+
+7. Select **Add** to add the new access policy.
+
+8. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
+
+    ![Key Vault access policies.](media/key-vault-access-policies-function1.png "Access policies")
+
+9. Select the **Select principal** section on the Add access policy form.
+
+    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png "Add access policy")
+
+10. In the Principal blade, search for your `IoT-StreamProcessing` Function App's service principal, select it, then select the **Select** button.
+
+    ![The Function App's principal is selected.](media/key-vault-principal-function2.png "Principal")
+
+11. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
+
+    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png "Add access policy")
+
+12. Select **Add** to add the new access policy.
+
+13. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
+
+    ![Key Vault access policies.](media/key-vault-access-policies-function2.png "Access policies")
+
+14. Select the **Select principal** section on the Add access policy form.
+
+    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png "Add access policy")
+
+15. In the Principal blade, search for your `IoTWebApp` Web App's service principal, select it, then select the **Select** button.
+
+    ![The Web App's principal is selected.](media/key-vault-principal-webapp.png "Principal")
+
+16. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
+
+    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png "Add access policy")
+
+17. Select **Add** to add the new access policy.
+
+18. When you are done, you should have an access policy for the Web App's managed identity. Select **Save** to save your new access policies.
+
+    ![Key Vault access policies.](media/key-vault-access-policies-webapp.png "Access policies")
+
+### Task 7: Create Azure Databricks cluster
 
 Contoso Auto wants to use the valuable data they are collecting from their vehicles to make predictions about the health of their fleet to reduce downtime due to maintenance-related issues. One of the predictions they would like to make is whether a vehicle's battery is likely to fail within the next 30 days, based on historical data. They would like to run a nightly batch process to identify vehicles that should be serviced, based on these predictions. They also want to have a way to make a prediction in real time when viewing a vehicle on their fleet management website.
 
@@ -541,7 +640,7 @@ In this task, you will create a new cluster on which data exploration and model 
 
 5. Select **Create Cluster**.
 
-### Task 6: Configure Key Vault-backed Databricks secret store
+### Task 8: Configure Key Vault-backed Databricks secret store
 
 In an earlier task, you added application secrets to Key Vault, such as the Cosmos DB connection string. In this task, you will configure the Key Vault-backed Databricks secret store to securely access these secrets.
 
@@ -573,7 +672,170 @@ Azure Databricks has two types of secret scopes: Key Vault-backed and Databricks
 
 After a moment, you will see a dialog verifying that the secret scope has been created.
 
-## Exercise 2: Deploy Azure functions and Web App
+## Exercise 2: Configure windowed queries in Stream Analytics
+
+**Duration**: 15 minutes
+
+If you examine the right-hand side of the solution architecture diagram, you will see a flow of event data that feeds into Event Hubs from a Cosmos DB change feed-triggered function. Stream Analytics uses the event hub as an input source for a set of time window queries that create aggregates for individual vehicle telemetry, and overall vehicle telemetry that flows through the architecture from the vehicle IoT devices. Stream Analytics has two output data sinks:
+
+1. Cosmos DB: Individual vehicle telemetry (grouped by VIN) is aggregated over a 30-second `TumblingWindow` and saved to the `metadata` container. This information is used in a Power BI report you will create in Power BI Desktop in a later task to display individual vehicle and multiple vehicle statistics.
+2. Power BI: All vehicle telemetry is aggregated over a 10-second `TumblingWindow` and output to a Power BI data set. This near real-time data is displayed in a live Power BI dashboard to show in 10 second snapshots how many events were processed, whether there are engine temperature, oil, or refrigeration unit warnings, whether aggressive driving was detected during the period, and the average speed, engine temperature, and refrigeration unit readings.
+
+![The stream processing components of the solution architecture are displayed.](media/solution-architecture-stream-processing.png 'Solution Architecture - Stream Processing')
+
+In this exercise, you will configure Stream Analytics for stream processing as described above.
+
+### Task 1: Add Stream Analytics Event Hubs input
+
+1. In the [Azure portal](https://portal.azure.com), open your lab resource group, then open your **Stream Analytics job**.
+
+   ![The Stream Analytics job is highlighted in the resource group.](media/resource-group-stream-analytics.png 'Resource Group')
+
+2. Select **Inputs** in the left-hand menu. In the Inputs blade, select **+ Add stream input**, then select **Event Hub** from the list.
+
+   ![The Event Hub input is selected in the Add Stream Input menu.](media/stream-analytics-inputs-add-event-hub.png 'Inputs')
+
+3. In the **New input** form, specify the following configuration options:
+
+   1. **Input alias**: Enter **events**.
+   2. Select the **Select Event Hub from your subscriptions** option beneath.
+   3. **Subscription**: Choose your Azure subscription for this lab.
+   4. **Event Hub namespace**: Find and select your Event Hub namespace (eg. `iot-namespace`).
+   5. **Event Hub name**: Select **Use existing**, then **reporting**.
+   6. **Event Hub policy name**: Choose the default `RootManageSharedAccessKey` policy.
+
+   ![The New Input form is displayed with the previously described values.](media/stream-analytics-new-input.png 'New input')
+
+4. Select **Save**.
+
+You should now see your Event Hubs input listed.
+
+![The Event Hubs input is listed.](media/stream-analytics-inputs.png 'Inputs')
+
+### Task 2: Add Stream Analytics outputs
+
+1. Select **Outputs** in the left-hand menu. In the Outputs blade, select **+ Add**, then select **Cosmos DB** from the list.
+
+   ![The Cosmos DB output is selected in the Add menu.](media/stream-analytics-outputs-add-cosmos-db.png 'Outputs')
+
+2. In the **New output** form, specify the following configuration options:
+
+   1. **Output alias**: Enter **cosmosdb**.
+   2. Select the **Select Cosmos DB from your subscriptions** option beneath.
+   3. **Subscription**: Choose your Azure subscription for this lab.
+   4. **Account id**: Find and select your Cosmos DB account (eg. `cosmos-db-iot`).
+   5. **Database**: Select **Use existing**, then **ContosoAuto**.
+   6. **Container name**: Enter **metadata**.
+
+   ![The New Output form is displayed with the previously described values.](media/stream-analytics-new-output-cosmos.png 'New output')
+
+3. Select **Save**.
+
+4. While remaining in the Outputs blade, select **+ Add** once again, then select **Power BI** from the list.
+
+   ![The Power BI output is selected in the Add menu.](media/stream-analytics-outputs-add-power-bi.png 'Outputs')
+
+5. In the **New output** form, look toward the bottom to find the **Authorize connection** section, then select **Authorize** to sign in to your Power BI account. If you do not have a Power BI account, select the _Sign up_ option first.
+
+   ![The Authorize connection section is displayed.](media/stream-analytics-authorize-power-bi.png 'Authorize connection')
+
+6. After authorizing the connection to Power BI, specify the following configuration options in the form:
+
+   1. **Output alias**: Enter **powerbi**.
+   2. **Group workspace**: Select **My workspace**.
+   3. **Dataset name**: Enter **Contoso Auto IoT Events**.
+   4. **Table name**: Enter **FleetEvents**.
+
+   ![The New Output form is displayed with the previously described values.](media/stream-analytics-new-output-power-bi.png 'New output')
+
+7. Select **Save**.
+
+You should now have two outputs listed.
+
+![The two added outputs are listed.](media/stream-analytics-outputs.png 'Outputs')
+
+### Task 3: Create Stream Analytics query
+
+The Query is Stream Analytics' work horse. This is where we process streaming inputs and write data to our outputs. The Stream Analytics query language is SQL-like, allowing you to use familiar syntax to explore and transform the streaming data, create aggregates, and create materialized views that can be used to help shape your data structure before writing to the output sinks. Stream Analytics jobs can only have one Query, but you can write to multiple outputs in a single Query, as you will do in the steps that follow.
+
+Please take a moment to analyze the query below. Notice how we are using the `events` input name for the Event Hubs input you created, and the `powerbi` and `cosmosDB` outputs, respectively. Also see where we use the `TumblingWindow` in durations of 30 seconds for `VehicleData`, and 10 seconds for `VehicleDataAll`. The `TumblingWindow` helps us evaluate events that occurred during the past X seconds and, in our case, create averages over those time periods for reporting.
+
+1. Select **Query** in the left-hand menu. Replace the contents of the query window with the script below:
+
+   ```sql
+   WITH
+   VehicleData AS (
+       select
+           vin,
+           AVG(engineTemperature) AS engineTemperature,
+           AVG(speed) AS speed,
+           AVG(refrigerationUnitKw) AS refrigerationUnitKw,
+           AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,
+           (case when AVG(engineTemperature) >= 400 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,
+           (case when AVG(engineoil) <= 18 then 1 else 0 end) as oilAnomaly,
+           (case when AVG(transmission_gear_position) <= 3.5 AND
+               AVG(accelerator_pedal_position) >= 50 AND
+               AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,
+           (case when AVG(refrigerationUnitTemp) >= 30 then 1 else 0 end) as refrigerationTempAnomaly,
+           System.TimeStamp() as snapshot
+       from events TIMESTAMP BY [timestamp]
+       GROUP BY
+           vin,
+           TumblingWindow(Duration(second, 30))
+   ),
+   VehicleDataAll AS (
+       select
+           AVG(engineTemperature) AS engineTemperature,
+           AVG(speed) AS speed,
+           AVG(refrigerationUnitKw) AS refrigerationUnitKw,
+           AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,
+           COUNT(*) AS eventCount,
+           (case when AVG(engineTemperature) >= 318 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,
+           (case when AVG(engineoil) <= 20 then 1 else 0 end) as oilAnomaly,
+           (case when AVG(transmission_gear_position) <= 4 AND
+               AVG(accelerator_pedal_position) >= 50 AND
+               AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,
+           (case when AVG(refrigerationUnitTemp) >= 22.5 then 1 else 0 end) as refrigerationTempAnomaly,
+           System.TimeStamp() as snapshot
+       from events t TIMESTAMP BY [timestamp]
+       GROUP BY
+           TumblingWindow(Duration(second, 10))
+   )
+   -- INSERT INTO POWER BI
+   SELECT
+       *
+   INTO
+       powerbi
+   FROM
+       VehicleDataAll
+   -- INSERT INTO COSMOS DB
+   SELECT
+       *,
+       entityType = 'VehicleAverage',
+       partitionKey = vin
+   INTO
+       cosmosdb
+   FROM
+       VehicleData
+   ```
+
+   ![The Stream Analytics job Query is displayed.](media/stream-analytics-query.png 'Query')
+
+2. Select **Save query**.
+
+### Task 4: Run Stream Analytics job
+
+Next, we will start the Stream Analytics job so we can begin processing event data once it starts to flow through the services.
+
+1. Select **Overview**.
+
+2. In the Overview blade, select **Start** and select **Now** for the job output start time.
+
+3. Select **Start** to beginning running the Stream Analytics job.
+
+   ![The steps to start the job as described are displayed.](media/stream-analytics-start-job.png 'Start job')
+
+## Exercise 3: Deploy Azure functions and Web App
 
 ### Task 1: Open solution
 
@@ -587,7 +849,7 @@ After a moment, you will see a dialog verifying that the secret scope has been c
 
 ### Task 6: Configure application settings in Azure
 
-## Exercise 3: Explore and execute data generator
+## Exercise 4: Explore and execute data generator
 
 ### Task 1: Open the data generator project
 
@@ -597,23 +859,29 @@ After a moment, you will see a dialog verifying that the secret scope has been c
 
 ### Task 4: Run generator
 
-## Exercise 4: Observe data using Cosmos DB Data Explorer and Web App
+## Exercise 5: Observe data using Cosmos DB Data Explorer and Web App
 
 ### Task 1: View data in Cosmos DB Data Explorer
 
 ### Task 2: Search and view data in Web App
 
-## Exercise 5: Performing CRUD operations using the Web App
+## Exercise 6: Performing CRUD operations using the Web App
 
 ### Task 1: Update vehicle metadata
 
 ### Task 2: View consignment, package, and trip data
 
-## Exercise 6: Observe Change Feed using Azure Functions and App Insights
+## Exercise 7: Observe Change Feed using Azure Functions and App Insights
 
 ### Task 1: Open App Insights Live View
 
-## Exercise 7: Running the predictive maintenance batch scoring
+## Exercise 8: Running the predictive maintenance batch scoring
+
+**Duration**: 20 minutes
+
+In this exercise, you will import Databricks notebooks into your Azure Databricks workspace. A notebook is interactive and runs in any web browser, mixing markup (formatted text with instructions), executable code, and outputs from running the code.
+
+Next, you will run the Batch Scoring notebook to make battery failure predictions on vehicles, using vehicle and trip data stored in Cosmos DB.
 
 ### Task 1: Import lab notebooks into Azure Databricks
 
@@ -641,21 +909,52 @@ In this task, you will import the Databricks notebooks into your workspace.
 
 ### Task 2: Run batch scoring notebook
 
-### Task 3: Create scheduled notebook job
+In this task, you will run the `Batch Scoring` notebook, using a pre-trained machine learning (ML) model to determine if the battery needs to be replaced on several vehicles within the next 30 days. The notebook performs the following actions:
 
-## Exercise 8: Deploying the predictive maintenance web service
+1. Installs required Python libraries.
+2. Connects to Azure Machine Learning service (Azure ML).
+3. Downloads a pre-trained ML model, saves it to Azure ML, then uses that model for batch scoring.
+4. Uses the Cosmos DB Spark connector to retrieve completed Trips and Vehicle metadata from the `metadata` Cosmos DB container, prepares the data using SQL queries, then surfaces the data as temporary views.
+5. Applies predictions against the data, using the pre-trained model.
+6. Saves the prediction results in the Cosmos DB `maintenance` container for reporting purposes.
+
+To run this notebook, perform the following steps:
+
+1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
+
+2. Select the `01 IoT (clean)` folder, then select the **Batch Scoring** notebook to open it.
+
+   ![The Batch Scoring notebook is highlighted.](media/databricks-batch-scoring-notebook.png 'Workspace')
+
+3. Before you can execute the cells in this or the other notebooks for this lab, you must first attach your Databricks cluster. Expand the dropdown at the top of the notebook where you see **Detached**. Select your lab cluster to attach it to the notebook. If it is not currently running, you will see an option to start the cluster.
+
+   ![The screenshot displays the lab cluster selected for attaching to the notebook.](media/databricks-notebook-attach-cluster.png 'Attach cluster')
+
+4. You may use keyboard shortcuts to execute the cells, such as **Ctrl+Enter** to execute a single cell, or **Shift+Enter** to execute a cell and move to the next one below.
+
+> If you wish to execute this notebook on a scheduled basis, such as every evening, you can use the Jobs feature in Azure Databricks to accomplish this.
+
+## Exercise 9: Deploying the predictive maintenance web service
+
+**Duration**: 20 minutes
+
+In addition to batch scoring, Contoso Auto would like to predict battery failures on-demand in real time for any given vehicle. They want to be able to call the model from their Fleet Management website when looking at a vehicle to predict whether that vehicle's battery may fail in the next 30 days.
+
+In the previous task, you executed a notebook that used a pre-trained ML model to predict battery failures for all vehicles with trip data in a batch process. But how do you take that same model and deploy it (in data science terms, this is called "operationalization") to a web service for this purpose?
+
+In this task, you will run the `Model Deployment` notebook to deploy the pre-trained model to a web service hosted by Azure Container Instances (ACI), using your Azure ML workspace. While it is possible to deploy the model to a web service running in Azure Kubernetes Service (AKS), we are deploying to ACI instead since doing so saves 10-20 minutes. However, once deployed, the process used to call the web service is the same, as are most of the steps to do the deployment.
 
 ### Task 1: Run deployment notebook
 
-## Exercise 9: Configure windowed queries in Stream Analytics
+To run this notebook, perform the following steps:
 
-### Task 1: Add Stream Analytics Event Hubs input
+1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
 
-### Task 2: Add Stream Analytics outputs
+2. Select the `01 IoT (clean)` folder, then select the **Model Deployment** notebook to open it.
 
-### Task 3: Create Stream Analytics query
+   ![The Model Deployment notebook is highlighted.](media/databricks-model-deployment-notebook.png 'Workspace')
 
-### Task 4: Run query
+3. As with the Batch Scoring notebook, be sure to attach your lab cluster before executing cells.
 
 ## Exercise 10: Creating the Fleet status real-time dashboard in Power BI
 
