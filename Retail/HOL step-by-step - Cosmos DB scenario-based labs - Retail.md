@@ -50,13 +50,13 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 ## Abstract and learning objectives
 
-In this hands-on-lab, TODO
+In this hands-on-lab, you will complete various tasks to implment a recommendation engine using several Microsoft Azure PaaS services.
 
-At the end of this lab you will TODO
+At the end of this lab you will understand how to design offline recommendation systems that store data in Cosmos DB using Data Bricks.  You will also see how to implement a ecommerce store front utilizing Cosmos DB.  Additionally, you will see how to utilize the Cosmos DB change feed to execute functions for reporting and monitoring activities with Power BI and Logic Apps.
 
 ## Overview
 
-Contoso Movies, Ltd. has TODO
+Contoso Movies, Ltd. has express their desire to move to a more modern and cloud-based approach to their online ecommerce presence.  The have decided to utilize Cosmos DB and Azure Databricks to implement their next generate recommendation system.
 
 ## Solution architecture (High-level)
 
@@ -392,13 +392,13 @@ In this exercise you will TODO
 
 1.  Open the **Ratings** notebook
 
-1.  Set the cluser and then run the notebook
+1.  Set the cluster and then run the notebook
 
 ### Task 2: Implement the Collaborative Rules
 
 1.  Open the **Similarity** notebook
 
-1.  Set the cluser and then run the notebook
+1.  Set the cluster and then run the notebook
 
 ### Task 2: Review the data generated
 
@@ -422,7 +422,35 @@ In this exercise you will TODO
 
 1.  Click **Inputs**
 
-1.  CLick **Outputs**
+1.  Click **+Add stream input**, then select **Event Hub**
+
+1.  For the alias, type **s2events**
+
+1.  Select your subscription
+
+1.  Select the **s2event..** event hub
+
+1.  For the event hub, select **store**
+
+1.  For the policy name, select **RootManageSharedAccessKey**
+
+1.  Click **Save**
+
+1.  Click **Outputs**
+
+1.  Click **+Add**, then select **Power BI**
+
+1.  For the output alias, type **todo**
+
+1.  For the dataset, type **todo**
+
+1.  For the table name, type **todo**
+
+1.  Click **Authorize**, login to your Power BI instance
+
+1.  Click **Save**
+
+1.  Click **Query**
 
 1.  Update the query to the following:
 
@@ -467,7 +495,65 @@ SELECT System.TimeStamp AS Time, Count(*)
 
 1.  Click **+Add tile** then select **Stream Data**
 
-### Task 3: Generate user events
+### Task 3: Configure the ChangeFeed Function
+
+1.  In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file
+
+1.  Take a moment to review the function signature.  Notice how it is trigger based on a Cosmos DB collection
+
+1.  Find the todo task #1 and complete it with the following:
+
+```csharp
+AddEventToEventHub(events);
+```
+
+1.  Add the following method to the function class:
+
+```csharp
+public void AddEventToEventHub(IReadOnlyList<Document> events)
+{
+    try
+    {
+        //event hub connection
+        EventHubClient eventHubClient;
+        string EventHubConnectionString = config["eventHubConnection"];
+        string EventHubName = "store";
+
+        var connectionStringBuilder = new EventHubsConnectionStringBuilder(EventHubConnectionString)
+        {
+            EntityPath = EventHubName
+        };
+
+        eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
+
+        foreach (var e in events)
+        {
+            string data = JsonConvert.SerializeObject(e);
+            var result = eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(data)));
+        }
+    }
+    catch (Exception ex)
+    {
+        log.LogError(ex.Message);
+    }
+}
+```
+
+>NOTE:  This method will forward the change feed events to the event hub where stream analytics will be monitoring and then forwarding data to a Power BI dashboard
+
+### Task 4: Deploy the ChangeFeed Function
+
+1.  Right-click the **Consoto.Apps.FunctionApp.ChangeFeed** function app project, select **Publish**
+
+1.  Click **New**, then ensure that **Azure Functions Consumption Plan** is selected
+
+1.  Click **Select Existing**, then click **Publish**
+
+1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2changefeed...***
+
+1.  Click **OK**
+
+### Task 5: Generate user events
 
 1.  Right-click the **DataGenerator** project, select **Set as startup project**
 
@@ -477,44 +563,92 @@ SELECT System.TimeStamp AS Time, Count(*)
 
 1.  Buy events will be generated for the first 30 seconds, after that you will notice the orders per hour will fall below the target of 10.  This would signify that something is wrong with the front end web site or order processing.
 
-1.  
-
+1.  Switch to your Power BI dashboard, you should see it update with the event data
 
 ## Exercise 6: Email alerts using Logic Apps
 
 Duration: 30 minutes
 
-In this exercise you will TODO
+In this exercise you will configure your change feed function to call an HTTP login app endpoint that will then send an email when an order event occurs.  The function will be using Polly to handle retries in the case the function app is not available.
 
 ### Task 1: Setup Logic App
 
-1.  Open the Azure Portal to your resource group and select the Logic App
+1.  Open the Azure Portal to your resource group and select the Logic App in your resource group, it should be named **s2_logicapp_...**
 
 1.  Click **Edit**
 
-1.  Set the email address to your email
+1.  Click **+New step**
+
+1.  Search for **send an email**, then select the Office 365 outlook connector
+
+1.  Click **Sign in**, login using your Azure AD credentials
+
+1.  Set the **To** as your email
+
+1.  Set the **Subject** as **Thank you for your order**
+
+1.  Set the **Body** as **Your order is being processed**
 
 1.  Click **Save**
 
-### Task 2: Update and deploy function app
-
-1.  Open the **todo** function app project
-
-1.  Add the following code:
-
-1.  Publish the function app
+1.  Click on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
 
 ### Task 2: Update and deploy function app
 
-1.  Open the **todo** function app project
+1.  In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file
 
-1.  Add the following code:
+1.  Take a moment to review the function signature.  Notice how it is trigger based on a Cosmos DB collection
 
-1.  Publish the function app
+1.  Find the todo task #3 and complete it with the following:
+
+```csharp
+CallLogicApp(events);
+```
+
+1.  Add the following method to the function class:
+
+```csharp
+public async void CallLogicApp(IReadOnlyList<Document> events)
+{
+    try
+    {
+        // Have the HttpClient factory create a new client instance.
+        var httpClient = _httpClientFactory.CreateClient("LogicAppClient");
+
+        // Create the payload to send to the Logic App.
+        foreach (var e in events)
+        {
+            var payload = new LogicAppAlert
+            {
+                data = JsonConvert.SerializeObject(e),
+                recipientEmail = Environment.GetEnvironmentVariable("RecipientEmail")
+            };
+
+            var postBody = JsonConvert.SerializeObject(payload);
+
+            var httpResult = await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
+        }
+    }
+    catch (Exception ex)
+    {
+        log.LogError(ex.Message);
+    }
+}
+```
+
+### Task 2: Update and deploy function app
+
+1.  Right-click the **Consoto.Apps.FunctionApp.ChangeFeed** function app project, select **Publish**
+
+1.  Click **Publish**
 
 ### Task 3: Test order email delivery
 
-1.  Blah
+1.  Switch to Visual Studio, right-click the **DataGenerator** project, select **Set as startup project**
+
+1.  Press **F5** to run the project
+
+1.  For each 'buy' event, you should received an email
 
 ## After the hands-on lab 
 

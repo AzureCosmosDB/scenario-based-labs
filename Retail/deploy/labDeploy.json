@@ -13,7 +13,6 @@
 		
 		"webAppName": "[concat('s2web', variables('name-suffix'))]",
         
-        
 		"functionAppRecommendName": "[concat('s2recommend', variables('name-suffix'))]",
         "functionAppChangeFeedName": "[concat('s2changefeed', variables('name-suffix'))]",        
         
@@ -758,26 +757,13 @@
               }
             }
           },
-		  {
-            "type": "Microsoft.Web/connections",
-            "apiVersion": "2016-06-01",
-            "name": "[variables('connections_office365_name')]",
-            "location": "westus2",
-            "properties": {
-                "displayName": "chris@solliance.net",
-                "customParameterValues": {},
-                "api": {
-                    "id": "[concat('/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/providers/Microsoft.Web/locations/westus2/managedApis/', variables('connections_office365_name'))]"
-                }
-            }
-        },
         {
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
             "name": "[variables('workflows_s2scenerio_name')]",
             "location": "westus2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/connections', variables('connections_office365_name'))]"
+                
             ],
             "properties": {
                 "state": "Enabled",
@@ -800,37 +786,12 @@
                         }
                     },
                     "actions": {
-                        "Send_an_email": {
-                            "runAfter": {},
-                            "type": "ApiConnection",
-                            "inputs": {
-                                "body": {
-                                    "Body": "Thanks for your order!",
-                                    "Subject": "Thanks for your order!",
-                                    "To": "chris@solliance.net"
-                                },
-                                "host": {
-                                    "connection": {
-                                        "name": "@parameters('$connections')['office365']['connectionId']"
-                                    }
-                                },
-                                "method": "post",
-                                "path": "/Mail"
-                            }
-                        }
+                        
                     },
                     "outputs": {}
                 },
                 "parameters": {
-                    "$connections": {
-                        "value": {
-                            "office365": {
-                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('connections_office365_name'))]",
-                                "connectionName": "office365",
-                                "id": "/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/providers/Microsoft.Web/locations/westus2/managedApis/office365"
-                            }
-                        }
-                    }
+                    
                 }
             }
         }
