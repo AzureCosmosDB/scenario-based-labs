@@ -31,16 +31,39 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Solution architecture (High-level)](#solution-architecture-high-level)
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
-  - [Exercise 1: Deployment and Setup](#exercise-1-deployment-and-setup)
-    - [Task 1: Blah](#task-1-blah)
-  - [Exercise 2: Creating and deploying rule calculations](#exercise-2-creating-and-deploying-rule-calculations)
-    - [Task 1: Blah](#task-1-blah-1)
-  - [Exercise 3: Simulate data and events](#exercise-3-simulate-data-and-events)
-    - [Task 1: Blah](#task-1-blah-2)
-  - [Exercise 4: Reporting with Stream Analytics and Power BI](#exercise-4-reporting-with-stream-analytics-and-power-bi)
-    - [Task 1: Blah](#task-1-blah-3)
-  - [Exercise 5: Email alerts using Logic Apps](#exercise-5-email-alerts-using-logic-apps)
-    - [Task 1: Blah](#task-1-blah-4)
+  - [Exercise 1: Configure Databricks and generate event data](#exercise-1-deployment-and-setup)
+    - [Task 1: Configure Azure Databricks](#task-1-blah)
+    - [Task 1: Populate event data](#task-1-blah)
+    - [Task 1: Review the data generated](#task-1-blah)
+  - [Exercise 2: Complete and deploy Web and Function Apps](#exercise-2-creating-and-deploying-rule-calculations)
+    - [Task 1: Implement the Top Items recommendation](#task-1-blah-1)
+    - [Task 2: Deploy the applications](#task-1-blah-1)
+    - [Task 3: Test the applications](#task-1-blah-1)
+  - [Exercise 3: Perform and deploy association rules calculation for offline algorithms](#exercise-3-simulate-data-and-events)
+    - [Task 1: Generate the Associations](#task-1-blah-2)
+    - [Task 2: Review the data generated](#task-1-blah-2)
+    - [Task 3: Generate the ratings](#task-1-blah-2)
+    - [Task 4: Review the data generated](#task-1-blah-2)
+  - [Exercise 4: Complete and deploy Web and Function Apps (Association Rules)](#exercise-3-simulate-data-and-events)
+    - [Task 1: Implement the Associations recommendation rules](#task-1-blah-2)
+    - [Task 2: Deploy the applications](#task-1-blah-1)
+    - [Task 3: Test the applications](#task-1-blah-1)
+  - [Exercise 5: Perform and deploy collaborative filtering rules calculation](#exercise-3-simulate-data-and-events)
+    - [Task 1: Compute the user implict ratings](#task-1-blah-2)
+    - [Task 2: Implement the Collaborative Rules](#task-1-blah-1)
+    - [Task 3: Review the data generated](#task-1-blah-1)
+  - [Exercise 6: Reporting with Stream Analytics and Power BI](#exercise-4-reporting-with-stream-analytics-and-power-bi)
+    - [Task 1: Steup Stream Analytics](#task-1-blah-3)
+    - [Task 2: Configure the ChangeFeed Function](#task-1-blah-3)
+    - [Task 3: Deploy the ChangeFeed Function](#task-1-blah-3)
+    - [Task 4: Generate more user events](#task-1-blah-3)
+    - [Task 5: Generate user events](#task-1-blah-3)
+    - [Task 6: Setup Power BI Dashboard](#task-1-blah-3)
+  - [Exercise 7: Email alerts using Logic Apps](#exercise-5-email-alerts-using-logic-apps)
+    - [Task 1: Setup Logic App](#task-1-blah-4)
+    - [Task 2: Update and deploy function app](#task-1-blah-4)
+    - [Task 3: Update and deploy function app](#task-1-blah-4)
+    - [Task 4: Test order email delivery](#task-1-blah-4)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete resource group](#task-1-delete-resource-group)
 
@@ -76,7 +99,7 @@ Refer to the Before the hands-on lab setup guide manual before continuing to the
 
 Duration: 30 minutes
 
-Synopsis: We have pregenerated a set of events that include **buy** events.  Based on this information, a **Top Items** recommendation will be made to users that are new to the site.  You will implement this code in the web application and function applications, then deploy the applications to test the functionality.
+Synopsis: We have pre-generated a set of events that include **buy** and **details** events.  Based on this data, a **Top Items** recommendation will be made to users that are new to the site (aka a cold start recommendation).  You will implement this top items code in the web application and function applications, then deploy the applications to test the functionality.
 
 ### Task 1: Configure Azure Databricks
 
@@ -114,11 +137,17 @@ Synopsis: We have pregenerated a set of events that include **buy** events.  Bas
 
 1.  Click the **small** cluster, then click **Libraries**
 
-1. If you **do not** see the **Maven** already installed on the cluster, continue to the next step. Otherwise, continue to Task 2.
-
 1. Select **Install New**.
 
-1. In the Install Library dialog, select **Maven** for the Library Source, then enter the following in the Coordinates field: `com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1`. Select **Install**.
+1. In the Install Library dialog, select **Maven** for the Library Source
+
+1.  In the Coordinates field type:
+
+```text
+com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
+```
+
+1. Select **Install**.
 
 1. **Wait** until the library's status shows as **Installed** before continuing.
 
@@ -126,7 +155,7 @@ Synopsis: We have pregenerated a set of events that include **buy** events.  Bas
 
 1. Within Azure Databricks, select **Workspace** on the menu, then **Users**, select your user, then select the down arrow on the top of your user workspace. Select **Import**.
 
-1. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it (/lab-files/Retail/Notebooks/02 Retail.dbc)
+1. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it ($githubdirectory/lab-files/Retail/Notebooks/02 Retail.dbc)
 
 1.  Click **Import**
 
@@ -140,7 +169,7 @@ Synopsis: We have pregenerated a set of events that include **buy** events.  Bas
 
 - Endpoint = Cosmos DB endpoint
 - Masterkey = Cosmos DB master key
-- Database = Database id of the cosmos db
+- Database = Database id of the cosmos db ('movies')
 
 1.  Click **Run All**
 
@@ -154,15 +183,24 @@ Synopsis: We have pregenerated a set of events that include **buy** events.  Bas
 
 >NOTE:  These items are created from the data bricks solution and include a random set of generated events for each user personality type.  You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated (via the contentId field) with the event.
 
-## Exercise 2: Complete and deploy Web App and Function Apps
+### Task 4: Compile the aggregations
+
+1.  Browse to the **$githubdirectory/lab-files/Retail/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
+
+1.  Right-click the **DataGenerator** project, select **Set as startup project**
+
+1.  Press **F5** to run the project.  This will:
+
+- Aggregate all the event data from the Databricks notebook
+- Create the users, movies and catgories in the cosmos db
+
+## Exercise 2: Complete and deploy Web and Function Apps
 
 Duration: 30 minutes
 
 Synopsis: We have pregenerated a set of events that include **buy** events.  Based on this information, a **Top Items** recommendation will be made to users that are new to the site.  You will implement this code in the web application and function applications, then deploy the applications to test the functionality.
 
 ### Task 1: Implement the Top Items recommendation
-
-1.  Browse to the **/lab-files/Retail/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
 1.  In the **Contoso.Apps.Movies.Web** project, open the **/Controllers/HomeController.cs** file
 
@@ -294,7 +332,7 @@ Duration: 30 minutes
 
 Synopsis: Now that we have data for our association calculations, we will add code to the web app and function app to support this new recommendation engine.
 
-### Task 1: Implement the Associations recommendation
+### Task 1: Implement the Associations recommendation rules
 
 1.  In the **Contoso.Apps.FunctionApp.Recommend** project, open the **RecommendationHelper.cs** file
 
@@ -437,7 +475,6 @@ In this exercise you will TODO
 1.  Set the cluster
 
 1. Run each cell of the **Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
-
 
 ### Task 2: Review the data generated
 

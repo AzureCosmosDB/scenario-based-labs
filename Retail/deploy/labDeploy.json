@@ -13,8 +13,7 @@
 		
 		"webAppName": "[concat('s2web', variables('name-suffix'))]",
         
-		"functionAppRecommendName": "[concat('s2recommend', variables('name-suffix'))]",
-        "functionAppChangeFeedName": "[concat('s2changefeed', variables('name-suffix'))]",        
+		"functionAppName": "[concat('s2func', variables('name-suffix'))]",
         
 		"keyVaultName": "[concat('s2keyvault-', variables('name-suffix'))]",
 		
@@ -67,6 +66,18 @@
                     }
                 ],
                 "capabilities": []
+            }
+        },
+		{
+            "type": "Microsoft.DocumentDB/databaseAccounts/apis/databases",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'))]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/', variables('cosmosDbAccountName'))]" ],
+            "properties":{
+                "resource":{
+                    "id": "[parameters('databaseName')]"
+                },
+                "options": { "throughput": "[parameters('throughput')]" }
             }
         },
         {
@@ -576,7 +587,7 @@
         {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2016-08-01",
-            "name": "[variables('functionAppCosmosDBProcessingName')]",
+            "name": "[variables('functionAppName')]",
             "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanFunctionAppsName'))]",
@@ -608,58 +619,6 @@
                         {
                             "name": "WEBSITE_CONTENTSHARE",
                             "value": "[variables('storageAccountCosmosDBProcessing-website-contentshare')]"
-                        },
-                        {
-                            "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~2"
-                        },
-                        {
-                            "name": "FUNCTIONS_WORKER_RUNTIME",
-                            "value": "dotnet"
-                        },
-                        {
-                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                            "value": "10.14.1"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Web/sites",
-            "apiVersion": "2016-08-01",
-            "name": "[variables('functionAppStreamProcessingName')]",
-            "location": "[variables('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanFunctionAppsName'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]",
-                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
-            ],
-            "kind": "functionapp",
-            "properties": {
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanFunctionAppsName'))]",
-                "siteConfig": {
-                    "appSettings": [
-                        {
-                            "name": "AzureWebJobsDashboard",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
-        
-                        },
-                        {
-                            "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
-                        },
-                        {
-                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(variables('storageAccountStreamProcessingName'),'2019-04-01').keys[0].value)]"
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTSHARE",
-                            "value": "[variables('storageAccountStreamProcessing-website-contentshare')]"
                         },
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -797,7 +756,7 @@
         }
     ],
 	"outputs": {
-		"hash" {
+		"hash" : {
 			"type" : "string",
 			"value" : "[variables('name-suffix')]"
 		}

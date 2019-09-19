@@ -42,7 +42,6 @@ namespace ContosoFunctionApp
         {
             log = inlog;
 
-            //FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
             var databaseId = "movies";
 
             //config
