@@ -1179,7 +1179,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     This code uses the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) to initialize the `CosmosClient` instance that is added to the `IServiceCollection` as a singleton for dependency injection and object lifetime management.
 
-16. *Save** the **Startup.cs** file.
+16. **Save** the **Startup.cs** file.
 
 17. Open **CosmosDBService.cs** under the **Services** folder of the **FleetManagementWebApp** project to find and complete **TODO 9** with the following code:
 
@@ -1198,7 +1198,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     In order to know how many pages we need to navigate, we must know the total item count with the current filter applied. To do this, we retrieve a new `IOrderedQueryable` results from the `Container`, pass the filter predicate to the `Where` method, and return the `Count` to the `count` variable. For this to work, you must set `allowSynchronousQueryExecution` to true, which we do with our first parameter to the `GetItemLinqQueryable` method.
 
-19. *Save** the **CosmosDBService.cs** file.
+19. **Save** the **CosmosDBService.cs** file.
 
 20. Open **VehiclesController.cs** under the **Controllers** folder of the **FleetManagementWebApp** project to review the following code:
 
@@ -1250,7 +1250,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     Here we are doing a hard delete by completely removing the item. In a real-world scenario, we would most likely perform a soft delete, which means updating the document with a `deleted` property and ensuring all filters exclude items with this property. Plus, we'd soft delete related records, such as trips. Soft deletions make it much easier to recover a deleted item if needed in the future.
 
-22. *Save** the **VehiclesController.cs** file.
+22. **Save** the **VehiclesController.cs** file.
 
 ### Task 5: Deploy Cosmos DB Processing Function App
 
