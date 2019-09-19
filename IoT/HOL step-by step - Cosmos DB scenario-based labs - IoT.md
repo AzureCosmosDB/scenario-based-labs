@@ -51,8 +51,8 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Configure application settings in Azure](#task-2-configure-application-settings-in-azure)
     - [Task 3: Open solution](#task-3-open-solution)
     - [Task 4: Code completion and walk-through](#task-4-code-completion-and-walk-through)
-    - [Task 5 Deploy Stream Processing Function App](#task-5-deploy-stream-processing-function-app)
-    - [Task 6: Deploy Cosmos DB Processing Function App](#task-6-deploy-cosmos-db-processing-function-app)
+    - [Task 5: Deploy Cosmos DB Processing Function App](#task-5-deploy-cosmos-db-processing-function-app)
+    - [Task 6: Deploy Stream Processing Function App](#task-6-deploy-stream-processing-function-app)
     - [Task 7: Deploy Web App](#task-7-deploy-web-app)
   - [Exercise 4: Explore and execute data generator](#exercise-4-explore-and-execute-data-generator)
     - [Task 1: Open the data generator project](#task-1-open-the-data-generator-project)
@@ -1252,7 +1252,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
 22. *Save** the **VehiclesController.cs** file.
 
-### Task 5 Deploy Cosmos DB Processing Function App
+### Task 5: Deploy Cosmos DB Processing Function App
 
 1. In the Visual Studio Solution Explorer, right-click on the **Functions.CosmosDB** project, then select **Publish...**.
 
