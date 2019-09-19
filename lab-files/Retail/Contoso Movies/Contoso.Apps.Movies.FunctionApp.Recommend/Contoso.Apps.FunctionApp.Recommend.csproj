@@ -6,10 +6,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="DbHelper.cs" />
-    <Compile Remove="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB" Version="2.6.0" />
     <PackageReference Include="Microsoft.Azure.EventHubs" Version="4.1.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.4" />

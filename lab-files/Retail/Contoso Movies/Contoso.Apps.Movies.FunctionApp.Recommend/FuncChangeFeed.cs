@@ -1,5 +1,6 @@
-using Contoso.Apps.Function.Common;
+using Contoso.Apps.Common;
 using Contoso.Apps.Movies.Data.Models;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.EventHubs;
@@ -52,7 +53,7 @@ namespace ContosoFunctionApp
                 .Build();
 
             //cosmob connection
-            DocumentClient client = new DocumentClient(new Uri(config["dbConnectionUrl"]), config["dbConnectionKey"]);
+            CosmosClient client = new CosmosClient(config["dbConnectionUrl"], config["dbConnectionKey"]);
             
             DbHelper.client = client;
             DbHelper.databaseId = databaseId;

@@ -123,6 +123,7 @@ $funcApiKey = "";
 $dbConnectionUrl = "";
 $dbConnectionKey = "";
 $databaseId = "movies"
+$eventHubConnection = "";
 
 #get the storage connection string
 $res = $(az storage account list --output json)
