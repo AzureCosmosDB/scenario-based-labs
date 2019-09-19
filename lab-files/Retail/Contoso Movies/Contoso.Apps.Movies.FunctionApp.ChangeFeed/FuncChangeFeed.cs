@@ -36,7 +36,7 @@ namespace ContosoFunctionApp
         [FunctionName("ChangeFeed")]
         public void Run(
             [CosmosDBTrigger(
-            databaseName: "moviegeek",
+            databaseName: "movies",
             collectionName: "events",
             ConnectionStringSetting = "CosmosDBConnection",
             LeaseCollectionName = "leases",
@@ -48,7 +48,7 @@ namespace ContosoFunctionApp
             log = inlog;
 
             //FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
-            var databaseId = "moviegeek";
+            var databaseId = "movies";
 
             //config
             config = new ConfigurationBuilder()

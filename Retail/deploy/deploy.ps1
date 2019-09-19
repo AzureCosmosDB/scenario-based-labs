@@ -282,5 +282,14 @@ SetupStreamAnalytics $suffix;
 #run the data bricks notebook
 #
 ########################
-#Done in the labs
 
+if ($mode -eq "demo")
+{
+    #create the node
+
+    #import the notebooks
+
+    #update the variables
+
+    #execute the notebook
+}
