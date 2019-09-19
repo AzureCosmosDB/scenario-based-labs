@@ -892,17 +892,45 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
    `@Microsoft.KeyVault(SecretUri=https://iot-keyvault-501993860.vault.azure.net/secrets/CosmosDBConnection/794f93084861483d823d37233569561d)`
 
-### Task 1: Configure application settings in Azure
+### Task 2: Configure application settings in Azure
 
-### Task 2: Open solution
+> We recommend that you open two browser tabs for these steps. One to copy secrets from each Azure service, and the other to add the secrets to Key Vault.
 
-### Task 3: Code walk-through
+1. Using a new tab or instance of your browser, navigate to the Azure portal, <https://portal.azure.com>.
 
-### Task 4: Deploy Event Hub consumer Function App
+2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
 
-### Task 5: Deploy Change Feed consumer Function App
+3. Open the your **Key Vault**. The name should begin with `iot-keyvault`.
 
-### Task 6: Deploy Web App
+   ![The Key Vault is highlighted in the resource group.](media/resource-group-keyvault.png 'Resource group')
+
+4. In another browser tab, open the Azure Function App whose name begins with **IoT-CosmosDBProcessing**.
+
+5. Select **Configuration** on the Overview pane.
+
+    ![The Configuration link is highlighted in the Overview blade.](media/cosmosdb-function-overview.png "Overview")
+
+6. Scroll to the **Application settings** section. Use the **+ New application setting** link to create the following additional Key/Value pairs (the key names must exactly match those found in the table below):
+
+| **Application Key**      |                                                                          **Value**                                                                          |
+| ------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| CosmosDBConnection     | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **CosmosDBConnection** Key Vault secret |
+| ColdStorageAccount     | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **ColdStorageAccount** Key Vault secret                                                                   |
+| EventHubsConnection   | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **EventHubsConnection** Key Vault secret |
+| LogicAppUrl        | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **LogicAppUrl** Key Vault secret |
+| RecipientEmail      | Enter a **valid email address** you want to receive notification emails from the Logic App. |
+
+![In the Application Settings section, the previously mentioned key / value pairs are displayed.](media/application-settings-cosmosdb-function.png 'Application Settings section')
+
+### Task 3: Open solution
+
+### Task 4: Code walk-through
+
+### Task 5 Deploy Event Hub consumer Function App
+
+### Task 6: Deploy Change Feed consumer Function App
+
+### Task 7: Deploy Web App
 
 ## Exercise 4: Explore and execute data generator
 
