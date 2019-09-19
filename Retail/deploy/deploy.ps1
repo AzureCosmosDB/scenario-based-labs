@@ -87,25 +87,16 @@ $rgName = $prefix;
 $databaseId = "movie";
 
 #register at https://api.themoviedb.org
-$movieApiKey = "";
+$movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
 
-$res = az account list;
-
-if ($res.contains("cloudName"))
-{
-    #login
-    $subs = az login;    
-}
+#login - do this always as AAD will error if you change location/ip
+$subs = az login;
 
 #select the subscription if you set it
 if ($subName)
 {
     az account set --subscription $subName;
 }
-
-SetupStreamAnalytics $suffix;
-
-return;
 
 #create the resource group
 $result = az group create --name $rgName --location "Central US"
@@ -131,6 +122,7 @@ $funcApiUrl = "";
 $funcApiKey = "";
 $dbConnectionUrl = "";
 $dbConnectionKey = "";
+$databaseId = "movies"
 
 #get the storage connection string
 $res = $(az storage account list --output json)
@@ -170,7 +162,10 @@ $dbConnectionKey = $json.primaryMasterKey;
 
 $webAppName = "s2web" + $suffix;
 
-az webapp deployment source config-zip --resource-group $rgName --name $webAppName --src "webapp.zip"
+if ($mode -eq "demo")
+{
+    az webapp deployment source config-zip --resource-group $rgName --name $webAppName --src "webapp.zip"
+}
 
 ########################
 #
@@ -180,7 +175,10 @@ az webapp deployment source config-zip --resource-group $rgName --name $webAppNa
 
 $funcAppName = "s2cosmosdb" + $suffix;
 
-az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "functionapp.zip"
+if ($mode -eq "demo")
+{
+    az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "functionapp.zip"
+}
 
 ########################
 #
@@ -207,6 +205,39 @@ $data = Get-content "host.json" -raw
 $json = ConvertFrom-json $data;
 
 $funcApiKey = $json.masterkey.value;
+
+########################
+#
+#setup the cosmosdb (run the import tool to create collections and import initial event data)
+#
+########################
+
+#update the app.config file with the new values
+$filePath = "C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe.config"
+[xml]$xml = get-content $filepath;
+
+#set the database url
+$data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionUrl"}
+$data.value = $dbConnectionUrl;
+
+#set the database key
+$data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionKey"}
+$data.value = $dbConnectionKey;
+
+#set the movie api key
+$data = $xml.configuration.appSettings.add | where {$_.key -eq "movieApiKey"}
+$data.value = $movieApiKey;
+
+#set the database id
+$data = $xml.configuration.appSettings.add | where {$_.key -eq "databaseId"}
+$data.value = $databaseId;
+
+$xml.save($filePath);
+
+#run the tool
+. "C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe"
+
+return;
 
 ########################
 #
@@ -245,14 +276,6 @@ az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiK
 #
 #########################
 SetupStreamAnalytics $suffix;
-
-########################
-#
-#setup the cosmosdb (run the import tool to create collections and import initial event data)
-#
-########################
-
-#DataImport.exe
 
 ########################
 #

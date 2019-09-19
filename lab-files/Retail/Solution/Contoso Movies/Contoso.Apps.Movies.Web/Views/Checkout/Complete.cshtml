@@ -1,0 +1,45 @@
+﻿@model Contoso.Apps.Movies.Web.Models.OrderModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@section HeaderOverlay {
+
+}
+
+<section class="store">
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+
+                @if (!string.IsNullOrWhiteSpace(Model.PaymentTransactionId))
+                {
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Success!</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>Thank you for your business! Your order has been completed. Here's your transaction Id for reference: <strong>@Model.PaymentTransactionId</strong></p>
+                            <p><br /></p>
+                            <p><a href="@Url.Action("Index", "Home")" class="btn red-btn">Return Home</a></p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Payment has not been completed</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>Oh no! I must've mistakenly brought you to this page. You have not completed your order yet...</p>
+                            <p>Let's <a href="@Url.Action("Index", "Cart")" style="color: blue">take a look at your cart</a> and try again!</p>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</section>

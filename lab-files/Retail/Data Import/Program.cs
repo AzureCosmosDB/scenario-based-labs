@@ -17,27 +17,34 @@ namespace MovieDataImport
         static protected CosmosClient client;
         static protected string databaseId;
         
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            MovieHelper.ApiKey = ConfigurationManager.AppSettings["movieApiKey"];
+            try
+            {
+                MovieHelper.ApiKey = ConfigurationManager.AppSettings["movieApiKey"];
 
-            //import genre/category
-            string endpointUrl = ConfigurationManager.AppSettings["dbConnectionUrl"];
-            string authorizationKey = ConfigurationManager.AppSettings["dbConnectionKey"];
-            databaseId = ConfigurationManager.AppSettings["databaseId"];
+                //import genre/category
+                string endpointUrl = ConfigurationManager.AppSettings["dbConnectionUrl"];
+                string authorizationKey = ConfigurationManager.AppSettings["dbConnectionKey"];
+                databaseId = ConfigurationManager.AppSettings["databaseId"];
 
-            client = new CosmosClient(endpointUrl, authorizationKey);
-            
-            DbHelper.client = client;
-            DbHelper.databaseId = databaseId;
+                client = new CosmosClient(endpointUrl, authorizationKey);
 
-            PreCalculate();
+                DbHelper.client = client;
+                DbHelper.databaseId = databaseId;
 
-            ImportUsers();
+                await PreCalculate();
 
-            ImportGenre();
+                await ImportUsers();
 
-            ImportMovies(true);
+                await ImportGenre();
+
+                await ImportMovies(true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private async static Task PreCalculate()
@@ -138,7 +145,7 @@ namespace MovieDataImport
 
         }
 
-        async static void ImportUsers()
+        async static Task ImportUsers()
         {
             List<Contoso.Apps.Movies.Data.Models.User> users = new List<Contoso.Apps.Movies.Data.Models.User>();
 
@@ -146,11 +153,19 @@ namespace MovieDataImport
 
             foreach (Contoso.Apps.Movies.Data.Models.User u in users)
             {
-                await DbHelper.SaveObject(u);
+                try
+                {
+                    await DbHelper.SaveObject(u);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                
             }
         }
 
-        async static void ImportGenre()
+        async static Task ImportGenre()
         {
             dynamic data = MovieHelper.GetMovieGenres();
 
@@ -190,7 +205,7 @@ namespace MovieDataImport
             */
         }
 
-        async static void ImportMovies(bool usedOnly)
+        async static Task ImportMovies(bool usedOnly)
         {
             string[] lines = System.IO.File.ReadAllLines("./Data/movies.csv");
 

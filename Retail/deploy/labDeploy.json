@@ -6,6 +6,7 @@
     },
     "variables": {
         "location": "westus",
+		"databaseName": "movies",
         "name-suffix": "[uniqueString(resourceGroup().id)]",
         "appServicePlan": "[concat('s2webplan-', variables('name-suffix'))]",
         "appServicePlanFunctionAppsName": "[concat('s2funcplan', variables('name-suffix'))]",
@@ -13,8 +14,8 @@
 		"webAppName": "[concat('s2web', variables('name-suffix'))]",
         
         
-		"functionAppStreamProcessingName": "[concat('s2streamprocessing', variables('name-suffix'))]",
-        "functionAppCosmosDBProcessingName": "[concat('s2cosmosdb', variables('name-suffix'))]",        
+		"functionAppRecommendName": "[concat('s2recommend', variables('name-suffix'))]",
+        "functionAppChangeFeedName": "[concat('s2changefeed', variables('name-suffix'))]",        
         
 		"keyVaultName": "[concat('s2keyvault-', variables('name-suffix'))]",
 		
@@ -69,6 +70,151 @@
                 "capabilities": []
             }
         },
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'objects')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "objects",
+                    "partitionKey": {
+                        "paths": [
+                        "/ObjectId"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "includedPaths": [{
+                                "path": "/*"
+                            }
+                        ],
+                        "excludedPaths": [{                                
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+		,
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'events')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "events",
+                    "partitionKey": {
+                        "paths": [
+                        "/id"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "includedPaths": [{
+                                "path": "/*"
+                            }
+                        ],
+                        "excludedPaths": [{                                
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+		,
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'associations')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "associations",
+                    "partitionKey": {
+                        "paths": [
+                        "/id"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "includedPaths": [{
+                                "path": "/*"
+                            }
+                        ],
+                        "excludedPaths": [{                                
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+		,
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'similarity')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "similarity",
+                    "partitionKey": {
+                        "paths": [
+                        "/id"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "includedPaths": [{
+                                "path": "/*"
+                            }
+                        ],
+                        "excludedPaths": [{                                
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+		,
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'ranking')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "ranking",
+                    "partitionKey": {
+                        "paths": [
+                        "/id"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "includedPaths": [{
+                                "path": "/*"
+                            }
+                        ],
+                        "excludedPaths": [{                                
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+		,
         {
             "type": "Microsoft.EventHub/namespaces",
             "apiVersion": "2018-01-01-preview",

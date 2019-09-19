@@ -1,0 +1,111 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.navbar-inverse {
+    background: #959094; /* Old browsers */
+    background: -moz-linear-gradient(left,  #959094 0%, #ddd1c5 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,#959094), color-stop(100%,#ddd1c5)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  #959094 0%,#ddd1c5 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left,  #959094 0%,#ddd1c5 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left,  #959094 0%,#ddd1c5 100%); /* IE10+ */
+    background: linear-gradient(to right,  #959094 0%,#ddd1c5 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#959094', endColorstr='#ddd1c5',GradientType=1 ); /* IE6-9 */
+    border: none;
+}
+
+.navbar-inverse .navbar-text {
+  color: #B65351;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+  color: white;
+}
+
+.navbar-text {
+  float: left;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.navbar-toggle {
+  margin-top: 12px;
+}
+
+@media (min-width: 768px) {
+  .navbar-nav > li > a {
+    padding-top: 20px;
+    padding-bottom: 15px;
+  }
+}
+
+.jumbotron { background-color: #ddd1c5; }
+
+.btn-white {
+  color: #f46d6d;
+  background-color: #ffffff;
+  border: 1px solid #ffffff;
+  transition: all 0.3s ease; }
+  .btn-white:hover {
+    color: #ffffff;
+    background: #f46d6d;
+    border: 1px solid #f46d6d; }
+
+.red-btn {
+  color: #ffffff;
+  background-color: #f46d6d;
+  border: 1px solid #f46d6d;
+  transition: all 0.3s ease; }
+  .red-btn:hover {
+    background: #ffffff;
+    color: #f46d6d;
+    border: 1px solid #f46d6d; }
+
+.trans-btn {
+  color: #f46d6d;
+  background-color: transparent;
+  border: 1px solid #f46d6d;
+  transition: all 0.3s ease-in-out; }
+  .trans-btn:hover {
+    color: #ffffff;
+    background: #f46d6d;
+    border: 1px solid #f46d6d; }
+
+h1, h2 { color: #f17775; }
+h1 a, h2 a, h1 a:active, h2 a:active, h1 a:visited, h2 a:visited {
+    border-bottom: 2px dotted #B65351;
+    text-decoration: none;
+    color: #B65351;
+}
+h1 a:hover, h2 a:hover {
+    border-bottom: 2px dotted #f17775;
+    text-decoration: none;
+    color: #f17775;
+}
+
+.panel-primary { border-color: #f17775; }
+.panel-primary > .panel-heading {
+    background-color: #f17775;
+    border-color: #f17775;
+}

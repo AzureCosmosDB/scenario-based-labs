@@ -1,0 +1,195 @@
+﻿<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <!--[if IE]>
+        <link rel="shortcut icon" href="/favicon.ico">
+    <![endif]-->
+
+    <title>@ViewBag.Title - Contoso Movies</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <!--[if lt IE 10]>
+      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <div class="page_overlay">
+        <div class="loader-inner ball-scale-multiple">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div class="wrapper-body">
+        <header class="s-header">
+            <div class="header-top">
+                <div class="container">
+                    <div class="row">
+                        <div class="header-top-left">
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-linkedin"></i></a>
+                            <a href="#"><i class="fa fa-instagram"></i></a>
+                        </div>
+                        <div class="header-top-right">
+                            <a href="#" class="top-wrap"><span class="icon-phone">Call today: </span> (999) 777-8080</a>
+                          
+                        </div>
+
+                    </div>
+                </div>
+            </div> <!--  End of header top   -->
+            <div class="menu">
+                <div class="container">
+                    <div class="row">
+                        <div class="header-top-left">
+                            <a href="@Url.Action("Index","Home")" class="logo">
+                                <img src="@Url.Content("~/Images/logo.png")" alt="logo-image">
+                            </a>
+                        </div>
+                        <div class="header-top-right">
+                            <nav class="navbar">
+                                <div class="nav-wrapper">
+                                    <div class="navbar-header">
+                                        <button type="button" class="navbar-toggle">
+                                            <span class="sr-only">Toggle navigation</span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                        </button>
+                                    </div>
+                                    <div class="overlay"></div>
+                                    <div class="nav-menu">
+                                        <a href="#" class="close">
+                                            <i class="fa fa-times"></i>
+                                        </a>
+                                        <ul class="nav navbar-nav menu-bar">
+                                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                            <li class="dropdown">
+                                                @Html.ActionLink("Store", "Index", "Store")
+                                                <ul class="submenu">
+                                                    <li>
+                                                        @Html.ActionLink("Shopping Cart", "Index", "Cart")
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>@Html.ActionLink("Contact Us", "Contact", "Home")</li>
+
+                                            @if (this.Session["User"] != null)
+                                            {
+                                                var user = (Contoso.Apps.Movies.Data.Models.User)this.Session["User"];
+
+                                                <li class="dropdown">
+                                                    <a href="/Analytics/User?userId=@user.UserId">@user.Email</a>
+                                                    <ul class="submenu">
+                                                        <li>
+                                                            @Html.ActionLink("Switch", "Login", "Home")
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li>@Html.ActionLink("Login", "Login", "Home")</li>
+                                            }
+                                            <li>
+                                                <a href="#" class="search-box-tablet"><i class="fa fa-search"></i></a>
+                                                <input type="text" placeholder="Search" class=" search-box-top">
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </nav>
+                        </div>  <!-- End of header right -->
+                    </div>
+                </div>
+            </div> <!-- End of menu -->
+            @RenderSection("HeaderOverlay", required: false)
+
+            @*Example HeaderOverlay section content:
+                <div class="button-wrapper">
+                    <div class="container">
+                        <div class="row">
+                            <a href="#" class="btn-content pull-right">Contoso Home</a>
+                        </div>
+                    </div>
+                </div>*@
+        </header>
+        <!-- End of header -->
+        @* The content within the RenderBody (views) should be wrapped in a <section> tag *@
+        @RenderBody()
+
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="row left">
+                        <div class="pages">
+                            <h4>Pages</h4>
+                            <ul>
+                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                <li>@Html.ActionLink("Store", "Index", "Store")</li>
+                                <li>@Html.ActionLink("Contact Us", "Contact", "Home")</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row right">
+                        <div class="contact">
+                            <h4>Contact us</h4>
+                            <p>7401 164th Ave NE<br />Redmond, WA 98052</p>
+                            <p>Phone: (555) 555-8000<br />Mail: <a href="mailto:contact@contoso.com">contact@contoso.com</a></p>
+                        </div>
+                        <div class="recent">
+                            <h4>Recent Blog Posts</h4>
+                            <div class="figure row">
+                                <div>
+                                    <img src="@Url.Content("~/Images/photo/soccer.jpg")" alt="image">
+                                </div>
+                                <div class="figcaption">
+                                    <h5 class="heading"><a href="#">Roku integration available now!</a></h5>
+                                    <h5 class="date">July 7, 2019</h5>
+                                    <p>Lorem Ipsum sit amit...</p>
+                                </div>
+                            </div>
+                            <div class="figure row">
+                                <div>
+                                    <img src="@Url.Content("~/Images/photo/mens-volleyball.jpg")" height="73" width="83" alt="">
+                                    >
+                                </div>
+                                <div class="figcaption">
+                                    <h5 class="heading"><a href="">Streaming Service coming soon!</a></h5>
+                                    <h5 class="date">January 29, 2019</h5>
+                                    <p>Lorem Ipsum is the bomb...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h6>&copy; @DateTime.Now.Year -  Contoso Movies</h6>
+            </div>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/scripts")
+    @RenderSection("scripts", required: false)
+
+    <script type="text/javascript">
+        // Application Insights page tracking:
+        var appInsights = window.appInsights || function (config) {
+            function s(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, r = document, f = window, e = "script", o = r.createElement(e), i, u; for (o.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", r.getElementsByTagName(e)[0].parentNode.appendChild(o), t.cookie = r.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;) s("track" + i.pop()); return config.disableExceptionTracking || (i = "onerror", s("_" + i), u = f[i], f[i] = function (config, r, f, e, o) { var s = u && u(config, r, f, e, o); return s !== !0 && t["_" + i](config, r, f, e, o), s }), t
+        }({
+            instrumentationKey: "714f7c1e-c6d8-43e2-9195-4fa815264935"
+        });
+
+        window.appInsights = appInsights;
+        appInsights.trackPageView();
+    </script>
+
+</body>
+</html>

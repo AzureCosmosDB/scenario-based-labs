@@ -1,0 +1,27 @@
+﻿@model Contoso.Apps.Movies.Admin.Models.BaseModel
+@if (Request.IsAuthenticated)
+{
+    <text>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="navbar-text">
+                @if (!string.IsNullOrWhiteSpace(Model.DisplayName))
+                {
+                    @:Hello, @Model.DisplayName!
+            }
+                else
+                {
+                    @:Logged in
+                }
+            </li>
+            <li>
+                @*@Html.ActionLink("Sign out", "SignOut", "Account")*@
+            </li>
+        </ul>
+    </text>
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li>@Html.ActionLink("Sign in", "Index", "Home", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>
+}

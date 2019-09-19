@@ -174,91 +174,11 @@ namespace Contoso.Apps.Movies.Logic
         //aka NeighborhoodBasedRecs
         public static List<string> CollaborationBasedRecommendation(int userId, int take)
         {
-            int neighborhoodSize = 15;
-            double minSim = 0.0;
-            int maxCandidates = 100;
-
-            //inside this we do the implict rating of events for the user...
-            Hashtable userRatedItems = GetRatedItems(userId, 100);
-
-            if (userRatedItems.Count == 0)
-                return new List<string>();
-
-            //this is the mean rating a user gave
-            double ratingSum = 0;
-
-            foreach(double r in userRatedItems.Values)
-            {
-                ratingSum += r;
-            }
-
-            double userMean = ratingSum / userRatedItems.Count;
-
-            //get similar items
-            List<SimilarItem> candidateItems = GetCandidateItems(userRatedItems.Keys, minSim);
-
-            //sort by similarity desc, take only max candidates
-            candidateItems = candidateItems.OrderByDescending(c=>c.similarity).Take(maxCandidates).ToList();
-
-            Hashtable recs = new Hashtable();
-
-            List<PredictionModel> precRecs = new List<PredictionModel>();
-
-            foreach(SimilarItem candidate in candidateItems)
-            {
-                int target = candidate.Target;
-                double pre = 0;
-                double simSum = 0;
-
-                List<SimilarItem> ratedItems = candidateItems.Where(c=>c.Target == target).Take(neighborhoodSize).ToList();
-
-                if (ratedItems.Count > 1)
-                {
-                    foreach (SimilarItem simItem in ratedItems)
-                    {
-                        try
-                        {
-                            string source = userRatedItems[simItem.sourceItemId].ToString();
-
-                            //rating of the movie - userMean;
-                            double r = double.Parse(source) - userMean;
-
-                            pre += simItem.similarity * r;
-                            simSum += simItem.similarity;
-
-                            if (simSum > 0)
-                            {
-                                PredictionModel p = new PredictionModel();
-                                p.Prediction = userMean + pre / simSum;
-                                p.Items = ratedItems;
-                                precRecs.Add(p);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-                    }
-                }
-            }
-
-            //sort based on the prediction, only take x of them
-            List<PredictionModel> sortedItems = precRecs.OrderByDescending(c => c.Prediction).Take(take).ToList();
-
             List<string> itemIds = new List<string>();
 
-            //get first model's items...
-            foreach(PredictionModel pm in sortedItems)
-            {
-                foreach(SimilarItem ri in pm.Items)
-                {
-                    if (ri.targetItemId != null)
-                    {
-                        itemIds.Add(ri.targetItemId.ToString());
-                        break;
-                    }
-                }
-            }
+            //TODO 3 - replace the following lines
+
+            
 
             return itemIds;
         }
@@ -484,39 +404,26 @@ namespace Contoso.Apps.Movies.Logic
         {
             List<Item> items = new List<Item>();
 
+            List<Item> topItems = new List<Item>();
+
+            List<string> itemIds = new List<string>();
+
+            //TODO 2 - add code below here...
             var container = client.GetContainer(databaseId, "object");
+
             var query = container.GetItemLinqQueryable<Item>(true)
-                .Where(c => c.EntityType == "Item")
+                .Where(c => c.EntityType == "ItemAggregation")
                 .OrderByDescending(c => c.BuyCount)
                 .Take(take);
 
             items = query.ToList();
 
-            /*
-            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
-            options.MaxItemCount = take;
-            
-            //get the product
-            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
-
-            var query = client.CreateDocumentQuery<Item>(objCollectionUri, new SqlQuerySpec()
-            {
-                QueryText = $"SELECT * FROM object f WHERE (f.EntityType = @type) order by f.BuyCount desc OFFSET 0 LIMIT {take}",
-                Parameters = new SqlParameterCollection()
-                    {
-                        new SqlParameter("@type", "ItemAggregate")
-                    }
-            }, options);
-            */
-
-            List<string> itemIds = new List<string>();
-
-            foreach(Item i in items)
+            foreach (Item i in items)
             {
                 itemIds.Add(i.ItemId.ToString());
             }
 
-            List<Item> topItems = GetItemsByImdbIds(itemIds);
+            topItems = GetItemsByImdbIds(itemIds);
 
             return topItems;
         }

@@ -24,7 +24,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 <!-- TOC -->
 
-- [Cosmos DB scenario-based labs - IoT before the hands-on lab setup guide](#cosmos-db-scenario-based-labs---iot-before-the-hands-on-lab-setup-guide)
+- [Cosmos DB scenario-based labs - Retail before the hands-on lab setup guide](#cosmos-db-scenario-based-labs---iot-before-the-hands-on-lab-setup-guide)
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
     - [Task 1: Download GitHub resources](#task-1-download-github-resources)
@@ -32,7 +32,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 <!-- /TOC -->
 
-# Cosmos DB scenario-based labs - IoT before the hands-on lab setup guide
+# Cosmos DB scenario-based labs - Retail before the hands-on lab setup guide
 
 ## Requirements
 
@@ -50,80 +50,48 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 1.  Open a browser window to the cloud workshop GitHub repository (<https://github.com/Microsoft/MCW-Securing-the-IoT-End-to-End>).
 
-2.  Select **Clone or download**, then select **Download Zip**.
+1.  Select **Clone or download**, then select **Download Zip**.
 
     ![Clone or download and Download ZIP are highlighted in this screenshot of the cloud workshop GitHub repository.](Images/Hands-onlabstep-bystep-securitytheiotendtoendimages/media/beforehol-image1.png "Download the zip file")
 
-3.  Extract the zip file to your local machine, be sure to keep note of where you have extracted the files. You should now see a set of folders:
+1.  Extract the zip file to your local machine, be sure to keep note of where you have extracted the files. You should now see a set of folders:
 
     ![A set of extracted folders and files are visible in File Explorer: Hands On Lab, Media, Whiteboard design session, README.md., etc.](Images/Hands-onlabstep-bystep-securitytheiotendtoendimages/media/beforehol-image2.png "Extract the zip file")
 
 ### Task 2: Deploy resources to Azure
 
-1.  Open your Azure Portal.
+1.  Open the **deploy.ps1** PowerShell script in an PowerShell ISE window
 
-2.  Select **Resource groups**.
+1.  Set the following variables:
 
-3.  Select **+Add**.
+-   $mode = "lab"  #can be 'lab' or 'demo'
+-   $subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
+-   $subName = "Solliance MPN 12K"
+-   $suffix = "mi4tatni3b2y4"
+-   $prefix = "s2_retail"
+-   $rgName = $prefix;
+-   $databaseId = "movies";
+-   $movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
 
-4.  Type a resource group name, such as **cosmosretail-\[your initials or first name\]**.
+1.  Run the script, this will do the following:
 
-5.  Select a region
+-   Deploy the starter ARM template
+-   Deploy the initial web and function apps
+-   Setup the web and function app configuration variables
+-   Setup various Stream Analytics inputs and outputs
+-   Create starter objects in the 'object' collection of the Comos DB database
 
-6.  Select **Review + Create**, then select **Create**.
+1. The deployment will take 15-25 minutes to complete. As part of the deployment, you will see the following items created:
 
-7.  Select **Refresh** to see your new resource group displayed and select it.
-
-8.  In the resource group blade, select **Export template**, and then select **Deploy**.
-
-    ![Automation script is highlighted under Settings on the left side of the Azure portal, and Deploy is highlighted on the top-right side.](Images/Hands-onlabstep-bystep-securitytheiotendtoendimages/media/beforehol-image3.png "Select Deploy")
-
-9.  Select **Build your own template in the editor**.
-
-10.  In the extracted folder, open the **\\Hands-on lab\\Resources\\template.json**.
-
-11. Copy and paste it into the window.
-
-12. Select **Save**, you will see the dialog with the input parameters. Fill out the form:
-
-    -  Subscription: Select your **subscription**.
-
-    -  Resource group: Use an existing Resource group, or create a new one by entering a unique name, such as **cosmosretail-\[your initials or first name\]**.
-
-    -  If prompted for location: Select a **location** for the Resource group.
-
-    -  Modify the **alias** to be something unique such as "\[your initials or first name\]".
-
-    -  Review the remaining parameters, but if you change anything, be sure to note it for future reference throughout the lab.
-
-    -  Check the **I agree to the terms and conditions stated above** checkbox.
-
-    -  Select **Purchase**.
-
-    ![The above information is entered in the form, and I agree to the terms and conditions stated above and Purchase are selected and highlighted at the bottom.](Images/Hands-onlabstep-bystep-securitytheiotendtoendimages/media/beforehol-image4.png "Fill out the form")
-
-13. The deployment will take 15-25 minutes to complete. To view the progress, select the **Deployments** link, then select the **Microsoft.Template** deployment.
-
-    -  As part of the deployment, you will see the following items created:
-
-       -  A Data Lake Storage account.
-
-       -  A Stream Analytics job.
-
-       -  App service plan
-
-       -  Azure Cosmos DB Account
-
-       -  Event Hubs namespace
-       
-       -  IoT Hub (located in Central US region).
-       
-       -  IoT Provisioning Service
-
-       -  Azure Key Vault
-
-       -  Time Series Insights environment
-
-    >**Note**: Not all of these resources may be used in the current version of the hands-on labs.
+- Function App
+- Web App
+- App Service Plans
+- Event Hub
+- Stream Analytics Job
+- Databricks Service
+- Cosmos DB
+- Key Vault
+- Storage Accounts
+- Application Insights
 
 You should follow all steps provided *before* attending the hands-on lab.
