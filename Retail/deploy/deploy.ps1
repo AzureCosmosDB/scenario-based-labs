@@ -77,6 +77,7 @@ function ConvertObjectToJson($data)
 #################
 #Install-Module -Name Az -AllowClobber -Scope CurrentUser
 #################
+$githubPath = "C:\github\solliancenet\cosmos-db-scenario-based-labs";
 $mode = "lab"  #can be 'lab' or 'demo'
 $subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
 $subName = "Solliance MPN 12K"
@@ -102,18 +103,27 @@ if ($subName)
 $result = az group create --name $rgName --location "Central US"
 
 #deploy the tempalte
-$deployId = [System.Guid]::newguid().ToString().replace("-","");
-#$result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file labdeploy.json --output json #--parameters storageAccountType=Standard_GRS)
+$deployId = "Microsoft.Template"
+$result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\labdeploy.json") --output json )#--parameters storageAccountType=Standard_GRS)
 
 #wait for the job to complete...
 $res = $(az group deployment list --resource-group $rgname --output json)
-
 $json = ConvertObjectToJson $res;
 
 $deployment = $json | where {$_.name -eq $deployId};
 
 #check the status
-$deployment.properties.provisioningState;
+while($deployment.properties.provisioningState -eq "Running")
+{
+    start-sleep 10;
+
+    $res = $(az group deployment list --resource-group $rgname --output json)
+    $json = ConvertObjectToJson $res;
+
+    $deployment = $json | where {$_.name -eq $deployId};
+
+    write-host "Deployment status is : $($deployment.properties.provisioningState)";
+}
 
 #get all the settings
 $azurequeueConnString = "";
@@ -125,7 +135,30 @@ $dbConnectionKey = "";
 $databaseId = "movies"
 $eventHubConnection = "";
 
+########################
+#
+#get the event hub connection
+#
+########################
+
+$res = $(az eventhubs namespace list --output json)
+$json = ConvertObjectToJson $res;
+
+$sa = $json | where {$_.name -eq "s2event" + $suffix};
+
+$res = $(az eventhubs eventhub authorization-rule keys list --resource-group $rgName --namespace-name $sa.name --eventhub-name store --name store)
+$json = ConvertObjectToJson $res;
+
+$key = $json[0].value;
+
+$eventHubConnection = "Endpoint=sb://$($sa.name).servicebus.windows.net/;SharedAccessKeyName=store;SharedAccessKey=$key;EntityPath=store";
+
+########################
+#
 #get the storage connection string
+#
+########################
+
 $res = $(az storage account list --output json)
 $json = ConvertObjectToJson $res;
 
