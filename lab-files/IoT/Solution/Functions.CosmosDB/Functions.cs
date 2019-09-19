@@ -56,8 +56,6 @@ namespace Functions.CosmosDB
 
             if (vehicleEvents.Count > 0)
             {
-                var collectionUri = UriFactory.CreateDocumentCollectionUri(database, metadataContainer);
-
                 foreach (var group in vehicleEvents.GroupBy(singleEvent => singleEvent.GetPropertyValue<string>("vin")))
                 {
                     var vin = group.Key;
