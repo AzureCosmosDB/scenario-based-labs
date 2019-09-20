@@ -58,11 +58,19 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
     ![A set of extracted folders and files are visible in File Explorer: Hands On Lab, Media, Whiteboard design session, README.md., etc.](Images/Hands-onlabstep-bystep-securitytheiotendtoendimages/media/beforehol-image2.png "Extract the zip file")
 
-### Task 2: Deploy resources to Azure
+### Task 2: Get a Movie Api Key
+
+1.  Open a browser window to **https://api.themoviedb.org**
+
+1.  Create an account and copy your API Key for use in the next task
+
+### Task 3: Deploy resources to Azure
 
 1.  Open the **deploy.ps1** PowerShell script in an PowerShell ISE window
 
 1.  Set the following variables:
+
+>NOTE:  If you are performing a demo of this solution, select the "demo" setting, otherwise leave as "lab"
 
 -   $mode = "lab"  #can be 'lab' or 'demo'
 -   $subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
@@ -92,6 +100,6 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 - Storage Accounts
 - Application Insights
 
-1.  Record the values that were exported from the script
+1.  Record the values that were output from the script for use in the lab
 
 You should follow all steps provided *before* attending the hands-on lab.

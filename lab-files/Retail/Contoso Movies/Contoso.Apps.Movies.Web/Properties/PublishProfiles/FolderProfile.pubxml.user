@@ -28,28 +28,28 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/29/2015 09:57:28</publishTime>
     </File>
     <File Include="bin/Contoso.Apps.Common.dll">
-      <publishTime>09/17/2019 17:34:38</publishTime>
+      <publishTime>09/19/2019 19:12:20</publishTime>
     </File>
     <File Include="bin/Contoso.Apps.Common.dll.config">
       <publishTime>09/16/2019 18:29:15</publishTime>
     </File>
     <File Include="bin/Contoso.Apps.Common.pdb">
-      <publishTime>09/17/2019 17:34:38</publishTime>
+      <publishTime>09/19/2019 19:12:20</publishTime>
     </File>
     <File Include="bin/Contoso.Apps.Movies.Data.dll">
-      <publishTime>09/17/2019 17:34:36</publishTime>
+      <publishTime>09/19/2019 19:12:20</publishTime>
     </File>
     <File Include="bin/Contoso.Apps.Movies.Data.dll.config">
       <publishTime>09/16/2019 18:29:15</publishTime>
     </File>
     <File Include="bin/Contoso.Apps.Movies.Data.pdb">
-      <publishTime>09/17/2019 17:34:36</publishTime>
+      <publishTime>09/19/2019 19:12:20</publishTime>
     </File>
     <File Include="bin/Contoso.Apps.Movies.Web.dll">
-      <publishTime>09/17/2019 17:37:33</publishTime>
+      <publishTime>09/19/2019 19:12:21</publishTime>
     </File>
     <File Include="bin/Contoso.Apps.Movies.Web.pdb">
-      <publishTime>09/17/2019 17:37:33</publishTime>
+      <publishTime>09/19/2019 19:12:21</publishTime>
     </File>
     <File Include="bin/Cosmos.CRTCompat.dll">
       <publishTime>08/09/2019 14:48:16</publishTime>
@@ -748,7 +748,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/31/2019 21:17:26</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>09/17/2019 17:37:34</publishTime>
+      <publishTime>09/19/2019 19:12:22</publishTime>
     </File>
   </ItemGroup>
 </Project>

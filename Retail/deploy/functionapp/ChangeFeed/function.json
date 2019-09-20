@@ -9,14 +9,14 @@
       "createLeaseCollectionIfNotExists": true,
       "startFromBeginning": true,
       "collectionName": "events",
-      "databaseName": "moviegeek",
-      "leaseDatabaseName": "moviegeek",
+      "databaseName": "movies",
+      "leaseDatabaseName": "movies",
       "useMultipleWriteLocations": false,
       "useDefaultJsonSerialization": false,
       "name": "events"
     }
   ],
   "disabled": false,
-  "scriptFile": "../bin/Contoso.Apps.FunctionApp.ChangeFeed.dll",
+  "scriptFile": "../bin/Contoso.Apps.FunctionApp.dll",
   "entryPoint": "ContosoFunctionApp.FuncChangeFeed.Run"
 }

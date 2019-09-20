@@ -67,7 +67,7 @@ Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services i
 
     - Trial subscriptions will not work.
     
-## Before the hands-on lab
+## Before the demo
 
 Refer to the Before the hands-on lab setup guide manual before continuing to the lab exercises.
 
@@ -77,25 +77,11 @@ Duration: 60 minutes
 
 Synopsis:  In this exercise you will TODO
 
-### Task 1: Get a Movie Api Key
-
-1.  Open a browser window to **https://api.themoviedb.org**
-
-2.  Create an account and copy your API Key for later use
-
-### Task 2: Deploy ARM Template
-
-1.  Deploy the provided ARM template
-
-### Task 3: Initalize and populate the Cosmos DB instance
-
-1.  Run the MovieDataImport
-
-### Task 4: Configure Stream Analytics
+### Task 1: Configure Stream Analytics
 
 1.  Set all the Azure resource configurations
 
-### Task 5: Setup Power BI
+### Task 2: Setup Power BI
 
 1.  Set all the Azure resource configurations
 
@@ -107,7 +93,7 @@ Synopsis: TODO
 
 ### Task 1: Explore the Contoso Movie Store
 
-1.  Open the web site
+1.  Open the deployed web site
 
 2.  Mention that you are not logged in as any user and the results that are being displayed are based on the **top** purchased items in the Cosmso database.
 

@@ -165,7 +165,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1. Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
 
-1.  Update the configuration settings for both the **readConfig** and the **writeConfig**, set the following:
+1.  Update the configuration settings for both the **readConfig** and the **writeConfig**, set the following using the values from your lab setup script:
 
 - Endpoint = Cosmos DB endpoint
 - Masterkey = Cosmos DB master key
@@ -183,16 +183,18 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 >NOTE:  These items are created from the data bricks solution and include a random set of generated events for each user personality type.  You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated (via the contentId field) with the event.
 
-### Task 4: Compile the aggregations
+### Task 4: Review the aggregation and import utility
 
 1.  Browse to the **$githubdirectory/lab-files/Retail/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
-1.  Right-click the **DataGenerator** project, select **Set as startup project**
-
-1.  Press **F5** to run the project.  This will:
+1.  Open the **program.cs** file, browse code and various methods.  Notice that it:
 
 - Aggregate all the event data from the Databricks notebook
-- Create the users, movies and catgories in the cosmos db
+- Creates the user personalities
+- Creates the movie categories/genres
+- Creates the movies
+
+>NOTE:  This would have been run during your setup script.  Cosmos is setup with primary keys so if you would like to run the utility you can, you may get several primary key errors if you do.  This can take up to 10 minutes to complete.
 
 ## Exercise 2: Complete and deploy Web and Function Apps
 
@@ -210,7 +212,7 @@ Synopsis: We have pregenerated a set of events that include **buy** events.  Bas
 vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 ```
 
-1.  In the **Contoso.Apps.FunctionApp.Recommend** project, open the **RecommendationHelper.cs** file
+1.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
 1.  Find the todo task #2 and complete it with the following:
 
@@ -235,20 +237,19 @@ topItems = GetItemsByImdbIds(itemIds);
 1.  Review the code, notice the following:
 
 - We are querying an "object" collection for an entity type called 'ItemAggregation' and sorting it by the 'BuyCount'.  Essentially these are the top purchased items.
-
-- We are then querying the object collection for all the top items to get their metadata
+- We are then querying the object collection for all the top movie items to get their metadata for display on the web front end
 
 1.  Compile the solution, fix any errors
 
 ### Task 2: Deploy the applications
 
-1.  Right-click the **Consoto.Apps.FunctionApp.Recommed** function app project, select **Publish**
+1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
 1.  Click **New**, then ensure that **Azure Functions Consumption Plan** is selected
 
 1.  Click **Select Existing**, then click **Publish**
 
-1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2recommend...***
+1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2func...***
 
 1.  Click **OK**
 
@@ -258,7 +259,7 @@ topItems = GetItemsByImdbIds(itemIds);
 
 1.  Click **Select Existing**, then click **Publish**
 
-1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2rweb...***
+1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2web...***
 
 1.  Click **OK**, the application will publish and the site should be displayed:
 
@@ -278,7 +279,7 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 ### Task 1: Generate the Associations 
 
-1.  Switch back to your Databricks workspace, select **Association Rules**
+1.  Switch back to your Databricks workspace, select the **Association Rules** workbook
 
 1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
 
@@ -334,7 +335,7 @@ Synopsis: Now that we have data for our association calculations, we will add co
 
 ### Task 1: Implement the Associations recommendation rules
 
-1.  In the **Contoso.Apps.FunctionApp.Recommend** project, open the **RecommendationHelper.cs** file
+1.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
 1.  In the **CollaborativeBasedRecommendation** method, find the todo task #3 and complete it with the following:
 
@@ -434,7 +435,7 @@ vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("assoc", 0, 0);
 
 ### Task 2: Deploy the applications
 
-1.  Right-click the **Consoto.Apps.FunctionApp.Recommed** function app project, select **Publish**
+1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
 1.  Click **Publish**
 
@@ -651,15 +652,9 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 ### Task 3: Deploy the ChangeFeed Function
 
-1.  Right-click the **Consoto.Apps.FunctionApp.ChangeFeed** function app project, select **Publish**
+1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Click **New**, then ensure that **Azure Functions Consumption Plan** is selected
-
-1.  Click **Select Existing**, then click **Publish**
-
-1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2changefeed...***
-
-1.  Click **OK**
+1.  Click **Publish**
 
 ### Task 4: Generate user events
 
@@ -768,7 +763,7 @@ public async void CallLogicApp(IReadOnlyList<Document> events)
 
 ### Task 2: Update and deploy function app
 
-1.  Right-click the **Consoto.Apps.FunctionApp.ChangeFeed** function app project, select **Publish**
+1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
 1.  Click **Publish**
 
@@ -778,7 +773,9 @@ public async void CallLogicApp(IReadOnlyList<Document> events)
 
 1.  Press **F5** to run the project
 
-1.  For each 'buy' event, you should received an email
+1.  For each 'buy' event, you should receive an email
+
+>NOTE:  You could receive quite a few emails.
 
 ## After the hands-on lab 
 
@@ -795,4 +792,3 @@ In this exercise, attendees will deprovision any Azure resources that were creat
 3.  Select **Delete** in the command bar, and confirm the deletion by re-typing the Resource group name and selecting **Delete**.
 
 You should follow all steps provided *after* attending the Hands-on lab.
-
