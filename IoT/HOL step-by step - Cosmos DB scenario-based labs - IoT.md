@@ -51,8 +51,8 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Configure application settings in Azure](#task-2-configure-application-settings-in-azure)
     - [Task 3: Open solution](#task-3-open-solution)
     - [Task 4: Code completion and walk-through](#task-4-code-completion-and-walk-through)
-    - [Task 5 Deploy Stream Processing Function App](#task-5-deploy-stream-processing-function-app)
-    - [Task 6: Deploy Cosmos DB Processing Function App](#task-6-deploy-cosmos-db-processing-function-app)
+    - [Task 5: Deploy Cosmos DB Processing Function App](#task-5-deploy-cosmos-db-processing-function-app)
+    - [Task 6: Deploy Stream Processing Function App](#task-6-deploy-stream-processing-function-app)
     - [Task 7: Deploy Web App](#task-7-deploy-web-app)
   - [Exercise 4: Explore and execute data generator](#exercise-4-explore-and-execute-data-generator)
     - [Task 1: Open the data generator project](#task-1-open-the-data-generator-project)
@@ -1179,7 +1179,9 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     This code uses the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) to initialize the `CosmosClient` instance that is added to the `IServiceCollection` as a singleton for dependency injection and object lifetime management.
 
-16. Open **CosmosDBService.cs** under the **Services** folder of the **FleetManagementWebApp** project to find and complete **TODO 9** with the following code:
+16. **Save** the **Startup.cs** file.
+
+17. Open **CosmosDBService.cs** under the **Services** folder of the **FleetManagementWebApp** project to find and complete **TODO 9** with the following code:
 
     ```csharp
     var setIterator = query.Where(predicate).Skip(itemIndex).Take(pageSize).ToFeedIterator();
@@ -1187,7 +1189,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     Here we are using the newly added `Skip` and `Take` methods on the `IOrderedQueryable` object (`query`) to retrieve just the records for the requested page. The `predicate` represents the LINQ expression passed in to the `GetItemsWithPagingAsync` method to apply filtering.
 
-17. Scroll down a little further to find and complete **TODO 10** with the following code:
+18. Scroll down a little further to find and complete **TODO 10** with the following code:
 
     ```csharp
     var count = this._container.GetItemLinqQueryable<T>(allowSynchronousQueryExecution: true, requestOptions: !string.IsNullOrWhiteSpace(partitionKey) ? new QueryRequestOptions { PartitionKey = new PartitionKey(partitionKey) } : null)
@@ -1196,7 +1198,9 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     In order to know how many pages we need to navigate, we must know the total item count with the current filter applied. To do this, we retrieve a new `IOrderedQueryable` results from the `Container`, pass the filter predicate to the `Where` method, and return the `Count` to the `count` variable. For this to work, you must set `allowSynchronousQueryExecution` to true, which we do with our first parameter to the `GetItemLinqQueryable` method.
 
-18. Open **VehiclesController.cs** under the **Controllers** folder of the **FleetManagementWebApp** project to review the following code:
+19. **Save** the **CosmosDBService.cs** file.
+
+20. Open **VehiclesController.cs** under the **Controllers** folder of the **FleetManagementWebApp** project to review the following code:
 
     ```csharp
     private readonly ICosmosDbService _cosmosDbService;
@@ -1238,7 +1242,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     Notice that the paging query does not include a partition key, making the Cosmos DB query cross-partition, which is needed to be able to query across all the documents. If this query ends up being used a lot with the passed in `search` value, causing a higher than desired RU usage on the container per execution, then you might want to consider alternate strategies for the partition key, such as a combination of `vin` and `stateVehicleRegistered`. However, since most of our access patterns for vehicles in this container use the VIN, we are using it as the partition key right now. You will see code further down in the method that explicitly pass the partition key value.
 
-19. Scroll down in the `VehiclesController.cs` file to find and complete **TODO 11** with the following code:
+21. Scroll down in the `VehiclesController.cs` file to find and complete **TODO 11** with the following code:
 
     ```csharp
     await _cosmosDbService.DeleteItemAsync<Vehicle>(item.id, item.partitionKey);
@@ -1246,11 +1250,57 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     Here we are doing a hard delete by completely removing the item. In a real-world scenario, we would most likely perform a soft delete, which means updating the document with a `deleted` property and ensuring all filters exclude items with this property. Plus, we'd soft delete related records, such as trips. Soft deletions make it much easier to recover a deleted item if needed in the future.
 
-### Task 5 Deploy Stream Processing Function App
+22. **Save** the **VehiclesController.cs** file.
 
-### Task 6: Deploy Cosmos DB Processing Function App
+### Task 5: Deploy Cosmos DB Processing Function App
+
+1. In the Visual Studio Solution Explorer, right-click on the **Functions.CosmosDB** project, then select **Publish...**.
+
+    ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
+
+2. In the publish dialog, select the **Azure Functions Consumption Plan** publish target. Next, select the **Select Existing** radio and make sure **Run from package file (recommended)** is checked. Select **Publish** on the bottom of the form.
+
+    ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
+
+3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-CosmosDBProcessing**, then select **OK**.
+
+    ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-cosmos.png "App Service")
+
+    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
+
+### Task 6: Deploy Stream Processing Function App
+
+1. In the Visual Studio Solution Explorer, right-click on the **Functions.StreamProcessing** project, then select **Publish...**.
+
+    ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
+
+2. In the publish dialog, select the **Azure Functions Consumption Plan** publish target. Next, select the **Select Existing** radio and make sure **Run from package file (recommended)** is checked. Select **Publish** on the bottom of the form.
+
+    ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
+
+3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-StreamProcessing**, then select **OK**.
+
+    ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-stream.png "App Service")
+
+    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
 
 ### Task 7: Deploy Web App
+
+1. In the Visual Studio Solution Explorer, right-click on the **FleetManagementWebApp** project, then select **Publish...**.
+
+    ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
+
+2. In the publish dialog, select the **App Service** publish target. Next, select the **Select Existing** radio, then select **Publish** on the bottom of the form.
+
+    ![The publish dialog is displayed.](media/vs-publish-target-webapp.png "Pick a publish target")
+
+3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-StreamProcessing**, then select **OK**.
+
+    ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-webapp.png "App Service")
+
+    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish. Also, the web app should open in a new browser window. If you try to navigate through the site, you will notice there is no data. We will seed the Cosmos DB `metadata` container with data in the next exeercise.
+
+    ![The Fleet Management web app home page is displayed.](media/webapp-home-page.png "Fleet Management home page")
 
 ## Exercise 4: Explore and execute data generator
 
