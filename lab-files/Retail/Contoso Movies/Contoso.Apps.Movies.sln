@@ -20,9 +20,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contoso.Apps.Movies.Offers"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contoso.Apps.Movies.Admin", "Contoso.Apps.Movies.Admin\Contoso.Apps.Movies.Admin.csproj", "{004842AE-0F56-4CA2-9257-370B742D2BD4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contoso.Apps.FunctionApp.ChangeFeed", "Contoso.Apps.Movies.FunctionApp.ChangeFeed\Contoso.Apps.FunctionApp.ChangeFeed.csproj", "{AF7A0CC4-1939-49FC-ADB4-EF3D38399F0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contoso.Apps.FunctionApp", "Contoso.Apps.Movies.FunctionApp.Recommend\Contoso.Apps.FunctionApp.csproj", "{F912AB7D-ADB5-4D3B-826D-59D47480DD36}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contoso.Apps.FunctionApp.Recommend", "Contoso.Apps.Movies.FunctionApp.Recommend\Contoso.Apps.FunctionApp.Recommend.csproj", "{F912AB7D-ADB5-4D3B-826D-59D47480DD36}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{5F0E01C6-6BD5-4A34-9449-D14B52FA7845}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieDataImport", "..\Data Import\MovieDataImport.csproj", "{FD6A0CEB-FF73-49D3-9B66-EE7D40B93B72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenerator", "..\DataGenerator\DataGenerator.csproj", "{A28FA543-8B8A-42C2-8E78-5B5BB1D5C5A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,14 +58,18 @@ Global
 		{004842AE-0F56-4CA2-9257-370B742D2BD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{004842AE-0F56-4CA2-9257-370B742D2BD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{004842AE-0F56-4CA2-9257-370B742D2BD4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AF7A0CC4-1939-49FC-ADB4-EF3D38399F0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF7A0CC4-1939-49FC-ADB4-EF3D38399F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF7A0CC4-1939-49FC-ADB4-EF3D38399F0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF7A0CC4-1939-49FC-ADB4-EF3D38399F0F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F912AB7D-ADB5-4D3B-826D-59D47480DD36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F912AB7D-ADB5-4D3B-826D-59D47480DD36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F912AB7D-ADB5-4D3B-826D-59D47480DD36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F912AB7D-ADB5-4D3B-826D-59D47480DD36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD6A0CEB-FF73-49D3-9B66-EE7D40B93B72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD6A0CEB-FF73-49D3-9B66-EE7D40B93B72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD6A0CEB-FF73-49D3-9B66-EE7D40B93B72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD6A0CEB-FF73-49D3-9B66-EE7D40B93B72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A28FA543-8B8A-42C2-8E78-5B5BB1D5C5A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A28FA543-8B8A-42C2-8E78-5B5BB1D5C5A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A28FA543-8B8A-42C2-8E78-5B5BB1D5C5A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A28FA543-8B8A-42C2-8E78-5B5BB1D5C5A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,8 +81,9 @@ Global
 		{3FF97305-2331-4E46-8D0F-C3E3BBD372F2} = {64037FD7-2047-4CD1-8A7D-E75C894FF675}
 		{828E0A97-01FC-4B5B-9721-42D95413A4B0} = {5A971972-BB4F-4B1F-928D-4F7F96A8602C}
 		{004842AE-0F56-4CA2-9257-370B742D2BD4} = {C4851AE4-C255-4EBF-B976-F50B39EC7C8C}
-		{AF7A0CC4-1939-49FC-ADB4-EF3D38399F0F} = {C4851AE4-C255-4EBF-B976-F50B39EC7C8C}
 		{F912AB7D-ADB5-4D3B-826D-59D47480DD36} = {C4851AE4-C255-4EBF-B976-F50B39EC7C8C}
+		{FD6A0CEB-FF73-49D3-9B66-EE7D40B93B72} = {5F0E01C6-6BD5-4A34-9449-D14B52FA7845}
+		{A28FA543-8B8A-42C2-8E78-5B5BB1D5C5A0} = {5F0E01C6-6BD5-4A34-9449-D14B52FA7845}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F2CB5410-48D3-4E9F-A937-D36BDC5DBF43}

@@ -186,13 +186,13 @@
 		,
         {
             "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
-            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'ranking')]",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'ratings')]",
             "apiVersion": "2016-03-31",
             "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
             "properties":
             {
                 "resource":{
-                    "id":  "ranking",
+                    "id":  "ratings",
                     "partitionKey": {
                         "paths": [
                         "/id"

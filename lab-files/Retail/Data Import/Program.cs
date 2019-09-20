@@ -50,14 +50,10 @@ namespace MovieDataImport
         private async static Task PreCalculate()
         {
             //get all the buy events, create the buy aggregates...
-            //FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
-
-            //get the product
-            //Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
-
-            //var query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'buy')", options);
             var container = client.GetContainer(databaseId, "events");
             var query = container.GetItemLinqQueryable<CollectorLog>(true).Where(c=>c.Event == "buy");
+
+            Console.WriteLine($"Saving buy aggregates");
 
             //do the aggregate for each product...
             foreach (var group in query.ToList().GroupBy(singleEvent => singleEvent.ContentId))
@@ -72,72 +68,11 @@ namespace MovieDataImport
                 if (doc != null)
                 {
                     doc.BuyCount = group.Count<CollectorLog>();
-
-                    //agg = (dynamic)doc;
-                    //doc.SetPropertyValue("BuyCount", group.Count<CollectorLog>());
                 }
                 else
                 {
                     agg.ItemId = itemId;
                     agg.BuyCount = group.Count<CollectorLog>();
-                }
-
-                await DbHelper.SaveObject(agg);
-            }
-
-            //query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'details')", options);
-            query = container.GetItemLinqQueryable<CollectorLog>(true).Where(c => c.Event == "details");
-
-            //do the aggregate for each product...
-            foreach (var group in query.ToList().GroupBy(singleEvent => singleEvent.ContentId))
-            {
-                int itemId = int.Parse(group.FirstOrDefault().ContentId);
-
-                //get the item aggregate record
-                ItemAggregate doc = await DbHelper.GetObject<ItemAggregate>("ItemAggregate_" + itemId, "ItemAggregate");
-
-                ItemAggregate agg = new ItemAggregate();
-
-                if (doc != null)
-                {
-                    doc.ViewDetailsCount = group.Count<CollectorLog>();
-
-                    //agg = (dynamic)doc;
-                    //doc.SetPropertyValue("ViewDetailsCount", group.Count<CollectorLog>());
-                }
-                else
-                {
-                    agg.ItemId = itemId;
-                    agg.ViewDetailsCount=  group.Count<CollectorLog>();
-                }
-
-                await DbHelper.SaveObject(agg);
-            }
-
-            //query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, $"SELECT * FROM events f WHERE (f.event = 'addToCart')", options);
-            query = container.GetItemLinqQueryable<CollectorLog>(true).Where(c => c.Event == "addToCart");
-
-            //do the aggregate for each product...
-            foreach (var group in query.ToList().GroupBy(singleEvent => singleEvent.ContentId))
-            {
-                int itemId = int.Parse(group.FirstOrDefault().ContentId);
-
-                //get the item aggregate record
-                ItemAggregate doc = await DbHelper.GetObject<ItemAggregate>("ItemAggregate_" + itemId, "ItemAggregate");
-
-                ItemAggregate agg = new ItemAggregate();
-
-                if (doc != null)
-                {
-                    doc.AddToCartCount = group.Count<CollectorLog>();
-
-                    //agg = (dynamic)doc;
-                    //doc.SetPropertyValue("AddToCartCount", group.Count<CollectorLog>());
-                }
-                else
-                {
-                    agg.ItemId = itemId;
-                    agg.AddToCartCount = group.Count<CollectorLog>();
                 }
 
                 await DbHelper.SaveObject(agg);
@@ -155,6 +90,8 @@ namespace MovieDataImport
             {
                 try
                 {
+                    Console.WriteLine($"Saving user {u.UserId}");
+
                     await DbHelper.SaveObject(u);
                 }
                 catch (Exception ex)
@@ -177,6 +114,8 @@ namespace MovieDataImport
 
                 try
                 {
+                    Console.WriteLine($"Saving genre {c.CategoryName}");
+
                     await DbHelper.SaveObject(c);
                 }
                 catch (Exception ex)
@@ -357,6 +296,8 @@ namespace MovieDataImport
 
                 if (!p.UnitPrice.HasValue)
                     p.UnitPrice = 5.99;
+
+                Console.WriteLine($"Saving movie {p.ImdbId} : {p.ProductName}");
 
                 await DbHelper.SaveObject(p);
             }

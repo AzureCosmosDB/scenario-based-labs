@@ -1,4 +1,17 @@
-﻿function SetupStreamAnalytics($suffix)
+﻿function Output()
+{
+    write-host "Output variables:"
+
+    write-host "Azure Queue: $azurequeueConnString"
+    write-host "Func Url: $funcApiUrl"
+    write-host "Func Key: $funcApiKey";
+    write-host "Cosmos DB Url: $dbConnectionUrl"
+    write-host "Cosmos DB Key: $dbConnectionKey"
+    write-host "DatabaseId: $databaseId"
+    write-host "EventHubConn: $eventHubConnection"
+}
+
+function SetupStreamAnalytics($suffix)
 {
     #https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-quick-create-powershell
 
@@ -83,13 +96,15 @@ $subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
 $subName = "Solliance MPN 12K"
 
 #this should get set on a successful deployment...
-$suffix = "mi4tatni3b2y4"
+$suffix = ""
 
 $rgName = "s2_retail"
 $databaseId = "movies";
 
 #register at https://api.themoviedb.org
 $movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
+
+cd $githubpath
 
 #login - do this always as AAD will error if you change location/ip
 $subs = az login;
@@ -156,7 +171,7 @@ $res = $(az eventhubs namespace list --output json)
 $json = ConvertObjectToJson $res;
 
 $sa = $json | where {$_.name -eq "s2ns" + $suffix};
-$res = $(az eventhubs eventhub authorization-rule keys list --resource-group $rgName --namespace-name $sa.name --eventhub-name store --name store)
+$res = $(az eventhubs namespace authorization-rule keys list --resource-group $rgName --namespace-name $sa.name --name RootManageSharedAccessKey)
 $json = ConvertObjectToJson $res;
 
 $eventHubConnection = $json.primaryConnectionString
@@ -206,7 +221,8 @@ $webAppName = "s2web" + $suffix;
 
 if ($mode -eq "demo")
 {
-    az webapp deployment source config-zip --resource-group $rgName --name $webAppName --src "webapp.zip"
+    $res = $(az webapp deployment source config-zip --resource-group $rgName --name $webAppName --src "$githubpath/retail/deploy/webapp.zip")
+    $json = ConvertObjectToJson $res;
 }
 
 ########################
@@ -215,12 +231,13 @@ if ($mode -eq "demo")
 #
 #########################
 
-$funcAppName = "s2cosmosdb" + $suffix;
+$funcAppName = "s2func" + $suffix;
 
 #we have to deploy something in order for the host.json file to be created in the storage account...
 if ($mode -eq "demo" -or $mode -eq "labs")
 {
-    az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "functionapp.zip"
+    $res = $(az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "$githubpath/retail/deploy/functionapp.zip")
+    $json = ConvertObjectToJson $res;
 }
 
 ########################
@@ -231,7 +248,7 @@ if ($mode -eq "demo" -or $mode -eq "labs")
 $res = $(az functionapp list --output json)
 $json = ConvertObjectToJson $res;
 
-$func = $json | where {$_.name -eq "s2cosmosdb" + $suffix};
+$func = $json | where {$_.name -eq $funcAppName};
 
 $funcApiUrl = "https://" + $func.defaultHostName;
 
@@ -239,7 +256,7 @@ $funcApiUrl = "https://" + $func.defaultHostName;
 $res = $(az storage blob list --connection-string $azurequeueConnString --container-name azure-webjobs-secrets)
 $json = ConvertObjectToJson $res;
 
-$blob = $json | where {$_.name -eq "s2cosmosdb$($suffix)/host.json"};
+$blob = $json | where {$_.name -eq "$funcAppName/host.json"};
 
 #download it..
 az storage blob download --connection-string $azurequeueConnString --container-name azure-webjobs-secrets --name $blob.name --file host.json;
@@ -248,6 +265,45 @@ $data = Get-content "host.json" -raw
 $json = ConvertFrom-json $data;
 
 $funcApiKey = $json.masterkey.value;
+
+########################
+#
+# Output variables
+#
+########################
+
+Output
+
+########################
+#
+#set the web app properties
+#
+#########################
+
+az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$azurequeueConnString
+az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$paymentsApiUrl
+az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$funcApiUrl
+az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$funcApiKey
+az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$databaseId
+az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$dbConnectionUrl
+az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$dbConnectionKey
+az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKey=$movieApiKey
+
+
+########################
+#
+#set the func properties
+#
+#########################
+az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$azurequeueConnString
+az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$paymentsApiUrlah
+az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl
+az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey
+az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId
+az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl
+az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey
+az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection
+az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$movieApiKey
 
 ########################
 #
@@ -280,36 +336,6 @@ $xml.save($filePath);
 #run the tool
 . "$githubpath\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe"
 
-########################
-#
-#set the web app properties
-#
-#########################
-
-az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$azurequeueConnString
-az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$paymentsApiUrl
-az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$funcApiUrl
-az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$funcApiKey
-az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$databaseId
-az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$dbConnectionUrl
-az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$dbConnectionKey
-az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKey=$movieApiKey
-
-
-########################
-#
-#set the func properties
-#
-#########################
-az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$azurequeueConnString
-az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$paymentsApiUrlah
-az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl
-az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey
-az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId
-az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl
-az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey
-az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection
-az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$movieApiKey
 
 ########################
 #
