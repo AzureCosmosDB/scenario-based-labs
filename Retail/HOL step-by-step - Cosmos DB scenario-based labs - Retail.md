@@ -203,14 +203,18 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1.  Browse to the **$githubdirectory/lab-files/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
-1.  Open the **program.cs** file, browse code and various methods.  Notice that it:
+1.  In the **/Utilities/MovieDataImport** project, open the **program.cs** file, browse code and various methods.  Notice that it:
 
 - Aggregates all the event data generated from the Databricks notebook
 - Creates the user personalities
 - Creates the movie categories/genres
 - Creates the movies
 
->NOTE:  This would have been run during your setup script.  Cosmos is setup with primary keys so if you would like to run the utility you can, you may get several primary key errors if you do.  This can take up to 10 minutes to complete.
+1.  Right-click the project, select **Set as startup project**
+
+1.  Press **F5** to run the project
+
+>NOTE:  You must have waited for the Event Generator DataBricks notebook to complete for this to run and have the late steps in the lab match.
 
 ## Exercise 2: Complete and deploy Web and Function Apps
 
@@ -262,6 +266,8 @@ topItems = GetItemsByImdbIds(itemIds);
 1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
 1.  Click **New**, then ensure that **Azure Functions Premium Plan** is selected
+
+![Select the Azure Functions Premium plan and then select 'select existing'](./media/xx_DeployFunction.png "Select a plan")
 
 1.  Click **Select Existing**, then click **Publish**
 
@@ -373,7 +379,7 @@ if (user != null)
 }
 else
 {
-    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", user.UserId, 0);
+    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 }
 
 return View(vm);

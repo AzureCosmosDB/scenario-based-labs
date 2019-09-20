@@ -405,11 +405,8 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Connected Services\AzureAD\ConnectedService.json" />
-    <None Include="Properties\PublishProfiles\ContosoAppsMoviesWeb20190909080058 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
-    <None Include="Properties\PublishProfiles\s2webmi4tatni3b2y4 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\s2webmi4tatni3b2y4 - Web Deploy1.pubxml" />
+    <None Include="Properties\PublishProfiles\s2webbtnis54yegnmy - Web Deploy.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

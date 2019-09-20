@@ -26,7 +26,7 @@ namespace Contoso.Apps.Movies.Controllers
             }
             else
             {
-                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", user.UserId, 0);
+                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
             }
 
             return View(vm);
