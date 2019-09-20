@@ -1510,9 +1510,31 @@ In this task, you will run the generator and have it generate events for 50 truc
 
 ## Exercise 5: Observe Change Feed using Azure Functions and App Insights
 
-### Task 1: Open App Insights Live View
+**Duration**: 10 minutes
+
+In this exercise, we use the Live Metrics Stream feature of Application Insights to view the incoming requests, outgoing requests, overall health, allocated server information, and sample telemetry in near-real time. This will help you observe how your functions scale under load and allow you to spot any potential bottlenecks or problematic components, through a single interactive interface.
+
+### Task 1: Open App Insights Live Metrics Stream
+
+1. In the Azure portal (<https://portal.azure.com>), open the Application Insights instance within your **cosmos-db-iot** resource group.
+
+    ![The App Insights resource is displayed in the resource group.](media/portal-resource-group-app-insights.png "Application Insights")
+
+2. Select **Live Metrics Stream** in the left-hand menu.
+
+    ![The Live Metrics Stream link is displayed in the left-hand menu.](media/app-insights-live-metrics-stream-link.png "Application Insights")
+
+3. Observe the metrics within the Live Metrics Stream as data flows through the system.
+
+    ![The Live Metrics Stream page is displayed.](media/app-insights-live-metrics-stream.png "Live Metrics Stream")
+
+    At the top of the page, you will see a server count. This shows how many instances of the Function Apps there are, and one server is allocated to the Web App. As the Function App server instances exceed computational, memory, or request duration thresholds, and as the IoT Hub and Change Feed queues grow and age, new instances are automatically allocated to scale out the Function Apps. You can view the server list at the bottom of the page. On the right-hand side you will see sample telemetry, including messages sent to the logger within the functions. Here we highlighted a message stating that the Cosmos DB Processing function is sending 100 Cosmos DB records to Event Hubs.
+
+    You will notice many dependency call failures (404). These can be safely ignored. They are caused by the Azure Storage binding for the **ColdStorage** function within the Cosmos DB Processing Function App. This binding checks if the file exists before writing to the specified container. Since we are writing new files, you will see a `404` message for every file that is written since it does not exist. Currently, the binding engine does not know the difference between "good" 404 messages such as these, and "bad" ones.
 
 ## Exercise 6: Observe data using Cosmos DB Data Explorer and Web App
+
+**Duration**: 10 minutes
 
 ### Task 1: View data in Cosmos DB Data Explorer
 
@@ -1520,11 +1542,15 @@ In this task, you will run the generator and have it generate events for 50 truc
 
 ## Exercise 7: Perform CRUD operations using the Web App
 
+**Duration**: 10 minutes
+
 ### Task 1: Update vehicle metadata
 
 ### Task 2: View consignment, package, and trip data
 
 ## Exercise 8: Create the Fleet status real-time dashboard in Power BI
+
+**Duration**: 10 minutes
 
 ### Task 1: Log in to Power BI online
 
@@ -1642,6 +1668,8 @@ Now that the web service is deployed to ACI, we can call it to make predictions 
     This vehicle has a high number of **Lifetime cycles used**, which is closer to the battery's rated 200 cycle lifespan. The model predicted that the battery will fail within the next 30 days.
 
 ## Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI
+
+**Duration**: 10 minutes
 
 ### Task 1: Add Cosmos DB data sources to Power BI Desktop
 
