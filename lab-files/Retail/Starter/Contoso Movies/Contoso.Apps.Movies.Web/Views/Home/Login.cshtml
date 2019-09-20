@@ -1,0 +1,47 @@
+﻿@model List<Contoso.Apps.Movies.Data.Models.User>
+
+@{
+    ViewBag.Title = "Login";
+}
+
+@section HeaderOverlay {
+    
+}
+
+<section class="store">
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+                <aside class="content contact-wrap">
+                    <div class="store-details-wrap clearfix">
+                        <div class="shop-related clearfix">
+                            <h2>Select a User</h2>
+                            <p><br /></p>
+
+                            <ul>
+                                @foreach (var user in Model)
+                                {
+                                    <li>
+                                        <a href="/Home/SetUser?userId=@user.UserId">@user.Name  (@user.Email)</a>
+                                    </li>
+                                }
+                            </ul>
+                            <br>
+                            <h2>I'm a new user</h2>
+
+                            <ul>
+                                <li><a href="/Home/NewUser">New User</a></li>
+                            </ul>
+                            
+
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+
+}

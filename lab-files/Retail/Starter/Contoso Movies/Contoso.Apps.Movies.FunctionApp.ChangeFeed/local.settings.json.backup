@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=scenerio2store;AccountKey=0kAE/eOimfuT7eNw8HR2M7DWJWAzj7Y14uXd5/XIV5Rz06pCJ5pXEbA0w8DhE3fw6sjz4s2sJkPbh7vliDIu4g==",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "databaseId": "movies",
+    "eventHubConnection": "Endpoint=sb://s2event.servicebus.windows.net/;SharedAccessKeyName=store;SharedAccessKey=D+WQd88/R1tp9Cboo1LODmY5TfCFwp8/WCVStqDk8ZQ=;EntityPath=store",
+    "dbConnectionUrl": "https://localhost:8081/",
+    "dbConnectionKey": "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+    "CosmosDBConnection": "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
+  }
+}

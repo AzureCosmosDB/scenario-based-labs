@@ -127,10 +127,13 @@ $databaseId = "movies";
 #register at https://api.themoviedb.org
 $movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
 
+#toggles for skipping items
+$skipDeployment = $false;
+
 cd $githubpath
 
 #login - do this always as AAD will error if you change location/ip
-$subs = az login;
+$subs = az login --use-device-code;
 
 #select the subscription if you set it
 if ($subName)
@@ -141,35 +144,39 @@ if ($subName)
 #create the resource group
 $result = az group create --name $rgName --location "Central US"
 
-#deploy the tempalte
-$deployId = "Microsoft.Template"
-$result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\labdeploy.json") --output json )#--parameters storageAccountType=Standard_GRS)
-
-#wait for the job to complete...
-$res = $(az group deployment list --resource-group $rgname --output json)
-$json = ConvertObjectToJson $res;
-
-$deployment = $json | where {$_.name -eq $deployId};
-
-#check the status
-while($deployment.properties.provisioningState -eq "Running")
+if (!$skipDeployment)
 {
-    start-sleep 10;
+    #deploy the tempalte
+    $deployId = "Microsoft.Template"
+    $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\labdeploy.json") --output json )#--parameters storageAccountType=Standard_GRS)
 
+    #wait for the job to complete...
     $res = $(az group deployment list --resource-group $rgname --output json)
     $json = ConvertObjectToJson $res;
 
     $deployment = $json | where {$_.name -eq $deployId};
 
-    write-host "Deployment status is : $($deployment.properties.provisioningState)";
+    #check the status
+    while($deployment.properties.provisioningState -eq "Running")
+    {
+        start-sleep 10;
+
+        $res = $(az group deployment list --resource-group $rgname --output json)
+        $json = ConvertObjectToJson $res;
+
+        $deployment = $json | where {$_.name -eq $deployId};
+
+        write-host "Deployment status is : $($deployment.properties.provisioningState)";
+    }
+
+    if ($deployment.properties.provisioningState -eq "Failed")
+    {
+        write-host "Deployment failed";
+        return;
+    }
 }
 
-if ($deployment.properties.provisioningState -eq "Failed")
-{
-    write-host "Deployment failed";
-    return;
-}
-
+#need the suffix...
 if ($deployment.properties.provisioningState -eq "Succeeded")
 {
     $suffix = $deployment.properties.outputs.hash.value
@@ -243,7 +250,7 @@ $dbConnectionKey = $json.primaryMasterKey;
 $webAppName = "s2web" + $suffix;
 
 if ($mode -eq "demo")
-{
+{ 
     $res = $(az webapp deployment source config-zip --resource-group $rgName --name $webAppName --src "$githubpath/retail/deploy/webapp.zip")
     $json = ConvertObjectToJson $res;
 }
@@ -257,12 +264,17 @@ if ($mode -eq "demo")
 $funcAppName = "s2func" + $suffix;
 
 #we have to deploy something in order for the host.json file to be created in the storage account...
-if ($mode -eq "demo" -or $mode -eq "labs")
+if ($mode -eq "demo" -or $mode -eq "lab")
 {
-    $res = $(az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "$githubpath/retail/deploy/functionapp.zip")
-    $json = ConvertObjectToJson $res;
+    $deployed = get-content "funcdeployed.txt";
 
-    add-content "funcdeployed."
+    if ($deployed -ne "true")
+    {
+        $res = $(az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "$githubpath/retail/deploy/functionapp.zip")
+        $json = ConvertObjectToJson $res;
+    }
+
+    add-content "funcdeployed.txt" "true";
 }
 
 ########################

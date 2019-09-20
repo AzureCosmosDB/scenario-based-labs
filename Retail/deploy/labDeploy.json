@@ -89,13 +89,6 @@
                         "/ObjectId"
                         ],
                         "kind": "Hash"
-                    },
-                    "indexingPolicy": {
-                        "indexingMode": "consistent",
-                        "includedPaths": [{
-                                "path": "/*"
-                            }
-                        ]
                     }
                 }
             }
@@ -115,13 +108,6 @@
                         "/id"
                         ],
                         "kind": "Hash"
-                    },
-                    "indexingPolicy": {
-                        "indexingMode": "consistent",
-                        "includedPaths": [{
-                                "path": "/*"
-                            }
-                        ]
                     }
                 }
             }
@@ -141,13 +127,6 @@
                         "/id"
                         ],
                         "kind": "Hash"
-                    },
-                    "indexingPolicy": {
-                        "indexingMode": "consistent",
-                        "includedPaths": [{
-                                "path": "/*"
-                            }
-                        ]
                     }
                 }
             }
@@ -167,13 +146,6 @@
                         "/id"
                         ],
                         "kind": "Hash"
-                    },
-                    "indexingPolicy": {
-                        "indexingMode": "consistent",
-                        "includedPaths": [{
-                                "path": "/*"
-                            }
-                        ]
                     }
                 }
             }
@@ -193,13 +165,6 @@
                         "/id"
                         ],
                         "kind": "Hash"
-                    },
-                    "indexingPolicy": {
-                        "indexingMode": "consistent",
-                        "includedPaths": [{
-                                "path": "/*"
-                            }
-                        ]
                     }
                 }
             }

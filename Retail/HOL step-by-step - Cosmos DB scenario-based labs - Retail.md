@@ -718,7 +718,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 }
 ```
 
->NOTE:  This method will forward the change feed events to the event hub where stream analytics will be monitoring and then forwarding data to a Power BI dashboard
+>NOTE:  This method will forward the change feed events to the event hub where stream analytics will be monitoring and then forwarding data to the Power BI dashboard
 
 ### Task 3: Deploy the ChangeFeed Function
 
@@ -772,11 +772,19 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Click **Edit**
 
+![The Logic App blade with 'edit' highlighted.](./images/xx_logicapp_01.png "Edit the Logic App")
+
 1.  Click **+New step**
+
+![The Logic App Designer is displayed with 'new step' highlighted.](./images/xx_logicapp_02.png "Add a new step")
 
 1.  Search for **send an email**, then select the Office 365 outlook connector
 
+![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./images/xx_logicapp_03.png "Add Send an Email action")
+
 1.  Click **Sign in**, login using your Azure AD credentials
+
+![Sign in button is highlighted.](./images/xx_logicapp_04.png "Sign in to Office 365")
 
 1.  Set the **To** as your email
 
@@ -786,9 +794,23 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Click **Save**
 
+![Action properties are completed and the 'Save' button is highlighted](./images/xx_logicapp_05.png "Complete the action properties")
+
 1.  Click on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
 
-### Task 2: Update and deploy function app
+![The http action trigger is expanded and the url is highlighted.](./images/xx_logicapp_06.png "Copy the function url trigger endpoint")
+
+### Task 2: Configure the function app settings
+
+1.  Open the Azure Portal to your resource group and select the Function App in your resource group, it should be named **s2func...**
+
+1.  Click **Configuration**
+
+1.  Update the **LogicAppUrl** configuration variable to the Logic App http endpoint your recorded above
+
+1.  Click **Save**
+
+### Task 3: Update and deploy function app
 
 1.  In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file
 
@@ -843,9 +865,9 @@ public async void CallLogicApp(IReadOnlyList<Document> events)
 
 1.  Press **F5** to run the project
 
-1.  For each 'buy' event, you should receive an email
+1.  For each `buy` event, you will receive an email
 
->NOTE:  You could receive quite a few emails.
+>NOTE:  You could receive quite a `few` emails.
 
 ## After the hands-on lab 
 

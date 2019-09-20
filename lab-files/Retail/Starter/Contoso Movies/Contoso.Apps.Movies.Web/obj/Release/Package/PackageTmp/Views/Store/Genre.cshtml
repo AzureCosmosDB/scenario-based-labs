@@ -1,0 +1,45 @@
+﻿@model Contoso.Apps.Movies.Web.Models.StoreIndexModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@section HeaderOverlay {
+
+}
+
+<!-- start of gallery -->
+<section class="gallery-page-wrapper events">
+    <div class="container">
+        <div class="row">
+            <div class="wrapper isp-wrap">
+                <div class="clearfix" id="list-item">
+                    @foreach (var product in Model.Products)
+                    {
+                        <div class="figure @product.CategoryId">
+                            <div class="item clearfix">
+                                <a class="item-img" href="@Url.Action("Details", "Store", new { id = product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'details', @product.ItemId, '@this.Session.SessionID','token')">
+                                    <img src="@Url.Content("http://image.tmdb.org/t/p/w500/")@product.ImagePath" alt="@product.ProductName" class="center-block">
+                                </a>
+                                <div class="item-content">
+                                    <h4 class="headline-lato">@product.ProductName</h4>
+                                    <div class="item-footer clearfix">
+                                        <div class="footer-content">
+                                            <div class="wrap clearfix">
+                                                <span class="text-primary" style="font-size:1.5em">@String.Format("{0:c}", product.UnitPrice)</span>
+                                            </div>
+                                        </div>
+                                        <div class="footer-button">
+                                            <a class="btn trans-btn" href="@Url.Action("AddToCart", "Cart", new { itemId = product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'buy', @product.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>

@@ -127,15 +127,61 @@ In this exercise you will TODO
 
 Duration: 30 minutes
 
-In this exercise you will TODO
+In this exercise you will configure your change feed function to call an HTTP login app endpoint that will then send an email when an order event occurs.  The function will be using Polly to handle retries in the case the function app is not available.
 
-### Task 1: Review the Logic App and Emails
+### Task 1: Setup Logic App
 
-1.  Open the Logic App, review the single logic app that is available
+1.  Open the Azure Portal to your resource group and select the Logic App in your resource group, it should be named **s2_logicapp_...**
 
-2.  Ensure that your email is set and re-execute the DataGenerator project
+1.  Click **Edit**
 
-3.  You should recieve emails based on the **buy** event
+![The Logic App blade with 'edit' highlighted.](./images/xx_logicapp_01.png "Edit the Logic App")
+
+1.  Click **+New step**
+
+![The Logic App Designer is displayed with 'new step' highlighted.](./images/xx_logicapp_02.png "Add a new step")
+
+1.  Search for **send an email**, then select the Office 365 outlook connector
+
+![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./images/xx_logicapp_03.png "Add Send an Email action")
+
+1.  Click **Sign in**, login using your Azure AD credentials
+
+![Sign in button is highlighted.](./images/xx_logicapp_04.png "Sign in to Office 365")
+
+1.  Set the **To** as your email
+
+1.  Set the **Subject** as **Thank you for your order**
+
+1.  Set the **Body** as **Your order is being processed**
+
+1.  Click **Save**
+
+![Action properties are completed and the 'Save' button is highlighted](./images/xx_logicapp_05.png "Complete the action properties")
+
+1.  Click on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
+
+![The http action trigger is expanded and the url is highlighted.](./images/xx_logicapp_06.png "Copy the function url trigger endpoint")
+
+### Task 2: Configure the function app settings
+
+1.  Open the Azure Portal to your resource group and select the Function App in your resource group, it should be named **s2func...**
+
+1.  Click **Configuration**
+
+1.  Add or update the **LogicAppUrl** configuration variable to the Logic App http endpoint you recorded above
+
+1.  Click **Save**
+
+### Task 3: Test order email delivery
+
+1.  Switch to Visual Studio, right-click the **DataGenerator** project, select **Set as startup project**
+
+1.  Press **F5** to run the project
+
+1.  For each `buy` event, you should receive an email
+
+>NOTE:  You could receive quite a `few` emails.
 
 ## After the hands-on lab 
 
