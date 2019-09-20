@@ -1,0 +1,179 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		
+    },
+    "variables": {
+        "location": "westus",
+		"databaseName": "movies",
+		"throughput": "400",
+        "name-suffix": "[uniqueString(resourceGroup().id)]",
+        "appServicePlan": "[concat('s2webplan-', variables('name-suffix'))]",
+        "appServicePlanFunctionAppsName": "[concat('s2funcplan', variables('name-suffix'))]",
+		
+		"webAppName": "[concat('s2web', variables('name-suffix'))]",
+        
+		"functionAppName": "[concat('s2func', variables('name-suffix'))]",
+        
+		"keyVaultName": "[concat('s2keyvault-', variables('name-suffix'))]",
+				
+        "storageAccountCosmosDBProcessingName": "[concat('s2data3', variables('name-suffix'))]",
+        "storageAccountCosmosDBProcessing-website-contentshare": "[concat('s2cosmosdbprocessing', variables('name-suffix'))]",
+
+        "eventHubsNamespaceIoTName": "[concat('s2ns', variables('name-suffix'))]",
+
+        "cosmosDbAccountName": "[concat('s2cosmosdb', variables('name-suffix'))]",
+
+        "appInsightsName": "[concat('s2_appinsights_', variables('name-suffix'))]",
+        
+        "streamAnalyticsJobName": "[concat('s2_analytics_', variables('name-suffix'))]",
+
+        "databricksWorkspaceName": "[concat('s2_databricks_', variables('name-suffix'))]",
+		
+		"connections_office365_name" : "[concat('s2_o365_', variables('name-suffix'))]",
+		
+		"workflows_s2scenerio_name" : "[concat('s2_logicapp_', variables('name-suffix'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts",
+            "apiVersion": "2015-04-08",
+            "name": "[variables('cosmosDbAccountName')]",
+            "location": "[variables('location')]",
+            "kind": "GlobalDocumentDB",
+            "properties": {
+                "enableAutomaticFailover": false,
+                "enableMultipleWriteLocations": false,
+                "isVirtualNetworkFilterEnabled": false,
+                "virtualNetworkRules": [],
+                "databaseAccountOfferType": "Standard",
+                "consistencyPolicy": {
+                    "defaultConsistencyLevel": "Session",
+                    "maxIntervalInSeconds": 5,
+                    "maxStalenessPrefix": 100
+                },
+                "locations": [
+                    {
+                        "locationName": "[variables('location')]",
+                        "provisioningState": "Succeeded",
+                        "failoverPriority": 0,
+                        "isZoneRedundant": false
+                    }
+                ],
+                "capabilities": []
+            }
+        },
+		{
+            "type": "Microsoft.DocumentDB/databaseAccounts/apis/databases",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'))]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/', variables('cosmosDbAccountName'))]" ],
+            "properties":{
+                "resource":{
+                    "id": "[variables('databaseName')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'object')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "object",
+                    "partitionKey": {
+                        "paths": [
+                        "/ObjectId"
+                        ],
+                        "kind": "Hash"
+                    }
+                }
+            }
+        }
+		,
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'events')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "events",
+                    "partitionKey": {
+                        "paths": [
+                        "/id"
+                        ],
+                        "kind": "Hash"
+                    }
+                }
+            }
+        }
+		,
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'associations')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "associations",
+                    "partitionKey": {
+                        "paths": [
+                        "/id"
+                        ],
+                        "kind": "Hash"
+                    }
+                }
+            }
+        }
+		,
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'similarity')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "similarity",
+                    "partitionKey": {
+                        "paths": [
+                        "/id"
+                        ],
+                        "kind": "Hash"
+                    }
+                }
+            }
+        }
+		,
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'ratings')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "ratings",
+                    "partitionKey": {
+                        "paths": [
+                        "/id"
+                        ],
+                        "kind": "Hash"
+                    }
+                }
+            }
+        }
+    ],
+	"outputs": {
+		"hash" : {
+			"type" : "string",
+			"value" : "[variables('name-suffix')]"
+		}
+	}
+}

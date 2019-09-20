@@ -218,6 +218,9 @@ if (!$logicApp)
     $deployment = DeployTemplate "labdeploy3.json" $skipDeployment;
 }
 
+#deploy containers - this is ok to fail
+$deployment = DeployTemplate "labdeploy4.json" $skipDeployment;
+
 #get all the settings
 $azurequeueConnString = "";
 $paymentsApiUrl = "";
