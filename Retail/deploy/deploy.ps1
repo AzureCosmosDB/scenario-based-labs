@@ -1,22 +1,91 @@
-﻿function UpdateConfig($path)
+﻿function DeployTemplate($filename, $skipDeployment)
+{
+    if (!$skipDeployment)
+    {
+        #deploy the template
+        $deployId = "Microsoft.Template"
+        $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\$fileName") --output json )#--parameters storageAccountType=Standard_GRS)
+
+        #wait for the job to complete...
+        $res = $(az group deployment list --resource-group $rgname --output json)
+        $json = ConvertObjectToJson $res;
+
+        $deployment = $json | where {$_.name -eq $deployId};
+
+        #check the status
+        while($deployment.properties.provisioningState -eq "Running")
+        {
+            start-sleep 10;
+
+            $res = $(az group deployment list --resource-group $rgname --output json)
+            $json = ConvertObjectToJson $res;
+
+            $deployment = $json | where {$_.name -eq $deployId};
+
+            write-host "Deployment status is : $($deployment.properties.provisioningState)";
+        }
+
+        if ($deployment.properties.provisioningState -eq "Failed")
+        {
+            write-host "Deployment failed";
+            return;
+        }
+    }
+
+    return $deployment;    
+}
+
+function UpdateConfig($path)
 {
     [xml]$xml = get-content $filepath;
 
+    #set the function url
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "funcAPIUrl"}
+
+    if($data)
+    {
+        $data.value = $funcApiUrl;
+    }
+
+    #set the function key
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "funcAPIKey"}
+
+    if($data)
+    {
+        $data.value = $funcApiKey;
+    }
+
     #set the database url
     $data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionUrl"}
-    $data.value = $dbConnectionUrl;
+
+    if($data)
+    {
+        $data.value = $dbConnectionUrl;
+    }
 
     #set the database key
     $data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionKey"}
-    $data.value = $dbConnectionKey;
+
+    if($data)
+    {
+        $data.value = $dbConnectionKey;
+    }
 
     #set the movie api key
     $data = $xml.configuration.appSettings.add | where {$_.key -eq "movieApiKey"}
-    $data.value = $movieApiKey;
+
+    if($data)
+    {
+        $data.value = $movieApiKey;
+    }
 
     #set the database id
     $data = $xml.configuration.appSettings.add | where {$_.key -eq "databaseId"}
-    $data.value = $databaseId;
+
+    if($data)
+    {
+        $data.value = $databaseId;
+    }
 
     $xml.save($filePath);    
 }
@@ -36,8 +105,17 @@ function Output()
 
 function SetupStreamAnalytics($suffix)
 {
-    #https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-quick-create-powershell
+    #deploy the template
+    $deployId = "Microsoft.Template"
+    $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\labdeploy2.json") --output json )
 
+    #wait for the job to complete...
+    $res = $(az group deployment list --resource-group $rgname --output json)
+    $json = ConvertObjectToJson $res;
+
+    $deployment = $json | where {$_.name -eq $deployId};
+
+    #https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-quick-create-powershell
     Connect-AzAccount -Subscription $subName
 
     $jobName = "s2_analytics_$suffix";
@@ -133,7 +211,7 @@ $skipDeployment = $false;
 cd $githubpath
 
 #login - do this always as AAD will error if you change location/ip
-$subs = az login --use-device-code;
+$subs = az login;
 
 #select the subscription if you set it
 if ($subName)
@@ -144,43 +222,36 @@ if ($subName)
 #create the resource group
 $result = az group create --name $rgName --location "Central US"
 
-if (!$skipDeployment)
-{
-    #deploy the tempalte
-    $deployId = "Microsoft.Template"
-    $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\labdeploy.json") --output json )#--parameters storageAccountType=Standard_GRS)
+#get all the resources in the RG
+$res = $(az resource list --resource-group $rgName)
+$json = ConvertObjectToJson $res;
 
-    #wait for the job to complete...
-    $res = $(az group deployment list --resource-group $rgname --output json)
-    $json = ConvertObjectToJson $res;
-
-    $deployment = $json | where {$_.name -eq $deployId};
-
-    #check the status
-    while($deployment.properties.provisioningState -eq "Running")
-    {
-        start-sleep 10;
-
-        $res = $(az group deployment list --resource-group $rgname --output json)
-        $json = ConvertObjectToJson $res;
-
-        $deployment = $json | where {$_.name -eq $deployId};
-
-        write-host "Deployment status is : $($deployment.properties.provisioningState)";
-    }
-
-    if ($deployment.properties.provisioningState -eq "Failed")
-    {
-        write-host "Deployment failed";
-        return;
-    }
-}
+$deployment = DeployTemplate "labdeploy.json" $skipDeployment;
 
 #need the suffix...
 if ($deployment.properties.provisioningState -eq "Succeeded")
 {
     $suffix = $deployment.properties.outputs.hash.value
 }
+
+$saJob = $json | where {$_.type -eq "Microsoft.StreamAnalytics/streamingjobs"};
+
+if (!$saJob)
+{
+    #deploy stream analytics
+    $deployment = DeployTemplate "labdeploy2.json" $skipDeployment;
+}
+
+$logicApp = $json | where {$_.type -eq "Microsoft.Logic/workflows"};
+
+if (!$logicApp)
+{
+    #deploy logic app
+    $deployment = DeployTemplate "labdeploy3.json" $skipDeployment;
+}
+
+#deploy containers - this is ok to fail
+$deployment = DeployTemplate "labdeploy4.json" $skipDeployment;
 
 #get all the settings
 $azurequeueConnString = "";
@@ -347,37 +418,39 @@ $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings 
 #Update project configs to be nice ;)
 #
 ########################
+$folders = ("starter", "solution")
 
-$filePath = "$githubpath\lab-files\Retail\Data Import\app.config"
-UpdateConfig $filePath;
+foreach($folder in $folders)
+{
+    $filePath = "$githubpath\lab-files\Retail\$folder\Data Import\app.config"
+    UpdateConfig $filePath;
 
-$filePath = "$githubpath\lab-files\Retail\DataGenerator\app.config"
-UpdateConfig $filePath;
+    $filePath = "$githubpath\lab-files\Retail\$folder\DataGenerator\app.config"
+    UpdateConfig $filePath;
 
-$filePath = "$githubpath\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\web.config"
-UpdateConfig $filePath;
+    $filePath = "$githubpath\lab-files\Retail\$folder\Contoso Movies\Contoso.Apps.Movies.Web\web.config"
+    UpdateConfig $filePath;
+
+    #update the app.config file with the new values
+    $filePath = "$githubpath\lab-files\Retail\$folder\Data Import\bin\Debug\MovieDataImport.exe.config"
+    UpdateConfig $filePath;
+}
 
 ########################
 #
-#setup the cosmosdb (run the import tool to create collections and import initial event data)
+#setup the cosmosdb (run the import tool to create collections and import initial object data)
 #
 ########################
 
-#update the app.config file with the new values
-$filePath = "$githubpath\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe.config"
-
-UpdateConfig $filePath;
-
-#run the tool
+#run the import tool
 . "$githubpath\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe"
 
-
 ########################
 #
-#deploy stream analytics
+#deploy stream analytics - Not production ready - does not support Power BI Outputs
 #
 #########################
-SetupStreamAnalytics $suffix;
+#SetupStreamAnalytics $suffix;
 
 ########################
 #
@@ -395,14 +468,3 @@ if ($mode -eq "demo")
 
     #execute the notebook
 }
-
-write-host "Output variables:"
-
-write-host $azurequeueConnString
-write-host $paymentsApiUrl;
-write-host $funcApiUrl;
-write-host $funcApiKey;
-write-host $dbConnectionUrl
-write-host $dbConnectionKey
-write-host $databaseId
-write-host $eventHubConnection

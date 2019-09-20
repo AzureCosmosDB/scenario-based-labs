@@ -1,0 +1,84 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		
+    },
+    "variables": {
+        "location": "westus",
+		"databaseName": "movies",
+		"throughput": "400",
+        "name-suffix": "[uniqueString(resourceGroup().id)]",
+        "appServicePlan": "[concat('s2webplan-', variables('name-suffix'))]",
+        "appServicePlanFunctionAppsName": "[concat('s2funcplan', variables('name-suffix'))]",
+		
+		"webAppName": "[concat('s2web', variables('name-suffix'))]",
+        
+		"functionAppName": "[concat('s2func', variables('name-suffix'))]",
+        
+		"keyVaultName": "[concat('s2keyvault-', variables('name-suffix'))]",
+				
+        "storageAccountCosmosDBProcessingName": "[concat('s2data3', variables('name-suffix'))]",
+        "storageAccountCosmosDBProcessing-website-contentshare": "[concat('s2cosmosdbprocessing', variables('name-suffix'))]",
+
+        "eventHubsNamespaceIoTName": "[concat('s2ns', variables('name-suffix'))]",
+
+        "cosmosDbAccountName": "[concat('s2cosmosdb', variables('name-suffix'))]",
+
+        "appInsightsName": "[concat('s2_appinsights_', variables('name-suffix'))]",
+        
+        "streamAnalyticsJobName": "[concat('s2_analytics_', variables('name-suffix'))]",
+
+        "databricksWorkspaceName": "[concat('s2_databricks_', variables('name-suffix'))]",
+		
+		"connections_office365_name" : "[concat('s2_o365_', variables('name-suffix'))]",
+		
+		"workflows_s2scenerio_name" : "[concat('s2_logicapp_', variables('name-suffix'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[variables('workflows_s2scenerio_name')]",
+            "location": "westus2",
+            "dependsOn": [
+                
+            ],
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "manual": {
+                            "type": "Request",
+                            "kind": "Http",
+                            "inputs": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "actions": {
+                        
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    
+                }
+            }
+        }
+    ],
+	"outputs": {
+		"hash" : {
+			"type" : "string",
+			"value" : "[variables('name-suffix')]"
+		}
+	}
+}

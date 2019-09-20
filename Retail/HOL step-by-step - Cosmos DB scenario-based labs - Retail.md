@@ -109,7 +109,7 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 
 1.  Click **Clusters**
 
-![The cluster blade with all the settings filled in.](./images/xx_databricks_01.png "Databricks cluster configuration")
+![The cluster blade with all the settings filled in.](./media/xx_databricks_01.png "Databricks cluster configuration")
 
 1.  Click **Create Cluster**
 
@@ -135,7 +135,7 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 
 1.  Select **Create Cluster**.
 
-![The cluster blade with all the settings filled in.](./images/xx_databricks_02.png "Databricks cluster configuration")
+![The cluster blade with all the settings filled in.](./media/xx_databricks_02.png "Databricks cluster configuration")
 
 1.  Before continuing to the next step, verify that your new cluster is running.  Wait for the state to change from **Pending** to **Running**
 
@@ -143,7 +143,7 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 
 1. Select **Install New**.
 
-![Navigate to the libraries tab and click Install New.](./images/xx_databricks_03.png "Adding a new library")
+![Navigate to the libraries tab and click Install New.](./media/xx_databricks_03.png "Adding a new library")
 
 1. In the Install Library dialog, select **Maven** for the Library Source
 
@@ -155,7 +155,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1. Select **Install**.
 
-![Populated library dialog for Maven.](./images/xx_databricks_04.png "Add the Maven library")
+![Populated library dialog for Maven.](./media/xx_databricks_04.png "Add the Maven library")
 
 1. **Wait** until the library's status shows as **Installed** before continuing.
 
@@ -179,6 +179,8 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 - Masterkey = Cosmos DB master key
 - Database = Database id of the cosmos db ('movies')
 
+![The configuration values in the notebook are highlighted.](./media/xx_databricks_06.png "Add the databrick notebook configuration settings")
+
 1.  Click **Run All**
 
 >NOTE:  This total process will take up to 30 minutes to generate the event data.
@@ -189,7 +191,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1.  Open the **events** collection, review the items in the collection
 
-![An example item from the events collection is displayed.](./images/xx_eventscoll.png "The events collection")
+![An example item from the events collection is displayed.](./media/xx_eventscoll.png "The events collection")
 
 >NOTE:  These items are created from the data bricks solution and include a random set of generated events for each user personality type.  You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated (via the contentId field) with the event.
 
@@ -259,11 +261,11 @@ topItems = GetItemsByImdbIds(itemIds);
 
 1.  Click **Select Existing**, then click **Publish**
 
-![Visual studio dialog is displayed for deploying the function app to Azure.](./images/xx_deployfunction.png "Deploy the function app")
+![Visual studio dialog is displayed for deploying the function app to Azure.](./media/xx_deployfunction.png "Deploy the function app")
 
 1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2func...***
 
-![Select the pre-created function app service that starts with s2func.](./images/xx_deployfunction_02.png "Select the App Service")
+![Select the pre-created function app service that starts with s2func.](./media/xx_deployfunction_02.png "Select the App Service")
 
 1.  Click **OK**
 
@@ -279,7 +281,7 @@ topItems = GetItemsByImdbIds(itemIds);
 
 ### Task 3: Test the applications
 
-1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see the following:
+1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see something similar to the following:
 
 **TODO**
 
@@ -311,19 +313,9 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 1.  Open the **associations** collection, review the items in the collection
 
-![An example item from the associations collection is displayed.](./images/xx_assoccoll.png "The associations collection")
+![An example item from the associations collection is displayed.](./media/xx_assoccoll.png "The associations collection")
 
 >NOTE:  These items are created from the data bricks solution and include the association confidence level as compared from one movie to another movie.
-
-### Task 3: Review the data generated
-
-1.  Switch back to your Cosmos DB instance
-
-1.  Open the **ratings** collection, review the items in the collection
-
-![An example item from the ratings collection is displayed.](./images/xx_ratingscoll.png "The ratings collection")
-
->NOTE:  These items are created from the data bricks solution and include the implict item ratings of a user based on their activites on the web site.
 
 ## Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)
 
@@ -425,6 +417,8 @@ In this exercise you will defined
 
 1. Run each cell of the **Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
+![An example item from the ratings collection is displayed.](./media/xx_ratingscoll.png "The ratings collection")
+
 >NOTE:  These ratings are generated as part of this notebook as an 'offline' operation.  If you collect a significant amount of user data, you would need to reevaluate the events using this notebook and populate the ratings collection again for the online calculations to utilize.
 
 ### Task 2: Implement the Collaborative Rules
@@ -443,7 +437,7 @@ In this exercise you will defined
 
 >NOTE:  These items are created from the data bricks solution and include the similarity of one movie, the source, to another, the target.
 
-**TODO**
+![An example item from the similarity collection is displayed.](./media/xx_similaritycoll.png "The similarity collection")
 
 ### Task 1: Implement the Associations recommendation rules
 
@@ -553,6 +547,8 @@ foreach(PredictionModel pm in sortedItems)
 
 2.  Click **login**, select the **comedy@contosomovies.com** account
 
+
+
 3.  Notice the main page now has both the associative and collborative results displayed::
 
 **TODO IMAGE**
@@ -589,7 +585,7 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the output alias, type **eventCount**
 
-1.  For the dataset, type **store**
+1.  For the dataset, type **eventCount**
 
 1.  For the table name, type **eventCount**
 
@@ -601,7 +597,7 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the output alias, type **eventOrdersLastHour**
 
-1.  For the dataset, type **store**
+1.  For the dataset, type **eventOrdersLastHour**
 
 1.  For the table name, type **eventOrdersLastHour**
 
@@ -611,7 +607,7 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the output alias, type **eventSummary**
 
-1.  For the dataset, type **store**
+1.  For the dataset, type **eventSummary**
 
 1.  For the table name, type **eventSummary**
 
@@ -621,7 +617,7 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the output alias, type **failureCount**
 
-1.  For the dataset, type **store**
+1.  For the dataset, type **failureCount**
 
 1.  For the table name, type **failureCount**
 
@@ -631,7 +627,7 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the output alias, type **userCount**
 
-1.  For the dataset, type **store**
+1.  For the dataset, type **userCount**
 
 1.  For the table name, type **userCount**
 
@@ -672,7 +668,19 @@ SELECT System.TimeStamp AS Time, Count(*)
  GROUP BY SlidingWindow(second,10) 
 ```
 
+1.  The Query windows should look similar to this:
+
+![An example item from the ratings collection is displayed.](./media/xx_streamanalytics_05.png "The ratings collection")
+
+1.  Click **Save query**
+
 1.  Click **Overview**, in the menu, click **Start** to start your stream analytics job
+
+![Go to the overview tab, then click 'start'.](./media/xx_streamanalytics_05.png "Start the analytics job")
+
+1.  In the dialog, ensure that **Now** is selected, then click **Start**
+
+>NOTE:  If your job fails for any reason, you can use the **Activity Log** to see what the error(s) were.
 
 ### Task 2: Configure the ChangeFeed Function
 
@@ -734,7 +742,11 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Notice events will be generated based on a set of users and their preferred movie type
 
-1.  Buy events will be generated for the first 30 seconds, after that you will notice the orders per hour will fall below the target of 10.  This would signify that something is wrong with the front end web site or order processing.
+![The data generator window is displayed with events streaming.](./media/xx_datagenerator_01.png "Run the data generator")
+
+1.  Buy events will be generated for the first 30 seconds with random payment failures also generated. After 30 seconds, you will notice the orders per hour will fall below the target of 10.  This would signify that something is wrong with the front end web site or order processing.
+
+1.  Close the DataGenerator console program
 
 ### Task 5: Setup Power BI Dashabord 
 
@@ -750,7 +762,26 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Select **Custom Streaming Data**, click **Next**
 
-1.  Select the **eventCount** data set
+1.  Select the **eventCount** data set, then click **Next**
+
+![Select the eventCount dataset and click next.](./media/xx_powerbi_02.png "Add the eventCount tile")
+
+1.  For the visualization type, select **Card**
+
+1.  For the Fields, select **Count**
+
+1.  Click **Next**
+
+1.  For the title, type **Event Count**, then click **Apply**
+
+1.  Repeat for:
+
+-   eventSummary
+-   userCount
+-   failureCount
+-   eventOrdersLastHour
+
+1.  
 
 ### Task 4: Generate more user events
 
@@ -772,19 +803,19 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Click **Edit**
 
-![The Logic App blade with 'edit' highlighted.](./images/xx_logicapp_01.png "Edit the Logic App")
+![The Logic App blade with 'edit' highlighted.](./media/xx_logicapp_01.png "Edit the Logic App")
 
 1.  Click **+New step**
 
-![The Logic App Designer is displayed with 'new step' highlighted.](./images/xx_logicapp_02.png "Add a new step")
+![The Logic App Designer is displayed with 'new step' highlighted.](./media/xx_logicapp_02.png "Add a new step")
 
 1.  Search for **send an email**, then select the Office 365 outlook connector
 
-![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./images/xx_logicapp_03.png "Add Send an Email action")
+![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./media/xx_logicapp_03.png "Add Send an Email action")
 
 1.  Click **Sign in**, login using your Azure AD credentials
 
-![Sign in button is highlighted.](./images/xx_logicapp_04.png "Sign in to Office 365")
+![Sign in button is highlighted.](./media/xx_logicapp_04.png "Sign in to Office 365")
 
 1.  Set the **To** as your email
 
@@ -794,11 +825,11 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Click **Save**
 
-![Action properties are completed and the 'Save' button is highlighted](./images/xx_logicapp_05.png "Complete the action properties")
+![Action properties are completed and the 'Save' button is highlighted](./media/xx_logicapp_05.png "Complete the action properties")
 
 1.  Click on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
 
-![The http action trigger is expanded and the url is highlighted.](./images/xx_logicapp_06.png "Copy the function url trigger endpoint")
+![The http action trigger is expanded and the url is highlighted.](./media/xx_logicapp_06.png "Copy the function url trigger endpoint")
 
 ### Task 2: Configure the function app settings
 

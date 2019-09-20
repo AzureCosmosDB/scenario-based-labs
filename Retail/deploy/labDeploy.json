@@ -76,101 +76,6 @@
             }
         },
         {
-            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
-            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'object')]",
-            "apiVersion": "2016-03-31",
-            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
-            "properties":
-            {
-                "resource":{
-                    "id":  "object",
-                    "partitionKey": {
-                        "paths": [
-                        "/ObjectId"
-                        ],
-                        "kind": "Hash"
-                    }
-                }
-            }
-        }
-		,
-        {
-            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
-            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'events')]",
-            "apiVersion": "2016-03-31",
-            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
-            "properties":
-            {
-                "resource":{
-                    "id":  "events",
-                    "partitionKey": {
-                        "paths": [
-                        "/id"
-                        ],
-                        "kind": "Hash"
-                    }
-                }
-            }
-        }
-		,
-        {
-            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
-            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'associations')]",
-            "apiVersion": "2016-03-31",
-            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
-            "properties":
-            {
-                "resource":{
-                    "id":  "associations",
-                    "partitionKey": {
-                        "paths": [
-                        "/id"
-                        ],
-                        "kind": "Hash"
-                    }
-                }
-            }
-        }
-		,
-        {
-            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
-            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'similarity')]",
-            "apiVersion": "2016-03-31",
-            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
-            "properties":
-            {
-                "resource":{
-                    "id":  "similarity",
-                    "partitionKey": {
-                        "paths": [
-                        "/id"
-                        ],
-                        "kind": "Hash"
-                    }
-                }
-            }
-        }
-		,
-        {
-            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
-            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'ratings')]",
-            "apiVersion": "2016-03-31",
-            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
-            "properties":
-            {
-                "resource":{
-                    "id":  "ratings",
-                    "partitionKey": {
-                        "paths": [
-                        "/id"
-                        ],
-                        "kind": "Hash"
-                    }
-                }
-            }
-        }
-		,
-        {
             "type": "Microsoft.EventHub/namespaces",
             "apiVersion": "2018-01-01-preview",
             "name": "[variables('eventHubsNamespaceIoTName')]",
@@ -346,22 +251,6 @@
             ]
         },
         {
-            "type": "Microsoft.StreamAnalytics/streamingjobs",
-            "apiVersion": "2016-03-01",
-            "name": "[variables('streamAnalyticsJobName')]",
-            "location": "[variables('location')]",
-            "properties": {
-                "sku": {
-                    "name": "Standard"
-                },
-                "eventsOutOfOrderPolicy": "Adjust",
-                "outputErrorPolicy": "Stop",
-                "eventsOutOfOrderMaxDelayInSeconds": 0,
-                "eventsLateArrivalMaxDelayInSeconds": 5,
-                "dataLocale": "en-US"
-            }
-        },
-        {
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2016-09-01",
             "name": "[variables('appServicePlan')]",
@@ -534,45 +423,7 @@
                 "location": { "value": "[variables('location')]" }
               }
             }
-          },
-        {
-            "type": "Microsoft.Logic/workflows",
-            "apiVersion": "2017-07-01",
-            "name": "[variables('workflows_s2scenerio_name')]",
-            "location": "westus2",
-            "dependsOn": [
-                
-            ],
-            "properties": {
-                "state": "Enabled",
-                "definition": {
-                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
-                    "contentVersion": "1.0.0.0",
-                    "parameters": {
-                        "$connections": {
-                            "defaultValue": {},
-                            "type": "Object"
-                        }
-                    },
-                    "triggers": {
-                        "manual": {
-                            "type": "Request",
-                            "kind": "Http",
-                            "inputs": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "actions": {
-                        
-                    },
-                    "outputs": {}
-                },
-                "parameters": {
-                    
-                }
-            }
-        }
+          }
     ],
 	"outputs": {
 		"hash" : {
