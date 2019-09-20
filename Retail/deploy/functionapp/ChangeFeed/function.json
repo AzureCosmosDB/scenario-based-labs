@@ -7,7 +7,7 @@
       "connectionStringSetting": "CosmosDBConnection",
       "leaseCollectionName": "leases",
       "createLeaseCollectionIfNotExists": true,
-      "startFromBeginning": true,
+      "startFromBeginning": false,
       "collectionName": "events",
       "databaseName": "movies",
       "leaseDatabaseName": "movies",

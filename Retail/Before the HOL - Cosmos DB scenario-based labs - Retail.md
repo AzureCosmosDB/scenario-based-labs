@@ -36,9 +36,13 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 ## Requirements
 
-1. Microsoft Azure subscription must be pay-as-you-go or MSDN.
+1.  Microsoft Azure subscription must be pay-as-you-go or MSDN.
 
     - Trial subscriptions will not work.
+
+1.  [Visual Stuido 2019](https://visualstudio.microsoft.com/downloads/)
+
+1.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
 ## Before the hands-on lab
 
@@ -48,21 +52,26 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 ### Task 1: Download GitHub resources
 
-1.  Open a browser window to the cloud workshop GitHub repository (<https://github.com/Microsoft/MCW-Securing-the-IoT-End-to-End>).
+1.  Open a browser window to the cloud workshop GitHub repository (<https://github.com/solliancenet/cosmos-db-scenario-based-labs>).
 
 1.  Select **Clone or download**, then select **Download Zip**.
 
-    ![Clone or download and Download ZIP are highlighted in this screenshot of the cloud workshop GitHub repository.](Images/Hands-onlabstep-bystep-securitytheiotendtoendimages/media/beforehol-image1.png "Download the zip file")
+    ![Clone or download and Download ZIP are highlighted in this screenshot of the  GitHub repository.](./media/beforehol-image1.png "Download the zip file")
 
 1.  Extract the zip file to your local machine, be sure to keep note of where you have extracted the files. You should now see a set of folders:
 
-    ![A set of extracted folders and files are visible in File Explorer: Hands On Lab, Media, Whiteboard design session, README.md., etc.](Images/Hands-onlabstep-bystep-securitytheiotendtoendimages/media/beforehol-image2.png "Extract the zip file")
+    ![A set of extracted folders and files are visible in File Explorer: Hands On Lab, Media, Whiteboard design session, README.md., etc.](./media/beforehol-image2.png "Extract the zip file")
 
 ### Task 2: Get a Movie Api Key
 
-1.  Open a browser window to **https://api.themoviedb.org**
+1.  Open a Chrome browser window to **https://api.themoviedb.org**
 
 1.  Create an account and copy your API Key for use in the next task
+
+    -   Click **SIGN UP**
+    -   Fill in your account details, click **Sign up**
+    -   Click your profile icon in the menu, select **Settings**
+    -   Click **API**, copy the `API Key (v3 auth)` key for later use
 
 ### Task 3: Deploy resources to Azure
 
