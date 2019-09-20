@@ -270,7 +270,7 @@ $CosmosDBConnection = "";
 #get the event hub connection
 #
 ########################
-$res = $(az eventhubs namespace list --output json)
+$res = $(az eventhubs namespace list --output json --resource-group $rgName)
 $json = ConvertObjectToJson $res;
 
 $sa = $json | where {$_.name -eq "s2ns" + $suffix};
@@ -285,7 +285,7 @@ $eventHubConnection = $json.primaryConnectionString
 #
 ########################
 
-$res = $(az storage account list --output json)
+$res = $(az storage account list --output json --resource-group $rgName)
 $json = ConvertObjectToJson $res;
 
 $sa = $json | where {$_.name -eq "s2data3" + $suffix};
@@ -302,7 +302,7 @@ $azurequeueConnString = "DefaultEndpointsProtocol=https;AccountName=$($sa.name);
 #get the cosmos db url and key
 #
 #########################
-$res = $(az cosmosdb list --output json)
+$res = $(az cosmosdb list --output json --resource-group $rgName)
 $json = ConvertObjectToJson $res;
 
 $db = $json | where {$_.name -eq "s2cosmosdb" + $suffix};
@@ -357,7 +357,7 @@ if ($mode -eq "demo" -or $mode -eq "lab")
 #get the function url and key
 #
 #########################
-$res = $(az functionapp list --output json)
+$res = $(az functionapp list --output json --resource-group $rgName)
 $json = ConvertObjectToJson $res;
 
 $func = $json | where {$_.name -eq $funcAppName};
