@@ -28,6 +28,7 @@ namespace FleetDataGenerator
         private const string DatabaseName = "ContosoAuto";
         private const string TelemetryContainerName = "telemetry";
         private const string MetadataContainerName = "metadata";
+        private const string MaintenanceContainerName = "maintenance";
         private const string PartitionKey = "partitionKey";
 
         private static readonly object LockObject = new object();
@@ -390,6 +391,18 @@ namespace FleetDataGenerator
             // Set initial performance to 50,000 RU/s for bulk import performance.
             await _database.CreateContainerIfNotExistsAsync(metadataContainerDefinition, throughput: 50000);
             #endregion
+
+            #region Maintenance container
+            // Define a new container (collection).
+            var maintenanceContainerDefinition =
+                new ContainerProperties(id: MaintenanceContainerName, partitionKeyPath: $"/vin")
+                {
+                    IndexingPolicy = { IndexingMode = IndexingMode.Consistent }
+                };
+
+            // Set initial performance to 400 RU/s due to light workloads.
+            await _database.CreateContainerIfNotExistsAsync(maintenanceContainerDefinition, throughput: 400);
+            #endregion
         }
 
         private static async Task ChangeContainerPerformance(Container container, int desiredThroughput)
@@ -431,7 +444,7 @@ namespace FleetDataGenerator
         /// </summary>
         private static async Task SeedDatabase(CosmosDbConnectionString cosmosDbConnectionString, CancellationToken cancellationToken)
         {
-            // TODO: Check if data exists before seeding.
+            // Check if data exists before seeding.
             var count = 0;
             var query = new QueryDefinition($"SELECT VALUE COUNT(1) FROM c");
             var container = await GetContainerIfExists(MetadataContainerName);
