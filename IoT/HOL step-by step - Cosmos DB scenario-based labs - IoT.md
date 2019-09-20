@@ -60,6 +60,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Code walk-through](#task-2-code-walk-through)
     - [Task 3: Update application configuration](#task-3-update-application-configuration)
     - [Task 4: Run generator](#task-4-run-generator)
+    - [Task 5: View devices in IoT Hub](#task-5-view-devices-in-iot-hub)
   - [Exercise 5: Observe Change Feed using Azure Functions and App Insights](#exercise-5-observe-change-feed-using-azure-functions-and-app-insights)
     - [Task 1: Open App Insights Live Metrics Stream](#task-1-open-app-insights-live-metrics-stream)
   - [Exercise 6: Observe data using Cosmos DB Data Explorer and Web App](#exercise-6-observe-data-using-cosmos-db-data-explorer-and-web-app)
@@ -1508,6 +1509,18 @@ In this task, you will run the generator and have it generate events for 50 truc
 6. When the generator completes, you will see a message to this effect.
 
     ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png "Generator")
+
+### Task 5: View devices in IoT Hub
+
+The data generator registered and activated each simulated vehicle in IoT Hub as a device. In this task, you will open IoT Hub and view these registered devices.
+
+1. In the Azure portal (<https://portal.azure.com>), open the IoT Hub instance within your **cosmos-db-iot** resource group.
+
+    ![The IoT Hub resource is displayed in the resource group.](media/portal-resource-group-iot-hub.png "IoT Hub")
+
+2. Select **IoT devices** in the left-hand menu. You will see all 50 IoT devices listed in the IoT devices pane to the right, with the VIN specified as the device ID. When we simulate more vehicles, we will see additional IoT devices registered here.
+
+    ![The IoT devices pane is displayed.](media/iot-hub-iot-devices.png "IoT devices")
 
 ## Exercise 5: Observe Change Feed using Azure Functions and App Insights
 
