@@ -4,7 +4,7 @@
     <NameOfLastUsedPublishProfile>s2webbtnis54yegnmy - Web Deploy</NameOfLastUsedPublishProfile>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44302</IISExpressSSLPort>
-    <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
+    <LastActiveSolutionConfig>Release|Any CPU</LastActiveSolutionConfig>
     <Use64BitIISExpress />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />

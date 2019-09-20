@@ -357,11 +357,6 @@ namespace Contoso.Apps.Movies.Logic
             {
                 case "assoc":
                     items = RecommendationHelper.AssociationRecommendationByUser(userId, take);
-
-                    //fall back to top items...
-                    if (items.Count == 0)
-                        items = RecommendationHelper.TopRecommendation(userId, take);
-
                     break;
                 case "top":
                     items = RecommendationHelper.TopRecommendation(userId, take);
@@ -374,9 +369,6 @@ namespace Contoso.Apps.Movies.Logic
 
                     if (precRecs2.Count > 0)
                         items = GetItemsByImdbIds(precRecs2);
-
-                    if (items.Count == 0)
-                        items = RecommendationHelper.TopRecommendation(userId, take);
 
                     break;
             }

@@ -75,21 +75,27 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 ### Task 3: Deploy resources to Azure
 
-1.  Open the **deploy.ps1** PowerShell script in an PowerShell ISE window
+1.  Open a **PowerShell ISE** window
+
+1.  Browse to the **$githubdir/Retail/deploy/deploy.ps1** PowerShell script in an PowerShell ISE window
 
 1.  Set the following variables:
 
 >NOTE:  If you are performing a demo of this solution, select the "demo" setting, otherwise leave as "lab"
 
--   $mode = "lab"  #can be 'lab' or 'demo'
--   $subscriptionId = "YOUR SUBSCRIPTION ID"
--   $subName = "YOUR SUBSCRIPTION NAME"
--   $prefix = "YOUR INIT"
--   $rgName = $prefix + "_s2_retail"
--   $databaseId = "movies";
--   $movieApiKey = "YOUR MOVIE API KEY";
+```PoweShell
+$mode = "lab"  #can be 'lab' or 'demo'
+$subscriptionId = "YOUR SUBSCRIPTION ID"
+$subName = "YOUR SUBSCRIPTION NAME"
+$prefix = "YOUR INIT"
+$rgName = $prefix + "_s2_retail"
+$databaseId = "movies"
+$movieApiKey = "YOUR MOVIE API KEY"
+```
 
-1.  Run the script, this will do the following:
+>NOTE:  You should have Azure CLI 2.0.68 or higher to run this script.  You can check by running `az --version`
+
+3.  Press **F5** to run the script, this will do the following:
 
 -   Deploy the starter ARM template(s)
 -   Deploy the initial web and function apps
@@ -97,7 +103,7 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 -   Create starter objects in the 'object' collection of the Comos DB database
 -   Update your project application configuration files with the target azure keys and settings
 
-1. The deployment will take 15-25 minutes to complete. As part of the deployment, you will see the following items created:
+4.  The deployment will take 15-25 minutes to complete. As part of the deployment, you will see the following items created:
 
 - Function App
 - Web App
@@ -110,6 +116,6 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 - Storage Accounts
 - Application Insights
 
-1.  Record the values that were output from the script for use in the lab
+5.  Record the values that were output from the script for use in the lab
 
 You should follow all steps provided *before* attending the hands-on lab.

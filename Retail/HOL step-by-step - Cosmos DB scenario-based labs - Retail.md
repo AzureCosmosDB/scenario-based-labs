@@ -291,7 +291,7 @@ topItems = GetItemsByImdbIds(itemIds);
 
 1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see something similar to the following:
 
-**TODO**
+![The Contoso Movie website is displayed with the top purchased items as suggestions.](./media/xx_WebSite_01.png "Contoso Movies web site")
 
 >NOTE:  These are simply suggestions based on the top purchased items from the pre-generated events.
 
