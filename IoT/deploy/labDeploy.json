@@ -699,5 +699,75 @@
               }
             }
           }
-    ]
+    ],
+    "outputs": {
+        "location": {
+            "type": "string",
+            "value": "[variables('location')]"
+        },
+        "resource-name-suffix": {
+            "type": "string",
+            "value": "[variables('name-suffix')]"
+        },
+        "iotHubName": {
+            "type": "string",
+            "value": "[variables('iotHubName')]"
+        },
+        "appServicePlanIoTWebAppNameName": {
+            "type": "string",
+            "value": "[variables('appServicePlanIoTWebAppNameName')]"
+        },
+        "iotWebAppName": {
+            "type": "string",
+            "value": "[variables('iotWebAppName')]"
+        },
+        "appServicePlanFunctionAppsName": {
+            "type": "string",
+            "value": "[variables('appServicePlanFunctionAppsName')]"
+        },
+        "functionAppStreamProcessingName": {
+            "type": "string",
+            "value": "[variables('functionAppStreamProcessingName')]"
+        },
+        "functionAppCosmosDBProcessingName": {
+            "type": "string",
+            "value": "[variables('functionAppCosmosDBProcessingName')]"
+        },
+        "keyVaultName": {
+            "type": "string",
+            "value": "[variables('keyVaultName')]"
+        },
+        "storageAccountStreamProcessingName": {
+            "type": "string",
+            "value": "[variables('storageAccountStreamProcessingName')]"
+        },
+        "storageAccountCosmosDBProcessingName": {
+            "type": "string",
+            "value": "[variables('storageAccountCosmosDBProcessingName')]"
+        },
+        "storageAccountIoTStoreName": {
+            "type": "string",
+            "value": "[variables('storageAccountIoTStoreName')]"
+        },
+        "eventHubsNamespaceIoTName": {
+            "type": "string",
+            "value": "[variables('eventHubsNamespaceIoTName')]"
+        },
+        "cosmosDbAccountName": {
+            "type": "string",
+            "value": "[variables('cosmosDbAccountName')]"
+        },
+        "appInsightsName": {
+            "type": "string",
+            "value": "[variables('appInsightsName')]"
+        },
+        "streamAnalyticsJobName": {
+            "type": "string",
+            "value": "[variables('streamAnalyticsJobName')]"
+        },
+        "databricksWorkspaceName": {
+            "type": "string",
+            "value": "[variables('databricksWorkspaceName')]"
+        }
+    }
 }
