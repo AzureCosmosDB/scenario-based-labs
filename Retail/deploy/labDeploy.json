@@ -7,6 +7,7 @@
     "variables": {
         "location": "westus",
 		"databaseName": "movies",
+		"throughput": "400",
         "name-suffix": "[uniqueString(resourceGroup().id)]",
         "appServicePlan": "[concat('s2webplan-', variables('name-suffix'))]",
         "appServicePlanFunctionAppsName": "[concat('s2funcplan', variables('name-suffix'))]",
@@ -75,9 +76,8 @@
             "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/', variables('cosmosDbAccountName'))]" ],
             "properties":{
                 "resource":{
-                    "id": "[parameters('databaseName')]"
-                },
-                "options": { "throughput": "[parameters('throughput')]" }
+                    "id": "[variables('databaseName')]"
+                }
             }
         },
         {
@@ -99,9 +99,6 @@
                         "indexingMode": "consistent",
                         "includedPaths": [{
                                 "path": "/*"
-                            }
-                        ],
-                        "excludedPaths": [{                                
                             }
                         ]
                     }
@@ -129,9 +126,6 @@
                         "includedPaths": [{
                                 "path": "/*"
                             }
-                        ],
-                        "excludedPaths": [{                                
-                            }
                         ]
                     }
                 }
@@ -157,9 +151,6 @@
                         "indexingMode": "consistent",
                         "includedPaths": [{
                                 "path": "/*"
-                            }
-                        ],
-                        "excludedPaths": [{                                
                             }
                         ]
                     }
@@ -187,9 +178,6 @@
                         "includedPaths": [{
                                 "path": "/*"
                             }
-                        ],
-                        "excludedPaths": [{                                
-                            }
                         ]
                     }
                 }
@@ -215,9 +203,6 @@
                         "indexingMode": "consistent",
                         "includedPaths": [{
                                 "path": "/*"
-                            }
-                        ],
-                        "excludedPaths": [{                                
                             }
                         ]
                     }
