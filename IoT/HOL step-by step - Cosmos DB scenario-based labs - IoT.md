@@ -54,22 +54,24 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 5: Deploy Cosmos DB Processing Function App](#task-5-deploy-cosmos-db-processing-function-app)
     - [Task 6: Deploy Stream Processing Function App](#task-6-deploy-stream-processing-function-app)
     - [Task 7: Deploy Web App](#task-7-deploy-web-app)
+    - [Task 8: View Cosmos DB processing Function App in the portal](#task-8-view-cosmos-db-processing-function-app-in-the-portal)
   - [Exercise 4: Explore and execute data generator](#exercise-4-explore-and-execute-data-generator)
     - [Task 1: Open the data generator project](#task-1-open-the-data-generator-project)
     - [Task 2: Code walk-through](#task-2-code-walk-through)
     - [Task 3: Update application configuration](#task-3-update-application-configuration)
     - [Task 4: Run generator](#task-4-run-generator)
-  - [Exercise 5: Observe data using Cosmos DB Data Explorer and Web App](#exercise-5-observe-data-using-cosmos-db-data-explorer-and-web-app)
+    - [Task 5: View devices in IoT Hub](#task-5-view-devices-in-iot-hub)
+  - [Exercise 5: Observe Change Feed using Azure Functions and App Insights](#exercise-5-observe-change-feed-using-azure-functions-and-app-insights)
+    - [Task 1: Open App Insights Live Metrics Stream](#task-1-open-app-insights-live-metrics-stream)
+  - [Exercise 6: Observe data using Cosmos DB Data Explorer and Web App](#exercise-6-observe-data-using-cosmos-db-data-explorer-and-web-app)
     - [Task 1: View data in Cosmos DB Data Explorer](#task-1-view-data-in-cosmos-db-data-explorer)
     - [Task 2: Search and view data in Web App](#task-2-search-and-view-data-in-web-app)
-  - [Exercise 6: Perform CRUD operations using the Web App](#exercise-6-perform-crud-operations-using-the-web-app)
+  - [Exercise 7: Perform CRUD operations using the Web App](#exercise-7-perform-crud-operations-using-the-web-app)
     - [Task 1: Update vehicle metadata](#task-1-update-vehicle-metadata)
     - [Task 2: View consignment, package, and trip data](#task-2-view-consignment-package-and-trip-data)
-  - [Exercise 7: Create the Fleet status real-time dashboard in Power BI](#exercise-7-create-the-fleet-status-real-time-dashboard-in-power-bi)
+  - [Exercise 8: Create the Fleet status real-time dashboard in Power BI](#exercise-8-create-the-fleet-status-real-time-dashboard-in-power-bi)
     - [Task 1: Log in to Power BI online](#task-1-log-in-to-power-bi-online)
     - [Task 2: Create real-time dashboard](#task-2-create-real-time-dashboard)
-  - [Exercise 8: Observe Change Feed using Azure Functions and App Insights](#exercise-8-observe-change-feed-using-azure-functions-and-app-insights)
-    - [Task 1: Open App Insights Live View](#task-1-open-app-insights-live-view)
   - [Exercise 9: Run the predictive maintenance batch scoring](#exercise-9-run-the-predictive-maintenance-batch-scoring)
     - [Task 1: Import lab notebooks into Azure Databricks](#task-1-import-lab-notebooks-into-azure-databricks)
     - [Task 2: Run batch scoring notebook](#task-2-run-batch-scoring-notebook)
@@ -1508,11 +1510,45 @@ In this task, you will run the generator and have it generate events for 50 truc
 
     ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png "Generator")
 
+### Task 5: View devices in IoT Hub
+
+The data generator registered and activated each simulated vehicle in IoT Hub as a device. In this task, you will open IoT Hub and view these registered devices.
+
+1. In the Azure portal (<https://portal.azure.com>), open the IoT Hub instance within your **cosmos-db-iot** resource group.
+
+    ![The IoT Hub resource is displayed in the resource group.](media/portal-resource-group-iot-hub.png "IoT Hub")
+
+2. Select **IoT devices** in the left-hand menu. You will see all 50 IoT devices listed in the IoT devices pane to the right, with the VIN specified as the device ID. When we simulate more vehicles, we will see additional IoT devices registered here.
+
+    ![The IoT devices pane is displayed.](media/iot-hub-iot-devices.png "IoT devices")
+
 ## Exercise 5: Observe Change Feed using Azure Functions and App Insights
 
-### Task 1: Open App Insights Live View
+**Duration**: 10 minutes
+
+In this exercise, we use the Live Metrics Stream feature of Application Insights to view the incoming requests, outgoing requests, overall health, allocated server information, and sample telemetry in near-real time. This will help you observe how your functions scale under load and allow you to spot any potential bottlenecks or problematic components, through a single interactive interface.
+
+### Task 1: Open App Insights Live Metrics Stream
+
+1. In the Azure portal (<https://portal.azure.com>), open the Application Insights instance within your **cosmos-db-iot** resource group.
+
+    ![The App Insights resource is displayed in the resource group.](media/portal-resource-group-app-insights.png "Application Insights")
+
+2. Select **Live Metrics Stream** in the left-hand menu.
+
+    ![The Live Metrics Stream link is displayed in the left-hand menu.](media/app-insights-live-metrics-stream-link.png "Application Insights")
+
+3. Observe the metrics within the Live Metrics Stream as data flows through the system.
+
+    ![The Live Metrics Stream page is displayed.](media/app-insights-live-metrics-stream.png "Live Metrics Stream")
+
+    At the top of the page, you will see a server count. This shows how many instances of the Function Apps there are, and one server is allocated to the Web App. As the Function App server instances exceed computational, memory, or request duration thresholds, and as the IoT Hub and Change Feed queues grow and age, new instances are automatically allocated to scale out the Function Apps. You can view the server list at the bottom of the page. On the right-hand side you will see sample telemetry, including messages sent to the logger within the functions. Here we highlighted a message stating that the Cosmos DB Processing function is sending 100 Cosmos DB records to Event Hubs.
+
+    You will notice many dependency call failures (404). These can be safely ignored. They are caused by the Azure Storage binding for the **ColdStorage** function within the Cosmos DB Processing Function App. This binding checks if the file exists before writing to the specified container. Since we are writing new files, you will see a `404` message for every file that is written since it does not exist. Currently, the binding engine does not know the difference between "good" 404 messages such as these, and "bad" ones.
 
 ## Exercise 6: Observe data using Cosmos DB Data Explorer and Web App
+
+**Duration**: 10 minutes
 
 ### Task 1: View data in Cosmos DB Data Explorer
 
@@ -1520,11 +1556,15 @@ In this task, you will run the generator and have it generate events for 50 truc
 
 ## Exercise 7: Perform CRUD operations using the Web App
 
+**Duration**: 10 minutes
+
 ### Task 1: Update vehicle metadata
 
 ### Task 2: View consignment, package, and trip data
 
 ## Exercise 8: Create the Fleet status real-time dashboard in Power BI
+
+**Duration**: 10 minutes
 
 ### Task 1: Log in to Power BI online
 
@@ -1642,6 +1682,8 @@ Now that the web service is deployed to ACI, we can call it to make predictions 
     This vehicle has a high number of **Lifetime cycles used**, which is closer to the battery's rated 200 cycle lifespan. The model predicted that the battery will fail within the next 30 days.
 
 ## Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI
+
+**Duration**: 10 minutes
 
 ### Task 1: Add Cosmos DB data sources to Power BI Desktop
 
