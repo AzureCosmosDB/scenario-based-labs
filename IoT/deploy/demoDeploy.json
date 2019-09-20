@@ -1,0 +1,137 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+    },
+    "variables": {
+        "location": "WestUS",
+        "name-suffix": "[uniqueString(resourceGroup().id)]",
+
+        "cosmosDbAccountName": "[concat('cosmos-db-iot-', variables('name-suffix'))]",
+
+
+        "cosmosDbDatabaseName": "ContosoAuto",
+        "cosmosIoTLogicAppName": "[concat('Cosmos-IoT-Logic-', variables('name-suffix'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "labDeployment",
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "https://publicstorage42.blob.core.windows.net/arm/labDeploy.json",
+                "contentVersion": "1.0.0.0"
+              },
+              "parameters": { }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/apis/databases",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'))]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties":{
+                "resource":{
+                    "id": "[variables('cosmosDbDatabaseName')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'), '/', 'metadata')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('cosmosDbDatabaseName'))]"
+            ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "metadata",
+                    "partitionKey": {
+                        "paths": [
+                        "/partitionKey"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "throughput": "15000"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'), '/', 'telemetry')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('cosmosDbDatabaseName'))]"
+            ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "telemetry",
+                    "partitionKey": {
+                        "paths": [
+                        "/partitionKey"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "throughput": "15000",
+                    "defaultTtl": -1,
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "automatic": true,
+                        "includedPaths": [
+                            {
+                            "path": "/vin/?"
+                            },
+                            {
+                            "path": "/state/?"
+                            },
+                            {
+                            "path": "/partitionKey/?"
+                            }
+                        ],
+                        "excludedPaths": [
+                            {
+                            "path": "/*"
+                            },
+                            {
+                            "path": "/\"_etag\"/?"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'), '/', 'maintenance')]",
+            "apiVersion": "2016-03-31",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('cosmosDbDatabaseName'))]"
+            ],
+            "properties":
+            {
+                "resource":{
+                    "id":  "maintenance",
+                    "partitionKey": {
+                        "paths": [
+                        "/vin"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "throughput": "400"
+                }
+            }
+        }
+
+
+
+
+
+
+    ]
+}
