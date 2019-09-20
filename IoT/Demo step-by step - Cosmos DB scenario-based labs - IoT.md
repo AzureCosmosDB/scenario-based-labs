@@ -55,8 +55,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 1: View batch scoring notebook](#task-1-view-batch-scoring-notebook)
     - [Task 2: Model training highlights](#task-2-model-training-highlights)
     - [Task 2: Call the deployed scoring web service from the Web App](#task-2-call-the-deployed-scoring-web-service-from-the-web-app)
-  - [Exercise 6: View the Predictive Maintenance & Trip/Consignment Status reports in Power BI](#exercise-6-view-the-predictive-maintenance--tripconsignment-status-reports-in-power-bi)
-    - [Task 1: Explore report](#task-1-explore-report)
+  - [Exercise 6: View the live dashboard, Predictive Maintenance, & Trip/Consignment Status reports in Power BI](#exercise-6-view-the-live-dashboard-predictive-maintenance--tripconsignment-status-reports-in-power-bi)
+    - [Task 1: Open the live dashboard report in Power BI online](#task-1-open-the-live-dashboard-report-in-power-bi-online)
+    - [Task 2: Explore report in Power BI Desktop](#task-2-explore-report-in-power-bi-desktop)
   - [After the demo](#after-the-demo)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
@@ -138,7 +139,7 @@ In this task, you will open the deployed Logic App workflow and configure it to 
 
 3. Select the **Send an email** action and sign in to your Office 365 when prompted.
 
-    ![The Sign in button is highlighted.](media/logic-app-sign-in-button.png 'Office 365 Outlook')
+   ![The Sign in button is highlighted.](media/logic-app-sign-in-button.png 'Office 365 Outlook')
 
 4. Save your changes.
 
@@ -263,7 +264,7 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 
 2. Expand the **Functions** list in the left-hand menu, then select **TripProcessor**.
 
-    ![The TripProcessor function is displayed.](media/portal-tripprocessor-function.png "TripProcessor")
+   ![The TripProcessor function is displayed.](media/portal-tripprocessor-function.png 'TripProcessor')
 
 3. View the **function.json** file to the right. This file was generated when you published the Function App in Visual Studio. The bindings are the same as you saw in the project code for the function. When new instances of the Function App are created, the generated `function.json` file and a ZIP file containing the compiled application are copied to these instances, and these instances run in parallel to share the load as data flows through the architecture. The `function.json` file instructs each instance how to bind attributes to the functions, where to find application settings, and information about the compiled application (`scriptFile` and `entryPoint`).
 
@@ -273,21 +274,21 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 
 2. Expand the **FleetDataGenerator** project and open **Program.cs** in the Solution Explorer.
 
-    ![The Program.cs file is highlighted in the Solution Explorer.](media/vs-data-generator-program.png "Solution Explorer")
+   ![The Program.cs file is highlighted in the Solution Explorer.](media/vs-data-generator-program.png 'Solution Explorer')
 
 ### Task 9: Update application configuration
 
 The data generator needs two connection strings before it can successfully run; the IoT Hub connection string, and the Cosmos DB connection string. The IoT Hub connection string can be found by selecting **Shared access policies** in IoT Hub, selecting the **iothubowner** policy, then copying the **Connection string--primary key** value. This is different from the Event Hub-compatible endpoint connection string you copied earlier.
 
-![The iothubowner shared access policy is displayed.](media/iot-hub-connection-string.png "IoT Hub shared access policy")
+![The iothubowner shared access policy is displayed.](media/iot-hub-connection-string.png 'IoT Hub shared access policy')
 
 1. Open **appsettings.json** within the **FleetDataGenerator** project.
 
 2. Paste the IoT Hub connection string value in quotes next to the **IOT_HUB_CONNECTION_STRING** key. Paste the Cosmos DB connection string value in quotes next to the **COSMOS_DB_CONNECTION_STRING** key.
 
-    ![The appsettings.json file is highlighted in the Solution Explorer, and the connection strings are highlighted within the file.](media/vs-appsettings.png "appsettings.json")
+   ![The appsettings.json file is highlighted in the Solution Explorer, and the connection strings are highlighted within the file.](media/vs-appsettings.png 'appsettings.json')
 
-    The NUMBER_SIMULATED_TRUCKS value is used when you select option 5 when you run the generator. This gives you the flexibility to simulate between 1 and 1,000 trucks at a time. SECONDS_TO_LEAD specifies how many seconds to wait until the generator starts generating simulated data. The default value is 0. SECONDS_TO_RUN forces the simulated trucks to stop sending generated data to IoT Hub. The default value is 14400. Otherwise, the generator stops sending tasks when all the trips complete or you cancel by entering `Ctrl+C` or `Ctrl+Break` in the console window.
+   The NUMBER_SIMULATED_TRUCKS value is used when you select option 5 when you run the generator. This gives you the flexibility to simulate between 1 and 1,000 trucks at a time. SECONDS_TO_LEAD specifies how many seconds to wait until the generator starts generating simulated data. The default value is 0. SECONDS_TO_RUN forces the simulated trucks to stop sending generated data to IoT Hub. The default value is 14400. Otherwise, the generator stops sending tasks when all the trips complete or you cancel by entering `Ctrl+C` or `Ctrl+Break` in the console window.
 
 3. **Save** the `appsettings.json` file.
 
@@ -308,32 +309,32 @@ After the generator ensures the metadata exists, it begins simulating the specif
 
 In this task, you will run the generator and have it generate events for 50 trucks. The reason we are generating events for so many vehicles is two-fold:
 
-   - In the next exercise, we will observe the function triggers and event activities with Application Insights.
-   - We need to have completed trips prior to performing batch predictions in a later exercise.
+- In the next exercise, we will observe the function triggers and event activities with Application Insights.
+- We need to have completed trips prior to performing batch predictions in a later exercise.
 
 1. Within Visual Studio, right-click on the **FleetDataGenerator** project in the Solution Explorer and select **Set as Startup Project**. This will automatically run the data generator each time you debug.
 
-    ![Set as Startup Project is highlighted in the Solution Explorer.](media/vs-set-startup-project.png "Solution Explorer")
+   ![Set as Startup Project is highlighted in the Solution Explorer.](media/vs-set-startup-project.png 'Solution Explorer')
 
 2. Select the Debug button at the top of the Visual Studio window or hit **F5** to run the data generator.
 
-    ![The debug button is highlighted.](media/vs-debug.png "Debug")
+   ![The debug button is highlighted.](media/vs-debug.png 'Debug')
 
 3. When the console window appears, enter **3** to simulate 50 vehicles. The generator will resize the requested throughput for the `metadata` container, uses the bulk importer to seed the container, and resize the throughput back to 15,000 RU/s.
 
-    ![3 has been entered in the console window.](media/cmd-run.png "Generator")
+   ![3 has been entered in the console window.](media/cmd-run.png 'Generator')
 
 4. After the seeding is completed the generator will retrieve 50 trips from the database, sorted by shortest trip distance first so we can have completed trip data appear faster. You will see a message output for every 50 events sent, per vehicle with their VIN, the message count, and the number of miles remaining for the trip. For example: `Vehicle 19: C1OVHZ8ILU8TGGPD8 Message count: 3650 -- 3.22 miles remaining`. **Let the generator run in the background and continue to the next exercise**.
 
-    ![Vehicle simulation begins.](media/cmd-simulated-vehicles.png "Generator")
+   ![Vehicle simulation begins.](media/cmd-simulated-vehicles.png 'Generator')
 
 5. As the vehicles complete their trips, you will see a message such as `Vehicle 37 has completed its trip`.
 
-    ![A completed messages is displayed in the generator console.](media/cmd-vehicle-completed.png "Generator")
+   ![A completed messages is displayed in the generator console.](media/cmd-vehicle-completed.png 'Generator')
 
 6. When the generator completes, you will see a message to this effect.
 
-    ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png "Generator")
+   ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png 'Generator')
 
 ### Task 11: Log in to Power BI online and create real-time dashboard
 
@@ -341,147 +342,147 @@ In this task, you will run the generator and have it generate events for 50 truc
 
 2. Select **My workspace**, then select the **Datasets** tab. You should see the **Contoso Auto IoT Events** dataset. This is the dataset you defined in the Stream Analytics Power BI output.
 
-    ![The Contoso Auto IoT dataset is displayed.](media/powerbi-datasets.png "Power BI Datasets")
+   ![The Contoso Auto IoT dataset is displayed.](media/powerbi-datasets.png 'Power BI Datasets')
 
 3. Select **+ Create** at the top of the page, then select **Dashboard**.
 
-    ![The Create button is highlighted at the top of the page, and the Dashboard menu item is highlighted underneath.](media/powerbi-create-dashboard.png "Create Dashboard")
+   ![The Create button is highlighted at the top of the page, and the Dashboard menu item is highlighted underneath.](media/powerbi-create-dashboard.png 'Create Dashboard')
 
 4. Provide a name for the dashboard, such as `Contoso Auto IoT Live Dashboard`, then select **Create**.
 
-    ![The create dashboard dialog is displayed.](media/powerbi-create-dashboard-dialog.png "Create dashboard dialog")
+   ![The create dashboard dialog is displayed.](media/powerbi-create-dashboard-dialog.png 'Create dashboard dialog')
 
 5. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
+   ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png 'Add tile')
 
 6. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
+   ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png 'Your datasets')
 
 7. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **oilAnomaly** from the dropdown. Select **Next**.
 
-    ![The oilAnomaly field is added.](media/power-bi-dashboard-add-tile-oilanomaly.png "Add a custom streaming data tile")
+   ![The oilAnomaly field is added.](media/power-bi-dashboard-add-tile-oilanomaly.png 'Add a custom streaming data tile')
 
 8. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
+   ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png 'Tile details')
 
 9. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
+   ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png 'Add tile')
 
 10. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
+    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png 'Your datasets')
 
 11. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **engineTempAnomaly** from the dropdown. Select **Next**.
 
-    ![The engineTempAnomaly field is added.](media/power-bi-dashboard-add-tile-enginetempanomaly.png "Add a custom streaming data tile")
+    ![The engineTempAnomaly field is added.](media/power-bi-dashboard-add-tile-enginetempanomaly.png 'Add a custom streaming data tile')
 
 12. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
+    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png 'Tile details')
 
 13. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
+    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png 'Add tile')
 
 14. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
+    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png 'Your datasets')
 
 15. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **aggressiveDriving** from the dropdown. Select **Next**.
 
-    ![The aggressiveDriving field is added.](media/power-bi-dashboard-add-tile-aggressivedriving.png "Add a custom streaming data tile")
+    ![The aggressiveDriving field is added.](media/power-bi-dashboard-add-tile-aggressivedriving.png 'Add a custom streaming data tile')
 
 16. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
+    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png 'Tile details')
 
 17. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
+    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png 'Add tile')
 
 18. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
+    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png 'Your datasets')
 
 19. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **refrigerationTempAnomaly** from the dropdown. Select **Next**.
 
-    ![The refrigerationTempAnomaly field is added.](media/power-bi-dashboard-add-tile-refrigerationtempanomaly.png "Add a custom streaming data tile")
+    ![The refrigerationTempAnomaly field is added.](media/power-bi-dashboard-add-tile-refrigerationtempanomaly.png 'Add a custom streaming data tile')
 
 20. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
+    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png 'Tile details')
 
 21. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
+    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png 'Add tile')
 
 22. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
+    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png 'Your datasets')
 
 23. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **eventCount** from the dropdown. Select **Next**.
 
-    ![The eventCount field is added.](media/power-bi-dashboard-add-tile-eventcount.png "Add a custom streaming data tile")
+    ![The eventCount field is added.](media/power-bi-dashboard-add-tile-eventcount.png 'Add a custom streaming data tile')
 
 24. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
+    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png 'Tile details')
 
 25. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
+    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png 'Add tile')
 
 26. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
+    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png 'Your datasets')
 
 27. Select the **Line chart** Visualization Type. Under Axis, select **+ Add value**, then select **snapshot** from the dropdown. Under Values, select **+Add value**, then select **engineTemperature**. Leave the time window to display at 1 minute. Select **Next**.
 
-    ![The engineTemperature field is added.](media/power-bi-dashboard-add-tile-enginetemperature.png "Add a custom streaming data tile")
+    ![The engineTemperature field is added.](media/power-bi-dashboard-add-tile-enginetemperature.png 'Add a custom streaming data tile')
 
 28. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
+    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png 'Tile details')
 
 29. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
+    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png 'Add tile')
 
 30. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
+    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png 'Your datasets')
 
 31. Select the **Line chart** Visualization Type. Under Axis, select **+ Add value**, then select **snapshot** from the dropdown. Under Values, select **+Add value**, then select **refrigerationUnitTemp**. Leave the time window to display at 1 minute. Select **Next**.
 
-    ![The refrigerationUnitTemp field is added.](media/power-bi-dashboard-add-tile-refrigerationunittemp.png "Add a custom streaming data tile")
+    ![The refrigerationUnitTemp field is added.](media/power-bi-dashboard-add-tile-refrigerationunittemp.png 'Add a custom streaming data tile')
 
 32. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
+    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png 'Tile details')
 
 33. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
+    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png 'Add tile')
 
 34. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
+    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png 'Your datasets')
 
 35. Select the **Line chart** Visualization Type. Under Axis, select **+ Add value**, then select **snapshot** from the dropdown. Under Values, select **+Add value**, then select **speed**. Leave the time window to display at 1 minute. Select **Next**.
 
-    ![The speed field is added.](media/power-bi-dashboard-add-tile-speed.png "Add a custom streaming data tile")
+    ![The speed field is added.](media/power-bi-dashboard-add-tile-speed.png 'Add a custom streaming data tile')
 
 36. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
+    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png 'Tile details')
 
 37. When you are done, rearrange the tiles as shown:
 
-    ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png "Power BI dashboard")
+    ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png 'Power BI dashboard')
 
 ### Task 12: Import report in Power BI Desktop and update report data sources
 
@@ -489,90 +490,90 @@ In this task, you will import a Power BI report that has been created for you. A
 
 1. Open **Power BI Desktop**, then select **Open other reports**.
 
-    ![The Open other reports link is highlighted.](media/pbi-splash-screen.png "Power BI Desktop")
+   ![The Open other reports link is highlighted.](media/pbi-splash-screen.png 'Power BI Desktop')
 
 2. In the Open report dialog, browse to `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Reports`, then select **FleetReport.pbix**. Click **Open**.
 
-    ![The FleetReport.pbix file is selected in the dialog.](media/pbi-open-report.png "Open report dialog")
+   ![The FleetReport.pbix file is selected in the dialog.](media/pbi-open-report.png 'Open report dialog')
 
 3. After the report opens, click on **Edit Queries** in the ribbon bar within the Home tab.
 
-    ![The Edit Queries button is highlighted.](media/pbi-edit-queries-button.png "Edit Queries")
+   ![The Edit Queries button is highlighted.](media/pbi-edit-queries-button.png 'Edit Queries')
 
 4. Select **Trips** in the Queries list on the left, then select **Source** under Applied Steps. Click the gear icon next to Source.
 
-    ![The Trip query is selected and the source configuration icon is highlighted.](media/pbi-queries-trips-source.png "Edit Queries")
+   ![The Trip query is selected and the source configuration icon is highlighted.](media/pbi-queries-trips-source.png 'Edit Queries')
 
 5. In the source dialog, update the Cosmos DB **URL** value with your Cosmos DB URI you copied earlier in the lab, then click **OK**. If you need to find this value, navigate to your Cosmos DB account in the portal, select Keys in the left-hand menu, then copy the URI value.
 
-    ![The Trips source dialog is displayed.](media/pbi-queries-trips-source-dialog.png "Trips source dialog")
+   ![The Trips source dialog is displayed.](media/pbi-queries-trips-source-dialog.png 'Trips source dialog')
 
-    The Trips data source has a SQL statement defined that returns only the fields we need, and applies some aggregates:
+   The Trips data source has a SQL statement defined that returns only the fields we need, and applies some aggregates:
 
-    ```sql
-    SELECT c.id, c.vin, c.consignmentId, c.plannedTripDistance,
-    c.location, c.odometerBegin, c.odometerEnd, c.temperatureSetting,
-    c.tripStarted, c.tripEnded, c.status,
-    (
-        SELECT VALUE Count(1) 
-        FROM n IN c.packages
-    ) AS numPackages,
-    (
-        SELECT VALUE MIN(n.storageTemperature) 
-        FROM n IN c.packages
-    ) AS packagesStorageTemp,
-    (
-        SELECT VALUE Count(1)
-        FROM n IN c.packages
-        WHERE n.highValue = true
-    ) AS highValuePackages,
-    c.consignment.customer,
-    c.consignment.deliveryDueDate
-    FROM c where c.entityType = 'Trip'
-    and c.status in ('Active', 'Delayed', 'Completed')
-    ```
+   ```sql
+   SELECT c.id, c.vin, c.consignmentId, c.plannedTripDistance,
+   c.location, c.odometerBegin, c.odometerEnd, c.temperatureSetting,
+   c.tripStarted, c.tripEnded, c.status,
+   (
+       SELECT VALUE Count(1)
+       FROM n IN c.packages
+   ) AS numPackages,
+   (
+       SELECT VALUE MIN(n.storageTemperature)
+       FROM n IN c.packages
+   ) AS packagesStorageTemp,
+   (
+       SELECT VALUE Count(1)
+       FROM n IN c.packages
+       WHERE n.highValue = true
+   ) AS highValuePackages,
+   c.consignment.customer,
+   c.consignment.deliveryDueDate
+   FROM c where c.entityType = 'Trip'
+   and c.status in ('Active', 'Delayed', 'Completed')
+   ```
 
 6. When prompted, enter the Cosmos DB **Account key** value, then click **Connect**. If you need to find this value, navigate to your Cosmos DB account in the portal, select Keys in the left-hand menu, then copy the Primary Key value.
 
-    ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
+   ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png 'Cosmos DB account key dialog')
 
 7. In a moment, you will see a table named **Document** that has several rows whose value is Record. This is because Power BI doesn't know how to display the JSON document. The document has to be expanded. After expanding the document, you want to change the data type of the numeric and date fields from the default string types, so you can perform aggregate functions in the report. These steps have already been applied for you. Select the **Changed Type** step under Applied Steps to see the columns and changed data types.
 
-    ![The Trips table shows Record in each row.](media/pbi-queries-trips-updated.png "Queries")
+   ![The Trips table shows Record in each row.](media/pbi-queries-trips-updated.png 'Queries')
 
-    The screenshot below shows the Trips document columns with the data types applied:
+   The screenshot below shows the Trips document columns with the data types applied:
 
-    ![The Trips document columns are displayed with the changed data types.](media/pbi-queries-trips-changed-type.png "Trips with changed types")
+   ![The Trips document columns are displayed with the changed data types.](media/pbi-queries-trips-changed-type.png 'Trips with changed types')
 
 8. Select **VehicleAverages** in the Queries list on the left, then select **Source** under Applied Steps. Click the gear icon next to Source.
 
-    ![The VehicleAverages query is selected and the source configuration icon is highlighted.](media/pbi-queries-vehicleaverages-source.png "Edit Queries")
+   ![The VehicleAverages query is selected and the source configuration icon is highlighted.](media/pbi-queries-vehicleaverages-source.png 'Edit Queries')
 
 9. In the source dialog, update the Cosmos DB **URL** value with your Cosmos DB URI, then click **OK**.
 
-    ![The VehicleAverages source dialog is displayed.](media/pbi-queries-vehicleaverages-source-dialog.png "Trips source dialog")
+   ![The VehicleAverages source dialog is displayed.](media/pbi-queries-vehicleaverages-source-dialog.png 'Trips source dialog')
 
-    The VehicleAverages data source has the following SQL statement defined:
+   The VehicleAverages data source has the following SQL statement defined:
 
-    ```sql
-    SELECT c.vin, c.engineTemperature, c.speed,
-    c.refrigerationUnitKw, c.refrigerationUnitTemp,
-    c.engineTempAnomaly, c.oilAnomaly, c.aggressiveDriving,
-    c.refrigerationTempAnomaly, c.snapshot
-    FROM c WHERE c.entityType = 'VehicleAverage'
-    ```
+   ```sql
+   SELECT c.vin, c.engineTemperature, c.speed,
+   c.refrigerationUnitKw, c.refrigerationUnitTemp,
+   c.engineTempAnomaly, c.oilAnomaly, c.aggressiveDriving,
+   c.refrigerationTempAnomaly, c.snapshot
+   FROM c WHERE c.entityType = 'VehicleAverage'
+   ```
 
 10. If prompted, enter the Cosmos DB **Account key** value, then click **Connect**. You may not be prompted since you entered the key in an earlier step.
 
-    ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
+    ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png 'Cosmos DB account key dialog')
 
 11. Select **VehicleMaintenance** in the Queries list on the left, then select **Source** under Applied Steps. Click the gear icon next to Source.
 
-    ![The VehicleMaintenance query is selected and the source configuration icon is highlighted.](media/pbi-queries-vehiclemaintenance-source.png "Edit Queries")
+    ![The VehicleMaintenance query is selected and the source configuration icon is highlighted.](media/pbi-queries-vehiclemaintenance-source.png 'Edit Queries')
 
 12. In the source dialog, update the Cosmos DB **URL** value with your Cosmos DB URI, then click **OK**.
 
-    ![The VehicleMaintenance source dialog is displayed.](media/pbi-queries-vehiclemaintenance-source-dialog.png "Trips source dialog")
+    ![The VehicleMaintenance source dialog is displayed.](media/pbi-queries-vehiclemaintenance-source-dialog.png 'Trips source dialog')
 
     The VehicleMaintenance data source has the following SQL statement defined, which is simpler than the other two since there are no other entity types in the `maintenance` container, and no aggregates are needed:
 
@@ -582,11 +583,11 @@ In this task, you will import a Power BI report that has been created for you. A
 
 13. If prompted, enter the Cosmos DB **Account key** value, then click **Connect**. You may not be prompted since you entered the key in an earlier step.
 
-    ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
+    ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png 'Cosmos DB account key dialog')
 
 14. If you are prompted, click **Close & Apply**.
 
-    ![The Close & Apply button is highlighted.](media/pbi-close-apply.png "Close & Apply")
+    ![The Close & Apply button is highlighted.](media/pbi-close-apply.png 'Close & Apply')
 
 ## Exercise 2: Observe Change Feed using Azure Functions and App Insights
 
@@ -600,29 +601,29 @@ The data generator registered and activated each simulated vehicle in IoT Hub as
 
 1. In the Azure portal (<https://portal.azure.com>), open the IoT Hub instance within your **cosmos-db-iot** resource group.
 
-    ![The IoT Hub resource is displayed in the resource group.](media/portal-resource-group-iot-hub.png "IoT Hub")
+   ![The IoT Hub resource is displayed in the resource group.](media/portal-resource-group-iot-hub.png 'IoT Hub')
 
 2. Select **IoT devices** in the left-hand menu. You will see all 50 IoT devices listed in the IoT devices pane to the right, with the VIN specified as the device ID. When we simulate more vehicles, we will see additional IoT devices registered here.
 
-    ![The IoT devices pane is displayed.](media/iot-hub-iot-devices.png "IoT devices")
+   ![The IoT devices pane is displayed.](media/iot-hub-iot-devices.png 'IoT devices')
 
 ### Task 2: Open App Insights Live Metrics Stream
 
 1. In the Azure portal (<https://portal.azure.com>), open the Application Insights instance within your **cosmos-db-iot** resource group.
 
-    ![The App Insights resource is displayed in the resource group.](media/portal-resource-group-app-insights.png "Application Insights")
+   ![The App Insights resource is displayed in the resource group.](media/portal-resource-group-app-insights.png 'Application Insights')
 
 2. Select **Live Metrics Stream** in the left-hand menu.
 
-    ![The Live Metrics Stream link is displayed in the left-hand menu.](media/app-insights-live-metrics-stream-link.png "Application Insights")
+   ![The Live Metrics Stream link is displayed in the left-hand menu.](media/app-insights-live-metrics-stream-link.png 'Application Insights')
 
 3. Observe the metrics within the Live Metrics Stream as data flows through the system.
 
-    ![The Live Metrics Stream page is displayed.](media/app-insights-live-metrics-stream.png "Live Metrics Stream")
+   ![The Live Metrics Stream page is displayed.](media/app-insights-live-metrics-stream.png 'Live Metrics Stream')
 
-    At the top of the page, you will see a server count. This shows how many instances of the Function Apps there are, and one server is allocated to the Web App. As the Function App server instances exceed computational, memory, or request duration thresholds, and as the IoT Hub and Change Feed queues grow and age, new instances are automatically allocated to scale out the Function Apps. You can view the server list at the bottom of the page. On the right-hand side you will see sample telemetry, including messages sent to the logger within the functions. Here we highlighted a message stating that the Cosmos DB Processing function is sending 100 Cosmos DB records to Event Hubs.
+   At the top of the page, you will see a server count. This shows how many instances of the Function Apps there are, and one server is allocated to the Web App. As the Function App server instances exceed computational, memory, or request duration thresholds, and as the IoT Hub and Change Feed queues grow and age, new instances are automatically allocated to scale out the Function Apps. You can view the server list at the bottom of the page. On the right-hand side you will see sample telemetry, including messages sent to the logger within the functions. Here we highlighted a message stating that the Cosmos DB Processing function is sending 100 Cosmos DB records to Event Hubs.
 
-    You will notice many dependency call failures (404). These can be safely ignored. They are caused by the Azure Storage binding for the **ColdStorage** function within the Cosmos DB Processing Function App. This binding checks if the file exists before writing to the specified container. Since we are writing new files, you will see a `404` message for every file that is written since it does not exist. Currently, the binding engine does not know the difference between "good" 404 messages such as these, and "bad" ones.
+   You will notice many dependency call failures (404). These can be safely ignored. They are caused by the Azure Storage binding for the **ColdStorage** function within the Cosmos DB Processing Function App. This binding checks if the file exists before writing to the specified container. Since we are writing new files, you will see a `404` message for every file that is written since it does not exist. Currently, the binding engine does not know the difference between "good" 404 messages such as these, and "bad" ones.
 
 ## Exercise 3: Observe data using Cosmos DB Data Explorer and Web App
 
@@ -636,111 +637,111 @@ The data generator registered and activated each simulated vehicle in IoT Hub as
 
 3. Expand the **ContosoAuto** database, then expand the **metadata** container. Select **Items** to view a list of documents stored in the container. Select one of the items to view the data.
 
-    ![The data explorer is displayed with a selected item in the metadata container's items list.](media/cosmos-data-explorer-metadata-items.png "Data Explorer")
+   ![The data explorer is displayed with a selected item in the metadata container's items list.](media/cosmos-data-explorer-metadata-items.png 'Data Explorer')
 
 4. Select the ellipses (...) to the right of the **metadata** container name, then select **New SQL Query**.
 
-    ![The New SQL Query menu item is highlighted.](media/cosmos-data-explorer-metadata-new-sql-query.png "New SQL Query")
+   ![The New SQL Query menu item is highlighted.](media/cosmos-data-explorer-metadata-new-sql-query.png 'New SQL Query')
 
 5. Replace the query with the following:
 
-    ```sql
-    SELECT * FROM c WHERE c.entityType = 'Vehicle'
-    ```
+   ```sql
+   SELECT * FROM c WHERE c.entityType = 'Vehicle'
+   ```
 
 6. Execute the query to view the first 100 vehicle records.
 
-    ![The query editor is displayed with the vehicle results.](media/cosmos-vehicle-query.png "Vehicle query")
+   ![The query editor is displayed with the vehicle results.](media/cosmos-vehicle-query.png 'Vehicle query')
 
 7. Update the query to find trip records where the trip is completed.
 
-    ```sql
-    SELECT * FROM c WHERE c.entityType = 'Trip' AND c.status = 'Completed'
-    ```
+   ```sql
+   SELECT * FROM c WHERE c.entityType = 'Trip' AND c.status = 'Completed'
+   ```
 
-    ![The qwuery editor is displayed with the trip results.](media/cosmos-trip-completed-query.png "Trip query")
+   ![The qwuery editor is displayed with the trip results.](media/cosmos-trip-completed-query.png 'Trip query')
 
-    Please note, you may not have any trips that have completed yet. Try querying where the `status` = **Active** instead. Active trips are those that are currently running.
+   Please note, you may not have any trips that have completed yet. Try querying where the `status` = **Active** instead. Active trips are those that are currently running.
 
-    Here is an example completed trip record (several trips removed for brevity):
+   Here is an example completed trip record (several trips removed for brevity):
 
-    ```json
-    {
-        "partitionKey": "DK6JW0RNF0G9PO2FJ",
-        "id": "eb96c44e-4c1d-4f54-bdea-e7d2f927009c",
-        "entityType": "Trip",
-        "vin": "DK6JW0RNF0G9PO2FJ",
-        "consignmentId": "e1da2e74-bf37-4773-a5bf-483fc08533ac",
-        "plannedTripDistance": 18.33,
-        "location": "AR",
-        "odometerBegin": 106841,
-        "odometerEnd": 106859.36,
-        "temperatureSetting": 19,
-        "tripStarted": "2019-09-20T14:39:24.1855725Z",
-        "tripEnded": "2019-09-20T14:54:53.7558481Z",
-        "status": "Completed",
-        "timestamp": "0001-01-01T00:00:00",
-        "packages": [
-            {
-                "packageId": "a5651f48-67d5-4c1b-b7d9-80d678aabe9b",
-                "storageTemperature": 30,
-                "highValue": false
-            },
-            {
-                "packageId": "b2185628-eb0e-49b9-8b7d-685fcdcb5a36",
-                "storageTemperature": 22,
-                "highValue": false
-            },
-            {
-                "packageId": "25ac4bd1-5aad-4030-91f7-9539cc15b441",
-                "storageTemperature": 31,
-                "highValue": true
-            }
-        ],
-        "consignment": {
-            "consignmentId": "e1da2e74-bf37-4773-a5bf-483fc08533ac",
-            "customer": "Fabrikam, Inc.",
-            "deliveryDueDate": "2019-09-20T17:50:40.3291024Z"
-        },
-        "_rid": "hM5HAOavCggb5QAAAAAAAA==",
-        "_self": "dbs/hM5HAA==/colls/hM5HAOavCgg=/docs/hM5HAOavCggb5QAAAAAAAA==/",
-        "_etag": "\"2d0364cc-0000-0700-0000-5d84e83d0000\"",
-        "_attachments": "attachments/",
-        "_ts": 1568991293
-    }
-    ```
+   ```json
+   {
+     "partitionKey": "DK6JW0RNF0G9PO2FJ",
+     "id": "eb96c44e-4c1d-4f54-bdea-e7d2f927009c",
+     "entityType": "Trip",
+     "vin": "DK6JW0RNF0G9PO2FJ",
+     "consignmentId": "e1da2e74-bf37-4773-a5bf-483fc08533ac",
+     "plannedTripDistance": 18.33,
+     "location": "AR",
+     "odometerBegin": 106841,
+     "odometerEnd": 106859.36,
+     "temperatureSetting": 19,
+     "tripStarted": "2019-09-20T14:39:24.1855725Z",
+     "tripEnded": "2019-09-20T14:54:53.7558481Z",
+     "status": "Completed",
+     "timestamp": "0001-01-01T00:00:00",
+     "packages": [
+       {
+         "packageId": "a5651f48-67d5-4c1b-b7d9-80d678aabe9b",
+         "storageTemperature": 30,
+         "highValue": false
+       },
+       {
+         "packageId": "b2185628-eb0e-49b9-8b7d-685fcdcb5a36",
+         "storageTemperature": 22,
+         "highValue": false
+       },
+       {
+         "packageId": "25ac4bd1-5aad-4030-91f7-9539cc15b441",
+         "storageTemperature": 31,
+         "highValue": true
+       }
+     ],
+     "consignment": {
+       "consignmentId": "e1da2e74-bf37-4773-a5bf-483fc08533ac",
+       "customer": "Fabrikam, Inc.",
+       "deliveryDueDate": "2019-09-20T17:50:40.3291024Z"
+     },
+     "_rid": "hM5HAOavCggb5QAAAAAAAA==",
+     "_self": "dbs/hM5HAA==/colls/hM5HAOavCgg=/docs/hM5HAOavCggb5QAAAAAAAA==/",
+     "_etag": "\"2d0364cc-0000-0700-0000-5d84e83d0000\"",
+     "_attachments": "attachments/",
+     "_ts": 1568991293
+   }
+   ```
 
-    Portions of the package and consignment records are included since they are often used in trip queries and reports.
+   Portions of the package and consignment records are included since they are often used in trip queries and reports.
 
 ### Task 2: Search and view data in Web App
 
 1. Navigate to your deployed Fleet Management web app. If you closed it earlier, you can find the deployment URL in the Overview blade of your Web App (**IoTWebApp**) in the portal.
 
-    ![The web app's URL is highlighted.](media/webapp-url.png "Web App overview")
+   ![The web app's URL is highlighted.](media/webapp-url.png 'Web App overview')
 
 2. Select **Vehicles**. Here you will see the paging capabilities at work.
 
-    ![The vehicles page is displayed.](media/webapp-vehicles.png "Vehicles")
+   ![The vehicles page is displayed.](media/webapp-vehicles.png 'Vehicles')
 
 3. Select one of the vehicles to view the details. On the right-hand side of the details page are the trips assigned to the vehicle. This view provides the customer name from the associated consignment record, aggregate information for the packages, and the trip details.
 
-    ![The vehicle details are displayed.](media/webapp-vehicle-details.png "Vehicle details")
+   ![The vehicle details are displayed.](media/webapp-vehicle-details.png 'Vehicle details')
 
 4. Go back to the vehicles list and enter a search term, such as **MT**. This will search both the state registered, and the VIN, including partial matches. Feel free to search for both states and VINs. In the screenshot below, we searched for `MT` and received results for Montana state registrations, and had a record where `MT` was included in the VIN.
 
-    ![The search results are displayed.](media/webapp-vehicle-search.png "Vehicle search")
+   ![The search results are displayed.](media/webapp-vehicle-search.png 'Vehicle search')
 
 5. Select **Consignments** in the left-hand menu, then enter **alpine ski** in the search box and execute. You should see several consignments for the `Alpine Ski House` customer. You can also search by Consignment ID. In our results, one of the consignments has a status of Completed.
 
-    ![The search results are displayed.](media/webapp-consignments-search.png "Consignments")
+   ![The search results are displayed.](media/webapp-consignments-search.png 'Consignments')
 
 6. Select a consignment to view the details. The record shows the customer, delivery due date, status, and package details. The package statistics contains aggregates to calculate the total number of packages, the required storage temperature, based on the package with the lowest storage temperature setting, the total cubic feet and combined gross weight of the packages, and whether any of the packages are considered high value.
 
-    ![The consignment details page is displayed.](media/webapp-consignment-details.png "Consignment details")
+   ![The consignment details page is displayed.](media/webapp-consignment-details.png 'Consignment details')
 
 7. Select **Trips** in the left-hand menu. Use the filter at the top of the page to filter trips by status, such as Pending, Active, Delayed, and Completed. Trips are delayed if the status is not Completed prior to the delivery due date. You may not see any delayed at this point, but you may have some that become delayed when you re-run the data generator later. You can view the Vehicle or related Consignment record from this page.
 
-    ![The search results are displayed.](media/webapp-trips-search.png "Trips")
+   ![The search results are displayed.](media/webapp-trips-search.png 'Trips')
 
 ## Exercise 4: Perform CRUD operations using the Web App
 
@@ -752,43 +753,43 @@ In this exercise, you will insert, update, and delete a vehicle record.
 
 1. In the web app, navigate to the **Vehicles** page, then select **Create New Vehicle**.
 
-    ![The Create New Vehicle button is highlighted on the vehicles page.](media/webapp-vehicles-new-button.png "Vehicles")
+   ![The Create New Vehicle button is highlighted on the vehicles page.](media/webapp-vehicles-new-button.png 'Vehicles')
 
 2. Complete the Create Vehicle form with the following VIN: **ISO4MF7SLBXYY9OZ3**. When finished filling out the form, select **Create**.
 
-    ![The Create Vehicle form is displayed.](media/webapp-create-vehicle.png "Create Vehicle")
+   ![The Create Vehicle form is displayed.](media/webapp-create-vehicle.png 'Create Vehicle')
 
 ### Task 2: View and edit the vehicle
 
 1. Search for your new vehicle in the Vehicles page by pasting the VIN in the search box: **ISO4MF7SLBXYY9OZ3**.
 
-    ![The VIN is pasted in the search box and the vehicle result is displayed.](media/webapp-vehicles-search-vin.png "Vehicles")
+   ![The VIN is pasted in the search box and the vehicle result is displayed.](media/webapp-vehicles-search-vin.png 'Vehicles')
 
 2. Select the vehicle in the search results. Select **Edit Vehicle** in the vehicle details page.
 
-    ![Details for the new vehicle are displayed and the edit vehicle button is highlighted.](media/webapp-vehicles-details-new.png "Vehicle details")
+   ![Details for the new vehicle are displayed and the edit vehicle button is highlighted.](media/webapp-vehicles-details-new.png 'Vehicle details')
 
 3. Update the record by changing the state registered and any other field, then select **Update**.
 
-    ![The Edit Vehicle form is displayed.](media/webapp-vehicles-edit.png "Edit Vehicle")
+   ![The Edit Vehicle form is displayed.](media/webapp-vehicles-edit.png 'Edit Vehicle')
 
 ### Task 3: Delete the vehicle
 
 1. Search for your new vehicle in the Vehicles page by pasting the VIN in the search box: **ISO4MF7SLBXYY9OZ3**. You should see the registered state any any other fields you updated have changed.
 
-    ![The VIN is pasted in the search box and the vehicle result is displayed.](media/webapp-vehicles-search-vin-updated.png "Vehicles")
+   ![The VIN is pasted in the search box and the vehicle result is displayed.](media/webapp-vehicles-search-vin-updated.png 'Vehicles')
 
 2. Select the vehicle in the search results. Select **Delete** in the vehicle details page.
 
-    ![Details for the new vehicle are displayed and the delete button is highlighted.](media/webapp-vehiclde-details-updated.png "Vehicle details")
+   ![Details for the new vehicle are displayed and the delete button is highlighted.](media/webapp-vehiclde-details-updated.png 'Vehicle details')
 
 3. In the Delete Vehicle confirmation page, select **Delete** to confirm.
 
-    ![The Delete Vehicle confirmation page is displayed.](media/webapp-vehicles-delete-confirmation.png "Delete Vehicle")
+   ![The Delete Vehicle confirmation page is displayed.](media/webapp-vehicles-delete-confirmation.png 'Delete Vehicle')
 
 4. Search for your new vehicle in the Vehicles page by pasting the VIN in the search box: **ISO4MF7SLBXYY9OZ3**. You should see that no vehicles are found.
 
-    ![The vehicle was not found.](media/webapp-vehicles-search-deleted.png "Vehicles")
+   ![The vehicle was not found.](media/webapp-vehicles-search-deleted.png 'Vehicles')
 
 ## Exercise 5: View the predictive maintenance batch scoring
 
@@ -841,7 +842,7 @@ To view this notebook, perform the following steps:
 
 5. Open the Azure Machine Learning service workspace, then select **Models** in the left-hand menu to view the pre-trained model.
 
-    ![The models blade is displayed in the AML service workspace.](media/aml-models.png "Models")
+   ![The models blade is displayed in the AML service workspace.](media/aml-models.png 'Models')
 
 ### Task 2: Call the deployed scoring web service from the Web App
 
@@ -857,21 +858,21 @@ Now that the web service is deployed to ACI, we can call it to make predictions 
 
 5. In the Add/Edit application setting form, enter `ScoringUrl` for the **Name**, and paste the web service URI you copied and paste it in the **Value** field. Select **OK** to add the setting.
 
-    ![The form is filled in with the previously described values.](media/app-setting-scoringurl.png "Add/Edit application setting")
+   ![The form is filled in with the previously described values.](media/app-setting-scoringurl.png 'Add/Edit application setting')
 
 6. Select **Save** to save your new application setting.
 
 7. Navigate to the deployed Fleet Management web app and open a random Vehicle record. Select **Predict battery failure**, which calls your deployed scoring web service and makes a prediction for the vehicle.
 
-    ![The prediction results show that the battery is not predicted to fail in the next 30 days.](media/web-prediction-no.png "Vehicle details with prediction")
+   ![The prediction results show that the battery is not predicted to fail in the next 30 days.](media/web-prediction-no.png 'Vehicle details with prediction')
 
-    This vehicle has a low number of **Lifetime cycles used**, compared to the battery's rated 200 cycle lifespan. The model predicted that the battery will not fail within the next 30 days.
+   This vehicle has a low number of **Lifetime cycles used**, compared to the battery's rated 200 cycle lifespan. The model predicted that the battery will not fail within the next 30 days.
 
 8. Look through the list of vehicles to find one whose **Lifetime cycles used** value is closer to 200, then make the prediction for the vehicle.
 
-    ![The prediction results show that the battery is is predicted to fail in the next 30 days.](media/web-prediction-yes.png "Vehicle details with prediction")
+   ![The prediction results show that the battery is is predicted to fail in the next 30 days.](media/web-prediction-yes.png 'Vehicle details with prediction')
 
-    This vehicle has a high number of **Lifetime cycles used**, which is closer to the battery's rated 200 cycle lifespan. The model predicted that the battery will fail within the next 30 days.
+   This vehicle has a high number of **Lifetime cycles used**, which is closer to the battery's rated 200 cycle lifespan. The model predicted that the battery will fail within the next 30 days.
 
 ## Exercise 6: View the live dashboard, Predictive Maintenance, & Trip/Consignment Status reports in Power BI
 
@@ -883,15 +884,15 @@ Now that the web service is deployed to ACI, we can call it to make predictions 
 
 2. If the data generator is finished sending events, you may notice that tiles on the dashboard are empty. If so, start the data generator again, this time selecting option 1 for one vehicle. If you do this, the refrigeration temperature anomaly is guaranteed, and you will see the refrigeration unit temperature gradually climb above the 22.5 degree Fahrenheit alert threshold. Alternatively, you may opt to simulate more vehicles and observe the high event count numbers.
 
-    ![The live dashboard is shown with events.](media/power-bi-dashboard-live-results.png "Power BI dashboard")
+   ![The live dashboard is shown with events.](media/power-bi-dashboard-live-results.png 'Power BI dashboard')
 
-    After the generator starts sending vehicle telemetry, the dashboard should start working after a few seconds. In this screenshot, we are simulating 50 vehicles with 2,486 events in the last 10 seconds.
+   After the generator starts sending vehicle telemetry, the dashboard should start working after a few seconds. In this screenshot, we are simulating 50 vehicles with 2,486 events in the last 10 seconds.
 
 ### Task 2: Explore report in Power BI Desktop
 
 1. Open the report in Power BI Desktop. Explore the report, using the slicers (status filter, customer filter, and VIN list) to filter the data for the visualizations. Also be sure to select the different tabs at the bottom of the report, such as Maintenance for more report pages.
 
-    ![The report is displayed.](media/pbi-updated-report.png "Updated report")
+   ![The report is displayed.](media/pbi-updated-report.png 'Updated report')
 
 ## After the demo
 
