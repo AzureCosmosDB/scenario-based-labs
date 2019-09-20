@@ -5,6 +5,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "databaseId": "movies",
     "eventHubConnection": "Endpoint=sb://s2event.servicebus.windows.net/;SharedAccessKeyName=store;SharedAccessKey=D+WQd88/R1tp9Cboo1LODmY5TfCFwp8/WCVStqDk8ZQ=;EntityPath=store",
+    "eventHub" :  "store",
     "dbConnectionUrl": "https://s2cosmosdbmi4tatni3b2y4.documents.azure.com:443/",
     "dbConnectionKey": "EcJoPrBGyOIL6jqJ3OZeDYzzXyiBZtzZwNxH0MINoFgAOUaggC4cumOA9adWhOOdoHhVHC1l2HUzsaYJnL12Fw==",
     "CosmosDBConnection": "AccountEndpoint=https://s2cosmosdbmi4tatni3b2y4.documents.azure.com:443/;AccountKey=EcJoPrBGyOIL6jqJ3OZeDYzzXyiBZtzZwNxH0MINoFgAOUaggC4cumOA9adWhOOdoHhVHC1l2HUzsaYJnL12Fw==",

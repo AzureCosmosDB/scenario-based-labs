@@ -3,7 +3,7 @@
   <PropertyGroup>
     <NameOfLastUsedPublishProfile>OffersAPI2 - Web Deploy</NameOfLastUsedPublishProfile>
     <UseIISExpress>true</UseIISExpress>
-    <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
+    <LastActiveSolutionConfig>Release|Any CPU</LastActiveSolutionConfig>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />

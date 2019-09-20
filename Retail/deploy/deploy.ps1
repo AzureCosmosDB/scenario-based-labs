@@ -251,6 +251,10 @@ if (!$logicApp)
     $deployment = DeployTemplate "labdeploy3.json" $skipDeployment;
 }
 
+#used later
+$funcAppName = "s2func" + $suffix;
+$funcApp = $json | where {$_.type -eq "Microsoft.Web/sites" -and $_.name -eq $funcAppName};
+
 #deploy containers - this is ok to fail
 $deployment = DeployTemplate "labdeploy4.json" $skipDeployment;
 
@@ -347,9 +351,8 @@ if ($mode -eq "demo" -or $mode -eq "lab")
     {
         $res = $(az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "$githubpath/retail/deploy/functionapp.zip")
         $json = ConvertObjectToJson $res;
+        add-content "funcdeployed.txt" "true";
     }
-
-    add-content "funcdeployed.txt" "true";
 }
 
 ########################
@@ -364,11 +367,23 @@ $func = $json | where {$_.name -eq $funcAppName};
 
 $funcApiUrl = "https://" + $func.defaultHostName;
 
-#key is stored in the storage account...
+#open the function app endpoint to create the host.json file:
+$url = "https://portal.azure.com/#blade/WebsitesExtension/FunctionsIFrameBlade/id/$($funcApp.id)";
+Start-Process -Path $url;
+
+start-sleep 10;
+
+#key is stored in the storage account after the last url loads.
 $res = $(az storage blob list --connection-string $azurequeueConnString --container-name azure-webjobs-secrets)
 $json = ConvertObjectToJson $res;
 
 $blob = $json | where {$_.name -eq "$funcAppName/host.json"};
+
+if (!$blob)
+{
+    write-host "The function app did not load the url, the host.json file is not available";
+    return;
+}
 
 #download it..
 az storage blob download --connection-string $azurequeueConnString --container-name azure-webjobs-secrets --name $blob.name --file host.json;
@@ -448,7 +463,7 @@ foreach($folder in $folders)
 ########################
 
 #run the import tool
-. "$githubpath\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe"
+. "$githubpath\lab-files\Retail\Starter\Data Import\bin\Debug\MovieDataImport.exe"
 
 ########################
 #
