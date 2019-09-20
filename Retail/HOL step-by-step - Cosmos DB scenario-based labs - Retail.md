@@ -585,7 +585,7 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the output alias, type **eventCount**
 
-1.  For the dataset, type **store**
+1.  For the dataset, type **eventCount**
 
 1.  For the table name, type **eventCount**
 
@@ -597,7 +597,7 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the output alias, type **eventOrdersLastHour**
 
-1.  For the dataset, type **store**
+1.  For the dataset, type **eventOrdersLastHour**
 
 1.  For the table name, type **eventOrdersLastHour**
 
@@ -607,7 +607,7 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the output alias, type **eventSummary**
 
-1.  For the dataset, type **store**
+1.  For the dataset, type **eventSummary**
 
 1.  For the table name, type **eventSummary**
 
@@ -617,7 +617,7 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the output alias, type **failureCount**
 
-1.  For the dataset, type **store**
+1.  For the dataset, type **failureCount**
 
 1.  For the table name, type **failureCount**
 
@@ -627,7 +627,7 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the output alias, type **userCount**
 
-1.  For the dataset, type **store**
+1.  For the dataset, type **userCount**
 
 1.  For the table name, type **userCount**
 
@@ -679,6 +679,8 @@ SELECT System.TimeStamp AS Time, Count(*)
 ![Go to the overview tab, then click 'start'.](./media/xx_streamanalytics_05.png "Start the analytics job")
 
 1.  In the dialog, ensure that **Now** is selected, then click **Start**
+
+>NOTE:  If your job fails for any reason, you can use the **Activity Log** to see what the error(s) were.
 
 ### Task 2: Configure the ChangeFeed Function
 
@@ -740,9 +742,11 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Notice events will be generated based on a set of users and their preferred movie type
 
+![The data generator window is displayed with events streaming.](./media/xx_datagenerator_01.png "Run the data generator")
 
+1.  Buy events will be generated for the first 30 seconds with random payment failures also generated. After 30 seconds, you will notice the orders per hour will fall below the target of 10.  This would signify that something is wrong with the front end web site or order processing.
 
-1.  Buy events will be generated for the first 30 seconds, after that you will notice the orders per hour will fall below the target of 10.  This would signify that something is wrong with the front end web site or order processing.
+1.  Close the DataGenerator console program
 
 ### Task 5: Setup Power BI Dashabord 
 
@@ -758,7 +762,26 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Select **Custom Streaming Data**, click **Next**
 
-1.  Select the **eventCount** data set
+1.  Select the **eventCount** data set, then click **Next**
+
+![Select the eventCount dataset and click next.](./media/xx_powerbi_02.png "Add the eventCount tile")
+
+1.  For the visualization type, select **Card**
+
+1.  For the Fields, select **Count**
+
+1.  Click **Next**
+
+1.  For the title, type **Event Count**, then click **Apply**
+
+1.  Repeat for:
+
+-   eventSummary
+-   userCount
+-   failureCount
+-   eventOrdersLastHour
+
+1.  
 
 ### Task 4: Generate more user events
 

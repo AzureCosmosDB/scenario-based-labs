@@ -438,7 +438,7 @@ foreach($folder in $folders)
 
 ########################
 #
-#setup the cosmosdb (run the import tool to create collections and import initial event data)
+#setup the cosmosdb (run the import tool to create collections and import initial object data)
 #
 ########################
 
@@ -447,10 +447,10 @@ foreach($folder in $folders)
 
 ########################
 #
-#deploy stream analytics
+#deploy stream analytics - Not production ready - does not support Power BI Outputs
 #
 #########################
-SetupStreamAnalytics $suffix;
+#SetupStreamAnalytics $suffix;
 
 ########################
 #
