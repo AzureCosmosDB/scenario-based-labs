@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Threading;
 
 namespace Contoso.Apps.Common
@@ -16,14 +17,17 @@ namespace Contoso.Apps.Common
                 //do some caching...
                 string html = null;
 
-                if (System.IO.File.Exists("./Data/TheMovieDbCache/" + movieId))
-                    html = System.IO.File.ReadAllText("./Data/TheMovieDbCache/" + movieId);
+                string dir = AppDomain.CurrentDomain.BaseDirectory;
+                string path = $"{dir}/Data/TheMovieDbCache/" + movieId;
+
+                if (System.IO.File.Exists(path))
+                    html = System.IO.File.ReadAllText(path);
 
                 if (string.IsNullOrEmpty(html))
                 {
                     HttpHelper hh = new HttpHelper();
                     html = hh.DoGet(url, "");
-                    System.IO.File.WriteAllText("./Data/TheMovieDbCache/" + movieId, html);
+                    System.IO.File.WriteAllText(path, html);
 
                     Thread.Sleep(150);
                 }
@@ -44,14 +48,17 @@ namespace Contoso.Apps.Common
             //do some caching...
             string html = null;
 
-            if (System.IO.File.Exists("./Data/TheMovieDbCache/genres.json"))
-                html = System.IO.File.ReadAllText("./Data/TheMovieDbCache/genres.json");
+            string dir = AppDomain.CurrentDomain.BaseDirectory;
+            string path = $"{dir}/Data/TheMovieDbCache/genres.json";
+
+            if (System.IO.File.Exists(path))
+                html = System.IO.File.ReadAllText(path);
 
             if (string.IsNullOrEmpty(html))
             {
                 HttpHelper hh = new HttpHelper();
                 html = hh.DoGet(url, "");
-                System.IO.File.WriteAllText("./Data/TheMovieDbCache/genres.json", html);
+                System.IO.File.WriteAllText(path, html);
             }
 
             if (string.IsNullOrEmpty(html))

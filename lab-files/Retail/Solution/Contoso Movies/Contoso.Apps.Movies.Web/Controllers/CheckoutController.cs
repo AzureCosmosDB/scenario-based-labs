@@ -219,17 +219,10 @@ namespace Contoso.Apps.Movies.Web.Controllers
                     if (currentOrderId >= 0)
                     {
                         myCurrentOrder = await DbHelper.GetObject<Order>("Order_" + currentOrderId, "Order");
-
-                        //myCurrentOrder = (dynamic)doc;
-
-                        // Update the order to reflect payment has been completed.
-                        //doc.SetPropertyValue("PaymentTransactionId", PaymentConfirmation );
                         
                         myCurrentOrder.PaymentTransactionId = PaymentConfirmation;
 
-                        //DbHelper.SaveObject(doc, myCurrentOrder);
-
-                        DbHelper.SaveObject(myCurrentOrder);
+                        await DbHelper.SaveObject(myCurrentOrder);
 
                         // Queue up a receipt generation request, asynchronously.
                         await new AzureQueueHelper().QueueReceiptRequest(myCurrentOrder);

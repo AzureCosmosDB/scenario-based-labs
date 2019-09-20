@@ -23,12 +23,8 @@ namespace Contoso.Apps.Movies.Logic
 
         static protected CosmosClient client;
 
-        //static protected DocumentCollection productColl, shoppingCartItems;
-
         protected static IQueryable<Item> items;
         protected static IQueryable<Item> events;
-
-        //protected static readonly FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
 
         static RecommendationHelper()
         {
@@ -118,9 +114,6 @@ namespace Contoso.Apps.Movies.Logic
 
             try
             {
-                //FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
-                //Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "associations");
-
                 var container = client.GetContainer(databaseId, "associations");
 
                 var query = container.GetItemLinqQueryable<Rule>(true)
@@ -139,22 +132,6 @@ namespace Contoso.Apps.Movies.Logic
 
         private static List<CollectorLog> GetUserLogs(int userId, int take)
         {
-            /*
-            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
-            options.MaxItemCount = take;
-
-            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
-
-            var query = client.CreateDocumentQuery<CollectorLog>(objCollectionUri, new SqlQuerySpec()
-            {
-                QueryText = $"SELECT * FROM events f WHERE f.userId = @userid order by f.created DESC",
-                Parameters = new SqlParameterCollection()
-                    {
-                        new SqlParameter("@userid", userId.ToString())
-                    }
-            }, options);
-            */
-
             var container = client.GetContainer(databaseId, "events");
 
             var query = container.GetItemLinqQueryable<CollectorLog>(true)
@@ -174,6 +151,9 @@ namespace Contoso.Apps.Movies.Logic
         //aka NeighborhoodBasedRecs
         public static List<string> CollaborationBasedRecommendation(int userId, int take)
         {
+            List<string> itemIds = new List<string>();
+
+            //TODO 3 - replace the following lines
             int neighborhoodSize = 15;
             double minSim = 0.0;
             int maxCandidates = 100;
@@ -187,7 +167,7 @@ namespace Contoso.Apps.Movies.Logic
             //this is the mean rating a user gave
             double ratingSum = 0;
 
-            foreach(double r in userRatedItems.Values)
+            foreach (double r in userRatedItems.Values)
             {
                 ratingSum += r;
             }
@@ -198,19 +178,19 @@ namespace Contoso.Apps.Movies.Logic
             List<SimilarItem> candidateItems = GetCandidateItems(userRatedItems.Keys, minSim);
 
             //sort by similarity desc, take only max candidates
-            candidateItems = candidateItems.OrderByDescending(c=>c.similarity).Take(maxCandidates).ToList();
+            candidateItems = candidateItems.OrderByDescending(c => c.similarity).Take(maxCandidates).ToList();
 
             Hashtable recs = new Hashtable();
 
             List<PredictionModel> precRecs = new List<PredictionModel>();
 
-            foreach(SimilarItem candidate in candidateItems)
+            foreach (SimilarItem candidate in candidateItems)
             {
                 int target = candidate.Target;
                 double pre = 0;
                 double simSum = 0;
 
-                List<SimilarItem> ratedItems = candidateItems.Where(c=>c.Target == target).Take(neighborhoodSize).ToList();
+                List<SimilarItem> ratedItems = candidateItems.Where(c => c.Target == target).Take(neighborhoodSize).ToList();
 
                 if (ratedItems.Count > 1)
                 {
@@ -245,12 +225,10 @@ namespace Contoso.Apps.Movies.Logic
             //sort based on the prediction, only take x of them
             List<PredictionModel> sortedItems = precRecs.OrderByDescending(c => c.Prediction).Take(take).ToList();
 
-            List<string> itemIds = new List<string>();
-
             //get first model's items...
-            foreach(PredictionModel pm in sortedItems)
+            foreach (PredictionModel pm in sortedItems)
             {
-                foreach(SimilarItem ri in pm.Items)
+                foreach (SimilarItem ri in pm.Items)
                 {
                     if (ri.targetItemId != null)
                     {
@@ -259,6 +237,8 @@ namespace Contoso.Apps.Movies.Logic
                     }
                 }
             }
+
+
 
             return itemIds;
         }
@@ -376,8 +356,6 @@ namespace Contoso.Apps.Movies.Logic
             switch (algo)
             {
                 case "assoc":
-                case "assocUser":
-
                     items = RecommendationHelper.AssociationRecommendationByUser(userId, take);
 
                     //fall back to top items...
@@ -390,12 +368,6 @@ namespace Contoso.Apps.Movies.Logic
                     break;
                 case "random":
                     items = GetRandom(take);
-                    break;
-                case "assocContent":
-                    items = RecommendationHelper.AssociationRecommendationByContent(userId, take);
-                    break;
-                case "content":
-                    items = RecommendationHelper.ContentBasedRecommendation(userId, take);
                     break;
                 case "collab":
                     List<string> precRecs2 = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
@@ -424,19 +396,6 @@ namespace Contoso.Apps.Movies.Logic
                     .Where(c => c.EntityType == "Item");
 
                 items = query.ToList();
-
-                /*
-                FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
-
-                //get the product
-                Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
-
-                var query = client.CreateDocumentQuery<Item>(objCollectionUri, options)
-                .Where(c => itemIds.Contains(c.ItemId))
-                .Where(c => c.EntityType == "Item");
-
-                items = query.ToList();
-                */
             }
             catch (Exception ex)
             {
@@ -455,22 +414,10 @@ namespace Contoso.Apps.Movies.Logic
                 var container = client.GetContainer(databaseId, "object");
                 var query = container.GetItemLinqQueryable<Item>(true)
                     .Where(c => itemIds.Contains(c.ImdbId))
-                    .Where(c => c.EntityType == "Item");
+                    .Where(c => c.EntityType == "Item")
+                    .Distinct();
 
                 items = query.ToList();
-
-                /*
-                FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
-
-                //get the product
-                Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
-
-                var query = client.CreateDocumentQuery<Item>(objCollectionUri, options)
-                .Where(c => itemIds.Contains(c.ImdbId))
-                .Where(c => c.EntityType == "Item");
-
-                items = query.ToList();
-                */
             }
             catch (Exception ex)
             {
@@ -484,39 +431,27 @@ namespace Contoso.Apps.Movies.Logic
         {
             List<Item> items = new List<Item>();
 
+            List<Item> topItems = new List<Item>();
+
+            List<string> itemIds = new List<string>();
+
+            //TODO 2 - add code below here...
             var container = client.GetContainer(databaseId, "object");
+
             var query = container.GetItemLinqQueryable<Item>(true)
-                .Where(c => c.EntityType == "Item")
+                .Where(c => c.EntityType == "ItemAggregate")
                 .OrderByDescending(c => c.BuyCount)
                 .Take(take);
 
             items = query.ToList();
 
-            /*
-            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
-            options.MaxItemCount = take;
-            
-            //get the product
-            Uri objCollectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
-
-            var query = client.CreateDocumentQuery<Item>(objCollectionUri, new SqlQuerySpec()
+            foreach (Item i in items)
             {
-                QueryText = $"SELECT * FROM object f WHERE (f.EntityType = @type) order by f.BuyCount desc OFFSET 0 LIMIT {take}",
-                Parameters = new SqlParameterCollection()
-                    {
-                        new SqlParameter("@type", "ItemAggregate")
-                    }
-            }, options);
-            */
-
-            List<string> itemIds = new List<string>();
-
-            foreach(Item i in items)
-            {
-                itemIds.Add(i.ItemId.ToString());
+                if (!itemIds.Contains(i.ItemId.ToString()))
+                    itemIds.Add(i.ItemId.ToString());
             }
 
-            List<Item> topItems = GetItemsByImdbIds(itemIds);
+            topItems = GetItemsByImdbIds(itemIds);
 
             return topItems;
         }

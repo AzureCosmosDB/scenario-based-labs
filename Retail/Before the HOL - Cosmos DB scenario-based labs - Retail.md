@@ -42,7 +42,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 1.  [Visual Stuido 2019](https://visualstudio.microsoft.com/downloads/)
 
-1.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+1.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
 
 ## Before the hands-on lab
 

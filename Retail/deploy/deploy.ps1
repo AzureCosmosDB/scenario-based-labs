@@ -1,5 +1,33 @@
-﻿function DeployTemplate($filename, $skipDeployment, $parameters)
+﻿#################
+#
+# Run to get the lasest AZ powershell commands (for stream analytics) NOTE:  Not all stream analytics components can be auto deployed
+#
+#################
+#Install-Module -Name Az -AllowClobber -Scope CurrentUser
+#################
+$githubPath = "C:\github\solliancenet\cosmos-db-scenario-based-labs";
+$mode = "lab"  #can be 'lab' or 'demo'
+$subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
+$subName = "Solliance MPN 12K"
+
+#this should get set on a successful deployment...
+$suffix = ""
+
+$prefix = "cjg"
+$rgName = $prefix + "_s2_retail"
+$databaseId = "movies";
+
+#register at https://api.themoviedb.org
+$movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
+
+#toggles for skipping items
+$skipDeployment = $false;
+
+
+function DeployTemplate($filename, $skipDeployment, $parameters)
 {
+    write-host "Deploying $filename - Please wait";
+
     if (!$skipDeployment)
     {
         #deploy the template
@@ -25,14 +53,10 @@
             write-host "Deployment status is : $($deployment.properties.provisioningState)";
         }
 
-        if ($deployment.properties.provisioningState -eq "Failed")
-        {
-            write-host "Deployment failed";
-            return;
-        }
+        write-host "Deploying finished with status $($deployment.properties.provisioningState)";
     }
 
-    return $deployment;    
+    return $deployment;
 }
 
 function UpdateConfig($path)
@@ -184,31 +208,6 @@ function ConvertObjectToJson($data)
     return ConvertFrom-json $json;
 }
 
-#################
-#
-# Run to get the lasest AZ powershell commands (for stream analytics) NOTE:  Not all stream analytics components can be auto deployed
-#
-#################
-#Install-Module -Name Az -AllowClobber -Scope CurrentUser
-#################
-$githubPath = "C:\github\solliancenet\cosmos-db-scenario-based-labs";
-$mode = "lab"  #can be 'lab' or 'demo'
-$subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
-$subName = "Solliance MPN 12K"
-
-#this should get set on a successful deployment...
-$suffix = ""
-
-$prefix = "cjg"
-$rgName = $prefix + "_s2_retail"
-$databaseId = "movies";
-
-#register at https://api.themoviedb.org
-$movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
-
-#toggles for skipping items
-$skipDeployment = $false;
-
 cd $githubpath
 
 #login - do this always as AAD will error if you change location/ip
@@ -274,6 +273,8 @@ $CosmosDBConnection = "";
 #get the event hub connection
 #
 ########################
+write-host "Getting event hub connection"
+
 $res = $(az eventhubs namespace list --output json --resource-group $rgName)
 $json = ConvertObjectToJson $res;
 
@@ -288,6 +289,7 @@ $eventHubConnection = $json.primaryConnectionString
 #get the storage connection string
 #
 ########################
+write-host "Getting storage account key"
 
 $res = $(az storage account list --output json --resource-group $rgName)
 $json = ConvertObjectToJson $res;
@@ -306,6 +308,8 @@ $azurequeueConnString = "DefaultEndpointsProtocol=https;AccountName=$($sa.name);
 #get the cosmos db url and key
 #
 #########################
+write-host "Getting cosmos db url and key"
+
 $res = $(az cosmosdb list --output json --resource-group $rgName)
 $json = ConvertObjectToJson $res;
 
@@ -325,11 +329,12 @@ $CosmosDBConnection = "AccountEndpoint=$dbConnectionUrl;AccountKey=$dbConnection
 #deploy the web app
 #
 #########################
-
 $webAppName = "s2web" + $suffix;
 
 if ($mode -eq "demo")
 { 
+    write-host "Deploying the web application"
+
     $res = $(az webapp deployment source config-zip --resource-group $rgName --name $webAppName --src "$githubpath/retail/deploy/webapp.zip")
     $json = ConvertObjectToJson $res;
 }
@@ -349,6 +354,8 @@ if ($mode -eq "demo" -or $mode -eq "lab")
 
     if ($deployed -ne "true")
     {
+        write-host "Deploying the function app"
+
         $res = $(az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "$githubpath/retail/deploy/functionapp.zip")
         $json = ConvertObjectToJson $res;
         add-content "funcdeployed.txt" "true";
@@ -360,6 +367,8 @@ if ($mode -eq "demo" -or $mode -eq "lab")
 #get the function url and key
 #
 #########################
+write-host "Getting the function app url and key"
+
 $res = $(az functionapp list --output json --resource-group $rgName)
 $json = ConvertObjectToJson $res;
 
@@ -398,7 +407,6 @@ $funcApiKey = $json.masterkey.value;
 # Output variables
 #
 ########################
-
 Output
 
 ########################
@@ -406,6 +414,7 @@ Output
 #set the web app properties
 #
 #########################
+write-host "Saving app settings to web application"
 
 $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$azurequeueConnString)
 $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$paymentsApiUrl)
@@ -422,6 +431,8 @@ $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings m
 #set the func properties
 #
 #########################
+write-host "Saving app settings to func app"
+
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$azurequeueConnString)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$paymentsApiUrlah)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl)
@@ -438,6 +449,8 @@ $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings 
 #Update project configs to be nice ;)
 #
 ########################
+write-host "Saving app settings to Visual Studio solutions (starter and solution)"
+
 $folders = ("starter", "solution")
 
 foreach($folder in $folders)
@@ -461,9 +474,13 @@ foreach($folder in $folders)
 #setup the cosmosdb (run the import tool to create collections and import initial object data)
 #
 ########################
+if ($mode -eq "demo")
+{ 
+    write-host "Importing all the movie data"
 
-#run the import tool
-. "$githubpath\lab-files\Retail\Starter\Data Import\bin\Debug\MovieDataImport.exe"
+    #run the import tool
+    . "$githubpath\lab-files\Retail\Starter\Data Import\bin\Debug\MovieDataImport.exe"
+}
 
 ########################
 #
@@ -488,3 +505,10 @@ if ($mode -eq "demo")
 
     #execute the notebook
 }
+
+########################
+#
+# Output variables
+#
+########################
+Output

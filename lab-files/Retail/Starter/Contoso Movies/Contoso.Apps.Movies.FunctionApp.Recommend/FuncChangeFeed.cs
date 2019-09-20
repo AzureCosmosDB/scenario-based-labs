@@ -58,15 +58,12 @@ namespace ContosoFunctionApp
             DbHelper.client = client;
             DbHelper.databaseId = databaseId;
 
-            //TODO 1 - Aggregate into cosmos for top products calcluation
             DoAggregateCalculations(events);
 
-            //TODO 2 - Event Hub
-            AddEventToEventHub(events);
+            //TODO 5 - Event Hub
+            
 
-            //TODO 3 - Fire the logic app
-            CallLogicApp(events);
-
+            //TODO 6 - Fire the logic app
             
         }        
 
@@ -117,59 +114,6 @@ namespace ContosoFunctionApp
             }
         }
 
-        public async void CallLogicApp(IReadOnlyList<Document> events)
-        {
-            try
-            {
-                // Have the HttpClient factory create a new client instance.
-                var httpClient = _httpClientFactory.CreateClient("LogicAppClient");
-
-                // Create the payload to send to the Logic App.
-                foreach (var e in events)
-                {
-                    var payload = new LogicAppAlert
-                    {
-                        data = JsonConvert.SerializeObject(e),
-                        recipientEmail = Environment.GetEnvironmentVariable("RecipientEmail")
-                    };
-
-                    var postBody = JsonConvert.SerializeObject(payload);
-
-                    var httpResult = await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
-                }
-            }
-            catch (Exception ex)
-            {
-                log.LogError(ex.Message);
-            }
-        }
-
-        public void AddEventToEventHub(IReadOnlyList<Document> events)
-        {
-            try
-            {
-                //event hub connection
-                EventHubClient eventHubClient;
-                string EventHubConnectionString = config["eventHubConnection"];
-                string EventHubName = config["eventHub"];
-
-                var connectionStringBuilder = new EventHubsConnectionStringBuilder(EventHubConnectionString)
-                {
-                    EntityPath = EventHubName
-                };
-
-                eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
-
-                foreach (var e in events)
-                {
-                    string data = JsonConvert.SerializeObject(e);
-                    var result = eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(data)));
-                }
-            }
-            catch (Exception ex)
-            {
-                log.LogError(ex.Message);
-            }
-        }
+        
     }
 }
