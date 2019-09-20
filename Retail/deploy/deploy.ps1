@@ -262,6 +262,7 @@ $dbConnectionUrl = "";
 $dbConnectionKey = "";
 $databaseId = "movies"
 $eventHubConnection = "";
+$CosmosDBConnection = "";
 
 ########################
 #
@@ -311,6 +312,8 @@ $res = $(az cosmosdb keys list --name $db.name --resource-group $rgName)
 $json = ConvertObjectToJson $res;
 
 $dbConnectionKey = $json.primaryMasterKey;
+
+$CosmosDBConnection = "AccountEndpoint=$dbConnectionUrl;AccountKey=$dbConnectionKey";
 
 ########################
 #
@@ -408,6 +411,7 @@ $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings 
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings CosmosDBConnection=$dbConnectionUrl)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection)

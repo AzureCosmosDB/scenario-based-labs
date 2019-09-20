@@ -762,32 +762,93 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Select **Custom Streaming Data**, click **Next**
 
-1.  Select the **eventCount** data set, then click **Next**
+1.  Select the **eventData** data set, then click **Next**
 
 ![Select the eventCount dataset and click next.](./media/xx_powerbi_02.png "Add the eventCount tile")
 
 1.  For the visualization type, select **Card**
 
-1.  For the Fields, select **Count**
+1.  For the Fields, select **Total Events**
 
 1.  Click **Next**
 
 1.  For the title, type **Event Count**, then click **Apply**
 
-1.  Repeat for:
+1.  Click the **...** ellipses, then select **+Add tile**
 
--   eventSummary
--   userCount
--   failureCount
--   eventOrdersLastHour
+1.  Select **Custom Streaming Data**, click **Next**
 
-1.  
+1.  Select the **eventData** data set, then click **Next**
+
+1.  For the visualization type, select **Card**
+
+1.  For the Fields, select **UserCount**
+
+1.  Click **Next**
+
+1.  For the title, type **User Count**, then click **Apply**
+
+1.  Click the **...** ellipses, then select **+Add tile**
+
+1.  Select **Custom Streaming Data**, click **Next**
+
+1.  Select the **failureCount** data set, then click **Next**
+
+1.  For the visualization type, select **Card**
+
+1.  For the Fields, select **FailureCount**
+
+1.  Click **Next**
+
+1.  For the title, type **Payment Failures**, then click **Apply**
+
+1.  Click the **...** ellipses, then select **+Add tile**
+
+1.  Select **Custom Streaming Data**, click **Next**
+
+1.  Select the **eventSummary** data set, then click **Next**
+
+1.  For the visualization type, select **Line chart**
+
+1.  For the axis, select **Time**
+
+1.  For the legend, select **Event**
+
+1.  For the values, select **Count**
+
+1.  Click **Next**
+
+1.  For the title, type **Count**, then click **Apply**
+
+1.  Click the **...** ellipses, then select **+Add tile**
+
+1.  Select **Custom Streaming Data**, click **Next**
+
+1.  Select the **evetOrdersLastHour** data set, then click **Next**
+
+1.  For the visualization type, select **Gauge**
+
+1.  For the value, select **Count**
+
+1.  For minimum value, select **Min**
+
+1.  For target value, select **Target**
+
+1.  For the legend, select **Event**
+
+1.  Click **Next**
+
+1.  For the title, type **Orders Per Hour**, then click **Apply**
+
+1.  Your dashboard should look similar to the following:
+
+![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_powerbi_03.png "Configure the dashboard")
 
 ### Task 4: Generate more user events
 
 1.  Switch back to Visual Studio, press **F5** to run the data generator project
 
-1.  Switch to your Power BI dashboard, you should see it update with the event data:
+1.  Switch to your Power BI dashboard, after a few minutes, you should see it update with the event data:
 
 TODO
 
