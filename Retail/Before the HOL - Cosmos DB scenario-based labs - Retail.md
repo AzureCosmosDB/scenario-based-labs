@@ -36,9 +36,13 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 ## Requirements
 
-1. Microsoft Azure subscription must be pay-as-you-go or MSDN.
+1.  Microsoft Azure subscription must be pay-as-you-go or MSDN.
 
     - Trial subscriptions will not work.
+
+1.  [Visual Stuido 2019](https://visualstudio.microsoft.com/downloads/)
+
+1.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
 ## Before the hands-on lab
 
