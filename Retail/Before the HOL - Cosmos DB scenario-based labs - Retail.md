@@ -67,9 +67,7 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 -   $mode = "lab"  #can be 'lab' or 'demo'
 -   $subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
 -   $subName = "Solliance MPN 12K"
--   $suffix = "mi4tatni3b2y4"
--   $prefix = "s2_retail"
--   $rgName = $prefix;
+-   $rgName = "s2_retail"
 -   $databaseId = "movies";
 -   $movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
 
@@ -93,5 +91,7 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 - Key Vault
 - Storage Accounts
 - Application Insights
+
+1.  Record the values that were exported from the script
 
 You should follow all steps provided *before* attending the hands-on lab.
