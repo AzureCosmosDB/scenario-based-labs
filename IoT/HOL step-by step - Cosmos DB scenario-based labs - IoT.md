@@ -62,21 +62,21 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Exercise 5: Observe data using Cosmos DB Data Explorer and Web App](#exercise-5-observe-data-using-cosmos-db-data-explorer-and-web-app)
     - [Task 1: View data in Cosmos DB Data Explorer](#task-1-view-data-in-cosmos-db-data-explorer)
     - [Task 2: Search and view data in Web App](#task-2-search-and-view-data-in-web-app)
-  - [Exercise 6: Performing CRUD operations using the Web App](#exercise-6-performing-crud-operations-using-the-web-app)
+  - [Exercise 6: Perform CRUD operations using the Web App](#exercise-6-perform-crud-operations-using-the-web-app)
     - [Task 1: Update vehicle metadata](#task-1-update-vehicle-metadata)
     - [Task 2: View consignment, package, and trip data](#task-2-view-consignment-package-and-trip-data)
-  - [Exercise 7: Creating the Fleet status real-time dashboard in Power BI](#exercise-7-creating-the-fleet-status-real-time-dashboard-in-power-bi)
+  - [Exercise 7: Create the Fleet status real-time dashboard in Power BI](#exercise-7-create-the-fleet-status-real-time-dashboard-in-power-bi)
     - [Task 1: Log in to Power BI online](#task-1-log-in-to-power-bi-online)
     - [Task 2: Create real-time dashboard](#task-2-create-real-time-dashboard)
   - [Exercise 8: Observe Change Feed using Azure Functions and App Insights](#exercise-8-observe-change-feed-using-azure-functions-and-app-insights)
     - [Task 1: Open App Insights Live View](#task-1-open-app-insights-live-view)
-  - [Exercise 9: Running the predictive maintenance batch scoring](#exercise-9-running-the-predictive-maintenance-batch-scoring)
+  - [Exercise 9: Run the predictive maintenance batch scoring](#exercise-9-run-the-predictive-maintenance-batch-scoring)
     - [Task 1: Import lab notebooks into Azure Databricks](#task-1-import-lab-notebooks-into-azure-databricks)
     - [Task 2: Run batch scoring notebook](#task-2-run-batch-scoring-notebook)
-  - [Exercise 10: Deploying the predictive maintenance web service](#exercise-10-deploying-the-predictive-maintenance-web-service)
+  - [Exercise 10: Deploy the predictive maintenance web service](#exercise-10-deploy-the-predictive-maintenance-web-service)
     - [Task 1: Run deployment notebook](#task-1-run-deployment-notebook)
     - [Task 2: Call the deployed scoring web service from the Web App](#task-2-call-the-deployed-scoring-web-service-from-the-web-app)
-  - [Exercise 11: Creating the Predictive Maintenance & Trip/Consignment Status reports in Power BI](#exercise-11-creating-the-predictive-maintenance--tripconsignment-status-reports-in-power-bi)
+  - [Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI](#exercise-11-create-the-predictive-maintenance--tripconsignment-status-reports-in-power-bi)
     - [Task 1: Add Cosmos DB data sources to Power BI Desktop](#task-1-add-cosmos-db-data-sources-to-power-bi-desktop)
     - [Task 2: Create new report in Power BI Desktop](#task-2-create-new-report-in-power-bi-desktop)
   - [After the hands-on lab](#after-the-hands-on-lab)
@@ -1327,7 +1327,143 @@ After the generator ensures the metadata exists, it begins simulating the specif
 
 ### Task 2: Code walk-through
 
+There is a lot of code within the data generator project, so we'll just touch on the highlights. The code we do not cover is commented and should be easy to follow if you so desire.
+
+1. Within the **Main** method of **Program.cs**, the core workflow of the data generator is executed by the following code block:
+
+    ```csharp
+    // Instantiate Cosmos DB client and start sending messages:
+    using (_cosmosDbClient = new CosmosClient(cosmosDbConnectionString.ServiceEndpoint.OriginalString,
+        cosmosDbConnectionString.AuthKey, connectionPolicy))
+    {
+        await InitializeCosmosDb();
+
+        // Find and output the container details, including # of RU/s.
+        var container = _database.GetContainer(MetadataContainerName);
+
+        var offer = await container.ReadThroughputAsync(cancellationToken);
+
+        if (offer != null)
+        {
+            var currentCollectionThroughput = offer ?? 0;
+            WriteLineInColor(
+                $"Found collection `{MetadataContainerName}` with {currentCollectionThroughput} RU/s.",
+                ConsoleColor.Green);
+        }
+
+        // Initially seed the Cosmos DB database with metadata if empty.
+        await SeedDatabase(cosmosDbConnectionString, cancellationToken);
+        trips = await GetTripsFromDatabase(numberSimulatedTrucks, container);
+    }
+
+    try
+    {
+        // Start sending telemetry from simulated vehicles to Event Hubs:
+        _runningVehicleTasks = await SetupVehicleTelemetryRunTasks(numberSimulatedTrucks,
+            trips, arguments.IoTHubConnectionString);
+        var tasks = _runningVehicleTasks.Select(t => t.Value).ToList();
+        while (tasks.Count > 0)
+        {
+            try
+            {
+                Task.WhenAll(tasks).Wait(cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                //expected
+            }
+
+            tasks = _runningVehicleTasks.Where(t => !t.Value.IsCompleted).Select(t => t.Value).ToList();
+
+        }
+    }
+    catch (OperationCanceledException)
+    {
+        Console.WriteLine("The vehicle telemetry operation was canceled.");
+        // No need to throw, as this was expected.
+    }
+    ```
+
+    The top section of the code instantiates a new `CosmosClient`, using the connection string defined in either `appsettings.json` or the environment variables. The first call within the block is to `InitializeCosmosDb()`. We'll dig into this method in a moment, but it is responsible for creating the Cosmos DB database and containers if they do not exist in the Cosmos DB account. Next, we create a new `Container` instance, which the v3 version of the .NET Cosmos DB SDK uses for operations against a container, such as CRUD and maintenance information. For example, we call `ReadThroughputAsync` on the container to retrieve the current throughput (RU/s), and we pass it to `GetTripsFromDatabase` to read Trip documents from the container, based on the number of vehicles we are simulating. In this method, we also call the `SeedDatabase` method, which checks whether data currently exists and, if not, calls methods in the `DataGenerator` class (`DataGenerator.cs` file) to generate vehicles, consignments, packages, and trips, then writes the data in bulk using the `BulkImporter` class (`BulkImporter.cs` file). This `SeedDatabase` method executes the following on the `Container` instance to adjust the throughput (RU/s) to 50,000 before the bulk import, and back to 15,000 after the data seeding is complete: `await container.ReplaceThroughputAsync(desiredThroughput);`.
+
+    The `try/catch` block calls `SetupVehicleTelemetryRunTasks` to register IoT device instances for each simulated vehicle and load up the tasks from each `SimulatedVehicle` instance it creates. It uses `Task.WhenAll` to ensure all pending tasks (simulated vehicle trips) are complete, removing completed tasks from the `_runningvehicleTasks` list as they finish. The cancellation token is used to cancel all running tasks if you issue the cancel command (`Ctrl+C` or `Ctrl+Break`) in the console.
+
+2. Scroll down the `Program.cs` file until you find the `InitializeCosmosDb()` method. Here is the code for your reference:
+
+    ```csharp
+    private static async Task InitializeCosmosDb()
+    {
+        _database = await _cosmosDbClient.CreateDatabaseIfNotExistsAsync(DatabaseName);
+
+        #region Telemetry container
+        // Define a new container.
+        var telemetryContainerDefinition =
+            new ContainerProperties(id: TelemetryContainerName, partitionKeyPath: $"/{PartitionKey}")
+            {
+                IndexingPolicy = { IndexingMode = IndexingMode.Consistent }
+            };
+
+        // Tune the indexing policy for write-heavy workloads by only including regularly queried paths.
+        // Be careful when using an opt-in policy as we are below. Excluding all and only including certain paths removes
+        // Cosmos DB's ability to proactively add new properties to the index.
+        telemetryContainerDefinition.IndexingPolicy.ExcludedPaths.Clear();
+        telemetryContainerDefinition.IndexingPolicy.ExcludedPaths.Add(new ExcludedPath { Path = "/*" }); // Exclude all paths.
+        telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Clear();
+        telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/vin/?" });
+        telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/state/?" });
+        telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/partitionKey/?" });
+
+        // Create the container with a throughput of 15000 RU/s.
+        await _database.CreateContainerIfNotExistsAsync(telemetryContainerDefinition, throughput: 15000);
+        #endregion
+
+        #region Metadata container
+        // Define a new container (collection).
+        var metadataContainerDefinition =
+            new ContainerProperties(id: MetadataContainerName, partitionKeyPath: $"/{PartitionKey}")
+            {
+                // Set the indexing policy to consistent and use the default settings because we expect read-heavy workloads in this container (includes all paths (/*) with all range indexes).
+                // Indexing all paths when you have write-heavy workloads may impact performance and cost more RU/s than desired.
+                IndexingPolicy = { IndexingMode = IndexingMode.Consistent }
+            };
+
+        // Set initial performance to 50,000 RU/s for bulk import performance.
+        await _database.CreateContainerIfNotExistsAsync(metadataContainerDefinition, throughput: 50000);
+        #endregion
+
+        #region Maintenance container
+        // Define a new container (collection).
+        var maintenanceContainerDefinition =
+            new ContainerProperties(id: MaintenanceContainerName, partitionKeyPath: $"/vin")
+            {
+                IndexingPolicy = { IndexingMode = IndexingMode.Consistent }
+            };
+
+        // Set initial performance to 400 RU/s due to light workloads.
+        await _database.CreateContainerIfNotExistsAsync(maintenanceContainerDefinition, throughput: 400);
+        #endregion
+    }
+    ```
+
+    This method creates a Cosmos DB database if it does not already exist, otherwise it retrieves a reference to it (`await _cosmosDbClient.CreateDatabaseIfNotExistsAsync(DatabaseName);`). Then it creates `ContainerProperties` for the `telemetry`, `metadata`, and `maintenance` containers. The `ContainerProperties` object lets us specify the container's indexing policy. We use the default indexing policy for `metadata` and `maintenance` since they are read-heavy and benefit from a greater number of paths, but we exclude all paths in the `telemetry` index policy, and add paths only to those properties we need to query, due to the container's write-heavy workload. The `telemetry` container is assigned a throughput of 15,000 RU/s, 50,000 for `metadata` for the initial bulk import, then it is scaled down to 15,000, and 400 for `maintenance`.
+
 ### Task 3: Update application configuration
+
+The data generator needs two connection strings before it can successfully run; the IoT Hub connection string, and the Cosmos DB connection string. The IoT Hub connection string can be found by selecting **Shared access policies** in IoT Hub, selecting the **iothubowner** policy, then copying the **Connection string--primary key** value. This is different from the Event Hub-compatible endpoint connection string you copied earlier.
+
+![The iothubowner shared access policy is displayed.](media/iot-hub-connection-string.png "IoT Hub shared access policy")
+
+1. Open **appsettings.json** within the **FleetDataGenerator** project.
+
+2. Paste the IoT Hub connection string value in quotes next to the **IOT_HUB_CONNECTION_STRING** key. Paste the Cosmos DB connection string value in quotes next to the **COSMOS_DB_CONNECTION_STRING** key.
+
+    ![The appsettings.json file is highlighted in the Solution Explorer, and the connection strings are highlighted within the file.](media/vs-appsettings.png "appsettings.json")
+
+    The NUMBER_SIMULATED_TRUCKS value is used when you select option 5 when you run the generator. This gives you the flexibility to simulate between 1 and 1,000 trucks at a time. SECONDS_TO_LEAD specifies how many seconds to wait until the generator starts generating simulated data. The default value is 0. SECONDS_TO_RUN forces the simulated trucks to stop sending generated data to IoT Hub. The default value is 14400. Otherwise, the generator stops sending tasks when all the trips complete or you cancel by entering `Ctrl+C` or `Ctrl+Break` in the console window.
+
+3. **Save** the `appsettings.json` file.
+
+> As an alternative, you may save these settings as environment variables on your machine, or through the FleetDataGenerator properties. Doing this will remove the risk of accidentally saving your secrets to source control.
 
 ### Task 4: Run generator
 
@@ -1337,13 +1473,13 @@ After the generator ensures the metadata exists, it begins simulating the specif
 
 ### Task 2: Search and view data in Web App
 
-## Exercise 6: Performing CRUD operations using the Web App
+## Exercise 6: Perform CRUD operations using the Web App
 
 ### Task 1: Update vehicle metadata
 
 ### Task 2: View consignment, package, and trip data
 
-## Exercise 7: Creating the Fleet status real-time dashboard in Power BI
+## Exercise 7: Create the Fleet status real-time dashboard in Power BI
 
 ### Task 1: Log in to Power BI online
 
@@ -1353,7 +1489,7 @@ After the generator ensures the metadata exists, it begins simulating the specif
 
 ### Task 1: Open App Insights Live View
 
-## Exercise 9: Running the predictive maintenance batch scoring
+## Exercise 9: Run the predictive maintenance batch scoring
 
 **Duration**: 20 minutes
 
@@ -1412,7 +1548,7 @@ To run this notebook, perform the following steps:
 
 > If you wish to execute this notebook on a scheduled basis, such as every evening, you can use the Jobs feature in Azure Databricks to accomplish this.
 
-## Exercise 10: Deploying the predictive maintenance web service
+## Exercise 10: Deploy the predictive maintenance web service
 
 **Duration**: 20 minutes
 
@@ -1464,7 +1600,7 @@ Now that the web service is deployed to ACI, we can call it to make predictions 
 
     This vehicle has a high number of **Lifetime cycles used**, which is closer to the battery's rated 200 cycle lifespan. The model predicted that the battery will fail within the next 30 days.
 
-## Exercise 11: Creating the Predictive Maintenance & Trip/Consignment Status reports in Power BI
+## Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI
 
 ### Task 1: Add Cosmos DB data sources to Power BI Desktop
 
