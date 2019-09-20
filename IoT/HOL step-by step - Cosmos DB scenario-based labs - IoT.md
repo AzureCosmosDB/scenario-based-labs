@@ -79,8 +79,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 1: Run deployment notebook](#task-1-run-deployment-notebook)
     - [Task 2: Call the deployed scoring web service from the Web App](#task-2-call-the-deployed-scoring-web-service-from-the-web-app)
   - [Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI](#exercise-11-create-the-predictive-maintenance--tripconsignment-status-reports-in-power-bi)
-    - [Task 1: Add Cosmos DB data sources to Power BI Desktop](#task-1-add-cosmos-db-data-sources-to-power-bi-desktop)
-    - [Task 2: Create new report in Power BI Desktop](#task-2-create-new-report-in-power-bi-desktop)
+    - [Task 1: Import report in Power BI Desktop](#task-1-import-report-in-power-bi-desktop)
+    - [Task 2: Update report data sources](#task-2-update-report-data-sources)
+    - [Task 3: Explore report](#task-3-explore-report)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
@@ -1864,11 +1865,11 @@ In this exercise, you will insert, update, and delete a vehicle record.
 
     ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png "Power BI dashboard")
 
-38. If the data generator is finished sending events, you may notice that tiles on the dashboard are empty. If so, start the data generator again, this time selecting option 1 for one vehicle. If you do this, the refrigeration temperature anomaly is guaranteed, and you will see the refrigeration unit temperature gradually climb above the 22 degree alert threshold. Alternatively, you may opt to simulate more vehicles and observe the high event count numbers.
+38. If the data generator is finished sending events, you may notice that tiles on the dashboard are empty. If so, start the data generator again, this time selecting option 1 for one vehicle. If you do this, the refrigeration temperature anomaly is guaranteed, and you will see the refrigeration unit temperature gradually climb above the 22.5 degree Fahrenheit alert threshold. Alternatively, you may opt to simulate more vehicles and observe the high event count numbers.
 
-    ![The live dashboard is shown with events.](media/power-bi-dashboard-live-results.png "Power BI dashboard")
+    ![The live dashboard is shown with events.](media/power-bi-dashboard-live-results.png "Power BI dashboard")![](media/power-bi-dashboard-live-results.png)
 
-    After the generator starts sending vehicle telemetry, the dashboard should start working after a few seconds. In this screenshot, we are simulating 50 vehicles with 2,286 events in the last 10 seconds.
+    After the generator starts sending vehicle telemetry, the dashboard should start working after a few seconds. In this screenshot, we are simulating 50 vehicles with 2,486 events in the last 10 seconds.
 
 ## Exercise 9: Run the predictive maintenance batch scoring
 
@@ -1983,15 +1984,124 @@ Now that the web service is deployed to ACI, we can call it to make predictions 
 
 ## Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI
 
-**Duration**: 10 minutes
+**Duration**: 15 minutes
 
-### Task 1: Add Cosmos DB data sources to Power BI Desktop
+In this lab, you will import a Power BI report that has been created for you. After opening it, you will update the data source to point to your Power BI instance.
 
-### Task 2: Create new report in Power BI Desktop
+### Task 1: Import report in Power BI Desktop
+
+1. Open **Power BI Desktop**, then select **Open other reports**.
+
+    ![The Open other reports link is highlighted.](media/pbi-splash-screen.png "Power BI Desktop")
+
+2. In the Open report dialog, browse to `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Reports`, then select **FleetReport.pbix**. Click **Open**.
+
+    ![The FleetReport.pbix file is selected in the dialog.](media/pbi-open-report.png "Open report dialog")
+
+### Task 2: Update report data sources
+
+1. After the report opens, click on **Edit Queries** in the ribbon bar within the Home tab.
+
+    ![The Edit Queries button is highlighted.](media/pbi-edit-queries-button.png "Edit Queries")
+
+2. Select **Trips** in the Queries list on the left, then select **Source** under Applied Steps. Click the gear icon next to Source.
+
+    ![The Trip query is selected and the source configuration icon is highlighted.](media/pbi-queries-trips-source.png "Edit Queries")
+
+3. In the source dialog, update the Cosmos DB **URL** value with your Cosmos DB URI you copied earlier in the lab, then click **OK**. If you need to find this value, navigate to your Cosmos DB account in the portal, select Keys in the left-hand menu, then copy the URI value.
+
+    ![The Trips source dialog is displayed.](media/pbi-queries-trips-source-dialog.png "Trips source dialog")
+
+    The Trips data source has a SQL statement defined that returns only the fields we need, and applies some aggregates:
+
+    ```sql
+    SELECT c.id, c.vin, c.consignmentId, c.plannedTripDistance,
+    c.location, c.odometerBegin, c.odometerEnd, c.temperatureSetting,
+    c.tripStarted, c.tripEnded, c.status,
+    (
+        SELECT VALUE Count(1) 
+        FROM n IN c.packages
+    ) AS numPackages,
+    (
+        SELECT VALUE MIN(n.storageTemperature) 
+        FROM n IN c.packages
+    ) AS packagesStorageTemp,
+    (
+        SELECT VALUE Count(1)
+        FROM n IN c.packages
+        WHERE n.highValue = true
+    ) AS highValuePackages,
+    c.consignment.customer,
+    c.consignment.deliveryDueDate
+    FROM c where c.entityType = 'Trip'
+    and c.status in ('Active', 'Delayed', 'Completed')
+    ```
+
+4. When prompted, enter the Cosmos DB **Account key** value, then click **Connect**. If you need to find this value, navigate to your Cosmos DB account in the portal, select Keys in the left-hand menu, then copy the Primary Key value.
+
+    ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
+
+5. In a moment, you will see a table named **Document** that has several rows whose value is Record. This is because Power BI doesn't know how to display the JSON document. The document has to be expanded. After expanding the document, you want to change the data type of the numeric and date fields from the default string types, so you can perform aggregate functions in the report. These steps have already been applied for you. Select the **Changed Type** step under Applied Steps to see the columns and changed data types.
+
+    ![The Trips table shows Record in each row.](media/pbi-queries-trips-updated.png "Queries")
+
+    The screenshot below shows the Trips document columns with the data types applied:
+
+    ![The Trips document columns are displayed with the changed data types.](media/pbi-queries-trips-changed-type.png "Trips with changed types")
+
+6. Select **VehicleAverages** in the Queries list on the left, then select **Source** under Applied Steps. Click the gear icon next to Source.
+
+    ![The VehicleAverages query is selected and the source configuration icon is highlighted.](media/pbi-queries-vehicleaverages-source.png "Edit Queries")
+
+7. In the source dialog, update the Cosmos DB **URL** value with your Cosmos DB URI, then click **OK**.
+
+    ![The VehicleAverages source dialog is displayed.](media/pbi-queries-vehicleaverages-source-dialog.png "Trips source dialog")
+
+    The VehicleAverages data source has the following SQL statement defined:
+
+    ```sql
+    SELECT c.vin, c.engineTemperature, c.speed,
+    c.refrigerationUnitKw, c.refrigerationUnitTemp,
+    c.engineTempAnomaly, c.oilAnomaly, c.aggressiveDriving,
+    c.refrigerationTempAnomaly, c.snapshot
+    FROM c WHERE c.entityType = 'VehicleAverage'
+    ```
+
+8. If prompted, enter the Cosmos DB **Account key** value, then click **Connect**. You may not be prompted since you entered the key in an earlier step.
+
+    ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
+
+9. Select **VehicleMaintenance** in the Queries list on the left, then select **Source** under Applied Steps. Click the gear icon next to Source.
+
+    ![The VehicleMaintenance query is selected and the source configuration icon is highlighted.](media/pbi-queries-vehiclemaintenance-source.png "Edit Queries")
+
+10. In the source dialog, update the Cosmos DB **URL** value with your Cosmos DB URI, then click **OK**.
+
+    ![The VehicleMaintenance source dialog is displayed.](media/pbi-queries-vehiclemaintenance-source-dialog.png "Trips source dialog")
+
+    The VehicleMaintenance data source has the following SQL statement defined, which is simpler than the other two since there are no other entity types in the `maintenance` container, and no aggregates are needed:
+
+    ```sql
+    SELECT c.vin, c.serviceRequired FROM c
+    ```
+
+11. If prompted, enter the Cosmos DB **Account key** value, then click **Connect**. You may not be prompted since you entered the key in an earlier step.
+
+    ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
+
+12. If you are prompted, click **Close & Apply**.
+
+    ![The Close & Apply button is highlighted.](media/pbi-close-apply.png "Close & Apply")
+
+### Task 3: Explore report
+
+1. The report will apply changes to the data sources and the cached data set will be updated in a few moments. Explore the report, using the slicers (status filter, customer filter, and VIN list) to filter the data for the visualizations. Also be sure to select the different tabs at the bottom of the report, such as Maintenance for more report pages.
+
+    ![The report is displayed.](media/pbi-updated-report.png "Updated report")
 
 ## After the hands-on lab
 
-Duration: 10 mins
+**Duration**: 10 mins
 
 In this exercise, you will delete any Azure resources that were created in support of the lab. You should follow all steps provided after attending the Hands-on lab to ensure your account does not continue to be charged for lab resources.
 
