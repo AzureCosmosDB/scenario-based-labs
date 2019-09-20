@@ -29,11 +29,8 @@ namespace Functions.CosmosDB
         private readonly CosmosClient _cosmosClient;
 
         // Use Dependency Injection to inject the HttpClientFactory service and Cosmos DB client that were configured in Startup.cs.
-        public Functions(IHttpClientFactory httpClientFactory, CosmosClient cosmosClient)
-        {
-            _httpClientFactory = httpClientFactory;
-            _cosmosClient = cosmosClient;
-        }
+        // TODO 2: Complete the Dependency Injection code to set the local IHttpClientFactory and CosmosClient objects.
+        // Complete: public Functions( ... ) { }
 
         [FunctionName("TripProcessor")]
         public async Task TripProcessor([CosmosDBTrigger(
@@ -58,10 +55,8 @@ namespace Functions.CosmosDB
             {
                 foreach (var group in vehicleEvents.GroupBy(singleEvent => singleEvent.GetPropertyValue<string>("vin")))
                 {
-                    var vin = group.Key;
-                    var odometerHigh = group.Max(item => item.GetPropertyValue<double>("odometer"));
-                    var averageRefrigerationUnitTemp =
-                        group.Average(item => item.GetPropertyValue<double>("refrigerationUnitTemp"));
+                    // TODO 3: We have grouped the events by vehicle VIN. Assign local variables to hold the VIN, get the max odometer value, and average refrigeration unit temperature.
+                    // Complete: var vin = ...; var odometerHigh = ...; var averageRefrigerationUnitTemp = ...;
 
                     // First, retrieve the metadata Cosmos DB container reference:
                     var container = _cosmosClient.GetContainer(database, metadataContainer);
@@ -135,15 +130,8 @@ namespace Functions.CosmosDB
                             }
 
                             // Update the trip and consignment records.
-                            if (updateTrip)
-                            {
-                                await container.ReplaceItemAsync(trip, trip.id, new Microsoft.Azure.Cosmos.PartitionKey(trip.partitionKey));
-                            }
-
-                            if (updateConsignment)
-                            {
-                                await container.ReplaceItemAsync(consignment, consignment.id, new Microsoft.Azure.Cosmos.PartitionKey(consignment.partitionKey));
-                            }
+                            // TODO 4: Complete the code to update the Trip and Consignment records.
+                            // Complete: if (updateTrip) { ... } if (updateConsignment) { ... }
 
                             // Send a trip alert.
                             if (sendTripAlert)
@@ -175,7 +163,8 @@ namespace Functions.CosmosDB
 
                                 var postBody = JsonConvert.SerializeObject(payload);
 
-                                await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
+                                // TODO 5: Add code to post the LogicAppAlert payload to the Logic App in JSON format.
+                                // Complete: await httpClient.PostAsync( ... ));
                             }
                         }
                     }
@@ -237,11 +226,8 @@ namespace Functions.CosmosDB
             {
                 foreach (var vehicleEvent in vehicleEvents)
                 {
-                    // Convert to a VehicleEvent class.
-                    var vehicleEventOut = await vehicleEvent.ReadAsAsync<VehicleEvent>();
-                    // Add to the Event Hub output collection.
-                    await vehicleEventsOut.AddAsync(new EventData(
-                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleEventOut))));
+                    // TODO 6: Convert the Cosmos DB Document object to a VehicleEvent class, then serialize the class and add it to the Event Hub output collection.
+                    // Complete: var vehicleEventOut = await vehicleEvent.ReadAsAsync ...; await vehicleEventsOut.AddAsync( ... );
                 }
             }
         }

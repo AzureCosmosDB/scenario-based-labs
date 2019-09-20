@@ -183,7 +183,8 @@ namespace FleetManagementWebApp.Controllers
             // We're just deleting the vehicle and not any related trips.
             // In a real-life scenario, we'd probably just soft-delete the vehicle and any related records,
             // or remove the vehicle's VIN from related trips.
-            await _cosmosDbService.DeleteItemAsync<Vehicle>(item.id, item.partitionKey);
+            // TODO 11: Delete the Vehicle item.
+            // Complete: await _cosmosDbService...;
 
             return RedirectToAction("Index");
         }
