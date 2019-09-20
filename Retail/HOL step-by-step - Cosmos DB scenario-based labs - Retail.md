@@ -31,39 +31,41 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Solution architecture (High-level)](#solution-architecture-high-level)
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
-  - [Exercise 1: Configure Databricks and generate event data](#exercise-1-deployment-and-setup)
-    - [Task 1: Configure Azure Databricks](#task-1-blah)
-    - [Task 1: Populate event data](#task-1-blah)
-    - [Task 1: Review the data generated](#task-1-blah)
-  - [Exercise 2: Complete and deploy Web and Function Apps](#exercise-2-creating-and-deploying-rule-calculations)
-    - [Task 1: Implement the Top Items recommendation](#task-1-blah-1)
-    - [Task 2: Deploy the applications](#task-1-blah-1)
-    - [Task 3: Test the applications](#task-1-blah-1)
-  - [Exercise 3: Perform and deploy association rules calculation for offline algorithms](#exercise-3-simulate-data-and-events)
-    - [Task 1: Generate the Associations](#task-1-blah-2)
-    - [Task 2: Review the data generated](#task-1-blah-2)
-    - [Task 3: Generate the ratings](#task-1-blah-2)
-    - [Task 4: Review the data generated](#task-1-blah-2)
-  - [Exercise 4: Complete and deploy Web and Function Apps (Association Rules)](#exercise-3-simulate-data-and-events)
-    - [Task 1: Implement the Associations recommendation rules](#task-1-blah-2)
-    - [Task 2: Deploy the applications](#task-1-blah-1)
-    - [Task 3: Test the applications](#task-1-blah-1)
-  - [Exercise 5: Perform and deploy collaborative filtering rules calculation](#exercise-3-simulate-data-and-events)
-    - [Task 1: Compute the user implict ratings](#task-1-blah-2)
-    - [Task 2: Implement the Collaborative Rules](#task-1-blah-1)
-    - [Task 3: Review the data generated](#task-1-blah-1)
+  - [Exercise 1: Configure Databricks and generate event data](#exercise-1-configure-databricks-and-generate-event-data)
+    - [Task 1: Configure Azure Databricks](#task-1-configure-azure-databricks)
+    - [Task 2: Populate event data](#task-2-populate-event-data)
+    - [Task 3: Review the data generated](#task-3-review-the-data-generated)
+    - [Task 4: Review the aggregations and import utility](#task-4-Review the aggregations and import utility)
+  - [Exercise 2: Complete and deploy Web and Function Apps](#exercise-2-complete-and-deploy-web-and-function-apps)
+    - [Task 1: Implement the Top Items recommendation](#task-1-implement-the-top-items-recommendation)
+    - [Task 2: Deploy the applications](#task-2-deploy-the-applications)
+    - [Task 3: Test the applications](#task-3-test-the-applications)
+  - [Exercise 3: Perform and deploy association rules calculation for offline algorithms](#exercise-3-perform-and-deploy-association-rules-calculation-for-offline-algorithms)
+    - [Task 1: Generate the Associations](#task-1-generate-the-associations)
+    - [Task 2: Review the data generated](#task-2-review-the-data-generated)
+  - [Exercise 4: Complete and deploy Web and Function Apps (Association Rules)](#exercise-4-simulate-data-and-events)
+    - [Task 1: Implement the Associations recommendation rules](#task-1-implement-the-associations-recommendation-rules)
+    - [Task 2: Deploy the applications](#task-2-deploy-the-applications)
+    - [Task 3: Test the applications](#task-3-test-the-applications)
+  - [Exercise 5: Perform and deploy collaborative filtering rules calculation](#exercise-5-perform-and-deploy-collaborative-filtering-rules-calculation)
+    - [Task 1: Compute the user implict ratings](#task-1-compute-the-user-implict-ratings)
+    - [Task 2: Generate the Collaborative Rules](#task-2-generate-the-collaborative-rules)
+    - [Task 3: Review the data generated](#task-3-review-the-data-generated)
+    - [Task 4: Implement the Collaborative recommendation rules](#task-4-implement-the-collaborative-recommendation-rules)
+    - [Task 5: Deploy the applications](#task-5-deploy-the-application)
+    - [Task 6: Test the applications](#task-6-test the applications)
   - [Exercise 6: Reporting with Stream Analytics and Power BI](#exercise-4-reporting-with-stream-analytics-and-power-bi)
-    - [Task 1: Steup Stream Analytics](#task-1-blah-3)
-    - [Task 2: Configure the ChangeFeed Function](#task-1-blah-3)
-    - [Task 3: Deploy the ChangeFeed Function](#task-1-blah-3)
-    - [Task 4: Generate more user events](#task-1-blah-3)
-    - [Task 5: Generate user events](#task-1-blah-3)
-    - [Task 6: Setup Power BI Dashboard](#task-1-blah-3)
+    - [Task 1: Setup Stream Analytics](#task-1-setup-stream-analytics)
+    - [Task 2: Configure the ChangeFeed Function](#task-2-configure-the-changefeed-function)
+    - [Task 3: Deploy the ChangeFeed Function](#task-3-deploy-the-changefeed-function)
+    - [Task 4: Generate user events for Power BI](#task-4-generate-user-events-for-power-bi)
+    - [Task 5: Setup Power BI Dashboard](#task-5-setup-power-bi-dashboard)
+    - [Task 6: Generate user events for real time analysis](#task-6-generate-user-events-for-real-time-analysis)
   - [Exercise 7: Email alerts using Logic Apps](#exercise-5-email-alerts-using-logic-apps)
-    - [Task 1: Setup Logic App](#task-1-blah-4)
-    - [Task 2: Update and deploy function app](#task-1-blah-4)
-    - [Task 3: Update and deploy function app](#task-1-blah-4)
-    - [Task 4: Test order email delivery](#task-1-blah-4)
+    - [Task 1: Setup Logic App](#task-1-setup-logic-app)
+    - [Task 2: Configure the function app settings](#task-2-configure-the-function-app-settings)
+    - [Task 3: Update and deploy function app](#task-3-update-and-deploy-function-app)
+    - [Task 4: Test order email delivery](#task-4-test-order-email-delivery)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete resource group](#task-1-delete-resource-group)
 
@@ -397,7 +399,7 @@ return View(vm);
 
 **TODO IMAGE**
 
-## Exercise 4: Perform and deploy collaborative filtering rules calculation
+## Exercise 5: Perform and deploy collaborative filtering rules calculation
 
 Duration: 30 minutes
 
@@ -421,7 +423,7 @@ In this exercise you will defined
 
 >NOTE:  These ratings are generated as part of this notebook as an 'offline' operation.  If you collect a significant amount of user data, you would need to reevaluate the events using this notebook and populate the ratings collection again for the online calculations to utilize.
 
-### Task 2: Implement the Collaborative Rules
+### Task 2: Generate the Collaborative Rules
 
 1.  Open the **Similarity** notebook
 
@@ -429,7 +431,7 @@ In this exercise you will defined
 
 1. Run each cell of the **Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
-### Task 2: Review the data generated
+### Task 3: Review the data generated
 
 1.  Open your Cosmos DB instance
 
@@ -439,7 +441,7 @@ In this exercise you will defined
 
 ![An example item from the similarity collection is displayed.](./media/xx_similaritycoll.png "The similarity collection")
 
-### Task 1: Implement the Associations recommendation rules
+### Task 4: Implement the Collaborative recommendation rules
 
 1.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
@@ -531,7 +533,7 @@ foreach(PredictionModel pm in sortedItems)
 }
 ```
 
-### Task 2: Deploy the applications
+### Task 5: Deploy the applications
 
 1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
@@ -541,7 +543,7 @@ foreach(PredictionModel pm in sortedItems)
 
 1.  Click **Publish**, the site should load.
 
-### Task 3: Test the applications
+### Task 6: Test the applications
 
 1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see the same results as you received previously.
 
@@ -553,7 +555,7 @@ foreach(PredictionModel pm in sortedItems)
 
 **TODO IMAGE**
 
-## Exercise 5: Reporting with Stream Analytics and Power BI
+## Exercise 6: Reporting with Stream Analytics and Power BI
 
 Duration: 30 minutes
 
@@ -734,7 +736,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Click **Publish**
 
-### Task 4: Generate user events
+### Task 4: Generate user events for PowerBI
 
 1.  Right-click the **DataGenerator** project, select **Set as startup project**
 
@@ -844,15 +846,15 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 ![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_powerbi_03.png "Configure the dashboard")
 
-### Task 4: Generate more user events
+### Task 6: Generate user events for real time
 
 1.  Switch back to Visual Studio, press **F5** to run the data generator project
 
 1.  Switch to your Power BI dashboard, after a few minutes, you should see it update with the event data:
 
-TODO
+![This graphic shows the layout of the tiles in the Power BI Dashboard when the event stream is running.](./media/xx_powerbi_04.png "Continuously updating dashboard")
 
-## Exercise 6: Email alerts using Logic Apps
+## Exercise 7: Email alerts using Logic Apps
 
 Duration: 30 minutes
 
@@ -945,13 +947,11 @@ public async void CallLogicApp(IReadOnlyList<Document> events)
 }
 ```
 
-### Task 2: Update and deploy function app
-
 1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
 1.  Click **Publish**
 
-### Task 3: Test order email delivery
+### Task 4: Test order email delivery
 
 1.  Switch to Visual Studio, right-click the **DataGenerator** project, select **Set as startup project**
 

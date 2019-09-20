@@ -73,11 +73,12 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 >NOTE:  If you are performing a demo of this solution, select the "demo" setting, otherwise leave as "lab"
 
 -   $mode = "lab"  #can be 'lab' or 'demo'
--   $subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
--   $subName = "Solliance MPN 12K"
--   $rgName = "s2_retail"
+-   $subscriptionId = "YOUR SUBSCRIPTION ID"
+-   $subName = "YOUR SUBSCRIPTION NAME"
+-   $prefix = "YOUR INIT"
+-   $rgName = $prefix + "s2_retail"
 -   $databaseId = "movies";
--   $movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
+-   $movieApiKey = "YOUR MOVIE API KEY";
 
 1.  Run the script, this will do the following:
 

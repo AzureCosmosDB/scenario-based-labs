@@ -1,4 +1,4 @@
-﻿function DeployTemplate($filename, $skipDeployment)
+﻿function DeployTemplate($filename, $skipDeployment, $parameters)
 {
     if (!$skipDeployment)
     {
@@ -199,7 +199,8 @@ $subName = "Solliance MPN 12K"
 #this should get set on a successful deployment...
 $suffix = ""
 
-$rgName = "s2_retail"
+$prefix = "cjg"
+$rgName = $prefix + "_s2_retail"
 $databaseId = "movies";
 
 #register at https://api.themoviedb.org

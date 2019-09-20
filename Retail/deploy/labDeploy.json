@@ -277,13 +277,13 @@
             "name": "[variables('appServicePlanFunctionAppsName')]",
             "location": "[variables('location')]",
             "sku": {
-                "name": "Y1",
-                "tier": "Dynamic",
-                "size": "Y1",
-                "family": "Y",
-                "capacity": 0
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 1
             },
-            "kind": "functionapp",
+            "kind": "app",
             "properties": {
                 "name": "[variables('appServicePlanFunctionAppsName')]",
                 "perSiteScaling": false,
