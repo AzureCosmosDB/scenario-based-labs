@@ -17,12 +17,7 @@
 		"functionAppName": "[concat('s2func', variables('name-suffix'))]",
         
 		"keyVaultName": "[concat('s2keyvault-', variables('name-suffix'))]",
-		
-		"storageAccountStoreName": "[concat('s2data1', variables('name-suffix'))]",
-		
-        "storageAccountStreamProcessingName": "[concat('s2data2', variables('name-suffix'))]",
-        "storageAccountStreamProcessing-website-contentshare": "[concat('s2streamprocessing', variables('name-suffix'))]",
-
+				
         "storageAccountCosmosDBProcessingName": "[concat('s2data3', variables('name-suffix'))]",
         "storageAccountCosmosDBProcessing-website-contentshare": "[concat('s2cosmosdbprocessing', variables('name-suffix'))]",
 
@@ -82,13 +77,13 @@
         },
         {
             "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
-            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'objects')]",
+            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('databaseName'), '/', 'object')]",
             "apiVersion": "2016-03-31",
             "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('databaseName'))]" ],
             "properties":
             {
                 "resource":{
-                    "id":  "objects",
+                    "id":  "object",
                     "partitionKey": {
                         "paths": [
                         "/ObjectId"
@@ -309,85 +304,6 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
-            "name": "[variables('storageAccountStreamProcessingName')]",
-            "location": "[variables('location')]",
-            "sku": {
-                "name": "Standard_LRS",
-                "tier": "Standard"
-            },
-            "kind": "Storage",
-            "properties": {
-                "networkAcls": {
-                    "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
-                    "defaultAction": "Allow"
-                },
-                "supportsHttpsTrafficOnly": true,
-                "encryption": {
-                    "services": {
-                        "file": {
-                            "enabled": true
-                        },
-                        "blob": {
-                            "enabled": true
-                        }
-                    },
-                    "keySource": "Microsoft.Storage"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices",
-            "apiVersion": "2019-04-01",
-            "name": "[concat(variables('storageAccountStreamProcessingName'), '/default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
-            ],
-            "properties": {
-                "cors": {
-                    "corsRules": []
-                },
-                "deleteRetentionPolicy": {
-                    "enabled": false
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-            "apiVersion": "2019-04-01",
-            "name": "[concat(variables('storageAccountStreamProcessingName'), '/default/azure-webjobs-hosts')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountStreamProcessingName'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
-            ],
-            "properties": {
-                "publicAccess": "None"
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-            "apiVersion": "2019-04-01",
-            "name": "[concat(variables('storageAccountStreamProcessingName'), '/default/azure-webjobs-secrets')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountStreamProcessingName'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
-            ],
-            "properties": {
-                "publicAccess": "None"
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
-            "apiVersion": "2019-04-01",
-            "name": "[concat(variables('storageAccountStreamProcessingName'), '/default/', variables('storageAccountStreamProcessing-website-contentshare'))]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
-            ]
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2019-04-01",
             "name": "[variables('storageAccountCosmosDBProcessingName')]",
             "location": "[variables('location')]",
             "sku": {
@@ -463,53 +379,6 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
             ]
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2019-04-01",
-            "name": "[variables('storageAccountStoreName')]",
-            "location": "[variables('location')]",
-            "sku": {
-                "name": "Standard_LRS",
-                "tier": "Standard"
-            },
-            "kind": "Storage",
-            "properties": {
-                "networkAcls": {
-                    "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
-                    "defaultAction": "Allow"
-                },
-                "supportsHttpsTrafficOnly": true,
-                "encryption": {
-                    "services": {
-                        "file": {
-                            "enabled": true
-                        },
-                        "blob": {
-                            "enabled": true
-                        }
-                    },
-                    "keySource": "Microsoft.Storage"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices",
-            "apiVersion": "2019-04-01",
-            "name": "[concat(variables('storageAccountStoreName'), '/default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStoreName'))]"
-            ],
-            "properties": {
-                "cors": {
-                    "corsRules": []
-                },
-                "deleteRetentionPolicy": {
-                    "enabled": false
-                }
-            }
         },
         {
             "type": "Microsoft.StreamAnalytics/streamingjobs",

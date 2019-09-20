@@ -146,9 +146,12 @@ namespace MovieDataImport
 
         async static Task ImportMovies(bool usedOnly)
         {
-            string[] lines = System.IO.File.ReadAllLines("./Data/movies.csv");
+            string dir = AppDomain.CurrentDomain.BaseDirectory;
+            string path = $"{dir}/Data/";
 
-            string[] usedOnlyLines = System.IO.File.ReadAllLines("./Data/UsedMovies.txt");
+            string[] lines = System.IO.File.ReadAllLines($"{path}/movies.csv");
+
+            string[] usedOnlyLines = System.IO.File.ReadAllLines($"{path}/UsedMovies.txt");
 
             List<string> itemIds = new List<string>();
             foreach(string line in usedOnlyLines)

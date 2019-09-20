@@ -1,4 +1,27 @@
-﻿function Output()
+﻿function UpdateConfig($path)
+{
+    [xml]$xml = get-content $filepath;
+
+    #set the database url
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionUrl"}
+    $data.value = $dbConnectionUrl;
+
+    #set the database key
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionKey"}
+    $data.value = $dbConnectionKey;
+
+    #set the movie api key
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "movieApiKey"}
+    $data.value = $movieApiKey;
+
+    #set the database id
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "databaseId"}
+    $data.value = $databaseId;
+
+    $xml.save($filePath);    
+}
+
+function Output()
 {
     write-host "Output variables:"
 
@@ -238,6 +261,8 @@ if ($mode -eq "demo" -or $mode -eq "labs")
 {
     $res = $(az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "$githubpath/retail/deploy/functionapp.zip")
     $json = ConvertObjectToJson $res;
+
+    add-content "funcdeployed."
 }
 
 ########################
@@ -280,14 +305,14 @@ Output
 #
 #########################
 
-az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$azurequeueConnString
-az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$paymentsApiUrl
-az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$funcApiUrl
-az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$funcApiKey
-az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$databaseId
-az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$dbConnectionUrl
-az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$dbConnectionKey
-az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKey=$movieApiKey
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$azurequeueConnString)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$paymentsApiUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$funcApiUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$funcApiKey)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$databaseId)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$dbConnectionUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$dbConnectionKey)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKey=$movieApiKey)
 
 
 ########################
@@ -295,15 +320,30 @@ az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKe
 #set the func properties
 #
 #########################
-az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$azurequeueConnString
-az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$paymentsApiUrlah
-az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl
-az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey
-az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId
-az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl
-az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey
-az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection
-az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$movieApiKey
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$azurequeueConnString)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$paymentsApiUrlah)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$movieApiKey)
+
+########################
+#
+#Update project configs to be nice ;)
+#
+########################
+
+$filePath = "$githubpath\lab-files\Retail\Data Import\app.config"
+UpdateConfig $filePath;
+
+$filePath = "$githubpath\lab-files\Retail\DataGenerator\app.config"
+UpdateConfig $filePath;
+
+$filePath = "$githubpath\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\web.config"
+UpdateConfig $filePath;
 
 ########################
 #
@@ -313,25 +353,8 @@ az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiK
 
 #update the app.config file with the new values
 $filePath = "$githubpath\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe.config"
-[xml]$xml = get-content $filepath;
 
-#set the database url
-$data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionUrl"}
-$data.value = $dbConnectionUrl;
-
-#set the database key
-$data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionKey"}
-$data.value = $dbConnectionKey;
-
-#set the movie api key
-$data = $xml.configuration.appSettings.add | where {$_.key -eq "movieApiKey"}
-$data.value = $movieApiKey;
-
-#set the database id
-$data = $xml.configuration.appSettings.add | where {$_.key -eq "databaseId"}
-$data.value = $databaseId;
-
-$xml.save($filePath);
+UpdateConfig $filePath;
 
 #run the tool
 . "$githubpath\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe"
