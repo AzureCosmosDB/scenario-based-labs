@@ -151,7 +151,7 @@ namespace ContosoFunctionApp
                 //event hub connection
                 EventHubClient eventHubClient;
                 string EventHubConnectionString = config["eventHubConnection"];
-                string EventHubName = "store";
+                string EventHubName = config["eventHub"];
 
                 var connectionStringBuilder = new EventHubsConnectionStringBuilder(EventHubConnectionString)
                 {

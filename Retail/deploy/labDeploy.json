@@ -277,13 +277,13 @@
             "name": "[variables('appServicePlanFunctionAppsName')]",
             "location": "[variables('location')]",
             "sku": {
-                "name": "Y1",
-                "tier": "Dynamic",
-                "size": "Y1",
-                "family": "Y",
-                "capacity": 0
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 1
             },
-            "kind": "functionapp",
+            "kind": "app",
             "properties": {
                 "name": "[variables('appServicePlanFunctionAppsName')]",
                 "perSiteScaling": false,
@@ -369,13 +369,13 @@
         {
             "type": "Microsoft.EventHub/namespaces/eventhubs",
             "apiVersion": "2017-04-01",
-            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/reporting')]",
+            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/store')]",
             "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubsNamespaceIoTName'))]"
             ],
             "properties": {
-                "messageRetentionInDays": 4,
+                "messageRetentionInDays": 6,
                 "partitionCount": 4,
                 "status": "Active"
             }
@@ -383,10 +383,10 @@
         {
             "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
             "apiVersion": "2017-04-01",
-            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/reporting/$Default')]",
+            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/store/$Default')]",
             "location": "[variables('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', variables('eventHubsNamespaceIoTName'), 'reporting')]",
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', variables('eventHubsNamespaceIoTName'), 'store')]",
                 "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubsNamespaceIoTName'))]"
             ],
             "properties": {}

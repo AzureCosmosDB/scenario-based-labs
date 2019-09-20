@@ -73,19 +73,20 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 >NOTE:  If you are performing a demo of this solution, select the "demo" setting, otherwise leave as "lab"
 
 -   $mode = "lab"  #can be 'lab' or 'demo'
--   $subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
--   $subName = "Solliance MPN 12K"
--   $rgName = "s2_retail"
+-   $subscriptionId = "YOUR SUBSCRIPTION ID"
+-   $subName = "YOUR SUBSCRIPTION NAME"
+-   $prefix = "YOUR INIT"
+-   $rgName = $prefix + "_s2_retail"
 -   $databaseId = "movies";
--   $movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
+-   $movieApiKey = "YOUR MOVIE API KEY";
 
 1.  Run the script, this will do the following:
 
--   Deploy the starter ARM template
+-   Deploy the starter ARM template(s)
 -   Deploy the initial web and function apps
 -   Setup the web and function app configuration variables
--   Setup various Stream Analytics inputs and outputs
 -   Create starter objects in the 'object' collection of the Comos DB database
+-   Update your project application configuration files with the target azure keys and settings
 
 1. The deployment will take 15-25 minutes to complete. As part of the deployment, you will see the following items created:
 
