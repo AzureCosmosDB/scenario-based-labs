@@ -52,6 +52,9 @@ namespace Contoso.Apps.Movies.Logic
             string res = hh.DoPost(finalUrl, json, "");
             items = JsonConvert.DeserializeObject<List<Item>>(res);
 
+            if (items == null)
+                return new List<Item>();
+
             return items;
         }
 

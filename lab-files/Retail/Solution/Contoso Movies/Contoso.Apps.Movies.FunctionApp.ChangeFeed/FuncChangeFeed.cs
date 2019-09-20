@@ -1,23 +1,17 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Net;
-using System.Text;
-using System.Collections.Generic;
+using Contoso.Apps.Function.Common;
 using Contoso.Apps.Movies.Data.Models;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
-using System.Linq;
 using Microsoft.Azure.EventHubs;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
-using Contoso.Apps.Function.Common;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
 
 namespace ContosoFunctionApp
 {
@@ -36,7 +30,7 @@ namespace ContosoFunctionApp
         [FunctionName("ChangeFeed")]
         public void Run(
             [CosmosDBTrigger(
-            databaseName: "moviegeek",
+            databaseName: "movies",
             collectionName: "events",
             ConnectionStringSetting = "CosmosDBConnection",
             LeaseCollectionName = "leases",
@@ -48,7 +42,7 @@ namespace ContosoFunctionApp
             log = inlog;
 
             //FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
-            var databaseId = "moviegeek";
+            var databaseId = "movies";
 
             //config
             config = new ConfigurationBuilder()
@@ -58,19 +52,21 @@ namespace ContosoFunctionApp
                 .Build();
 
             //cosmob connection
-            DocumentClient client = new DocumentClient(new Uri(config["CosmosDBUrl"]), config["CosmosDBKey"]);
+            DocumentClient client = new DocumentClient(new Uri(config["dbConnectionUrl"]), config["dbConnectionKey"]);
             
             DbHelper.client = client;
             DbHelper.databaseId = databaseId;
-            
-            //add to event hub
+
+            //TODO 1 - Aggregate into cosmos for top products calcluation
+            DoAggregateCalculations(events);
+
+            //TODO 2 - Event Hub
             AddEventToEventHub(events);
 
-            //fire the logic app
+            //TODO 3 - Fire the logic app
             CallLogicApp(events);
 
-            //aggregate into cosmos for top products calcluation
-            DoAggregateCalculations(events);
+            
         }        
 
         public async void DoAggregateCalculations(IReadOnlyList<Document> events)

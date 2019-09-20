@@ -23,9 +23,6 @@ namespace Contoso.Apps.Movies.Web.Controllers
         protected Database database;
         protected string databaseId;
 
-        //protected DocumentCollection productColl, shoppingCartItems;
-        //protected static readonly FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
-
         public DataController()
         {
             string endpointUrl = ConfigurationManager.AppSettings["dbConnectionUrl"];
@@ -52,8 +49,6 @@ namespace Contoso.Apps.Movies.Web.Controllers
             {
                 string name = user.Email;
                 int userId = user.UserId;
-
-                //Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "events");
 
                 logs = DbHelper.GetUserLogs(userId, 100);
             }

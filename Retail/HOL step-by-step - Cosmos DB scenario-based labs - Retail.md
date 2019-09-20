@@ -109,7 +109,7 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 
 1.  Click **Launch Workspace**, if prompted, login as the account you used to create your environment
 
-1.  Click **Clusters**
+1.  In the side navigation, click **Clusters**
 
 ![The cluster blade with all the settings filled in.](./media/xx_DataBricks_01.png "Databricks cluster configuration")
 
@@ -155,7 +155,7 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 ```
 
-1. Select **Install**.
+1. Select **Install**
 
 ![Populated library dialog for Maven.](./media/xx_DataBricks_04.png "Add the Maven library")
 
@@ -169,7 +169,9 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1.  Click **Import**
 
-1. After importing, expand the new **02 Retail** folder.
+![Workspace is highlighted with the user expanded and the Import option highlighted.](./media/xx_DataBricks_07.png "Import the DataBricks notebook")
+
+1. After importing, select the new **02 Retail** folder.
 
 1.  Select **Event Generator**
 
@@ -199,7 +201,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 ### Task 4: Review the aggregation and import utility
 
-1.  Browse to the **$githubdirectory/lab-files/Retail/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
+1.  Browse to the **$githubdirectory/lab-files/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
 1.  Open the **program.cs** file, browse code and various methods.  Notice that it:
 
@@ -228,7 +230,7 @@ vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 
 1.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
-1.  Find the todo task #2 and complete it with the following:
+1.  In the **TopRecommendation** method, find the todo task #2 and complete it with the following:
 
 ```csharp
 var container = client.GetContainer(databaseId, "object");
@@ -259,11 +261,9 @@ topItems = GetItemsByImdbIds(itemIds);
 
 1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Click **New**, then ensure that **Azure Functions Consumption Plan** is selected
+1.  Click **New**, then ensure that **Azure Functions Premium Plan** is selected
 
 1.  Click **Select Existing**, then click **Publish**
-
-![Visual studio dialog is displayed for deploying the function app to Azure.](./media/xx_DeployFunction.png "Deploy the function app")
 
 1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2func...***
 
@@ -445,7 +445,7 @@ In this exercise you will defined
 
 1.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
-1.  In the **CollaborativeBasedRecommendation** method, find the todo task #3 and complete it with the following:
+1.  In the **CollaborativeBasedRecommendation** method, find the todo task #4 and complete it with the following:
 
 ```csharp
 int neighborhoodSize = 15;
@@ -690,7 +690,7 @@ SELECT System.TimeStamp AS Time, Count(*)
 
 1.  Take a moment to review the function signature.  Notice how it is trigger based on a Cosmos DB collection
 
-1.  Find the todo task #2 and complete it with the following:
+1.  Find the todo task #5 and complete it with the following:
 
 ```csharp
 AddEventToEventHub(events);
@@ -910,7 +910,7 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Take a moment to review the function signature.  Notice how it is trigger based on a Cosmos DB collection
 
-1.  Find the todo task #3 and complete it with the following:
+1.  Find the todo task #6 and complete it with the following:
 
 ```csharp
 CallLogicApp(events);

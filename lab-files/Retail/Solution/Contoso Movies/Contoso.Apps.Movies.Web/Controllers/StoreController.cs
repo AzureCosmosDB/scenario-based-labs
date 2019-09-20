@@ -4,9 +4,6 @@ using Contoso.Apps.Common.Controllers;
 using Contoso.Apps.Common.Extensions;
 using Contoso.Apps.Movies.Data.Models;
 using Contoso.Apps.Movies.Logic;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -62,23 +59,8 @@ namespace Contoso.Apps.Movies.Web.Controllers
         public ActionResult Genre(int categoryId)
         {
             var container = client.GetContainer(databaseId, "object");
-
-            //Uri collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
-
+            
             var query = container.GetItemLinqQueryable<Item>(true).Where(c=>c.CategoryId == categoryId && c.EntityType == "Item");
-
-            /*
-            var query = client.CreateDocumentQuery<Item>(collectionUri, new SqlQuerySpec()
-            {
-                QueryText = "SELECT * FROM object f WHERE f.CategoryId = @id and f.EntityType = 'Item'",
-                Parameters = new SqlParameterCollection()
-                    {
-                        new SqlParameter("@id", categoryId)
-                    }
-            }, DefaultOptions);
-
-            List<Item> products = query.ToList().Take(12).ToList();
-            */
 
             List<Item> products = query.ToList();
 

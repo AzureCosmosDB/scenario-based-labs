@@ -21,16 +21,12 @@ namespace Contoso.Apps.Movies.Controllers
 
             if (user != null)
             {
-                string name = user.Email;
-                int userId = user.UserId;
-
-                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", userId, 10);
-                vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", userId, 10);
+                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", user.UserId, 0);
+                vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", user.UserId, 0);
             }
             else
             {
-                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", 0, 10);
-                vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", 0, 10);
+                vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", user.UserId, 0);
             }
 
             return View(vm);

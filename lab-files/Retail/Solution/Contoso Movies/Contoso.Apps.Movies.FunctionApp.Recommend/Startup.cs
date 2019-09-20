@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
@@ -14,8 +15,17 @@ namespace Contoso.Apps.FunctionApp
 {
     public class Startup : FunctionsStartup
     {
+        //config
+        private static IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Environment.CurrentDirectory)
+            .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables()
+            .Build();
+
         public override void Configure(IFunctionsHostBuilder builder)
         {
+            
+
             // Add a new HttpClientFactory that can be injected into the functions.
             // We add resilience and transient fault-handling capabilities to the HttpClient instances that the factory creates
             // by adding a Polly Retry policy with a very brief back-off starting at quarter-of-a-second to two seconds.

@@ -74,6 +74,8 @@ namespace Contoso.Apps.Movies.Logic
 
             List<string> itemIds = new List<string>();
 
+            //TODO #3
+
             //get 20 log events for the user.
             List<CollectorLog> logs = GetUserLogs(userId, 20);
 
@@ -153,92 +155,7 @@ namespace Contoso.Apps.Movies.Logic
         {
             List<string> itemIds = new List<string>();
 
-            //TODO 3 - replace the following lines
-            int neighborhoodSize = 15;
-            double minSim = 0.0;
-            int maxCandidates = 100;
-
-            //inside this we do the implict rating of events for the user...
-            Hashtable userRatedItems = GetRatedItems(userId, 100);
-
-            if (userRatedItems.Count == 0)
-                return new List<string>();
-
-            //this is the mean rating a user gave
-            double ratingSum = 0;
-
-            foreach (double r in userRatedItems.Values)
-            {
-                ratingSum += r;
-            }
-
-            double userMean = ratingSum / userRatedItems.Count;
-
-            //get similar items
-            List<SimilarItem> candidateItems = GetCandidateItems(userRatedItems.Keys, minSim);
-
-            //sort by similarity desc, take only max candidates
-            candidateItems = candidateItems.OrderByDescending(c => c.similarity).Take(maxCandidates).ToList();
-
-            Hashtable recs = new Hashtable();
-
-            List<PredictionModel> precRecs = new List<PredictionModel>();
-
-            foreach (SimilarItem candidate in candidateItems)
-            {
-                int target = candidate.Target;
-                double pre = 0;
-                double simSum = 0;
-
-                List<SimilarItem> ratedItems = candidateItems.Where(c => c.Target == target).Take(neighborhoodSize).ToList();
-
-                if (ratedItems.Count > 1)
-                {
-                    foreach (SimilarItem simItem in ratedItems)
-                    {
-                        try
-                        {
-                            string source = userRatedItems[simItem.sourceItemId].ToString();
-
-                            //rating of the movie - userMean;
-                            double r = double.Parse(source) - userMean;
-
-                            pre += simItem.similarity * r;
-                            simSum += simItem.similarity;
-
-                            if (simSum > 0)
-                            {
-                                PredictionModel p = new PredictionModel();
-                                p.Prediction = userMean + pre / simSum;
-                                p.Items = ratedItems;
-                                precRecs.Add(p);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-                    }
-                }
-            }
-
-            //sort based on the prediction, only take x of them
-            List<PredictionModel> sortedItems = precRecs.OrderByDescending(c => c.Prediction).Take(take).ToList();
-
-            //get first model's items...
-            foreach (PredictionModel pm in sortedItems)
-            {
-                foreach (SimilarItem ri in pm.Items)
-                {
-                    if (ri.targetItemId != null)
-                    {
-                        itemIds.Add(ri.targetItemId.ToString());
-                        break;
-                    }
-                }
-            }
-
-
+            //TODO 4
 
             return itemIds;
         }
@@ -435,23 +352,8 @@ namespace Contoso.Apps.Movies.Logic
 
             List<string> itemIds = new List<string>();
 
-            //TODO 2 - add code below here...
-            var container = client.GetContainer(databaseId, "object");
-
-            var query = container.GetItemLinqQueryable<Item>(true)
-                .Where(c => c.EntityType == "ItemAggregate")
-                .OrderByDescending(c => c.BuyCount)
-                .Take(take);
-
-            items = query.ToList();
-
-            foreach (Item i in items)
-            {
-                if (!itemIds.Contains(i.ItemId.ToString()))
-                    itemIds.Add(i.ItemId.ToString());
-            }
-
-            topItems = GetItemsByImdbIds(itemIds);
+            //TODO #2 - add code below here...
+            
 
             return topItems;
         }

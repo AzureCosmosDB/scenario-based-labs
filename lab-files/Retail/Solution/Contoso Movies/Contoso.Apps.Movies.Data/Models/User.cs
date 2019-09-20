@@ -17,9 +17,9 @@ namespace Contoso.Apps.Movies.Data.Models
 
         public string Personality { get; set; }
 
-        public string EntityType { get { return "User"; } }
+        override public string EntityType { get { return "User"; } }
 
-        new public string ObjectId { get { return this.EntityType + "_" + this.UserId; } }
+        override public string ObjectId { get { return this.EntityType + "_" + this.UserId; } }
 
         static public List<User> GetUsers()
         {
