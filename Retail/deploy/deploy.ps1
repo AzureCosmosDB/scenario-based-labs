@@ -1,4 +1,27 @@
-﻿function Output()
+﻿function UpdateConfig($path)
+{
+    [xml]$xml = get-content $filepath;
+
+    #set the database url
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionUrl"}
+    $data.value = $dbConnectionUrl;
+
+    #set the database key
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionKey"}
+    $data.value = $dbConnectionKey;
+
+    #set the movie api key
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "movieApiKey"}
+    $data.value = $movieApiKey;
+
+    #set the database id
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "databaseId"}
+    $data.value = $databaseId;
+
+    $xml.save($filePath);    
+}
+
+function Output()
 {
     write-host "Output variables:"
 
@@ -104,10 +127,13 @@ $databaseId = "movies";
 #register at https://api.themoviedb.org
 $movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
 
+#toggles for skipping items
+$skipDeployment = $false;
+
 cd $githubpath
 
 #login - do this always as AAD will error if you change location/ip
-$subs = az login;
+$subs = az login --use-device-code;
 
 #select the subscription if you set it
 if ($subName)
@@ -118,35 +144,39 @@ if ($subName)
 #create the resource group
 $result = az group create --name $rgName --location "Central US"
 
-#deploy the tempalte
-$deployId = "Microsoft.Template"
-$result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\labdeploy.json") --output json )#--parameters storageAccountType=Standard_GRS)
-
-#wait for the job to complete...
-$res = $(az group deployment list --resource-group $rgname --output json)
-$json = ConvertObjectToJson $res;
-
-$deployment = $json | where {$_.name -eq $deployId};
-
-#check the status
-while($deployment.properties.provisioningState -eq "Running")
+if (!$skipDeployment)
 {
-    start-sleep 10;
+    #deploy the tempalte
+    $deployId = "Microsoft.Template"
+    $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\labdeploy.json") --output json )#--parameters storageAccountType=Standard_GRS)
 
+    #wait for the job to complete...
     $res = $(az group deployment list --resource-group $rgname --output json)
     $json = ConvertObjectToJson $res;
 
     $deployment = $json | where {$_.name -eq $deployId};
 
-    write-host "Deployment status is : $($deployment.properties.provisioningState)";
+    #check the status
+    while($deployment.properties.provisioningState -eq "Running")
+    {
+        start-sleep 10;
+
+        $res = $(az group deployment list --resource-group $rgname --output json)
+        $json = ConvertObjectToJson $res;
+
+        $deployment = $json | where {$_.name -eq $deployId};
+
+        write-host "Deployment status is : $($deployment.properties.provisioningState)";
+    }
+
+    if ($deployment.properties.provisioningState -eq "Failed")
+    {
+        write-host "Deployment failed";
+        return;
+    }
 }
 
-if ($deployment.properties.provisioningState -eq "Failed")
-{
-    write-host "Deployment failed";
-    return;
-}
-
+#need the suffix...
 if ($deployment.properties.provisioningState -eq "Succeeded")
 {
     $suffix = $deployment.properties.outputs.hash.value
@@ -220,7 +250,7 @@ $dbConnectionKey = $json.primaryMasterKey;
 $webAppName = "s2web" + $suffix;
 
 if ($mode -eq "demo")
-{
+{ 
     $res = $(az webapp deployment source config-zip --resource-group $rgName --name $webAppName --src "$githubpath/retail/deploy/webapp.zip")
     $json = ConvertObjectToJson $res;
 }
@@ -234,10 +264,17 @@ if ($mode -eq "demo")
 $funcAppName = "s2func" + $suffix;
 
 #we have to deploy something in order for the host.json file to be created in the storage account...
-if ($mode -eq "demo" -or $mode -eq "labs")
+if ($mode -eq "demo" -or $mode -eq "lab")
 {
-    $res = $(az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "$githubpath/retail/deploy/functionapp.zip")
-    $json = ConvertObjectToJson $res;
+    $deployed = get-content "funcdeployed.txt";
+
+    if ($deployed -ne "true")
+    {
+        $res = $(az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "$githubpath/retail/deploy/functionapp.zip")
+        $json = ConvertObjectToJson $res;
+    }
+
+    add-content "funcdeployed.txt" "true";
 }
 
 ########################
@@ -280,14 +317,14 @@ Output
 #
 #########################
 
-az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$azurequeueConnString
-az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$paymentsApiUrl
-az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$funcApiUrl
-az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$funcApiKey
-az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$databaseId
-az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$dbConnectionUrl
-az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$dbConnectionKey
-az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKey=$movieApiKey
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$azurequeueConnString)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$paymentsApiUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$funcApiUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$funcApiKey)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$databaseId)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$dbConnectionUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$dbConnectionKey)
+$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKey=$movieApiKey)
 
 
 ########################
@@ -295,15 +332,30 @@ az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKe
 #set the func properties
 #
 #########################
-az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$azurequeueConnString
-az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$paymentsApiUrlah
-az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl
-az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey
-az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId
-az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl
-az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey
-az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection
-az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$movieApiKey
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$azurequeueConnString)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$paymentsApiUrlah)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$movieApiKey)
+
+########################
+#
+#Update project configs to be nice ;)
+#
+########################
+
+$filePath = "$githubpath\lab-files\Retail\Data Import\app.config"
+UpdateConfig $filePath;
+
+$filePath = "$githubpath\lab-files\Retail\DataGenerator\app.config"
+UpdateConfig $filePath;
+
+$filePath = "$githubpath\lab-files\Retail\Contoso Movies\Contoso.Apps.Movies.Web\web.config"
+UpdateConfig $filePath;
 
 ########################
 #
@@ -313,25 +365,8 @@ az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiK
 
 #update the app.config file with the new values
 $filePath = "$githubpath\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe.config"
-[xml]$xml = get-content $filepath;
 
-#set the database url
-$data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionUrl"}
-$data.value = $dbConnectionUrl;
-
-#set the database key
-$data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionKey"}
-$data.value = $dbConnectionKey;
-
-#set the movie api key
-$data = $xml.configuration.appSettings.add | where {$_.key -eq "movieApiKey"}
-$data.value = $movieApiKey;
-
-#set the database id
-$data = $xml.configuration.appSettings.add | where {$_.key -eq "databaseId"}
-$data.value = $databaseId;
-
-$xml.save($filePath);
+UpdateConfig $filePath;
 
 #run the tool
 . "$githubpath\lab-files\Retail\Data Import\bin\Debug\MovieDataImport.exe"

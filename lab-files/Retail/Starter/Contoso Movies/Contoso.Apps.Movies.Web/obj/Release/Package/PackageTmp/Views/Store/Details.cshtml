@@ -1,0 +1,108 @@
+﻿@model Contoso.Apps.Movies.Web.Models.StoreDetailsModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+@section HeaderOverlay {
+
+}
+
+<section class="store">
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+                <aside class="content contact-wrap">
+                    <div class="store-details-wrap clearfix">
+                        <div class="fig-shop clearfix">
+                            <aside class="fig-shop-img">
+                                <img src="@Url.Content("http://image.tmdb.org/t/p/w500/")@Model.Product.ImagePath" alt="@Model.Product.ProductName">
+                            </aside>
+                            <aside class="fig-shop-content">
+                                <h4 class="headline-lato">@Model.Product.ProductName</h4>
+                                <h5>@String.Format("{0:c}", Model.Product.UnitPrice)</h5>
+                                <p class="paragraph_opensans">@Model.Product.Description</p>
+                                <div class="avilable-wrap clearfix">
+                                    <div class="avl-wrp">
+                                        <span>availability:</span>
+                                        <span>available</span>
+                                    </div>
+                                    <a class="btn btn-small btn-red" href="@Url.Action("AddToCart", "Cart", new { itemId = Model.Product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'buy', @Model.Product.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
+                                </div>
+                            </aside>
+                        </div>
+                        <div class="tab-shop clearfix">
+                            <div role="tabpanel">
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Description</a></li>
+                                    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Additional information</a></li>
+                                    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Reviews (@Model.Product.VoteCount)</a></li>
+                                </ul>
+
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane active" id="home">@Model.Product.Description</div>
+                                    <div role="tabpanel" class="tab-pane" id="profile">None</div>
+                                    <div role="tabpanel" class="tab-pane" id="messages">Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries.</div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="shop-related clearfix">
+                            @if (this.Session["User"] == null)
+                            {
+                                <h6>Similar Items You Might Also Like</h6>
+
+                                foreach (var product in Model.SimilarProducts)
+                                {
+                                    @Html.Partial("_MoviesTeaser", product)
+                                }
+                            }
+
+                            <h6>Frequently Bought Together</h6>
+
+                            @foreach (var product in Model.RelatedProducts)
+                            {
+                                @Html.Partial("_MoviesTeaser", product)
+                            }
+                        </div>
+                </aside>
+                <aside class="sidebar">
+                    <div class="item-menu">
+                        <div class="item-menu-wrap">
+                            <h5>Store categories</h5>
+                            <ul class="category">
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <li><a href="@Url.Action("Genre", "Store", new { categoryId = category.CategoryId })" onclick="add_impression('@this.User.Identity.Name', 'genre_@category.CategoryName', @category.CategoryId, '@this.Session.SessionID','token')">@category.CategoryName</a></li>
+                                }
+                            </ul>
+                        </div>
+
+                    </div><!--  End of item-menu -->
+                    <div class="item-menu ">
+                        <div class="item-menu-wrap">
+                            <h5>New items</h5>
+                            @foreach (var product in Model.NewProducts)
+                            {
+                                <div class="item-wrap clearfix">
+                                    <div class="item-fig">
+                                        <img src="@Url.Content("http://image.tmdb.org/t/p/w500/")@product.ImagePath" alt="@product.ProductName">
+                                    </div>
+                                    <div class="item-content">
+                                        <h6><a href="@Url.Action("Details", "Store", new { id = product.ItemId })" onclick="add_impression('@this.User.Identity.Name', 'details', @product.ItemId, '@this.Session.SessionID','token')" >@product.ProductName</a></h6>
+                                        <p>@String.Format("{0:c}", product.UnitPrice)</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div><!--  End of item-menu -->
+                    
+                </aside>
+            </div>
+
+        </div>
+    </div>
+</section>

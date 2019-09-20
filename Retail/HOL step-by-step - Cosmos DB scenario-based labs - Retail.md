@@ -107,7 +107,9 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 
 1.  Click **Launch Workspace**, if prompted, login as the account you used to create your environment
 
-1.  Click **Cluster**
+1.  Click **Clusters**
+
+![The cluster blade with all the settings filled in.](./images/xx_databricks_01.png "Databricks cluster configuration")
 
 1.  Click **Create Cluster**
 
@@ -133,11 +135,15 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 
 1.  Select **Create Cluster**.
 
+![The cluster blade with all the settings filled in.](./images/xx_databricks_02.png "Databricks cluster configuration")
+
 1.  Before continuing to the next step, verify that your new cluster is running.  Wait for the state to change from **Pending** to **Running**
 
 1.  Click the **small** cluster, then click **Libraries**
 
 1. Select **Install New**.
+
+![Navigate to the libraries tab and click Install New.](./images/xx_databricks_03.png "Adding a new library")
 
 1. In the Install Library dialog, select **Maven** for the Library Source
 
@@ -148,6 +154,8 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 ```
 
 1. Select **Install**.
+
+![Populated library dialog for Maven.](./images/xx_databricks_04.png "Add the Maven library")
 
 1. **Wait** until the library's status shows as **Installed** before continuing.
 
@@ -163,7 +171,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1.  Select **Event Generator**
 
-1. Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
+1. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. 
 
 1.  Update the configuration settings for both the **readConfig** and the **writeConfig**, set the following using the values from your lab setup script:
 
@@ -181,6 +189,8 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1.  Open the **events** collection, review the items in the collection
 
+![An example item from the events collection is displayed.](./images/xx_eventscoll.png "The events collection")
+
 >NOTE:  These items are created from the data bricks solution and include a random set of generated events for each user personality type.  You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated (via the contentId field) with the event.
 
 ### Task 4: Review the aggregation and import utility
@@ -189,7 +199,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1.  Open the **program.cs** file, browse code and various methods.  Notice that it:
 
-- Aggregate all the event data from the Databricks notebook
+- Aggregates all the event data generated from the Databricks notebook
 - Creates the user personalities
 - Creates the movie categories/genres
 - Creates the movies
@@ -200,7 +210,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 Duration: 30 minutes
 
-Synopsis: We have pregenerated a set of events that include **buy** events.  Based on this information, a **Top Items** recommendation will be made to users that are new to the site.  You will implement this code in the web application and function applications, then deploy the applications to test the functionality.
+Synopsis: We have pre-generated a set of events that include **buy** events.  Based on this information, a **Top Items** recommendation will be made to users that are new to the site.  You will implement this code in the web application and function applications, then deploy the applications to test the functionality.
 
 ### Task 1: Implement the Top Items recommendation
 
@@ -249,7 +259,11 @@ topItems = GetItemsByImdbIds(itemIds);
 
 1.  Click **Select Existing**, then click **Publish**
 
+![Visual studio dialog is displayed for deploying the function app to Azure.](./images/xx_deployfunction.png "Deploy the function app")
+
 1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2func...***
+
+![Select the pre-created function app service that starts with s2func.](./images/xx_deployfunction_02.png "Select the App Service")
 
 1.  Click **OK**
 
@@ -297,11 +311,107 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 1.  Open the **associations** collection, review the items in the collection
 
+![An example item from the associations collection is displayed.](./images/xx_assoccoll.png "The associations collection")
+
 >NOTE:  These items are created from the data bricks solution and include the association confidence level as compared from one movie to another movie.
+
+### Task 3: Review the data generated
+
+1.  Switch back to your Cosmos DB instance
+
+1.  Open the **ratings** collection, review the items in the collection
+
+![An example item from the ratings collection is displayed.](./images/xx_ratingscoll.png "The ratings collection")
+
+>NOTE:  These items are created from the data bricks solution and include the implict item ratings of a user based on their activites on the web site.
+
+## Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)
+
+Duration: 30 minutes
+
+Synopsis: Now that we have data for our association calculations, we will add code to the web app and function app to support this new recommendation engine.
+
+### Task 1: Implement the Associations recommendation rules
+
+1.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
+
+1.  In the **AssociationRecommendationByUser** method, find the todo task #3 and complete it with the following:
+
+```csharp
+//get 20 log events for the user.
+List<CollectorLog> logs = GetUserLogs(userId, 20);
+
+if (logs.Count == 0)
+    return items;
+
+List<Rule> rules = GetSeededRules(logs);
+
+//get the pre-seeded objects based on confidence
+List<Recommendation> recs = new List<Recommendation>();
+
+//for each rule returned, evaluate the confidence
+foreach (Rule r in rules)
+{
+    Recommendation rec = new Recommendation();
+    rec.id = int.Parse(r.target);
+    rec.confidence = r.confidence;
+    recs.Add(rec);
+
+    itemIds.Add(rec.id.ToString());
+}
+
+items = GetItemsByImdbIds(itemIds);
+```
+
+1.  In the **Contoso.Apps.Movies.Web** project, open the **HomeController.cs** file
+
+1.  Replace the **Index** method with the following:
+
+```csharp
+var vm = new HomeModel();
+
+Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
+
+if (user != null)
+{
+    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", user.UserId, 0);
+    vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", user.UserId, 0);
+}
+else
+{
+    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", user.UserId, 0);
+}
+
+return View(vm);
+```
+
+### Task 2: Deploy the applications
+
+1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+
+1.  Click **Publish**
+
+1.  Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
+
+1.  Click **Publish**, the site should load.
+
+### Task 3: Test the applications
+
+1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see the same results as you received previously.
+
+2.  Click **login**, select the **comedy@contosomovies.com** account
+
+3.  Notice the main page now has different recommendations than what you received earlier, but we are still missing the similar 'liked' items:
 
 **TODO IMAGE**
 
-### Task 3: Generate the Ratings
+## Exercise 4: Perform and deploy collaborative filtering rules calculation
+
+Duration: 30 minutes
+
+In this exercise you will defined
+
+### Task 1: Compute the user implict ratings
 
 1.  Switch back to your Databricks workspace, select **Ratings**
 
@@ -317,21 +427,23 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 >NOTE:  These ratings are generated as part of this notebook as an 'offline' operation.  If you collect a significant amount of user data, you would need to reevaluate the events using this notebook and populate the ratings collection again for the online calculations to utilize.
 
-### Task 4: Review the data generated
+### Task 2: Implement the Collaborative Rules
 
-1.  Switch back to your Cosmos DB instance
+1.  Open the **Similarity** notebook
 
-1.  Open the **ratings** collection, review the items in the collection
+1.  Set the cluster
 
->NOTE:  These items are created from the data bricks solution and include the implict item ratings of a user based on their activites on the web site.
+1. Run each cell of the **Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
-**TODO IMAGE**
+### Task 2: Review the data generated
 
-## Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)
+1.  Open your Cosmos DB instance
 
-Duration: 30 minutes
+1.  Open the **similarity** collection, review the items in the collection
 
-Synopsis: Now that we have data for our association calculations, we will add code to the web app and function app to support this new recommendation engine.
+>NOTE:  These items are created from the data bricks solution and include the similarity of one movie, the source, to another, the target.
+
+**TODO**
 
 ### Task 1: Implement the Associations recommendation rules
 
@@ -425,14 +537,6 @@ foreach(PredictionModel pm in sortedItems)
 }
 ```
 
-1.  In the **Contoso.Apps.Movies.Web** project, open the **HomeController.cs** file
-
-1.  In the **Index** method, find the todo task #4 and complete it with the following:
-
-```csharp
-vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("assoc", 0, 0);
-```
-
 ### Task 2: Deploy the applications
 
 1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
@@ -449,49 +553,15 @@ vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("assoc", 0, 0);
 
 2.  Click **login**, select the **comedy@contosomovies.com** account
 
-3.  Notice the main page now has different recommendations that what you received earlier:
+3.  Notice the main page now has both the associative and collborative results displayed::
 
 **TODO IMAGE**
-
-## Exercise 4: Perform and deploy collaborative filtering rules calculation
-
-Duration: 30 minutes
-
-In this exercise you will TODO
-
-### Task 1: Compute the user implict ratings
-
-1.  Switch to your Azure DataBricks instance
-
-1.  Open the **Ratings** notebook
-
-1.  Set the cluster
-
-1. Run each cell of the **Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
-
-### Task 2: Implement the Collaborative Rules
-
-1.  Open the **Similarity** notebook
-
-1.  Set the cluster
-
-1. Run each cell of the **Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
-
-### Task 2: Review the data generated
-
-1.  Open your Cosmos DB instance
-
-1.  Open the **similarity** collection, review the items in the collection
-
->NOTE:  These items are created from the data bricks solution and include the similarity of one movie, the source, to another, the target.
-
-**TODO**
 
 ## Exercise 5: Reporting with Stream Analytics and Power BI
 
 Duration: 30 minutes
 
-In this exercise you will TODO
+In this exercise you will setup stream analytics to process the change feed events fired from Cosmos DB into an Azure Function which then forwards to an event hub for real time Power BI analytics.
 
 ### Task 1: Setup Stream Analytics 
 
@@ -501,7 +571,7 @@ In this exercise you will TODO
 
 1.  Click **+Add stream input**, then select **Event Hub**
 
-1.  For the alias, type **s2event**
+1.  For the alias, type **s2events**
 
 1.  Select your subscription
 
@@ -576,28 +646,28 @@ In this exercise you will TODO
 ```sql
 SELECT Count(*) as FailureCount
  INTO failureCount
- FROM s2event
+ FROM s2events
  WHERE Event = 'paymentFailure'
  GROUP BY TumblingWindow(second,10) 
 
 SELECT Count(distinct UserId) as UserCount
  INTO userCount
- FROM s2event  
+ FROM s2events 
  GROUP BY TumblingWindow(second,10) 
 
 SELECT System.TimeStamp AS Time, Count(*)
  INTO eventCount  
- FROM s2event  
+ FROM s2events 
  GROUP BY TumblingWindow(second,10) 
 
  SELECT System.TimeStamp AS Time, Event, Count(*)
  INTO eventSummary
- FROM s2event  
+ FROM s2events 
  GROUP BY Event, TumblingWindow(second,10) 
 
  select DateAdd(second,-10,System.Timestamp()) AS WinStartTime, System.Timestamp() AS WinEndTime,0 as Min, Count(*) as Count, 10 as Target
  into eventOrdersLastHour
- from s2event
+ from s2events
  where event = 'buy'
  GROUP BY SlidingWindow(second,10) 
 ```
@@ -606,11 +676,11 @@ SELECT System.TimeStamp AS Time, Count(*)
 
 ### Task 2: Configure the ChangeFeed Function
 
-1.  In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file
+1.  In the **Contoso.Apps.FunctionApp** project, open the **FuncChangeFeed.cs** file
 
 1.  Take a moment to review the function signature.  Notice how it is trigger based on a Cosmos DB collection
 
-1.  Find the todo task #1 and complete it with the following:
+1.  Find the todo task #2 and complete it with the following:
 
 ```csharp
 AddEventToEventHub(events);
@@ -648,7 +718,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 }
 ```
 
->NOTE:  This method will forward the change feed events to the event hub where stream analytics will be monitoring and then forwarding data to a Power BI dashboard
+>NOTE:  This method will forward the change feed events to the event hub where stream analytics will be monitoring and then forwarding data to the Power BI dashboard
 
 ### Task 3: Deploy the ChangeFeed Function
 
@@ -702,11 +772,19 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Click **Edit**
 
+![The Logic App blade with 'edit' highlighted.](./images/xx_logicapp_01.png "Edit the Logic App")
+
 1.  Click **+New step**
+
+![The Logic App Designer is displayed with 'new step' highlighted.](./images/xx_logicapp_02.png "Add a new step")
 
 1.  Search for **send an email**, then select the Office 365 outlook connector
 
+![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./images/xx_logicapp_03.png "Add Send an Email action")
+
 1.  Click **Sign in**, login using your Azure AD credentials
+
+![Sign in button is highlighted.](./images/xx_logicapp_04.png "Sign in to Office 365")
 
 1.  Set the **To** as your email
 
@@ -716,9 +794,23 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Click **Save**
 
+![Action properties are completed and the 'Save' button is highlighted](./images/xx_logicapp_05.png "Complete the action properties")
+
 1.  Click on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
 
-### Task 2: Update and deploy function app
+![The http action trigger is expanded and the url is highlighted.](./images/xx_logicapp_06.png "Copy the function url trigger endpoint")
+
+### Task 2: Configure the function app settings
+
+1.  Open the Azure Portal to your resource group and select the Function App in your resource group, it should be named **s2func...**
+
+1.  Click **Configuration**
+
+1.  Update the **LogicAppUrl** configuration variable to the Logic App http endpoint your recorded above
+
+1.  Click **Save**
+
+### Task 3: Update and deploy function app
 
 1.  In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file
 
@@ -773,9 +865,9 @@ public async void CallLogicApp(IReadOnlyList<Document> events)
 
 1.  Press **F5** to run the project
 
-1.  For each 'buy' event, you should receive an email
+1.  For each `buy` event, you will receive an email
 
->NOTE:  You could receive quite a few emails.
+>NOTE:  You could receive quite a `few` emails.
 
 ## After the hands-on lab 
 

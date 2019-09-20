@@ -1,0 +1,21 @@
+﻿@model Contoso.Apps.Movies.Data.Models.Item
+
+<div class="figure @Model.CategoryId">
+    <div class="item">
+        <div class="item-img">
+            <img src="@Url.Content("http://image.tmdb.org/t/p/w500/")@Model.ImagePath" alt="Add @Model.ProductName to cart" class="center-block">
+            <div class="item-cart">
+                <a href="@Url.Action("Details", "Store", new { id = Model.ItemId })" class="btn trans-btn" onclick="add_impression('@this.User.Identity.Name', 'details', @Model.ItemId, '@this.Session.SessionID','token')">Product Details</a>
+            </div>
+        </div>
+        <div class="item-content" style="height:230px">
+            <div class="item-header clearfix">
+                <span class="headline-lato">@Model.ProductName</span>
+                <span>@String.Format("{0:c}", Model.UnitPrice)</span>
+            </div>
+            <p>
+                <a href="@Url.Action("AddToCart", "Cart", new { itemId = Model.ItemId })" class="btn trans-btn" onclick="add_impression('@this.User.Identity.Name', 'buy', @Model.ItemId, '@this.Session.SessionID','token')">Add to cart</a>
+            </p>
+        </div>
+    </div>
+</div>

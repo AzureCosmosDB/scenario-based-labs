@@ -1,0 +1,119 @@
+﻿@model Contoso.Apps.Movies.Web.Models.UserAnalyticsModel
+@{
+    ViewBag.Title = "Content Analytics";
+}
+
+<h2>Personalize recommendations</h2>
+
+<section class="store">
+
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+                <aside class="content contact-wrap">
+                    <div class="store-details-wrap clearfix">
+                        <div class="shop-related clearfix">
+                            <h3>Association Rules</h3>
+                            <p><br /></p>
+
+                            @foreach (var product in Model.RecommendProductsAssoc)
+                            {
+                                @Html.Partial("_MoviesTeaser", product)
+                            }
+
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+                <aside class="content contact-wrap">
+                    <div class="store-details-wrap clearfix">
+                        <div class="shop-related clearfix">
+                            <h2>Content Based</h2>
+                            <p><br /></p>
+
+                            @foreach (var product in Model.RecommendProductsContentBased)
+                            {
+                                @Html.Partial("_MoviesTeaser", product)
+                            }
+
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+                <aside class="content contact-wrap">
+                    <div class="store-details-wrap clearfix">
+                        <div class="shop-related clearfix">
+                            <h2>Collaboriative Based</h2>
+                            <p><br /></p>
+
+                            @foreach (var product in Model.RecommendProductsCollabBased)
+                            {
+                                @Html.Partial("_MoviesTeaser", product)
+                            }
+
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+                <aside class="content contact-wrap">
+                    <div class="store-details-wrap clearfix">
+                        <div class="shop-related clearfix">
+                            <h2>Matrix factorization</h2>
+                            <p><br /></p>
+
+                            @foreach (var product in Model.RecommendProductsMatrixFactor)
+                            {
+                                @Html.Partial("_MoviesTeaser", product)
+                            }
+
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="wrapper clearfix">
+                <aside class="content contact-wrap">
+                    <div class="store-details-wrap clearfix">
+                        <div class="shop-related clearfix">
+                            <h2>Hybrid Based</h2>
+                            <p><br /></p>
+
+                            @foreach (var product in Model.RecommendProductsHybrid)
+                            {
+                                @Html.Partial("_MoviesTeaser", product)
+                            }
+
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+@section Scripts {
+
+}

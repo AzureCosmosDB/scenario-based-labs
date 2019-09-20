@@ -1,0 +1,26 @@
+﻿@model Contoso.Apps.Movies.Admin.Models.HomeModel
+@using AspNet.Mvc.Grid
+@{
+    ViewBag.Title = "Admin Home";
+}
+
+<div class="row">
+    <div class="col-md-12"><br /></div>
+</div>
+
+<div class="jumbotron">
+    <h2>Contoso Sports League Admin</h2>
+    <p class="lead">Below is a list of orders, sorted by reverse order date. You may click on an order to see its details and to obtain the generated PDF receipt.</p>
+    <p><a href="@Url.Action("About", "Home")" class="btn red-btn btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<h1>Completed Orders</h1>
+
+@Html.Grid(Model.Orders).Columns(cb =>
+{
+    cb.For(p => Html.ActionLink("Details", "Details", "Home", new { Id = p.OrderId }, null)).Named("Order Details");
+    cb.For(p => p.OrderDate);
+    cb.For(p => p.FirstName);
+    cb.For(p => p.LastName);
+    cb.For(p => p.Total).Format("{0:c}");
+}).Attributes(@class => "table table-striped table-hover table-condensed").HeaderRowAttributes(new Dictionary<string, object> { { "class", "active" } })
