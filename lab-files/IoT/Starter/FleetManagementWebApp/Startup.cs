@@ -86,11 +86,9 @@ namespace FleetManagementWebApp
             var containerName = configuration["ContainerName"];
             var connectionString = configuration["CosmosDBConnection"];
             var cosmosDbConnectionString = new CosmosDbConnectionString(connectionString);
-            CosmosClientBuilder clientBuilder = new CosmosClientBuilder(cosmosDbConnectionString.ServiceEndpoint.OriginalString, cosmosDbConnectionString.AuthKey);
-            CosmosClient client = clientBuilder
-                .WithConnectionModeDirect()
-                .Build();
-            CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
+
+            // TODO 8: Use the CosmosClientBuilder to create the CosmosClient and instantiate a new CosmosDbService so it can be returned.
+            // Complete: CosmosClientBuilder clientBuilder = ...; CosmosClient client = ...; CosmosDbService cosmosDbService = ...;
 
             return cosmosDbService;
         }

@@ -962,7 +962,7 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
 In this task, you will open the Visual Studio solution for this lab. It contains projects for both Function Apps, the Web App, and the data generator.
 
-1. Open Windows Explorer and navigate to the location you extracted the solution ZIP file in the _Before the HOL_ guide. If you extracted the ZIP file directly to `C:\`, you need to open the following folder: `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Solution`. Open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
+1. Open Windows Explorer and navigate to the location you extracted the solution ZIP file in the _Before the HOL_ guide. If you extracted the ZIP file directly to `C:\`, you need to open the following folder: `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Starter`. Open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
 
     ![The Visual Studio Solution file is displayed in Windows Explorer.](media/vs-solution-file.png "Visual Studio Solution")
 
@@ -1302,9 +1302,21 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     ![The Fleet Management web app home page is displayed.](media/webapp-home-page.png "Fleet Management home page")
 
+### Task 8: View Cosmos DB processing Function App in the portal
+
+**Note**: It is important to complete this step prior to running the data generator. If you do not initially activate the function by viewing it in the portal after publishing it, then it can take some time before it starts processing the data from the change feed.
+
+1. In the Azure portal (<https://portal.azure.com>), open the Azure Function App whose name begins with **IoT-CosmosDBProcessing**.
+
+2. Expand the **Functions** list in the left-hand menu, then select **TripProcessor**.
+
+    ![The TripProcessor function is displayed.](media/portal-tripprocessor-function.png "TripProcessor")
+
+3. View the **function.json** file to the right. This file was generated when you published the Function App in Visual Studio. The bindings are the same as you saw in the project code for the function. When new instances of the Function App are created, the generated `function.json` file and a ZIP file containing the compiled application are copied to these instances, and these instances run in parallel to share the load as data flows through the architecture. The `function.json` file instructs each instance how to bind attributes to the functions, where to find application settings, and information about the compiled application (`scriptFile` and `entryPoint`).
+
 ## Exercise 4: Explore and execute data generator
 
-**Duration**: 30 minutes
+**Duration**: 10 minutes
 
 In this exercise, we will explore the data generator project, **FleetDataGenerator**, update the application configuration, and run it in order to seed the metadata database with data and simulate a single vehicle.
 
@@ -1319,7 +1331,7 @@ After the generator ensures the metadata exists, it begins simulating the specif
 
 ### Task 1: Open the data generator project
 
-1. If the Visual Studio solution is not already open, navigate to `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Solution` and open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
+1. If the Visual Studio solution is not already open, navigate to `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Starter` and open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
 
 2. Expand the **FleetDataGenerator** project and open **Program.cs** in the Solution Explorer.
 
@@ -1467,27 +1479,56 @@ The data generator needs two connection strings before it can successfully run; 
 
 ### Task 4: Run generator
 
-## Exercise 5: Observe data using Cosmos DB Data Explorer and Web App
+In this task, you will run the generator and have it generate events for 50 trucks. The reason we are generating events for so many vehicles is two-fold:
+
+   - In the next exercise, we will observe the function triggers and event activities with Application Insights.
+   - We need to have completed trips prior to performing batch predictions in a later exercise.
+
+1. Within Visual Studio, right-click on the **FleetDataGenerator** project in the Solution Explorer and select **Set as Startup Project**. This will automatically run the data generator each time you debug.
+
+    ![Set as Startup Project is highlighted in the Solution Explorer.](media/vs-set-startup-project.png "Solution Explorer")
+
+2. Select the Debug button at the top of the Visual Studio window or hit **F5** to run the data generator.
+
+    ![The debug button is highlighted.](media/vs-debug.png "Debug")
+
+3. When the console window appears, enter **3** to simulate 50 vehicles. The generator will resize the requested throughput for the `metadata` container, uses the bulk importer to seed the container, and resize the throughput back to 15,000 RU/s.
+
+    ![3 has been entered in the console window.](media/cmd-run.png "Generator")
+
+4. After the seeding is completed the generator will retrieve 50 trips from the database, sorted by shortest trip distance first so we can have completed trip data appear faster. You will see a message output for every 50 events sent, per vehicle with their VIN, the message count, and the number of miles remaining for the trip. For example: `Vehicle 19: C1OVHZ8ILU8TGGPD8 Message count: 3650 -- 3.22 miles remaining`. **Let the generator run in the background and continue to the next exercise**.
+
+    ![Vehicle simulation begins.](media/cmd-simulated-vehicles.png "Generator")
+
+5. As the vehicles complete their trips, you will see a message such as `Vehicle 37 has completed its trip`.
+
+    ![A completed messages is displayed in the generator console.](media/cmd-vehicle-completed.png "Generator")
+
+6. When the generator completes, you will see a message to this effect.
+
+    ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png "Generator")
+
+## Exercise 5: Observe Change Feed using Azure Functions and App Insights
+
+### Task 1: Open App Insights Live View
+
+## Exercise 6: Observe data using Cosmos DB Data Explorer and Web App
 
 ### Task 1: View data in Cosmos DB Data Explorer
 
 ### Task 2: Search and view data in Web App
 
-## Exercise 6: Perform CRUD operations using the Web App
+## Exercise 7: Perform CRUD operations using the Web App
 
 ### Task 1: Update vehicle metadata
 
 ### Task 2: View consignment, package, and trip data
 
-## Exercise 7: Create the Fleet status real-time dashboard in Power BI
+## Exercise 8: Create the Fleet status real-time dashboard in Power BI
 
 ### Task 1: Log in to Power BI online
 
 ### Task 2: Create real-time dashboard
-
-## Exercise 8: Observe Change Feed using Azure Functions and App Insights
-
-### Task 1: Open App Insights Live View
 
 ## Exercise 9: Run the predictive maintenance batch scoring
 
