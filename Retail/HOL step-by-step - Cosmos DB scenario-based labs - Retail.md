@@ -279,7 +279,7 @@ topItems = GetItemsByImdbIds(itemIds);
 
 ### Task 3: Test the applications
 
-1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see the following:
+1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see something similar to the following:
 
 **TODO**
 
