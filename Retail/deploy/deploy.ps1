@@ -39,21 +39,53 @@ function UpdateConfig($path)
 {
     [xml]$xml = get-content $filepath;
 
+    #set the function url
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "funcAPIUrl"}
+
+    if($data)
+    {
+        $data.value = $funcApiUrl;
+    }
+
+    #set the function key
+    $data = $xml.configuration.appSettings.add | where {$_.key -eq "funcAPIKey"}
+
+    if($data)
+    {
+        $data.value = $funcApiKey;
+    }
+
     #set the database url
     $data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionUrl"}
-    $data.value = $dbConnectionUrl;
+
+    if($data)
+    {
+        $data.value = $dbConnectionUrl;
+    }
 
     #set the database key
     $data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionKey"}
-    $data.value = $dbConnectionKey;
+
+    if($data)
+    {
+        $data.value = $dbConnectionKey;
+    }
 
     #set the movie api key
     $data = $xml.configuration.appSettings.add | where {$_.key -eq "movieApiKey"}
-    $data.value = $movieApiKey;
+
+    if($data)
+    {
+        $data.value = $movieApiKey;
+    }
 
     #set the database id
     $data = $xml.configuration.appSettings.add | where {$_.key -eq "databaseId"}
-    $data.value = $databaseId;
+
+    if($data)
+    {
+        $data.value = $databaseId;
+    }
 
     $xml.save($filePath);    
 }
@@ -386,7 +418,7 @@ $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings 
 #Update project configs to be nice ;)
 #
 ########################
-$folders = {"starter", "solution"}
+$folders = ("starter", "solution")
 
 foreach($folder in $folders)
 {

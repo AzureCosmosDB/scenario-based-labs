@@ -676,6 +676,10 @@ SELECT System.TimeStamp AS Time, Count(*)
 
 1.  Click **Overview**, in the menu, click **Start** to start your stream analytics job
 
+![Go to the overview tab, then click 'start'.](./media/xx_streamanalytics_05.png "Start the analytics job")
+
+1.  In the dialog, ensure that **Now** is selected, then click **Start**
+
 ### Task 2: Configure the ChangeFeed Function
 
 1.  In the **Contoso.Apps.FunctionApp** project, open the **FuncChangeFeed.cs** file
@@ -735,6 +739,8 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 1.  Press **F5** to run the project
 
 1.  Notice events will be generated based on a set of users and their preferred movie type
+
+
 
 1.  Buy events will be generated for the first 30 seconds, after that you will notice the orders per hour will fall below the target of 10.  This would signify that something is wrong with the front end web site or order processing.
 
