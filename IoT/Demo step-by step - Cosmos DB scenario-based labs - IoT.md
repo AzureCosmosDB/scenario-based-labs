@@ -35,6 +35,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 4: Add Stream Analytics outputs](#task-4-add-stream-analytics-outputs)
     - [Task 5: Create Stream Analytics query](#task-5-create-stream-analytics-query)
     - [Task 6: Run Stream Analytics job](#task-6-run-stream-analytics-job)
+    - [Task 7: Deploy Cosmos DB Processing Function App](#task-7-deploy-cosmos-db-processing-function-app)
+    - [Task 8: Deploy Stream Processing Function App](#task-8-deploy-stream-processing-function-app)
+    - [Task 9: Deploy Web App](#task-9-deploy-web-app)
     - [Task 3: Create Azure Databricks cluster](#task-3-create-azure-databricks-cluster)
     - [Task 4: Configure Key Vault-backed Databricks secret store](#task-4-configure-key-vault-backed-databricks-secret-store)
     - [Task 5: Import lab notebooks into Azure Databricks](#task-5-import-lab-notebooks-into-azure-databricks)
@@ -131,7 +134,27 @@ In this exercise, you will configure your lab environment so you can start sendi
 
 ### Task 1: Run deployment scripts
 
-TODO
+In this task, you will deploy the infrastructure for this demo using an ARM Template deployment.
+
+1. In the [Azure portal](https://portal.azure.com), select **+ Create a resource** then create a new **Template deployment**.
+
+2. On the **Custom deployment** pane, select **Build your own template in the editor**.
+
+3. On the **Edit template** blade, select the **Load file** button and upload the **demoDeploy.json** ARM Template located at `\cosmos-db-scenario-based-labs\IoT\deploy\demoDeploy.json`.
+
+4. Select **Save**.
+
+5. Enter the following values:
+
+    - Resource group: enter a Resource group name; like `cosmos-db-iot`
+    - Location: _it doesn't matter which region is selected, the template will use West US to ensure everything works_
+    - Recipient Email: **Enter an email address to receive notifications from the Logic App**
+
+6. Check the **I agree to the terms and conditions stated above** box.
+
+7. Select **Purchase**
+
+> The template deployment will take a few minutes to complete. Continue with the guide once it completes
 
 ### Task 2: Authenticate the Office 365 API Connection for sending email alerts
 
@@ -281,6 +304,58 @@ Next, we will start the Stream Analytics job so we can begin processing event da
 3. Select **Start** to beginning running the Stream Analytics job.
 
    ![The steps to start the job as described are displayed.](media/stream-analytics-start-job.png 'Start job')
+
+### Task 7: Deploy Cosmos DB Processing Function App
+
+1. Open the Visual Studio solution file **CosmosDbIoTScenario.sln** within the `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Solution` folder.
+
+2. In the Visual Studio Solution Explorer, right-click on the **Functions.CosmosDB** project, then select **Publish...**.
+
+    ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
+
+3. In the publish dialog, select the **Azure Functions Consumption Plan** publish target. Next, select the **Select Existing** radio and make sure **Run from package file (recommended)** is checked. Select **Publish** on the bottom of the form.
+
+    ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
+
+4. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-CosmosDBProcessing**, then select **OK**.
+
+    ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-cosmos.png "App Service")
+
+    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
+
+### Task 8: Deploy Stream Processing Function App
+
+1. In the Visual Studio Solution Explorer, right-click on the **Functions.StreamProcessing** project, then select **Publish...**.
+
+    ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
+
+2. In the publish dialog, select the **Azure Functions Consumption Plan** publish target. Next, select the **Select Existing** radio and make sure **Run from package file (recommended)** is checked. Select **Publish** on the bottom of the form.
+
+    ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
+
+3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-StreamProcessing**, then select **OK**.
+
+    ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-stream.png "App Service")
+
+    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
+
+### Task 9: Deploy Web App
+
+1. In the Visual Studio Solution Explorer, right-click on the **FleetManagementWebApp** project, then select **Publish...**.
+
+    ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
+
+2. In the publish dialog, select the **App Service** publish target. Next, select the **Select Existing** radio, then select **Publish** on the bottom of the form.
+
+    ![The publish dialog is displayed.](media/vs-publish-target-webapp.png "Pick a publish target")
+
+3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-StreamProcessing**, then select **OK**.
+
+    ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-webapp.png "App Service")
+
+    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish. Also, the web app should open in a new browser window. If you try to navigate through the site, you will notice there is no data. We will seed the Cosmos DB `metadata` container with data in the next exercise.
+
+    ![The Fleet Management web app home page is displayed.](media/webapp-home-page.png "Fleet Management home page")
 
 ### Task 3: Create Azure Databricks cluster
 

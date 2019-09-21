@@ -56,7 +56,7 @@
             "properties": {
               "mode": "Incremental",
               "templateLink": {
-                "uri": "https://publicstorage42.blob.core.windows.net/arm/labDeploy.json",
+                "uri": "https://raw.githubusercontent.com/solliancenet/cosmos-db-scenario-based-labs/master/IoT/deploy/labDeploy.json?token=AAC7Y2MUHVWYU52HZSHGR525R4JJO",
                 "contentVersion": "1.0.0.0"
               },
               "parameters": { }
@@ -476,6 +476,10 @@
                             "value": "10.14.1"
                         },
 
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
+                        },
 
                         {
                             "name": "CosmosDBConnection",
@@ -538,6 +542,11 @@
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
                             "value": "10.14.1"
+                        },
+
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
                         },
 
                         {
