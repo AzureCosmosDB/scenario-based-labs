@@ -59,7 +59,7 @@ Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services i
 
 ## Solution architecture (High-level)
 
-![TODO.](../Media/solution-diagram-1.png "Solution Architecture")
+![TODO.](./Media/solution-diagram-1.png "Solution Architecture")
 
 ## Requirements
 
@@ -77,23 +77,255 @@ Duration: 60 minutes
 
 Synopsis:  In this exercise you will TODO
 
-### Task 1: Configure Stream Analytics
+### Task 1: Setup Stream Analytics 
 
-1.  Set all the Azure resource configurations
+1.  Open the Azure Portal, navigate to your Stream Analytics job that was created for you in the setup script
 
-### Task 2: Setup Power BI
+1.  Click **Inputs**
 
-1.  Set all the Azure resource configurations
+1.  Click **+Add stream input**, then select **Event Hub**
+
+1.  For the alias, type **s2events**
+
+1.  Select your subscription
+
+1.  Select the **s2ns..** event hub
+
+1.  For the event hub, select **store**
+
+1.  For the policy name, select **RootManageSharedAccessKey**
+
+1.  Click **Save**
+
+1.  Click **Outputs**
+
+1.  Click **+Add**, then select **Power BI**
+
+1.  For the output alias, type **eventCount**
+
+1.  For the dataset, type **eventCount**
+
+1.  For the table name, type **eventCount**
+
+1.  Click **Authorize**, login to your Power BI instance
+
+1.  Click **Save**
+
+1.  Click **+Add**, then select **Power BI**
+
+1.  For the output alias, type **eventOrdersLastHour**
+
+1.  For the dataset, type **eventOrdersLastHour**
+
+1.  For the table name, type **eventOrdersLastHour**
+
+1.  Click **Authorize**, login to your Power BI instance
+
+1.  Click **+Add**, then select **Power BI**
+
+1.  For the output alias, type **eventSummary**
+
+1.  For the dataset, type **eventSummary**
+
+1.  For the table name, type **eventSummary**
+
+1.  Click **Authorize**, login to your Power BI instance
+
+1.  Click **+Add**, then select **Power BI**
+
+1.  For the output alias, type **failureCount**
+
+1.  For the dataset, type **failureCount**
+
+1.  For the table name, type **failureCount**
+
+1.  Click **Authorize**, login to your Power BI instance
+
+1.  Click **+Add**, then select **Power BI**
+
+1.  For the output alias, type **eventData**
+
+1.  For the dataset, type **eventData**
+
+1.  For the table name, type **eventData**
+
+1.  Click **Authorize**, login to your Power BI instance
+
+1.  Click **Save**
+
+1.  Click **Query**
+
+1.  Update the query to the following:
+
+```sql
+SELECT Count(*) as FailureCount
+ INTO failureCount
+ FROM s2events
+ WHERE Event = 'paymentFailure'
+ GROUP BY TumblingWindow(second,10) 
+
+SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) as EventCount
+ INTO eventData
+ FROM s2events 
+ GROUP BY TumblingWindow(second,10) 
+
+ SELECT System.TimeStamp AS Time, Event, Count(*)
+ INTO eventSummary
+ FROM s2events 
+ GROUP BY Event, TumblingWindow(second,10) 
+
+ select DateAdd(second,-10,System.Timestamp()) AS WinStartTime, System.Timestamp() AS WinEndTime,0 as Min, Count(*) as Count, 10 as Target
+ into eventOrdersLastHour
+ from s2events
+ where event = 'buy'
+ GROUP BY SlidingWindow(second,10) 
+```
+
+1.  The Query windows should look similar to this:
+
+![An example item from the ratings collection is displayed.](./media/xx_StreamAnalytics_05.png "The ratings collection")
+
+1.  Click **Save query**
+
+1.  Click **Overview**, in the menu, click **Start** to start your stream analytics job
+
+![Go to the overview tab, then click 'start'.](./media/xx_StreamAnalytics_05.png "Start the analytics job")
+
+1.  In the dialog, ensure that **Now** is selected, then click **Start**
+
+>NOTE:  If your job fails for any reason, you can use the **Activity Log** to see what the error(s) were.
+
+### Task 2: Generate user events for PowerBI
+
+1.  Open Visual Studio, browse to the Solution
+
+1.  Right-click the **DataGenerator** project, select **Set as startup project**
+
+1.  Press **F5** to run the project
+
+1.  Notice events will be generated based on a set of users and their preferred movie type
+
+![The data generator window is displayed with events streaming.](./media/xx_DataGenerator_01.png "Run the data generator")
+
+1.  Buy events will be generated for the first 30 seconds with random payment failures also generated. After 30 seconds, you will notice the orders per hour will fall below the target of 10.  This would signify that something is wrong with the front end web site or order processing.
+
+1.  After about 1 minute, close the DataGenerator console program
+
+### Task 3: Setup Power BI Dashabord 
+
+1.  Open a new window to [Power BI](https://www.powerbi.com)
+
+1.  Click on **My workspace**
+
+1.  Click **+Create**, then select **Dashboard**
+
+![The main Power BI dashboard page is displayed with the '+Create' highlighted.](./media/xx_PowerBI_01.png "Create a dashboard")
+
+1.  For the name, type **Contoso Movies**, click **Create**
+
+1.  Click the **...** ellipses, then select **+Add tile**
+
+1.  Select **Custom Streaming Data**, click **Next**
+
+1.  Select the **eventData** data set, then click **Next**
+
+![Select the eventCount dataset and click next.](./media/xx_PowerBI_02.png "Add the eventCount tile")
+
+1.  For the visualization type, select **Card**
+
+1.  For the Fields, select **count**
+
+1.  Click **Next**
+
+1.  For the title, type **Event Count**, then click **Apply**
+
+1.  Click the **...** ellipses, then select **+Add tile**
+
+1.  Select **Custom Streaming Data**, click **Next**
+
+1.  Select the **eventData** data set, then click **Next**
+
+1.  For the visualization type, select **Card**
+
+1.  For the Fields, select **UserCount**, click **Next**
+
+1.  For the title, type **User Count**, then click **Apply**
+
+1.  Click the **...** ellipses, then select **+Add tile**
+
+1.  Select **Custom Streaming Data**, click **Next**
+
+1.  Select the **failureCount** data set, then click **Next**
+
+1.  For the visualization type, select **Card**
+
+1.  For the Fields, select **FailureCount**
+
+1.  Click **Next**
+
+1.  For the title, type **Payment Failures**, then click **Apply**
+
+1.  Click the **...** ellipses, then select **+Add tile**
+
+1.  Select **Custom Streaming Data**, click **Next**
+
+1.  Select the **eventSummary** data set, then click **Next**
+
+1.  For the visualization type, select **Line chart**
+
+1.  For the axis, select **Time**
+
+1.  For the legend, select **Event**
+
+1.  For the values, select **Count**
+
+1.  Click **Next**
+
+1.  For the title, type **Count By Event**, then click **Apply**
+
+1.  Click the **...** ellipses, then select **+Add tile**
+
+1.  Select **Custom Streaming Data**, click **Next**
+
+1.  Select the **evetOrdersLastHour** data set, then click **Next**
+
+1.  For the visualization type, select **Gauge**
+
+1.  For the value, select **Count**
+
+1.  For minimum value, select **Min**
+
+1.  For target value, select **Target**
+
+1.  For the legend, select **Event**
+
+1.  Click **Next**
+
+1.  For the title, type **Orders Per Hour**, then click **Apply**
+
+1.  Your dashboard should look similar to the following:
+
+![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_PowerBI_03.png "Configure the dashboard")
+
+### Task 4: Generate user events for real time
+
+1.  Switch back to Visual Studio, press **F5** to run the data generator project
+
+1.  Switch to your Power BI dashboard, after a few minutes, you should see it update with the event data:
+
+![This graphic shows the layout of the tiles in the Power BI Dashboard when the event stream is running.](./media/xx_PowerBI_04.png "Continuously updating dashboard")
 
 ## Exercise 2: Explore Contoso Movie Store
 
 Duration: 15 minutes
 
-Synopsis: TODO
+Synopsis: You will show your attendees the Contoso Movies store.  It is an ecommerce site setup using Cosmos DB as its data store.  In addition, Azure Functions are monitoring the `changefeed` of Cosmos DB to execute reporting and notification activities.  A second function is in charge of providing recommendations based on the logged in user.  This function calls logic and pre-calculated offline AI models based on user behavior to make movie recommendations.
 
 ### Task 1: Explore the Contoso Movie Store
 
 1.  Open the deployed web site
+
+>NOTE:  This should have opened as part of the setup script.
 
 2.  Mention that you are not logged in as any user and the results that are being displayed are based on the **top** purchased items in the Cosmso database.
 
@@ -102,26 +334,6 @@ Synopsis: TODO
 4.  Mention that there are several pre-populated *personalities*.  Select the **comedy@contosomovies.com** personality
 
 5.  Mention that you now have targeted movies based on two different algorithms
-
-## Exercise 3: Simulate data and events using Stream Analytics and Power BI
-
-Duration: 30 minutes
-
-In this exercise you will TODO
-
-### Task 1: Open the Power BI dashboard
-
-1.  Browse to your PowerBI dashboard and open the Movie Dashboard
-
-### Task 2: Start Stream Analytics and run the Data Generator
-
-1.  Browse to your Stream Analytics service, click **Start**
-
-2.  Open the **DataGenerator** project
-
-3.  Update the app.config settings, then run the **DataGenerator** project, after a few moments, notice that your dashboard is being updated
-
-4.  After 30 seconds, you will notice the **buy** events has stopped.
 
 ## Exercise 4: Email alerts using Logic Apps
 

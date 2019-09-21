@@ -443,6 +443,7 @@ $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings 
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHub=store)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$movieApiKey)
 
 ########################

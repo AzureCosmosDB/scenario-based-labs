@@ -24,11 +24,12 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 <!-- TOC -->
 
-- [Cosmos DB scenario-based labs - Retail before the hands-on lab setup guide](#cosmos-db-scenario-based-labs---iot-before-the-hands-on-lab-setup-guide)
+- [Cosmos DB scenario-based labs - Retail before the hands-on lab setup guide](#cosmos-db-scenario-based-labs---retail-before-the-hands-on-lab-setup-guide)
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
     - [Task 1: Download GitHub resources](#task-1-download-github-resources)
-    - [Task 2: Deploy resources to Azure](#task-2-deploy-resources-to-azure)
+    - [Task 2: Get a Movie Api Key](#task-2-get-a-movie-api-key)
+    - [Task 3: Deploy resources to Azure](#task-2-deploy-resources-to-azure)
 
 <!-- /TOC -->
 
