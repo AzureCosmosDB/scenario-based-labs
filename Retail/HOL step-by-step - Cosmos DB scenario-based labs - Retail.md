@@ -787,7 +787,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  For the visualization type, select **Card**
 
-1.  For the Fields, select **count**
+1.  For the Fields, select **EventCount**
 
 1.  Select **Next**
 
