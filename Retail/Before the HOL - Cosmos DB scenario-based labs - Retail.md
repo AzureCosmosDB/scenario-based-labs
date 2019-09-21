@@ -100,6 +100,7 @@ $prefix = "YOUR INIT"
 $rgName = $prefix + "_s2_retail"
 $databaseId = "movies"
 $movieApiKey = "YOUR MOVIE API KEY"
+$githubPath = "PATH YOU EXTRACTED REPO ZIP TOO"
 ```
 
 >NOTE:  You should have Azure CLI 2.0.68 or higher to run this script.  You can check by running `az --version`

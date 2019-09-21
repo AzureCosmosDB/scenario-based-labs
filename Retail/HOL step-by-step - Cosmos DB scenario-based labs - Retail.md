@@ -31,7 +31,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Solution architecture (High-level)](#solution-architecture-high-level)
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
-  - [Exercise 1: Configure Databricks and generate event data](#exercise-1-configure-databricks-and-generate-event-data)
+  - [Exercise 1: Configure Databricks and generate event data](#exercise-1-configure-Databricks-and-generate-event-data)
     - [Task 1: Configure Azure Databricks](#task-1-configure-azure-databricks)
     - [Task 2: Populate event data](#task-2-populate-event-data)
     - [Task 3: Review the data generated](#task-3-review-the-data-generated)
@@ -48,7 +48,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Deploy the applications](#task-2-deploy-the-applications)
     - [Task 3: Test the applications](#task-3-test-the-applications)
   - [Exercise 5: Perform and deploy collaborative filtering rules calculation](#exercise-5-perform-and-deploy-collaborative-filtering-rules-calculation)
-    - [Task 1: Compute the user implict ratings](#task-1-compute-the-user-implict-ratings)
+    - [Task 1: Compute the user implicit ratings](#task-1-compute-the-user-implicit-ratings)
     - [Task 2: Generate the Collaborative Rules](#task-2-generate-the-collaborative-rules)
     - [Task 3: Review the data generated](#task-3-review-the-data-generated)
     - [Task 4: Implement the Collaborative recommendation rules](#task-4-implement-the-collaborative-recommendation-rules)
@@ -75,17 +75,17 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 ## Abstract and learning objectives
 
-In this hands-on-lab, you will complete various tasks to implment a recommendation engine using several Microsoft Azure PaaS services.
+In this hands-on-lab, you will complete various tasks to implement a recommendation engine using several Microsoft Azure PaaS services.
 
-At the end of this lab you will understand how to design offline recommendation systems that store data in Cosmos DB using Data Bricks.  You will also see how to implement a ecommerce store front utilizing Cosmos DB.  Additionally, you will see how to utilize the Cosmos DB change feed to execute functions for reporting and monitoring activities with Power BI and Logic Apps.
+At the end of this lab you will understand how to design recommendation systems that store data in Cosmos DB using Databricks.  You will also see how to implement a ecommerce store front utilizing Cosmos DB.  Additionally, you will see how to utilize the Cosmos DB change feed to execute functions for reporting and monitoring activities with Power BI and Logic Apps.
 
 ## Overview
 
-Contoso Movies, Ltd. has express their desire to move to a more modern and cloud-based approach to their online ecommerce presence.  The have decided to utilize Cosmos DB and Azure Databricks to implement their next generate recommendation system.
+Contoso Movies, Ltd. has expressed their desire to move to a more modern and cloud-based approach to their online ecommerce presence.  The have decided to utilize Cosmos DB and Azure Databricks to implement their next generate recommendation system.
 
 ## Solution architecture (High-level)
 
-![The proposed solution utilizing Azure Security Center for IoT and its agents to monitor and secure the IoT Devcies.  Log data is forwarded to Log Analytics where alerts and logic apps will execute to start investigation and remediation.](../Media/solution-diagram-1.png "Solution Architecture")
+![TODO.](./Media/solution-diagram-1.png "Solution Architecture")
 
 ## Requirements
 
@@ -113,17 +113,19 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 
 ### Task 1: Configure Azure Databricks
 
-1.  Open the Azure Portal, navigate to your Azure DataBricks instance
+1.  Open the Azure Portal, search for your **YOURINIT-s2-retail** resource group
 
-1.  Click **Launch Workspace**, if prompted, login as the account you used to create your environment
+1.  Select your resource group, and then select your Azure Databricks instance, it should be called **s2_databricks...**
 
-1.  In the side navigation, click **Clusters**
+2.  Click **Launch Workspace**, if prompted, login as the account you used to create your environment
 
-![The cluster blade with all the settings filled in.](./media/xx_DataBricks_01.png "Databricks cluster configuration")
+3.  In the side navigation, click **Clusters**
 
-1.  Click **Create Cluster**
+![The cluster blade with all the settings filled in.](./media/xx_Databricks_01.png "Databricks cluster configuration")
 
-1.  On the create cluster form, provide the following:
+4.  Click **Create Cluster**
+
+5.  On the create cluster form, provide the following:
 
    - **Cluster Name**: small
 
@@ -143,86 +145,92 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 
    - **Workers**: 1
 
-1.  Select **Create Cluster**.
+6.  Select **Create Cluster**.
 
-![The cluster blade with all the settings filled in.](./media/xx_DataBricks_02.png "Databricks cluster configuration")
+![The cluster blade with all the settings filled in.](./media/xx_Databricks_02.png "Databricks cluster configuration")
 
-1.  Before continuing to the next step, verify that your new cluster is running.  Wait for the state to change from **Pending** to **Running**
+7.  Before continuing to the next step, verify that your new cluster is running.  Wait for the state to change from **Pending** to **Running**
 
-1.  Click the **small** cluster, then click **Libraries**
+8.  Click the **small** cluster, then click **Libraries**
 
-1. Select **Install New**.
+9. Select **Install New**.
 
-![Navigate to the libraries tab and click Install New.](./media/xx_DataBricks_03.png "Adding a new library")
+![Navigate to the libraries tab and click Install New.](./media/xx_Databricks_03.png "Adding a new library")
 
-1. In the Install Library dialog, select **Maven** for the Library Source
+10. In the Install Library dialog, select **Maven** for the Library Source
 
-1.  In the Coordinates field type:
+11.  In the Coordinates field type:
 
 ```text
 com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 ```
 
-1. Select **Install**
+12. Select **Install**
 
-![Populated library dialog for Maven.](./media/xx_DataBricks_04.png "Add the Maven library")
+![Populated library dialog for Maven.](./media/xx_Databricks_04.png "Add the Maven library")
 
-1. **Wait** until the library's status shows as **Installed** before continuing.
+13. **Wait** until the library's status shows as **Installed** before continuing.
 
 ### Task 2: Populate event data
 
 1. Within Azure Databricks, select **Workspace** on the menu, then **Users**, select your user, then select the down arrow on the top of your user workspace. Select **Import**.
 
-1. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it ($githubdirectory/lab-files/Retail/Notebooks/02 Retail.dbc)
+2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it ($githubdirectory/lab-files/Retail/Notebooks/02 Retail.dbc)
 
-1.  Click **Import**
+3.  Click **Import**
 
-![Workspace is highlighted with the user expanded and the Import option highlighted.](./media/xx_DataBricks_07.png "Import the DataBricks notebook")
+![Workspace is highlighted with the user expanded and the Import option highlighted.](./media/xx_Databricks_07.png "Import the Databricks notebook")
 
-1. After importing, select the new **02 Retail** folder.
+4. After importing, select the new **02 Retail** folder.
 
-1.  Select **Event Generator**
+5.  Select **Event Generator**
 
-1. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. 
+6. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. 
 
-1.  Update the configuration settings for both the **readConfig** and the **writeConfig**, set the following using the values from your lab setup script:
+7.  Update the configuration settings for both the **readConfig** and the **writeConfig**, set the following using the values from your lab setup script output:
 
-- Endpoint = Cosmos DB endpoint
+- Endpoint = Cosmos DB endpoint url
 - Masterkey = Cosmos DB master key
 - Database = Database id of the cosmos db ('movies')
 
-![The configuration values in the notebook are highlighted.](./media/xx_DataBricks_06.png "Add the databrick notebook configuration settings")
+![The configuration values in the notebook are highlighted.](./media/xx_Databricks_06.png "Add the databrick notebook configuration settings")
 
-1.  Click **Run All**
+8.  Click **Run All**
 
->NOTE:  This total process will take up to 30 minutes to generate the event data.
+>NOTE:  With the default RUs on the Cosmos DB, this process will take up to 25 minutes to generate the event data.  You could increase the RUs and get it under 5 minutes.
 
 ### Task 3: Review the data generated
 
-1.  Open your Cosmos DB instance
+1.  Switch back to the Azure Portal
 
-1.  Open the **events** collection, review the items in the collection
+1.  In your resource group, navigate to your Cosmos DB instance, it should start with **s2cosmosdb...**
+
+1.  Click **Data Explorer**
+
+1.  Select the **events** collection, then click **items**
+
+1.  Review the items in the collection
 
 ![An example item from the events collection is displayed.](./media/xx_EventsColl.png "The events collection")
 
->NOTE:  These items are created from the data bricks solution and include a random set of generated events for each user personality type.  You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated (via the contentId field) with the event.
+>NOTE:  These items are created from the Databricks solution and include a random set of generated events for each user personality type.  You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated (via the contentId field) with the event.
 
 ### Task 4: Review the aggregation and import utility
 
 1.  Browse to the **$githubdirectory/lab-files/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
-1.  In the **/Utilities/MovieDataImport** project, open the **program.cs** file, browse code and various methods.  Notice that it:
+2.  In the **/Utilities/MovieDataImport** project, open the **program.cs** file, browse code and various methods.  Notice that it:
 
 - Aggregates all the event data generated from the Databricks notebook
 - Creates the user personalities
 - Creates the movie categories/genres
 - Creates the movies
 
-1.  Right-click the project, select **Set as startup project**
+3.  Right-click the project, select **Set as startup project**
 
-1.  Press **F5** to run the project
+4.  Press **F5** to run the project
 
->NOTE:  You must have waited for the Event Generator DataBricks notebook to complete for this to run and have the late steps in the lab match.
+>NOTE:  You must have waited for the Event Generator Databricks notebook to complete for this to run and have the later steps in the lab match.
 
 ## Exercise 2: Complete and deploy Web and Function Apps
 
@@ -234,15 +242,15 @@ Synopsis: We have pre-generated a set of events that include **buy** events.  Ba
 
 1.  In the **Contoso.Apps.Movies.Web** project, open the **/Controllers/HomeController.cs** file
 
-1.  Find the todo task #1 and complete it with the following:
+2.  Find the todo task #1 and complete it with the following:
 
 ```csharp
 vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 ```
 
-1.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
+3.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
-1.  In the **TopRecommendation** method, find the todo task #2 and complete it with the following:
+4.  In the **TopRecommendation** method, find the todo task #2 and complete it with the following:
 
 ```csharp
 var container = client.GetContainer(databaseId, "object");
@@ -262,12 +270,12 @@ foreach(Item i in items)
 topItems = GetItemsByImdbIds(itemIds);
 ```
 
-1.  Review the code, notice the following:
+5.  Review the code, notice the following:
 
 - We are querying an "object" collection for an entity type called 'ItemAggregation' and sorting it by the 'BuyCount'.  Essentially these are the top purchased items.
 - We are then querying the object collection for all the top movie items to get their metadata for display on the web front end
 
-1.  Compile the solution, fix any errors
+6.  Compile the solution, fix any errors
 
 ### Task 2: Deploy the applications
 
@@ -317,7 +325,7 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 1.  Update the configuration settings for both the **readEventsConfig** AND the **writeAssociationConfig**, set the following:
 
-- Endpoint = Cosmos DB endpoint
+- Endpoint = Cosmos DB endpoint url
 - Masterkey = Cosmos DB master key
 - Database = Database id of the cosmos db
 
@@ -325,13 +333,15 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 ### Task 2: Review the data generated
 
-1.  Switch back to your Cosmos DB instance
+1.  Switch back to the Azure Portal
+
+1.  In your resource group, navigate to your Cosmos DB instance
 
 1.  Open the **associations** collection, review the items in the collection
 
 ![An example item from the associations collection is displayed.](./media/xx_AssocColl.png "The associations collection")
 
->NOTE:  These items are created from the data bricks solution and include the association confidence level as compared from one movie to another movie.
+>NOTE:  These items are created from the Databricks solution and include the association confidence level as compared from one movie to another movie.
 
 ## Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)
 
@@ -419,7 +429,7 @@ Duration: 30 minutes
 
 In this exercise you will defined
 
-### Task 1: Compute the user implict ratings
+### Task 1: Compute the user implicit ratings
 
 1.  Switch back to your Databricks workspace, select **Ratings**
 
@@ -447,11 +457,13 @@ In this exercise you will defined
 
 ### Task 3: Review the data generated
 
-1.  Open your Cosmos DB instance
+1.  Switch back to the Azure Portal
+
+1.  In your resource group, navigate to your Cosmos DB instance
 
 1.  Open the **similarity** collection, review the items in the collection
 
->NOTE:  These items are created from the data bricks solution and include the similarity of one movie, the source, to another, the target.
+>NOTE:  These items are created from the Databricks solution and include the similarity of one movie, the source, to another, the target.
 
 ![An example item from the similarity collection is displayed.](./media/xx_SimilarityColl.png "The similarity collection")
 
@@ -563,9 +575,7 @@ foreach(PredictionModel pm in sortedItems)
 
 2.  Click **login**, select the **comedy@contosomovies.com** account
 
-
-
-3.  Notice the main page now has both the associative and collborative results displayed::
+3.  Notice the main page now has both the associative and collaborative results displayed::
 
 **TODO IMAGE**
 
