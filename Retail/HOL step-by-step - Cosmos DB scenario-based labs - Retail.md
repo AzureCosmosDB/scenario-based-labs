@@ -89,9 +89,17 @@ Contoso Movies, Ltd. has express their desire to move to a more modern and cloud
 
 ## Requirements
 
-1. Microsoft Azure subscription must be pay-as-you-go or MSDN.
+1.  Microsoft Azure subscription must be pay-as-you-go or MSDN.
 
     - Trial subscriptions will not work.
+
+1.  [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
+
+1.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
+
+1.  [.Net Framework 4.7.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
+
+1.  [.Net Core 2.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
     
 ## Before the hands-on lab
 

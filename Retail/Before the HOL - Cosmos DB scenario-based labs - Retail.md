@@ -41,9 +41,13 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
     - Trial subscriptions will not work.
 
-1.  [Visual Stuido 2019](https://visualstudio.microsoft.com/downloads/)
+1.  [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
 
 1.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
+
+1.  [.Net Framework 4.7.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
+
+1.  [.Net Core 2.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
 ## Before the hands-on lab
 
@@ -75,6 +79,10 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
     -   Click **API**, copy the `API Key (v3 auth)` key for later use
 
 ### Task 3: Deploy resources to Azure
+
+1.  Open a browser window to the [Azure Portal](https://portal.azure.com), be sure to login as the user that has access to your soon to be created resource group
+
+>NOTE: This is necessary as the script will open a window that requires you to have already logged in to the portal.
 
 1.  Open a **PowerShell ISE** window
 

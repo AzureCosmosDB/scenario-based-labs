@@ -63,13 +63,23 @@ Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services i
 
 ## Requirements
 
-1. Microsoft Azure subscription must be pay-as-you-go or MSDN.
+1.  Microsoft Azure subscription must be pay-as-you-go or MSDN.
 
     - Trial subscriptions will not work.
+
+1.  [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
+
+1.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
+
+1.  [.Net Framework 4.7.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
+
+1.  [.Net Core 2.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
     
 ## Before the demo
 
 Refer to the Before the hands-on lab setup guide manual before continuing to the lab exercises.
+
+Be sure that you change the script mode to `demo` such that the solution code is deployed to the web app and function apps.
 
 ## Exercise 1: Deployment and Setup
 

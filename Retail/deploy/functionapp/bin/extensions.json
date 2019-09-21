@@ -1,7 +1,0 @@
-{
-  "extensions":[
-    { "name": "Startup", "typeName":"Contoso.Apps.FunctionApp.Startup, Contoso.Apps.FunctionApp.ChangeFeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"},
-    { "name": "Startup", "typeName":"Contoso.Apps.FunctionApp.Startup, Contoso.Apps.FunctionApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"},
-    { "name": "CosmosDB", "typeName":"Microsoft.Azure.WebJobs.Extensions.CosmosDB.CosmosDBWebJobsStartup, Microsoft.Azure.WebJobs.Extensions.CosmosDB, Version=3.0.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"}
-  ]
-}
