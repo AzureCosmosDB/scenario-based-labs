@@ -129,19 +129,21 @@ In this exercise, you will configure your lab environment so you can start sendi
 
 TODO
 
-### Task 2: Open Logic App workflow and connect to Office 365 for email alerts
+### Task 2: Authenticate the Office 365 API Connection for sending email alerts
 
 In this task, you will open the deployed Logic App workflow and configure it to send email alerts through its HTTP trigger. This trigger will be called by one of your Azure functions that gets triggered by the Cosmos DB change feed, any time a notification event occurs, such as completing a trip. You will need to have an Office 365 or Outlook.com account to send the emails.
 
 1. In the [Azure portal](https://portal.azure.com), navigate to your resource group for this demo and open the **Logic App**.
 
-2. Go to the edit view for the Logic App.
+2. Go to view the **office365** **API Connection**, and select the **This connection is not authenticated** message.
 
-3. Select the **Send an email** action and sign in to your Office 365 when prompted.
+    ![office365 API Connection is not authenticated.](media/office365-api-connection-not-authenticated.png 'Office 365 API Connection')
 
-   ![The Sign in button is highlighted.](media/logic-app-sign-in-button.png 'Office 365 Outlook')
+3. Enter your email in the **Display Name** field, then click **Authorize** and authenticate your Office 365 account.
 
-4. Save your changes.
+    ![Edit API connection](media/office365-api-connection-edit.png 'Edit API connection')
+
+4. Click **Save**.
 
 ### Task 3: Create Azure Databricks cluster
 
