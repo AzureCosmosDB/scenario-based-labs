@@ -340,63 +340,63 @@ In this task, you will create a new Logic App workflow and configure it to send 
 
    ```json
    {
-     "properties": {
-       "consignmentId": {
-         "type": "string"
-       },
-       "customer": {
-         "type": "string"
-       },
-       "deliveryDueDate": {
-         "type": "string"
-       },
-       "distanceDriven": {
-         "type": "number"
-       },
-       "hasHighValuePackages": {
-         "type": "boolean"
-       },
-       "id": {
-         "type": "string"
-       },
-       "lastRefrigerationUnitTemperatureReading": {
-         "type": "integer"
-       },
-       "location": {
-         "type": "string"
-       },
-       "lowestPackageStorageTemperature": {
-         "type": "integer"
-       },
-       "odometerBegin": {
-         "type": "integer"
-       },
-       "odometerEnd": {
-         "type": "number"
-       },
-       "plannedTripDistance": {
-         "type": "number"
-       },
-       "recipientEmail": {
-         "type": "string"
-       },
-       "status": {
-         "type": "string"
-       },
-       "temperatureSetting": {
-         "type": "integer"
-       },
-       "tripEnded": {
-         "type": "string"
-       },
-       "tripStarted": {
-         "type": "string"
-       },
-       "vin": {
-         "type": "string"
-       }
-     },
-     "type": "object"
+        "properties": {
+           "consignmentId": {
+             "type": "string"
+           },
+           "customer": {
+             "type": "string"
+           },
+           "deliveryDueDate": {
+             "type": "string"
+           },
+           "distanceDriven": {
+             "type": "number"
+           },
+           "hasHighValuePackages": {
+             "type": "boolean"
+           },
+           "id": {
+             "type": "string"
+           },
+           "lastRefrigerationUnitTemperatureReading": {
+             "type": "integer"
+           },
+           "location": {
+             "type": "string"
+           },
+           "lowestPackageStorageTemperature": {
+             "type": "integer"
+           },
+           "odometerBegin": {
+             "type": "integer"
+           },
+           "odometerEnd": {
+             "type": "number"
+           },
+           "plannedTripDistance": {
+             "type": "number"
+           },
+           "recipientEmail": {
+             "type": "string"
+           },
+           "status": {
+             "type": "string"
+           },
+           "temperatureSetting": {
+             "type": "integer"
+           },
+           "tripEnded": {
+             "type": "string"
+           },
+           "tripStarted": {
+             "type": "string"
+           },
+           "vin": {
+             "type": "string"
+           }
+        },
+        "type": "object"
    }
    ```
 

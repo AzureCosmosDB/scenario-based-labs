@@ -31,6 +31,10 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Exercise 1: Configure environment](#exercise-1-configure-environment)
     - [Task 1: Run deployment scripts](#task-1-run-deployment-scripts)
     - [Task 2: Open Logic App workflow and connect to Office 365 for email alerts](#task-2-open-logic-app-workflow-and-connect-to-office-365-for-email-alerts)
+    - [Task 3: Add Stream Analytics Event Hubs input](#task-3-add-stream-analytics-event-hubs-input)
+    - [Task 4: Add Stream Analytics outputs](#task-4-add-stream-analytics-outputs)
+    - [Task 5: Create Stream Analytics query](#task-5-create-stream-analytics-query)
+    - [Task 6: Run Stream Analytics job](#task-6-run-stream-analytics-job)
     - [Task 3: Create Azure Databricks cluster](#task-3-create-azure-databricks-cluster)
     - [Task 4: Configure Key Vault-backed Databricks secret store](#task-4-configure-key-vault-backed-databricks-secret-store)
     - [Task 5: Import lab notebooks into Azure Databricks](#task-5-import-lab-notebooks-into-azure-databricks)
@@ -144,6 +148,139 @@ In this task, you will open the deployed Logic App workflow and configure it to 
     ![Edit API connection](media/office365-api-connection-edit.png 'Edit API connection')
 
 4. Click **Save**.
+
+### Task 3: Add Stream Analytics Event Hubs input
+
+1. In the [Azure portal](https://portal.azure.com), open your lab resource group, then open your **Stream Analytics job**.
+
+   ![The Stream Analytics job is highlighted in the resource group.](media/resource-group-stream-analytics.png 'Resource Group')
+
+2. Select **Inputs** in the left-hand menu. In the Inputs blade, select **+ Add stream input**, then select **Event Hub** from the list.
+
+   ![The Event Hub input is selected in the Add Stream Input menu.](media/stream-analytics-inputs-add-event-hub.png 'Inputs')
+
+3. In the **New input** form, specify the following configuration options:
+
+   1. **Input alias**: Enter **events**.
+   2. Select the **Select Event Hub from your subscriptions** option beneath.
+   3. **Subscription**: Choose your Azure subscription for this lab.
+   4. **Event Hub namespace**: Find and select your Event Hub namespace (eg. `iot-namespace`).
+   5. **Event Hub name**: Select **Use existing**, then **reporting**.
+   6. **Event Hub policy name**: Choose the default `RootManageSharedAccessKey` policy.
+
+   ![The New Input form is displayed with the previously described values.](media/stream-analytics-new-input.png 'New input')
+
+4. Select **Save**.
+
+You should now see your Event Hubs input listed.
+
+![The Event Hubs input is listed.](media/stream-analytics-inputs.png 'Inputs')
+
+### Task 4: Add Stream Analytics outputs
+
+1. While remaining in the Outputs blade, select **+ Add** once again, then select **Power BI** from the list.
+
+   ![The Power BI output is selected in the Add menu.](media/stream-analytics-outputs-add-power-bi.png 'Outputs')
+
+2. In the **New output** form, look toward the bottom to find the **Authorize connection** section, then select **Authorize** to sign in to your Power BI account. If you do not have a Power BI account, select the _Sign up_ option first.
+
+   ![The Authorize connection section is displayed.](media/stream-analytics-authorize-power-bi.png 'Authorize connection')
+
+3. After authorizing the connection to Power BI, specify the following configuration options in the form:
+
+   1. **Output alias**: Enter **powerbi**.
+   2. **Group workspace**: Select **My workspace**.
+   3. **Dataset name**: Enter **Contoso Auto IoT Events**.
+   4. **Table name**: Enter **FleetEvents**.
+
+   ![The New Output form is displayed with the previously described values.](media/stream-analytics-new-output-power-bi.png 'New output')
+
+4. Select **Save**.
+
+You should now have two outputs listed.
+
+![The two added outputs are listed.](media/stream-analytics-outputs.png 'Outputs')
+
+### Task 5: Create Stream Analytics query
+
+The Query is Stream Analytics' work horse. This is where we process streaming inputs and write data to our outputs. The Stream Analytics query language is SQL-like, allowing you to use familiar syntax to explore and transform the streaming data, create aggregates, and create materialized views that can be used to help shape your data structure before writing to the output sinks. Stream Analytics jobs can only have one Query, but you can write to multiple outputs in a single Query, as you will do in the steps that follow.
+
+Please take a moment to analyze the query below. Notice how we are using the `events` input name for the Event Hubs input you created, and the `powerbi` and `cosmosDB` outputs, respectively. Also see where we use the `TumblingWindow` in durations of 30 seconds for `VehicleData`, and 10 seconds for `VehicleDataAll`. The `TumblingWindow` helps us evaluate events that occurred during the past X seconds and, in our case, create averages over those time periods for reporting.
+
+1. Select **Query** in the left-hand menu. Replace the contents of the query window with the script below:
+
+    ```sql
+    WITH
+    VehicleData AS (
+        select
+            vin,
+            AVG(engineTemperature) AS engineTemperature,
+            AVG(speed) AS speed,
+            AVG(refrigerationUnitKw) AS refrigerationUnitKw,
+            AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,
+            (case when AVG(engineTemperature) >= 400 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,
+            (case when AVG(engineoil) <= 18 then 1 else 0 end) as oilAnomaly,
+            (case when AVG(transmission_gear_position) <= 3.5 AND
+                AVG(accelerator_pedal_position) >= 50 AND
+                AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,
+            (case when AVG(refrigerationUnitTemp) >= 30 then 1 else 0 end) as refrigerationTempAnomaly,
+            System.TimeStamp() as snapshot
+        from events TIMESTAMP BY [timestamp]
+        GROUP BY
+            vin,
+            TumblingWindow(Duration(second, 30))
+    ),
+    VehicleDataAll AS (
+        select
+            AVG(engineTemperature) AS engineTemperature,
+            AVG(speed) AS speed,
+            AVG(refrigerationUnitKw) AS refrigerationUnitKw,
+            AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,
+            COUNT(*) AS eventCount,
+            (case when AVG(engineTemperature) >= 318 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,
+            (case when AVG(engineoil) <= 20 then 1 else 0 end) as oilAnomaly,
+            (case when AVG(transmission_gear_position) <= 4 AND
+                AVG(accelerator_pedal_position) >= 50 AND
+                AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,
+            (case when AVG(refrigerationUnitTemp) >= 22.5 then 1 else 0 end) as refrigerationTempAnomaly,
+            System.TimeStamp() as snapshot
+        from events t TIMESTAMP BY [timestamp]
+        GROUP BY
+            TumblingWindow(Duration(second, 10))
+    )
+    -- INSERT INTO POWER BI
+    SELECT
+        *
+    INTO
+        powerbi
+    FROM
+        VehicleDataAll
+    -- INSERT INTO COSMOS DB
+    SELECT
+        *,
+        entityType = 'VehicleAverage',
+        partitionKey = vin
+    INTO
+        cosmosdb
+    FROM
+        VehicleData
+    ```
+
+   ![The Stream Analytics job Query is displayed.](media/stream-analytics-query.png 'Query')
+
+2. Select **Save query**.
+
+### Task 6: Run Stream Analytics job
+
+Next, we will start the Stream Analytics job so we can begin processing event data once it starts to flow through the services.
+
+1. Select **Overview**.
+
+2. In the Overview blade, select **Start** and select **Now** for the job output start time.
+
+3. Select **Start** to beginning running the Stream Analytics job.
+
+   ![The steps to start the job as described are displayed.](media/stream-analytics-start-job.png 'Start job')
 
 ### Task 3: Create Azure Databricks cluster
 

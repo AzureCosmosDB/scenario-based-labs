@@ -482,15 +482,47 @@
                     }
                 ]
             }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+        {
+            "type": "Microsoft.StreamAnalytics/streamingjobs/outputs",
+            "apiVersion": "2016-03-01",
+            "name": "[concat(variables('streamAnalyticsJobName'), '/cosmosdb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "datasource": {
+                    "type": "Microsoft.Storage/DocumentDB",
+                    "properties": {
+                        "accountId": "[variables('cosmosDbAccountName')]",
+                        "accountKey": "[reference('labDeployment').outputs.CosmosDBPrimaryKey.value]",
+                        "database": "[variables('cosmosDbDatabaseName')]",
+                        "collectionNamePattern": "metadata"
+                    }
+                }
+            }
         }
 
 
 
 
-
-
-
-
+        
 
 
 
