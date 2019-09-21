@@ -768,6 +768,35 @@
         "databricksWorkspaceName": {
             "type": "string",
             "value": "[variables('databricksWorkspaceName')]"
+        },
+
+
+
+        "CosmosDBConnection": {
+            "type": "string",
+            "value": "[concat('AccountEndpoint=', reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosDbAccountName'))).documentEndpoint, '​;AccountKey=', listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts/', variables('cosmosDbAccountName')), '2015-04-08').primaryMasterKey, ';Database=ContosoAuto')]"
+        },
+        "CosmosDBEndpoint": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosDbAccountName'))).documentEndpoint]"
+        },
+        "CosmosDBPrimaryKey": {
+            "type": "string",
+            "value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts/', variables('cosmosDbAccountName')), '2015-04-08').primaryMasterKey]"
+        },
+        "IoTHubConnection": {
+            "type": "string",
+            "value": "[concat('Endpoint=', reference(resourceId('Microsoft.Devices/IoTHubs', variables('iotHubName')), providers('Microsoft.Devices', 'IoTHubs').apiVersions[0]).eventHubEndpoints.events.endpoint, ';SharedAccessKeyName=iothubowner;SharedAccessKey=', listKeys(resourceId('Microsoft.Devices/IotHubs', variables('iotHubName')), providers('Microsoft.Devices', 'IoTHubs').apiVersions[0]).value[0].primaryKey, ';EntityPath=', reference(resourceId('Microsoft.Devices/IoTHubs', variables('iotHubName')), providers('Microsoft.Devices', 'IoTHubs').apiVersions[0]).eventHubEndpoints.events.path)]"
+        },
+        "ColdStorageAccount": {
+            "type": "string",
+            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountIoTStoreName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountIoTStoreName')), '2019-04-01').keys[0].value, ';EndpointSuffix=core.windows.net')]"
+        },
+        "EventHubsConnection": {
+            "type": "string",
+            "value": "[listKeys(resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventHubsNamespaceIoTName'), 'RootManageSharedAccessKey'), '2017-04-01').primaryConnectionString]"
         }
+        
+        
     }
 }

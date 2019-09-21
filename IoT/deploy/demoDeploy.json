@@ -4,10 +4,39 @@
     "parameters": {
     },
     "variables": {
-        "location": "WestUS",
+        "location": "westus",
         "name-suffix": "[uniqueString(resourceGroup().id)]",
 
+        "iotHubName": "[concat('iot-hub-', variables('name-suffix'))]",
+
+        "appServicePlanIoTWebAppNameName": "[concat('IoTWebAppNamePlan-', variables('name-suffix'))]",
+        "iotWebAppName": "[concat('IoTWebApp-', variables('name-suffix'))]",
+        
+        "appServicePlanFunctionAppsName": "[concat('FunctionAppPlan-', variables('name-suffix'))]",
+        "functionAppStreamProcessingName": "[concat('IoT-StreamProcessing-', variables('name-suffix'))]",
+        "functionAppCosmosDBProcessingName": "[concat('IoT-CosmosDBProcessing-', variables('name-suffix'))]",
+        
+        "keyVaultName": "[concat('keyvault-', variables('name-suffix'))]",
+        
+        "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
+        "storageAccountStreamProcessing-website-contentshare": "[concat('iot-streamprocessing-', variables('name-suffix'))]",
+
+        "storageAccountCosmosDBProcessingName": "[concat('iotfunc2', variables('name-suffix'))]",
+        "storageAccountCosmosDBProcessing-website-contentshare": "[concat('iot-cosmosdbprocessing-', variables('name-suffix'))]",
+
+        "storageAccountIoTStoreName": "[concat('iotstore', variables('name-suffix'))]",
+
+        "eventHubsNamespaceIoTName": "[concat('iot-namespace-', variables('name-suffix'))]",
+
         "cosmosDbAccountName": "[concat('cosmos-db-iot-', variables('name-suffix'))]",
+        "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('name-suffix'))]",
+        
+        "streamAnalyticsJobName": "[concat('Cosmos-DB-IoT-Analytics-', variables('name-suffix'))]",
+
+        "databricksWorkspaceName": "[concat('iot-databricks-', variables('name-suffix'))]",
+
+
+
 
 
         "cosmosDbDatabaseName": "ContosoAuto",
@@ -131,7 +160,7 @@
 
 
 
-        
+
 
 
 
@@ -273,8 +302,104 @@
                     }
                 }
             }
-        }
+        },
 
+
+
+
+
+
+
+
+
+
+
+
+
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBConnection')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.CosmosDBConnection.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBEndpoint')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.CosmosDBEndpoint.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBPrimaryKey')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.CosmosDBPrimaryKey.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'IoTHubConnection')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.IoTHubConnection.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'ColdStorageAccount')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.ColdStorageAccount.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'EventHubsConnection')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.EventHubsConnection.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'LogicAppUrl')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('cosmosIoTLogicAppName')), '/triggers/manual'), '2016-06-01').value]"
+            }
+        }
 
 
 
