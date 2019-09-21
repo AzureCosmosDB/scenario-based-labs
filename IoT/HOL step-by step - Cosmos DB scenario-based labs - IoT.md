@@ -1281,6 +1281,9 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     ![The Fleet Management web app home page is displayed.](media/webapp-home-page.png "Fleet Management home page")
 
+> **NOTE:** If the web application displays an error, then go into the Azure Portal for the **IoTWebApp** and click **Restart**. When the Azure Web App is created from the ARM Template and configured for .NET Core, it may need to be restarted for the .NET Core configuration to be fully installed and ready for the application to run. Once restarted, the web application will run as expected.
+> ![App Service blade with Restart button highlighted](media/IoTWebApp-App-Service-Restart-Button.png "App Service blade with Restart button highlighted")
+
 ### Task 8: View Cosmos DB processing Function App in the portal
 
 **Note**: It is important to complete this step prior to running the data generator. If you do not initially activate the function by viewing it in the portal after publishing it, then it can take some time before it starts processing the data from the change feed.

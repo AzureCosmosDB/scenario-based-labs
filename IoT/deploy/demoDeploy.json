@@ -708,6 +708,12 @@
                             "name": "ContainerName",
                             "value": "metadata"
                         }
+                    ],
+                    "metadata": [
+                        {
+                            "name": "CURRENT_STACK",
+                            "value": "dotnetcore"
+                        }
                     ]
                 }
             }
