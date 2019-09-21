@@ -80,6 +80,7 @@
             "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'), '/', 'metadata')]",
             "apiVersion": "2016-03-31",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('cosmosDbDatabaseName'))]"
             ],
             "properties":
@@ -101,6 +102,7 @@
             "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'), '/', 'telemetry')]",
             "apiVersion": "2016-03-31",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('cosmosDbDatabaseName'))]"
             ],
             "properties":
@@ -146,6 +148,7 @@
             "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'), '/', 'maintenance')]",
             "apiVersion": "2016-03-31",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('cosmosDbDatabaseName'))]"
             ],
             "properties":
@@ -182,7 +185,7 @@
             "name": "office365",
             "location": "[variables('location')]",
             "properties": {
-                "displayName": "cpietschmann@solliance.net",
+                "displayName": "[parameters('RecipientEmail')]",
                 "api": {
                     "id": "[concat(subscription().id,'/providers/Microsoft.Web/locations/', variables('location'), '/managedApis/office365')]"
                 }
@@ -433,6 +436,7 @@
             "name": "[variables('functionAppStreamProcessingName')]",
             "location": "[variables('location')]",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
                 "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')]"
             ],
@@ -499,6 +503,7 @@
             "name": "[variables('functionAppCosmosDBProcessingName')]",
             "location": "[variables('location')]",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
                 "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'ColdStorageAccount')]",
                 "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'EventHubsConnection')]",
@@ -579,6 +584,7 @@
             "name": "[variables('iotWebAppName')]",
             "location": "[variables('location')]",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]"
             ],
             "identity": {
@@ -613,6 +619,7 @@
             "name": "[concat(variables('keyVaultName'), '/add')]",
             "apiVersion": "2018-02-14",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[resourceId('Microsoft.Web/sites', variables('iotWebAppName'))]",
                 "[resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName'))]",
                 "[resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName'))]"
