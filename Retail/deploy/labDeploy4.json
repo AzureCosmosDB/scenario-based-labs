@@ -124,7 +124,7 @@
                     "id":  "associations",
                     "partitionKey": {
                         "paths": [
-                        "/id"
+                        "/source"
                         ],
                         "kind": "Hash"
                     }
@@ -143,7 +143,7 @@
                     "id":  "similarity",
                     "partitionKey": {
                         "paths": [
-                        "/id"
+                        "/sourceItemId"
                         ],
                         "kind": "Hash"
                     }
@@ -162,7 +162,7 @@
                     "id":  "ratings",
                     "partitionKey": {
                         "paths": [
-                        "/id"
+                        "/itemId"
                         ],
                         "kind": "Hash"
                     }

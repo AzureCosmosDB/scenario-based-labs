@@ -85,7 +85,7 @@ Contoso Movies, Ltd. has expressed their desire to move to a more modern and clo
 
 ## Solution architecture (High-level)
 
-![TODO.](./Media/solution-diagram-1.png "Solution Architecture")
+![The Cosmos DB high level solution diagram.](./Media/solution-diagram-1.png "Solution Architecture")
 
 ## Requirements
 
@@ -117,13 +117,13 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 
 1.  Select your resource group, and then select your Azure Databricks instance, it should be called **s2_databricks...**
 
-2.  Click **Launch Workspace**, if prompted, login as the account you used to create your environment
+2.  Select **Launch Workspace**, if prompted, login as the account you used to create your environment
 
-3.  In the side navigation, click **Clusters**
+3.  In the side navigation, Select **Clusters**
 
 ![The cluster blade with all the settings filled in.](./media/xx_Databricks_01.png "Databricks cluster configuration")
 
-4.  Click **Create Cluster**
+4.  Select **Create Cluster**
 
 5.  On the create cluster form, provide the following:
 
@@ -151,11 +151,11 @@ Synopsis: We have pre-generated a set of events that include **buy** and **detai
 
 7.  Before continuing to the next step, verify that your new cluster is running.  Wait for the state to change from **Pending** to **Running**
 
-8.  Click the **small** cluster, then click **Libraries**
+8.  Select the **small** cluster, then select **Libraries**
 
-9. Select **Install New**.
+9.  Select **Install New**.
 
-![Navigate to the libraries tab and click Install New.](./media/xx_Databricks_03.png "Adding a new library")
+![Navigate to the libraries tab and select `Install New`.](./media/xx_Databricks_03.png "Adding a new library")
 
 10. In the Install Library dialog, select **Maven** for the Library Source
 
@@ -177,7 +177,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it ($githubdirectory/lab-files/Retail/Notebooks/02 Retail.dbc)
 
-3.  Click **Import**
+3.  Select **Import**
 
 ![Workspace is highlighted with the user expanded and the Import option highlighted.](./media/xx_Databricks_07.png "Import the Databricks notebook")
 
@@ -195,7 +195,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 ![The configuration values in the notebook are highlighted.](./media/xx_Databricks_06.png "Add the databrick notebook configuration settings")
 
-8.  Click **Run All**
+8.  Select **Run All**
 
 >NOTE:  With the default RUs on the Cosmos DB, this process will take up to 25 minutes to generate the event data.  You could increase the RUs and get it under 5 minutes.
 
@@ -205,11 +205,11 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1.  In your resource group, navigate to your Cosmos DB instance, it should start with **s2cosmosdb...**
 
-1.  Click **Data Explorer**
+1.  Select **Data Explorer**
 
-1.  Select the **events** collection, then click **items**
+1.  Select the **events** collection, then select **items**
 
-1.  Review the items in the collection
+1.  Select one or more of the items and review them
 
 ![An example item from the events collection is displayed.](./media/xx_EventsColl.png "The events collection")
 
@@ -281,27 +281,27 @@ topItems = GetItemsByImdbIds(itemIds);
 
 1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Click **New**, then ensure that **Azure Functions Premium Plan** is selected
+1.  Select **New**, then ensure that **Azure Functions Premium Plan** is selected
 
 ![Select the Azure Functions Premium plan and then select 'select existing'](./media/xx_DeployFunction.png "Select a plan")
 
-1.  Click **Select Existing**, then click **Publish**
+1.  Select **Select Existing**, then select **Publish**
 
 1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2func...***
 
 ![Select the pre-created function app service that starts with s2func.](./media/xx_DeployFunction_02.png "Select the App Service")
 
-1.  Click **OK**
+1.  Select **OK**
 
 1.  Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
 
-1.  Click **New**, then ensure that **App Service** is selected
+1.  Select **New**, then ensure that **App Service** is selected
 
-1.  Click **Select Existing**, then click **Publish**
+1.  Select **Select Existing**, then select **Publish**
 
 1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2web...***
 
-1.  Click **OK**, the application will publish and the site should be displayed:
+1.  Select **OK**, the application will publish and the site should be displayed:
 
 ### Task 3: Test the applications
 
@@ -407,21 +407,19 @@ return View(vm);
 
 1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Click **Publish**
+1.  Select **Publish**
 
 1.  Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
 
-1.  Click **Publish**, the site should load.
+1.  Select **Publish**, the site should load.
 
 ### Task 3: Test the applications
 
 1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see the same results as you received previously.
 
-2.  Click **login**, select the **comedy@contosomovies.com** account
+2.  Select **login**, select the **comedy@contosomovies.com** account
 
-3.  Notice the main page now has different recommendations than what you received earlier, but we are still missing the similar 'liked' items:
-
-**TODO IMAGE**
+3.  Notice the main page now has different recommendations than what you received earlier, but we are still missing the similar 'liked' items
 
 ## Exercise 5: Perform and deploy collaborative filtering rules calculation
 
@@ -437,7 +435,7 @@ In this exercise you will defined
 
 1.  Update the configuration settings for both the **readEventsConfig** AND the **writeAssociationConfig**, set the following:
 
-- Endpoint = Cosmos DB endpoint
+- Endpoint = Cosmos DB endpoint url
 - Masterkey = Cosmos DB master key
 - Database = Database id of the cosmos db
 
@@ -449,9 +447,9 @@ In this exercise you will defined
 
 ### Task 2: Generate the Collaborative Rules
 
-1.  Open the **Similarity** notebook
+1.  Switch back to your Databricks workspace, select **Similarity**
 
-1.  Set the cluster
+1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. 
 
 1. Run each cell of the **Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
@@ -459,9 +457,13 @@ In this exercise you will defined
 
 1.  Switch back to the Azure Portal
 
-1.  In your resource group, navigate to your Cosmos DB instance
+1.  In your resource group, navigate to your Cosmos DB instance, it should start with **s2cosmosdb...**
 
-1.  Open the **similarity** collection, review the items in the collection
+1.  Select **Data Explorer**
+
+1.  Select the **similarity** collection, then select **items**
+
+1.  Select one or more of the items and review them
 
 >NOTE:  These items are created from the Databricks solution and include the similarity of one movie, the source, to another, the target.
 
@@ -563,17 +565,17 @@ foreach(PredictionModel pm in sortedItems)
 
 1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Click **Publish**
+1.  Select **Publish**
 
 1.  Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
 
-1.  Click **Publish**, the site should load.
+1.  Select **Publish**, the site should load.
 
 ### Task 6: Test the applications
 
 1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user.  You should see the same results as you received previously.
 
-2.  Click **login**, select the **comedy@contosomovies.com** account
+2.  Select **login**, select the **comedy@contosomovies.com** account
 
 3.  Notice the main page now has both the associative and collaborative results displayed::
 
@@ -589,9 +591,9 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  Open the Azure Portal, navigate to your Stream Analytics job that was created for you in the setup script
 
-1.  Click **Inputs**
+1.  Select **Inputs**
 
-1.  Click **+Add stream input**, then select **Event Hub**
+1.  Select **+Add stream input**, then select **Event Hub**
 
 1.  For the alias, type **s2events**
 
@@ -603,23 +605,11 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the policy name, select **RootManageSharedAccessKey**
 
-1.  Click **Save**
+1.  Select **Save**
 
-1.  Click **Outputs**
+1.  Select **Outputs**
 
-1.  Click **+Add**, then select **Power BI**
-
-1.  For the output alias, type **eventCount**
-
-1.  For the dataset, type **eventCount**
-
-1.  For the table name, type **eventCount**
-
-1.  Click **Authorize**, login to your Power BI instance
-
-1.  Click **Save**
-
-1.  Click **+Add**, then select **Power BI**
+1.  Select **+Add**, then select **Power BI**
 
 1.  For the output alias, type **eventOrdersLastHour**
 
@@ -627,9 +617,11 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the table name, type **eventOrdersLastHour**
 
-1.  Click **Authorize**, login to your Power BI instance
+1.  Select **Authorize**, login to your Power BI instance
 
-1.  Click **+Add**, then select **Power BI**
+1.  Select **Save**
+
+1.  Select **+Add**, then select **Power BI**
 
 1.  For the output alias, type **eventSummary**
 
@@ -637,9 +629,11 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the table name, type **eventSummary**
 
-1.  Click **Authorize**, login to your Power BI instance
+1.  Select **Authorize**, login to your Power BI instance
 
-1.  Click **+Add**, then select **Power BI**
+1.  Select **Save**
+
+1.  Select **+Add**, then select **Power BI**
 
 1.  For the output alias, type **failureCount**
 
@@ -647,9 +641,11 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the table name, type **failureCount**
 
-1.  Click **Authorize**, login to your Power BI instance
+1.  Select **Authorize**, login to your Power BI instance
 
-1.  Click **+Add**, then select **Power BI**
+1.  Select **Save**
+
+1.  Select **+Add**, then select **Power BI**
 
 1.  For the output alias, type **eventData**
 
@@ -657,11 +653,11 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  For the table name, type **eventData**
 
-1.  Click **Authorize**, login to your Power BI instance
+1.  Select **Authorize**, login to your Power BI instance
 
-1.  Click **Save**
+1.  Select **Save**
 
-1.  Click **Query**
+1.  Select **Query**
 
 1.  Update the query to the following:
 
@@ -693,13 +689,13 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 ![An example item from the ratings collection is displayed.](./media/xx_StreamAnalytics_05.png "The ratings collection")
 
-1.  Click **Save query**
+1.  Select **Save query**
 
-1.  Click **Overview**, in the menu, click **Start** to start your stream analytics job
+1.  Select **Overview**, in the menu, select **Start** to start your stream analytics job
 
-![Go to the overview tab, then click 'start'.](./media/xx_StreamAnalytics_05.png "Start the analytics job")
+![Go to the overview tab, then select 'start'.](./media/xx_StreamAnalytics_05.png "Start the analytics job")
 
-1.  In the dialog, ensure that **Now** is selected, then click **Start**
+1.  In the dialog, ensure that **Now** is selected, then select **Start**
 
 >NOTE:  If your job fails for any reason, you can use the **Activity Log** to see what the error(s) were.
 
@@ -751,9 +747,9 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 ### Task 3: Deploy the ChangeFeed Function
 
-1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1.  Right-Select the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Click **Publish**
+1.  Select **Publish**
 
 ### Task 4: Generate user events for PowerBI
 
@@ -773,61 +769,61 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Open a new window to [Power BI](https://www.powerbi.com)
 
-1.  Click on **My workspace**
+1.  Select on **My workspace**
 
-1.  Click **+Create**, then select **Dashboard**
+1.  Select **+Create**, then select **Dashboard**
 
 ![The main Power BI dashboard page is displayed with the '+Create' highlighted.](./media/xx_PowerBI_01.png "Create a dashboard")
 
-1.  For the name, type **Contoso Movies**, click **Create**
+1.  For the name, type **Contoso Movies**, select **Create**
 
-1.  Click the **...** ellipses, then select **+Add tile**
+1.  Select the **...** ellipses, then select **+Add tile**
 
-1.  Select **Custom Streaming Data**, click **Next**
+1.  Select **Custom Streaming Data**, select **Next**
 
-1.  Select the **eventData** data set, then click **Next**
+1.  Select the **eventData** data set, then select **Next**
 
-![Select the eventCount dataset and click next.](./media/xx_PowerBI_02.png "Add the eventCount tile")
+![Select the eventCount dataset and select next.](./media/xx_PowerBI_02.png "Add the eventCount tile")
 
 1.  For the visualization type, select **Card**
 
 1.  For the Fields, select **count**
 
-1.  Click **Next**
+1.  Select **Next**
 
-1.  For the title, type **Event Count**, then click **Apply**
+1.  For the title, type **Event Count**, then select **Apply**
 
-1.  Click the **...** ellipses, then select **+Add tile**
+1.  Select the **...** ellipses, then select **+Add tile**
 
-1.  Select **Custom Streaming Data**, click **Next**
+1.  Select **Custom Streaming Data**, select **Next**
 
-1.  Select the **eventData** data set, then click **Next**
+1.  Select the **eventData** data set, then select **Next**
 
 1.  For the visualization type, select **Card**
 
-1.  For the Fields, select **UserCount**, click **Next**
+1.  For the Fields, select **UserCount**, select **Next**
 
-1.  For the title, type **User Count**, then click **Apply**
+1.  For the title, type **User Count**, then select **Apply**
 
-1.  Click the **...** ellipses, then select **+Add tile**
+1.  Select the **...** ellipses, then select **+Add tile**
 
-1.  Select **Custom Streaming Data**, click **Next**
+1.  Select **Custom Streaming Data**, select **Next**
 
-1.  Select the **failureCount** data set, then click **Next**
+1.  Select the **failureCount** data set, then select **Next**
 
 1.  For the visualization type, select **Card**
 
 1.  For the Fields, select **FailureCount**
 
-1.  Click **Next**
+1.  Select **Next**
 
-1.  For the title, type **Payment Failures**, then click **Apply**
+1.  For the title, type **Payment Failures**, then select **Apply**
 
-1.  Click the **...** ellipses, then select **+Add tile**
+1.  Select the **...** ellipses, then select **+Add tile**
 
-1.  Select **Custom Streaming Data**, click **Next**
+1.  Select **Custom Streaming Data**, select **Next**
 
-1.  Select the **eventSummary** data set, then click **Next**
+1.  Select the **eventSummary** data set, then select **Next**
 
 1.  For the visualization type, select **Line chart**
 
@@ -837,15 +833,15 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  For the values, select **Count**
 
-1.  Click **Next**
+1.  Select **Next**
 
-1.  For the title, type **Count By Event**, then click **Apply**
+1.  For the title, type **Count By Event**, then select **Apply**
 
-1.  Click the **...** ellipses, then select **+Add tile**
+1.  Select the **...** ellipses, then select **+Add tile**
 
-1.  Select **Custom Streaming Data**, click **Next**
+1.  Select **Custom Streaming Data**, select **Next**
 
-1.  Select the **evetOrdersLastHour** data set, then click **Next**
+1.  Select the **evetOrdersLastHour** data set, then select **Next**
 
 1.  For the visualization type, select **Gauge**
 
@@ -857,9 +853,9 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  For the legend, select **Event**
 
-1.  Click **Next**
+1.  Select **Next**
 
-1.  For the title, type **Orders Per Hour**, then click **Apply**
+1.  For the title, type **Orders Per Hour**, then select **Apply**
 
 1.  Your dashboard should look similar to the following:
 
@@ -883,11 +879,11 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Open the Azure Portal to your resource group and select the Logic App in your resource group, it should be named **s2_logicapp_...**
 
-1.  Click **Edit**
+1.  Select **Edit**
 
 ![The Logic App blade with 'edit' highlighted.](./media/xx_LogicApp_01.png "Edit the Logic App")
 
-1.  Click **+New step**
+1.  Select **+New step**
 
 ![The Logic App Designer is displayed with 'new step' highlighted.](./media/xx_LogicApp_02.png "Add a new step")
 
@@ -895,7 +891,7 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 ![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./media/xx_LogicApp_03.png "Add Send an Email action")
 
-1.  Click **Sign in**, login using your Azure AD credentials
+1.  Select **Sign in**, login using your Azure AD credentials
 
 ![Sign in button is highlighted.](./media/xx_LogicApp_04.png "Sign in to Office 365")
 
@@ -905,11 +901,11 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Set the **Body** as **Your order is being processed**
 
-1.  Click **Save**
+1.  Select **Save**
 
 ![Action properties are completed and the 'Save' button is highlighted](./media/xx_LogicApp_05.png "Complete the action properties")
 
-1.  Click on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
+1.  Select on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
 
 ![The http action trigger is expanded and the url is highlighted.](./media/xx_LogicApp_06.png "Copy the function url trigger endpoint")
 
@@ -917,11 +913,11 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Open the Azure Portal to your resource group and select the Function App in your resource group, it should be named **s2func...**
 
-1.  Click **Configuration**
+1.  Select **Configuration**
 
 1.  Update the **LogicAppUrl** configuration variable to the Logic App http endpoint your recorded above
 
-1.  Click **Save**
+1.  Select **Save**
 
 ### Task 3: Update and deploy function app
 
@@ -966,9 +962,9 @@ public async void CallLogicApp(IReadOnlyList<Document> events)
 }
 ```
 
-1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1.  Right-Select the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Click **Publish**
+1.  Select **Publish**
 
 ### Task 4: Test order email delivery
 

@@ -151,7 +151,7 @@ namespace Contoso.Apps.Movies.Logic
         }
 
         //aka NeighborhoodBasedRecs
-        public static List<string> CollaborationBasedRecommendation(int userId, int take)
+        public static List<string> CollaborativeBasedRecommendation(int userId, int take)
         {
             List<string> itemIds = new List<string>();
 
@@ -287,7 +287,7 @@ namespace Contoso.Apps.Movies.Logic
                     items = GetRandom(take);
                     break;
                 case "collab":
-                    List<string> precRecs2 = RecommendationHelper.CollaborationBasedRecommendation(userId, take);
+                    List<string> precRecs2 = RecommendationHelper.CollaborativeBasedRecommendation(userId, take);
 
                     if (precRecs2.Count > 0)
                         items = GetItemsByImdbIds(precRecs2);
