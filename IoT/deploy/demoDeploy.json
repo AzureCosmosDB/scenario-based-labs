@@ -2,6 +2,12 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "RecipientEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "Enter a valid email address you want to receive notification emails from the Logic App."
+            }
+        }
     },
     "variables": {
         "location": "westus",
@@ -316,6 +322,7 @@
 
 
 
+
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
             "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBConnection')]",
@@ -418,35 +425,179 @@
 
 
 
+
+
         {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2016-08-01",
             "name": "[variables('functionAppStreamProcessingName')]",
             "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')]"
+            ],
             "identity": {
                 "type": "SystemAssigned"
             },
-            "properties": { }
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName')),'2019-04-01').keys[0].value)]"
+        
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName')),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName')),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('storageAccountStreamProcessing-website-contentshare')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
+                        },
+
+
+                        {
+                            "name": "CosmosDBConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "IoTHubConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')).secretUriWithVersion, ')')]"
+                        }
+                    ]
+                }
+            }
         },
         {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2016-08-01",
             "name": "[variables('functionAppCosmosDBProcessingName')]",
             "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'ColdStorageAccount')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'EventHubsConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'LogicAppUrl')]"
+            ],
             "identity": {
                 "type": "SystemAssigned"
             },
-            "properties": { }
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName')),'2019-04-01').keys[0].value)]"
+        
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName')),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName')),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('storageAccountCosmosDBProcessing-website-contentshare')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
+                        },
+
+                        {
+                            "name": "CosmosDBConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "ColdStorageAccount",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'ColdStorageAccount')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "EventHubsConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'EventHubsConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "LogicAppUrl",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'LogicAppUrl')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "RecipientEmail",
+                            "value": "[parameters('RecipientEmail')]"
+                        }
+                    ]
+                }
+            }
         },
         {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2016-08-01",
             "name": "[variables('iotWebAppName')]",
             "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]"
+            ],
             "identity": {
                 "type": "SystemAssigned"
             },
-            "properties": { }
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+
+                        {
+                            "name": "CosmosDBConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "DatabaseName",
+                            "value": "[variables('cosmosDbDatabaseName')]"
+                        },
+                        {
+                            "name": "ContainerName",
+                            "value": "metadata"
+                        }
+                    ]
+                }
+            }
         },
         {
             "type": "Microsoft.KeyVault/vaults/accessPolicies",
@@ -522,7 +673,7 @@
 
 
 
-        
+
 
 
 
