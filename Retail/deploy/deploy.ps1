@@ -349,18 +349,12 @@ if ($mode -eq "demo")
 $funcAppName = "s2func" + $suffix;
 
 #we have to deploy something in order for the host.json file to be created in the storage account...
-if ($mode -eq "demo" -or $mode -eq "lab")
+if ($mode -eq "demo")
 {
-    $deployed = get-content "funcdeployed.txt";
+    write-host "Deploying the function app"
 
-    if ($deployed -ne "true")
-    {
-        write-host "Deploying the function app"
-
-        $res = $(az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "$githubpath/retail/deploy/functionapp.zip")
-        $json = ConvertObjectToJson $res;
-        add-content "funcdeployed.txt" "true";
-    }
+    $res = $(az functionapp deployment source config-zip --resource-group $rgName --name $funcAppName --src "$githubpath/retail/deploy/functionapp.zip")
+    $json = ConvertObjectToJson $res;
 }
 
 ########################
@@ -378,10 +372,10 @@ $func = $json | where {$_.name -eq $funcAppName};
 $funcApiUrl = "https://" + $func.defaultHostName;
 
 #open the function app endpoint to create the host.json file:
-$url = "https://portal.azure.com/#blade/WebsitesExtension/FunctionsIFrameBlade/id/$($funcApp.id)";
+$url = "https://$($func.defaultHostName)/admin/vfs/site/wwwroot/host.json"
 Start-Process $url;
 
-start-sleep 10;
+start-sleep 5;
 
 #key is stored in the storage account after the last url loads.
 $res = $(az storage blob list --connection-string $azurequeueConnString --container-name azure-webjobs-secrets)
