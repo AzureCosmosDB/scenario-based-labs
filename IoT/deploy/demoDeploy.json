@@ -45,6 +45,7 @@
 
 
 
+
         "cosmosDbDatabaseName": "ContosoAuto",
         "cosmosIoTLogicAppName": "[concat('Cosmos-IoT-Logic-', variables('name-suffix'))]"
     },
@@ -60,8 +61,100 @@
                 "contentVersion": "1.0.0.0"
               },
               "parameters": { }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
+            ]
+        },
+
+
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2015-05-01",
+            "name": "[variables('appInsightsName')]",
+            "location": "[variables('location')]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            },
+            "metadata": {
+                "description": "This was copied here from labDeploy.json. It needs to be in this template otherwise reference() calls to it will fail on deployment. Yes, this is to work around a bug with Nested ARM Template deployments."
             }
         },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('storageAccountStreamProcessingName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "metadata": {
+                "description": "This was copied here from labDeploy.json. It needs to be in this template otherwise reference() calls to it will fail on deployment. Yes, this is to work around a bug with Nested ARM Template deployments."
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('storageAccountCosmosDBProcessingName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "metadata": {
+                "description": "This was copied here from labDeploy.json. It needs to be in this template otherwise reference() calls to it will fail on deployment. Yes, this is to work around a bug with Nested ARM Template deployments."
+            }
+        },
+
+
+
+
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/apis/databases",
             "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'))]",
@@ -438,7 +531,9 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
-                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')]"
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')]",
+                "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
             ],
             "identity": {
                 "type": "SystemAssigned"
@@ -507,7 +602,9 @@
                 "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
                 "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'ColdStorageAccount')]",
                 "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'EventHubsConnection')]",
-                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'LogicAppUrl')]"
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'LogicAppUrl')]",
+                "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
             ],
             "identity": {
                 "type": "SystemAssigned"
@@ -585,7 +682,8 @@
             "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
-                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]"
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
+                "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]"
             ],
             "identity": {
                 "type": "SystemAssigned"
