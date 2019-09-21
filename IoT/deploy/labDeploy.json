@@ -637,6 +637,12 @@
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                             "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
                         }
+                    ],
+                    "metadata": [
+                        {
+                            "name": "CURRENT_STACK",
+                            "value": "dotnetcore"
+                        }
                     ]
                 }
             },
