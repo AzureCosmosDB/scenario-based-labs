@@ -7,18 +7,18 @@
 #################
 $githubPath = "C:\github\solliancenet\cosmos-db-scenario-based-labs";
 $mode = "lab"  #can be 'lab' or 'demo'
-$subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
-$subName = "Solliance MPN 12K"
+$subscriptionId = "YOUR SUBSCRIPTION ID"
+$subName = "YOUR SUBSCRIPTION NAME"
 
 #this should get set on a successful deployment...
 $suffix = ""
 
-$prefix = "cjg"
+$prefix = "YOUR INITIALS"
 $rgName = $prefix + "_s2_retail"
 $databaseId = "movies";
 
 #register at https://api.themoviedb.org
-$movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
+$movieApiKey = "YOUR API KEY";
 
 #toggles for skipping items
 $skipDeployment = $false;
@@ -399,13 +399,6 @@ $funcApiKey = $json.masterkey.value;
 
 ########################
 #
-# Output variables
-#
-########################
-Output
-
-########################
-#
 #set the web app properties
 #
 #########################
@@ -439,6 +432,8 @@ $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings 
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHub=store)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$movieApiKey)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings LogicAppUrl=empty)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings RecipientEmail=empty)
 
 ########################
 #

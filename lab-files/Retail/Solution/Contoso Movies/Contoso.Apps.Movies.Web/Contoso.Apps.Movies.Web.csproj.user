@@ -4,7 +4,7 @@
     <NameOfLastUsedPublishProfile>FolderProfile</NameOfLastUsedPublishProfile>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44302</IISExpressSSLPort>
-    <LastActiveSolutionConfig>Release|Any CPU</LastActiveSolutionConfig>
+    <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
     <Use64BitIISExpress />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
