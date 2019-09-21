@@ -841,7 +841,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Select **Custom Streaming Data**, select **Next**
 
-1.  Select the **evetOrdersLastHour** data set, then select **Next**
+1.  Select the **eventOrdersLastHour** data set, then select **Next**
 
 1.  For the visualization type, select **Gauge**
 
@@ -851,8 +851,6 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  For target value, select **Target**
 
-1.  For the legend, select **Event**
-
 1.  Select **Next**
 
 1.  For the title, type **Orders Per Hour**, then select **Apply**
@@ -861,7 +859,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 ![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_PowerBI_03.png "Configure the dashboard")
 
-### Task 6: Generate user events for real time
+### Task 6: Generate user events for real time analytics
 
 1.  Switch back to Visual Studio, press **F5** to run the data generator project
 
@@ -879,33 +877,33 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Open the Azure Portal to your resource group and select the Logic App in your resource group, it should be named **s2_logicapp_...**
 
-1.  Select **Edit**
+2.  Select **Edit**
 
 ![The Logic App blade with 'edit' highlighted.](./media/xx_LogicApp_01.png "Edit the Logic App")
 
-1.  Select **+New step**
+3.  Select **+New step**
 
 ![The Logic App Designer is displayed with 'new step' highlighted.](./media/xx_LogicApp_02.png "Add a new step")
 
-1.  Search for **send an email**, then select the Office 365 outlook connector
+4.  Search for **send an email**, then select the Office 365 outlook connector
 
 ![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./media/xx_LogicApp_03.png "Add Send an Email action")
 
-1.  Select **Sign in**, login using your Azure AD credentials
+5.  Select **Sign in**, login using your Azure AD credentials
 
 ![Sign in button is highlighted.](./media/xx_LogicApp_04.png "Sign in to Office 365")
 
-1.  Set the **To** as your email
+6.  Set the **To** as your email address
 
-1.  Set the **Subject** as **Thank you for your order**
+7.  Set the **Subject** as **Thank you for your order**
 
-1.  Set the **Body** as **Your order is being processed**
+8.  Set the **Body** as **Your order is being processed**
 
-1.  Select **Save**
+9.  Select **Save**
 
 ![Action properties are completed and the 'Save' button is highlighted](./media/xx_LogicApp_05.png "Complete the action properties")
 
-1.  Select on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
+10.  Select on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
 
 ![The http action trigger is expanded and the url is highlighted.](./media/xx_LogicApp_06.png "Copy the function url trigger endpoint")
 
