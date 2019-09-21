@@ -399,6 +399,54 @@
             "properties": {
                 "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('cosmosIoTLogicAppName')), '/triggers/manual'), '2016-06-01').value]"
             }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[variables('functionAppStreamProcessingName')]",
+            "location": "[variables('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": { }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[variables('functionAppCosmosDBProcessingName')]",
+            "location": "[variables('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": { }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[variables('iotWebAppName')]",
+            "location": "[variables('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": { }
         }
 
 
