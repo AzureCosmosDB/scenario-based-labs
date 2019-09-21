@@ -378,7 +378,7 @@ $funcApiUrl = "https://" + $func.defaultHostName;
 
 #open the function app endpoint to create the host.json file:
 $url = "https://portal.azure.com/#blade/WebsitesExtension/FunctionsIFrameBlade/id/$($funcApp.id)";
-Start-Process -Path $url;
+Start-Process $url;
 
 start-sleep 10;
 
@@ -438,7 +438,7 @@ $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings 
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings CosmosDBConnection=$dbConnectionUrl)
+$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings CosmosDBConnection=$CosmosDBConnection)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey)
 $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection)
