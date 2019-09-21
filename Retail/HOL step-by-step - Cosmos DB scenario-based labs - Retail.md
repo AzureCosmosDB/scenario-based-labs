@@ -793,7 +793,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  For the title, type **Event Count**, then select **Apply**
 
-1.  Select the **...** ellipses, then select **+Add tile**
+1.  Select **+Add tile**, you may need to select the **...** ellipses first
 
 1.  Select **Custom Streaming Data**, select **Next**
 
@@ -805,7 +805,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  For the title, type **User Count**, then select **Apply**
 
-1.  Select the **...** ellipses, then select **+Add tile**
+1.  Select **+Add tile**, you may need to select the **...** ellipses first
 
 1.  Select **Custom Streaming Data**, select **Next**
 
@@ -819,7 +819,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  For the title, type **Payment Failures**, then select **Apply**
 
-1.  Select the **...** ellipses, then select **+Add tile**
+1.  Select **+Add tile**, you may need to select the **...** ellipses first
 
 1.  Select **Custom Streaming Data**, select **Next**
 
@@ -837,7 +837,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  For the title, type **Count By Event**, then select **Apply**
 
-1.  Select the **...** ellipses, then select **+Add tile**
+1.  Select **+Add tile**, you may need to select the **...** ellipses first
 
 1.  Select **Custom Streaming Data**, select **Next**
 
