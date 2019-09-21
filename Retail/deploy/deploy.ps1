@@ -125,6 +125,7 @@ function Output()
     write-host "Cosmos DB Key: $dbConnectionKey"
     write-host "DatabaseId: $databaseId"
     write-host "EventHubConn: $eventHubConnection"
+    write-host "CosmosDBFull: $CosmosDBConnection"
 }
 
 function SetupStreamAnalytics($suffix)

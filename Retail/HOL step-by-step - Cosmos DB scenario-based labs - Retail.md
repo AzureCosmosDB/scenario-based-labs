@@ -759,6 +759,8 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Click **+Create**, then select **Dashboard**
 
+![The main Power BI dashboard page is displayed with the '+Create' highlighted.](./media/xx_PowerBI_01.png "Create a dashboard")
+
 1.  For the name, type **Contoso Movies**, click **Create**
 
 1.  Click the **...** ellipses, then select **+Add tile**
@@ -771,7 +773,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  For the visualization type, select **Card**
 
-1.  For the Fields, select **Total Events**
+1.  For the Fields, select **count**
 
 1.  Click **Next**
 
@@ -785,9 +787,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  For the visualization type, select **Card**
 
-1.  For the Fields, select **UserCount**
-
-1.  Click **Next**
+1.  For the Fields, select **UserCount**, click **Next**
 
 1.  For the title, type **User Count**, then click **Apply**
 
@@ -821,7 +821,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Click **Next**
 
-1.  For the title, type **Count**, then click **Apply**
+1.  For the title, type **Count By Event**, then click **Apply**
 
 1.  Click the **...** ellipses, then select **+Add tile**
 
