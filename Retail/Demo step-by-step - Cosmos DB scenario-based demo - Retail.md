@@ -1,65 +1,40 @@
-<div class="MCWHeader1">
-Cosmos DB scenario-based Demo - Retail
-</div>
-
-<div class="MCWHeader2">
-Hands-on demo step-by-step
-</div>
-
-<div class="MCWHeader3">
-September 2019
-</div>
-
-
-Information in this document, including URL and other Internet Web site references, is subject to change without notice. Unless otherwise noted, the example companies, organizations, products, domain names, e-mail addresses, logos, people, places, and events depicted herein are fictitious, and no association with any real company, organization, product, domain name, e-mail address, logo, person, place or event is intended or should be inferred. Complying with all applicable copyright laws is the responsibility of the user. Without limiting the rights under copyright, no part of this document may be reproduced, stored in or introduced into a retrieval system, or transmitted in any form or by any means (electronic, mechanical, photocopying, recording, or otherwise), or for any purpose, without the express written permission of Microsoft Corporation.
-
-Microsoft may have patents, patent applications, trademarks, copyrights, or other intellectual property rights covering subject matter in this document. Except as expressly provided in any written license agreement from Microsoft, the furnishing of this document does not give you any license to these patents, trademarks, copyrights, or other intellectual property.
-
-The names of manufacturers, products, or URLs are provided for informational purposes only and Microsoft makes no representations and warranties, either expressed, implied, or statutory, regarding these manufacturers or the use of the products with any Microsoft technologies. The inclusion of a manufacturer or product does not imply endorsement of Microsoft of the manufacturer or product. Links may be provided to third party sites. Such sites are not under the control of Microsoft and Microsoft is not responsible for the contents of any linked site or any link contained in a linked site, or any changes or updates to such sites. Microsoft is not responsible for webcasting or any other form of transmission received from any linked site. Microsoft is providing these links to you only as a convenience, and the inclusion of any link does not imply endorsement of Microsoft of the site or the products contained therein.
-
-© 2019 Microsoft Corporation. All rights reserved.
-
-Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/Usage/General.aspx> are trademarks of the Microsoft group of companies. All other trademarks are property of their respective owners.
-
-**Contents** 
+# Cosmos DB scenario-based labs - Retail hands-on lab step-by-step
 
 <!-- TOC -->
 
-- [Cosmos DB scenario-based demo - Retail hands-on demo step-by-step](#cosmos-db-scenario-based-demo---retail-hands-on-lab-step-by-step)
+- [Cosmos DB scenario-based labs - Retail hands-on lab step-by-step](#cosmos-db-scenario-based-labs---retail-hands-on-lab-step-by-step)
   - [Abstract and learning objectives](#abstract-and-learning-objectives)
   - [Overview](#overview)
   - [Solution architecture (High-level)](#solution-architecture-high-level)
   - [Requirements](#requirements)
-  - [Before the hands-on lab](#before-the-hands-on-lab)
+  - [Before the demo](#before-the-demo)
   - [Exercise 1: Deployment and Setup](#exercise-1-deployment-and-setup)
-    - [Task 1: Deploy ARM Template](#task-1-blah)
-    - [Task 2: Initialize and populate the Cosmos DB instance](#task-1-blah)
-    - [Task 3: Configure resources](#task-1-blah)
+    - [Task 1: Setup Stream Analytics](#task-1-setup-stream-analytics)
+    - [Task 2: Generate user events for PowerBI](#task-2-generate-user-events-for-powerbi)
+    - [Task 3: Setup Power BI Dashboard](#task-3-setup-power-bi-dashboard)
+    - [Task 4: Generate user events for real time](#task-4-generate-user-events-for-real-time)
   - [Exercise 2: Explore Contoso Movie Store](#exercise-2-explore-contoso-movie-store)
-    - [Task 1: Explore the Contoso Movie Store](#task-1-blah-1)
-  - [Exercise 3: Simulate data and events using Stream Analytics and Power BI](#exercise-3-simulate-data-and-events-using-stream-analytics-and-power-bi)
-    - [Task 1: Open the Power BI Dashboard](#task-1-blah-2)
-    - [Task 2: Start Stream Analytics and run the Data Generator](#task-2-blah-2)
+    - [Task 1: Explore the Contoso Movie Store](#task-1-explore-the-contoso-movie-store)
   - [Exercise 4: Email alerts using Logic Apps](#exercise-4-email-alerts-using-logic-apps)
-    - [Task 1: Review the Logic App and Emails](#task-1-review-the-logic-app-and-emails)
+    - [Task 1: Setup Logic App](#task-1-setup-logic-app)
+    - [Task 2: Configure the function app settings](#task-2-configure-the-function-app-settings)
+    - [Task 3: Test order email delivery](#task-3-test-order-email-delivery)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete resource group](#task-1-delete-resource-group)
 
 <!-- /TOC -->
 
-# Cosmos DB scenario-based labs - Retail hands-on lab step-by-step
-
 ## Abstract and learning objectives
 
-In this demo you will show your audience how to uiltize Azure services to host a movie retail store with custom AI models and CosmosDb.  Several other PaaS based technologies will be used to show how Azure can be used to migrate legacy applications to the cloud.
+In this demo you will show your audience how to uiltize Azure services to host a movie retail store with custom AI models and CosmosDb. Several other PaaS based technologies will be used to show how Azure can be used to migrate legacy applications to the cloud.
 
 ## Overview
 
-Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services including CosmosDb, Functions, EventHubs, Stream Analytics, Power BI and Logic Apps.  As part of this redesign they have also implemented a new recommendation system based on custom AI models.  These AI models are done **offline** and stored in CosmosDb for reference when users are browing a site.  User events will immplicitly rank the items they are clicking on and then modify their recommendations based on these events.
+Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services including CosmosDb, Functions, EventHubs, Stream Analytics, Power BI and Logic Apps. As part of this redesign they have also implemented a new recommendation system based on custom AI models. These AI models are done **offline** and stored in CosmosDb for reference when users are browing a site. User events will immplicitly rank the items they are clicking on and then modify their recommendations based on these events.
 
 ## Solution architecture (High-level)
 
-![TODO.](./Media/solution-diagram-1.png "Solution Architecture")
+![TODO.](./Media/solution-diagram-1.png 'Solution Architecture')
 
 ## Requirements
 
@@ -74,7 +49,7 @@ Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services i
 1.  [.Net Framework 4.7.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
 1.  [.Net Core 2.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
-    
+
 ## Before the demo
 
 Refer to the Before the hands-on lab setup guide manual before continuing to the lab exercises.
@@ -85,9 +60,9 @@ Be sure that you change the script mode to `demo` such that the solution code is
 
 Duration: 60 minutes
 
-Synopsis:  In this exercise you will TODO
+Synopsis: In this exercise you will TODO
 
-### Task 1: Setup Stream Analytics 
+### Task 1: Setup Stream Analytics
 
 1.  Open the Azure Portal, navigate to your Stream Analytics job that was created for you in the setup script
 
@@ -172,38 +147,38 @@ SELECT Count(*) as FailureCount
  INTO failureCount
  FROM s2events
  WHERE Event = 'paymentFailure'
- GROUP BY TumblingWindow(second,10) 
+ GROUP BY TumblingWindow(second,10)
 
 SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) as EventCount
  INTO eventData
- FROM s2events 
- GROUP BY TumblingWindow(second,10) 
+ FROM s2events
+ GROUP BY TumblingWindow(second,10)
 
  SELECT System.TimeStamp AS Time, Event, Count(*)
  INTO eventSummary
- FROM s2events 
- GROUP BY Event, TumblingWindow(second,10) 
+ FROM s2events
+ GROUP BY Event, TumblingWindow(second,10)
 
  select DateAdd(second,-10,System.Timestamp()) AS WinStartTime, System.Timestamp() AS WinEndTime,0 as Min, Count(*) as Count, 10 as Target
  into eventOrdersLastHour
  from s2events
  where event = 'buy'
- GROUP BY SlidingWindow(second,10) 
+ GROUP BY SlidingWindow(second,10)
 ```
 
 1.  The Query windows should look similar to this:
 
-![An example item from the ratings collection is displayed.](./media/xx_StreamAnalytics_05.png "The ratings collection")
+![An example item from the ratings collection is displayed.](./media/xx_StreamAnalytics_05.png 'The ratings collection')
 
 1.  Click **Save query**
 
 1.  Click **Overview**, in the menu, click **Start** to start your stream analytics job
 
-![Go to the overview tab, then click 'start'.](./media/xx_StreamAnalytics_05.png "Start the analytics job")
+![Go to the overview tab, then click 'start'.](./media/xx_StreamAnalytics_05.png 'Start the analytics job')
 
 1.  In the dialog, ensure that **Now** is selected, then click **Start**
 
->NOTE:  If your job fails for any reason, you can use the **Activity Log** to see what the error(s) were.
+> NOTE: If your job fails for any reason, you can use the **Activity Log** to see what the error(s) were.
 
 ### Task 2: Generate user events for PowerBI
 
@@ -215,13 +190,13 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 1.  Notice events will be generated based on a set of users and their preferred movie type
 
-![The data generator window is displayed with events streaming.](./media/xx_DataGenerator_01.png "Run the data generator")
+![The data generator window is displayed with events streaming.](./media/xx_DataGenerator_01.png 'Run the data generator')
 
-1.  Buy events will be generated for the first 30 seconds with random payment failures also generated. After 30 seconds, you will notice the orders per hour will fall below the target of 10.  This would signify that something is wrong with the front end web site or order processing.
+1.  Buy events will be generated for the first 30 seconds with random payment failures also generated. After 30 seconds, you will notice the orders per hour will fall below the target of 10. This would signify that something is wrong with the front end web site or order processing.
 
 1.  After about 1 minute, close the DataGenerator console program
 
-### Task 3: Setup Power BI Dashabord 
+### Task 3: Setup Power BI Dashboard
 
 1.  Open a new window to [Power BI](https://www.powerbi.com)
 
@@ -229,7 +204,7 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 1.  Click **+Create**, then select **Dashboard**
 
-![The main Power BI dashboard page is displayed with the '+Create' highlighted.](./media/xx_PowerBI_01.png "Create a dashboard")
+![The main Power BI dashboard page is displayed with the '+Create' highlighted.](./media/xx_PowerBI_01.png 'Create a dashboard')
 
 1.  For the name, type **Contoso Movies**, click **Create**
 
@@ -239,7 +214,7 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 1.  Select the **eventData** data set, then click **Next**
 
-![Select the eventCount dataset and click next.](./media/xx_PowerBI_02.png "Add the eventCount tile")
+![Select the eventCount dataset and click next.](./media/xx_PowerBI_02.png 'Add the eventCount tile')
 
 1.  For the visualization type, select **Card**
 
@@ -315,7 +290,7 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 1.  Your dashboard should look similar to the following:
 
-![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_PowerBI_03.png "Configure the dashboard")
+![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_PowerBI_03.png 'Configure the dashboard')
 
 ### Task 4: Generate user events for real time
 
@@ -323,25 +298,25 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 1.  Switch to your Power BI dashboard, after a few minutes, you should see it update with the event data:
 
-![This graphic shows the layout of the tiles in the Power BI Dashboard when the event stream is running.](./media/xx_PowerBI_04.png "Continuously updating dashboard")
+![This graphic shows the layout of the tiles in the Power BI Dashboard when the event stream is running.](./media/xx_PowerBI_04.png 'Continuously updating dashboard')
 
 ## Exercise 2: Explore Contoso Movie Store
 
 Duration: 15 minutes
 
-Synopsis: You will show your attendees the Contoso Movies store.  It is an ecommerce site setup using Cosmos DB as its data store.  In addition, Azure Functions are monitoring the `changefeed` of Cosmos DB to execute reporting and notification activities.  A second function is in charge of providing recommendations based on the logged in user.  This function calls logic and pre-calculated offline AI models based on user behavior to make movie recommendations.
+Synopsis: You will show your attendees the Contoso Movies store. It is an ecommerce site setup using Cosmos DB as its data store. In addition, Azure Functions are monitoring the `changefeed` of Cosmos DB to execute reporting and notification activities. A second function is in charge of providing recommendations based on the logged in user. This function calls logic and pre-calculated offline AI models based on user behavior to make movie recommendations.
 
 ### Task 1: Explore the Contoso Movie Store
 
 1.  Open the deployed web site
 
->NOTE:  This should have opened as part of the setup script.
+> NOTE: This should have opened as part of the setup script.
 
 2.  Mention that you are not logged in as any user and the results that are being displayed are based on the **top** purchased items in the Cosmso database.
 
 3.  In the top navigation, cLick the **Login** link
 
-4.  Mention that there are several pre-populated *personalities*.  Select the **comedy@contosomovies.com** personality
+4.  Mention that there are several pre-populated _personalities_. Select the **comedy@contosomovies.com** personality
 
 5.  Mention that you now have targeted movies based on two different algorithms
 
@@ -349,27 +324,27 @@ Synopsis: You will show your attendees the Contoso Movies store.  It is an ecomm
 
 Duration: 30 minutes
 
-In this exercise you will configure your change feed function to call an HTTP login app endpoint that will then send an email when an order event occurs.  The function will be using Polly to handle retries in the case the function app is not available.
+In this exercise you will configure your change feed function to call an HTTP login app endpoint that will then send an email when an order event occurs. The function will be using Polly to handle retries in the case the function app is not available.
 
 ### Task 1: Setup Logic App
 
-1.  Open the Azure Portal to your resource group and select the Logic App in your resource group, it should be named **s2_logicapp_...**
+1.  Open the Azure Portal to your resource group and select the Logic App in your resource group, it should be named **s2*logicapp*...**
 
 1.  Click **Edit**
 
-![The Logic App blade with 'edit' highlighted.](./images/xx_logicapp_01.png "Edit the Logic App")
+![The Logic App blade with 'edit' highlighted.](./images/xx_logicapp_01.png 'Edit the Logic App')
 
 1.  Click **+New step**
 
-![The Logic App Designer is displayed with 'new step' highlighted.](./images/xx_logicapp_02.png "Add a new step")
+![The Logic App Designer is displayed with 'new step' highlighted.](./images/xx_logicapp_02.png 'Add a new step')
 
 1.  Search for **send an email**, then select the Office 365 outlook connector
 
-![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./images/xx_logicapp_03.png "Add Send an Email action")
+![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./images/xx_logicapp_03.png 'Add Send an Email action')
 
 1.  Click **Sign in**, login using your Azure AD credentials
 
-![Sign in button is highlighted.](./images/xx_logicapp_04.png "Sign in to Office 365")
+![Sign in button is highlighted.](./images/xx_logicapp_04.png 'Sign in to Office 365')
 
 1.  Set the **To** as your email
 
@@ -379,11 +354,11 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Click **Save**
 
-![Action properties are completed and the 'Save' button is highlighted](./images/xx_logicapp_05.png "Complete the action properties")
+![Action properties are completed and the 'Save' button is highlighted](./images/xx_logicapp_05.png 'Complete the action properties')
 
 1.  Click on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
 
-![The http action trigger is expanded and the url is highlighted.](./images/xx_logicapp_06.png "Copy the function url trigger endpoint")
+![The http action trigger is expanded and the url is highlighted.](./images/xx_logicapp_06.png 'Copy the function url trigger endpoint')
 
 ### Task 2: Configure the function app settings
 
@@ -403,9 +378,9 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  For each `buy` event, you should receive an email
 
->NOTE:  You could receive quite a `few` emails.
+> NOTE: You could receive quite a `few` emails.
 
-## After the hands-on lab 
+## After the hands-on lab
 
 Duration: 10 minutes
 
@@ -419,5 +394,4 @@ In this exercise, attendees will deprovision any Azure resources that were creat
 
 3.  Select **Delete** in the command bar, and confirm the deletion by re-typing the Resource group name and selecting **Delete**.
 
-You should follow all steps provided *after* attending the Hands-on lab.
-
+You should follow all steps provided _after_ attending the Hands-on lab.
