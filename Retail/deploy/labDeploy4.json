@@ -84,6 +84,12 @@
             {
                 "resource":{
                     "id":  "object",
+					"indexes": [
+                        {
+                            "key": { "keys":["ObjectId"] },
+                            "options": { "unique": "true" }
+                        }
+                    ],
                     "partitionKey": {
                         "paths": [
                         "/ObjectId"

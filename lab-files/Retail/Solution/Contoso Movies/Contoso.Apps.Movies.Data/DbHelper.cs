@@ -127,6 +127,9 @@ namespace Contoso.Apps.Common
             log.SessionId = sessionId;
             log.Created = DateTime.Now;
 
+            if (eventType == "buy")
+                log.OrderId = Guid.NewGuid().ToString().Replace("-", "");
+
             //add to cosmos db
             var container = client.GetContainer(databaseId, "events");
             var item = await container.CreateItemAsync(log);

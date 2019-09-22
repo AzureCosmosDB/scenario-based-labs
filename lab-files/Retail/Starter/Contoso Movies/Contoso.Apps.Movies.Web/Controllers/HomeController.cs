@@ -20,7 +20,7 @@ namespace Contoso.Apps.Movies.Controllers
             Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
 
             //TODO #1
-            vm.RecommendProductsBought = new List<Item>();
+            vm.RecommendProductsTop = new List<Item>();
 
             //TODO #3
             vm.RecommendProductsLiked = new List<Item>();

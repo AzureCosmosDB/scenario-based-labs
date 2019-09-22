@@ -55,6 +55,9 @@ namespace Contoso.Apps.Movies.Logic
             if (items == null)
                 return new List<Item>();
 
+            if (items.Count > take)
+                return items.Take(take).ToList();
+
             return items;
         }
 
