@@ -107,6 +107,20 @@ You must provision a few resources in Azure before you start developing the solu
 
 In this exercise, you will configure your lab environment so you can start sending and processing generated vehicle, consignment, package, and trip data. You will begin by creating a Cosmos DB database and containers, then you will create a new Logic App and create a workflow for sending email notifications, create an Application Insights service for real-time monitoring of your solution, then retrieve secrets used in the solution's application settings (such as connection strings) and securely store them in Azure Key Vault, and finally configure your Azure Databricks environment.
 
+### Task 0: Download the starter files
+
+Download a starter project that includes a vehicle simulator, Azure Function App projects, a Web App project, Azure Databricks notebooks, and data files used in the lab.
+
+1. From your lab computer, download the starter files by downloading a .zip copy of the Cosmos DB scenario-based labs GitHub repo.
+
+2. In a web browser, navigate to the [Cosmos DB scenario-based labs repo](https://github.com/solliancenet/cosmos-db-scenario-based-labs).
+
+3. On the repo page, select **Clone or download**, then select **Download ZIP**.
+
+   ![Download .zip containing the repository](media/github-download-repo.png 'Download ZIP')
+
+4. Unzip the contents to your root hard drive (i.e. `C:\`). This will create a folder on your root drive named `cosmos-db-scenario-based-labs`.
+
 ### Task 1: Run deployment scripts
 
 In this task, you will deploy the infrastructure for this demo using an ARM Template deployment.
