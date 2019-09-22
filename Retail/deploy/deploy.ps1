@@ -95,7 +95,7 @@ function DeployTemplate($filename, $skipDeployment, $parameters)
             write-host "Deployment status is : $($deployment.properties.provisioningState)";
         }
 
-        write-host "Deploying finished with status $($deployment.properties.provisioningState)";
+        write-host "Deploying [$fileName] finished with status $($deployment.properties.provisioningState)";
     }
 
     return $deployment;
@@ -410,6 +410,17 @@ $deployment = DeployTemplate "labdeploy.json" $skipDeployment $parameters;
 if ($deployment.properties.provisioningState -eq "Succeeded")
 {
     $suffix = $deployment.properties.outputs.hash.value
+}
+
+if (!$suffix)
+{
+    $suffix = read-host "Deployment failed: Please enter the suffix that was created for the resource group";
+
+    if (!$suffix)
+    {
+        write-host "No suffix, stopping";
+        return;
+    }
 }
 
 #deploy containers - this is ok to fail

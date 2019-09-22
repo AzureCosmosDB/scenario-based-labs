@@ -131,6 +131,8 @@
                     "family": "A",
                     "name": "standard"
                 },
+                "tenantId": "[subscription().tenantId]",
+				"accessPolicies" : [],
                 "enabledForDeployment": false
             }
         },
