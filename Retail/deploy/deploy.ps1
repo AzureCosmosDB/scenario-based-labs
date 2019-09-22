@@ -223,13 +223,13 @@ function SetupDatabricks()
         }
 
         #execute the event generation
-        ExecuteDatabrickNotebook "/Users/$userFolderName/01 Event Generator" "01 Event Generator" $true $clusterId
+        ExecuteDatabrickNotebook "/Users/$userFolderName/$notebookFolderName/01 Event Generator" "01 Event Generator" $true $clusterId
         
-        ExecuteDatabrickNotebook "/Users/$userFolderName/02 Association Rules" "02 Association Rules" $true $clusterId
+        ExecuteDatabrickNotebook "/Users/$userFolderName/$notebookFolderName/02 Association Rules" "02 Association Rules" $true $clusterId
         
-        ExecuteDatabrickNotebook "/Users/$userFolderName/03 Ratings" "03 Ratings" $true $clusterId
+        ExecuteDatabrickNotebook "/Users/$userFolderName/$notebookFolderName/03 Ratings" "03 Ratings" $true $clusterId
         
-        ExecuteDatabrickNotebook "/Users/$userFolderName/04 Similarity" "04 Similarity" $true $clusterId
+        ExecuteDatabrickNotebook "/Users/$userFolderName/$notebookFolderName/04 Similarity" "04 Similarity" $true $clusterId
     }   
 }
 
