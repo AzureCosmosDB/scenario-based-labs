@@ -1,0 +1,73 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"msiId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+		"userObjectId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+		"region": {
+            "type": "string",
+            "defaultValue": "westus"
+        },
+        "prefix": {
+            "type": "string",
+            "defaultValue": ""
+        }
+		,
+        "tenantId": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "location": "westus",
+		"databaseName": "movies",
+		"throughput": "400",
+        "name-suffix": "[uniqueString(resourceGroup().id)]",
+        "appServicePlan": "[concat('s2webplan-', variables('name-suffix'))]",
+        "appServicePlanFunctionAppsName": "[concat('s2funcplan', variables('name-suffix'))]",
+		
+		"webAppName": "[concat('s2web', variables('name-suffix'))]",
+        
+		"functionAppName": "[concat('s2func', variables('name-suffix'))]",
+        
+		"keyVaultName": "[concat('s2keyvault-', variables('name-suffix'))]",
+				
+        "storageAccountCosmosDBProcessingName": "[concat('s2data3', variables('name-suffix'))]",
+        "storageAccountCosmosDBProcessing-website-contentshare": "[concat('s2cosmosdbprocessing', variables('name-suffix'))]",
+
+        "eventHubsNamespaceIoTName": "[concat('s2ns', variables('name-suffix'))]",
+
+        "cosmosDbAccountName": "[concat('s2cosmosdb', variables('name-suffix'))]",
+
+        "appInsightsName": "[concat('s2_appinsights_', variables('name-suffix'))]",
+        
+        "streamAnalyticsJobName": "[concat('s2_analytics_', variables('name-suffix'))]",
+
+        "databricksWorkspaceName": "[concat('s2_databricks_', variables('name-suffix'))]",
+		
+		"connections_office365_name" : "[concat('s2_o365_', variables('name-suffix'))]",
+		
+		"workflows_s2scenerio_name" : "[concat('s2_logicapp_', variables('name-suffix'))]"
+    },
+    "resources": [
+		{
+		  "name": "s2retailmsi",
+		  "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+		  "location": "[variables('location')]",
+		  "apiVersion": "2018-11-30",
+		  "tags": {}
+		}
+    ],
+	"outputs": {
+		"hash" : {
+			"type" : "string",
+			"value" : "[variables('name-suffix')]"
+		}
+	}
+}
