@@ -164,7 +164,7 @@
 
 
 
-        
+
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/apis/databases",
             "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'))]",
@@ -901,7 +901,6 @@
             "location": "[variables('location')]",
             "dependsOn": [
               "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
-              "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
               "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
               "[resourceId('Microsoft.Storage/storageAccounts', variables('machineLearningServicesStorageAccountName'))]"
             ],
