@@ -10,7 +10,7 @@ namespace Contoso.Apps.Movies.Data.Models
     public class CollectorLog : DbObject, IEntity
     {
         [JsonProperty(PropertyName = "userId")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         [JsonProperty(PropertyName = "itemId")]
         public string ItemId { get; set; }

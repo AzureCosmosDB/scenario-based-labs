@@ -25,7 +25,7 @@ namespace Contoso.Apps.Movies.Controllers
 
                 CollectorLog log = new CollectorLog();
 
-                log.UserId = userId;
+                log.UserId = userId.ToString();
                 log.ItemId = item_id;
                 log.Event = event_type;
                 log.SessionId = session_id;

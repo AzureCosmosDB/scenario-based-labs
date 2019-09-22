@@ -121,7 +121,7 @@ namespace Contoso.Apps.Common
 
             CollectorLog log = new CollectorLog();
             log.id = Guid.NewGuid().ToString();
-            log.UserId = userId;
+            log.UserId = userId.ToString();
             log.ItemId = itemId;
             log.Event = eventType;
             log.SessionId = sessionId;
