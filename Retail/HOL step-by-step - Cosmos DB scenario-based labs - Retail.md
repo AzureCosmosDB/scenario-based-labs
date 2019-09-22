@@ -365,14 +365,12 @@ var vm = new HomeModel();
 
 Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
 
+vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
+
 if (user != null)
 {
     vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", user.UserId, 0);
     vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", user.UserId, 0);
-}
-else
-{
-    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 }
 
 return View(vm);
@@ -744,65 +742,15 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Select **+Add tile**, you may need to select the **...** ellipses first
 
-1.  Select **Custom Streaming Data**, select **Next**
+1.  Select **Custom Streaming Data**, select **Next**.  Use the following table to create the needed tiles:
 
-1.  Select the **eventData** data set, then select **Next**
-
-1.  For the visualization type, select **Card**
-
-1.  For the Fields, select **UserCount**, select **Next**
-
-1.  For the title, type **User Count**, then select **Apply**
-
-1.  Select **+Add tile**, you may need to select the **...** ellipses first
-
-1.  Select **Custom Streaming Data**, select **Next**
-
-1.  Select the **failureCount** data set, then select **Next**
-
-1.  For the visualization type, select **Card**
-
-1.  For the Fields, select **FailureCount**
-
-1.  Select **Next**
-
-1.  For the title, type **Payment Failures**, then select **Apply**
-
-1.  Select **+Add tile**, you may need to select the **...** ellipses first
-
-1.  Select **Custom Streaming Data**, select **Next**
-
-1.  Select the **eventSummary** data set, then select **Next**
-
-1.  For the visualization type, select **Line chart**
-
-1.  For the axis, select **Time**
-
-1.  For the legend, select **Event**
-
-1.  For the values, select **Count**
-
-1.  Select **Next**
-
-1.  For the title, type **Count By Event**, then select **Apply**
-
-1.  Select **+Add tile**, you may need to select the **...** ellipses first
-
-1.  Select **Custom Streaming Data**, select **Next**
-
-1.  Select the **eventOrdersLastHour** data set, then select **Next**
-
-1.  For the visualization type, select **Gauge**
-
-1.  For the value, select **Count**
-
-1.  For minimum value, select **Min**
-
-1.  For target value, select **Target**
-
-1.  Select **Next**
-
-1.  For the title, type **Orders Per Hour**, then select **Apply**
+|    |    |    |    |
+|----------|-------------|-------------|:-------------:|
+| **Dataset** | **Type** | **Fields** | **Title** |
+| eventData | Card | UserCount  | User Count |
+| failureCount | Card |FailureCount  | Payment Failures |
+| eventSummary | Line cart | Axis = UserCount, Legend = Event, Values = Count  | Count By Event |
+| eventOrdersLastHour | Gauge |  Value = Count, Minimum = Min, Target = Target  | Orders Per Hour |
 
 1.  Your dashboard should look similar to the following:
 

@@ -148,3 +148,12 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\C
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\obj\Release\Contoso.Apps.Common.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\obj\Release\Contoso.Apps.Common.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\obj\Release\Contoso.Apps.Common.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Release\Microsoft.Azure.KeyVault.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Release\Microsoft.Azure.KeyVault.WebKey.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Release\Microsoft.Azure.Services.AppAuthentication.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Release\Microsoft.IdentityModel.Clients.ActiveDirectory.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Release\Microsoft.Rest.ClientRuntime.Azure.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Release\Microsoft.Rest.ClientRuntime.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Release\Microsoft.IdentityModel.Clients.ActiveDirectory.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Release\Microsoft.Rest.ClientRuntime.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Release\Microsoft.Rest.ClientRuntime.Azure.xml

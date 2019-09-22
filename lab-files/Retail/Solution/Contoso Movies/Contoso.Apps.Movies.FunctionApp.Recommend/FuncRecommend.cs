@@ -43,6 +43,7 @@ namespace ContosoFunctionApp
             log.LogInformation($"Recommend http was triggered");
 
             RecommendationHelper.client = _cosmosClient;
+            RecommendationHelper.databaseId = config["databaseId"];
             RecommendationHelper.Init();
 
             try

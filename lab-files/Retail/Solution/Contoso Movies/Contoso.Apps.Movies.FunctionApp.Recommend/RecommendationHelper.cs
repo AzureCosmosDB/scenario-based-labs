@@ -59,16 +59,6 @@ namespace Contoso.Apps.Movies.Logic
             return items.ToList();
         }
 
-        public static List<Movies.Data.Models.Item> AssociationRecommendationByContent(int itemId, int take)
-        {
-            return GetRandom(take);
-
-            //get the pre-seeded objects based on confidence
-
-            //return the "take" number of records
-
-        }
-
         public static List<Item> AssociationRecommendationByUser(int userId, int take)
         {
             List<Item> items = new List<Item>();
@@ -142,11 +132,6 @@ namespace Contoso.Apps.Movies.Logic
                 return query.Take(take).ToList();
             else
                 return query.ToList();
-        }
-
-        public static List<Movies.Data.Models.Item> ContentBasedRecommendation(int contentId, int take)
-        {
-            return GetRandom(take);
         }
 
         //aka NeighborhoodBasedRecs
