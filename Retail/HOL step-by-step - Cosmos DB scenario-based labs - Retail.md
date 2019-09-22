@@ -296,7 +296,7 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 1.  Switch back to your Databricks workspace, select the **02 Association Rules** workbook
 
-1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open.
+1. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
@@ -400,7 +400,7 @@ In this exercise you will defined
 
 1.  Switch back to your Databricks workspace, select **03 Ratings**
 
-1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open.
+1. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 

@@ -276,7 +276,7 @@ function ExecuteDatabrickNotebook($notebookPath, $jobName, $waitToComplete)
     $res = curl -Method Post "$databricksurl/api/2.0/jobs/run-now" -H @{'Authorization' = "Bearer $databricktoken"} -Body $json;
     $json = ConvertFrom-json $res.Content
 
-    $runid = $json.runId;
+    $runid = $json.run_id;
 
     if ($waitToComplete)
     {
@@ -746,7 +746,7 @@ if ($mode -eq "demo")
 ########################
 if ($mode -eq "demo")
 {
-    $url = $webapp.HostName;
+    $url = "https://$($webapp.name).azurewebsites.net";
     write-host "Opening url: $url";
     Start-Process $url;
 }
