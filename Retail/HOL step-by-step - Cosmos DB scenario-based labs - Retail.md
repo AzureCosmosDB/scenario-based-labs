@@ -156,23 +156,19 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 ![Workspace is highlighted with the user expanded and the Import option highlighted.](./media/xx_Databricks_07.png 'Import the Databricks notebook')
 
-4. After importing, select the new **02 Retail** folder.
+4. After importing, select the new **02 Retail** folder, then navigation to the **Includes** folder
 
-5. Select **Event Generator**
+5.  Select the **Shared-Configuration** notebook
 
-6. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open.
-
-7. Update the configuration settings for both the **readConfig** and the **writeConfig**, set the following using the values from your lab setup script output:
+6. Update the configuration settings and set the following using the values from your lab setup script output:
 
 - Endpoint = Cosmos DB endpoint url
 - Masterkey = Cosmos DB master key
 - Database = Database id of the cosmos db ('movies')
 
-5.  Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
+6.  Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
 
-6. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. 
-
-![The configuration values in the notebook are highlighted.](./media/xx_Databricks_06.png "Add the databrick notebook configuration settings")
+7. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
 
 8.  Select **Run All**
 
