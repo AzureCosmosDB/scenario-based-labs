@@ -1,26 +1,4 @@
-<div class="MCWHeader1">
-Cosmos DB scenario-based labs - Retail
-</div>
-
-<div class="MCWHeader2">
-Before the hands-on lab setup guide
-</div>
-
-<div class="MCWHeader3">
-September 2019
-</div>
-
-Information in this document, including URL and other Internet Web site references, is subject to change without notice. Unless otherwise noted, the example companies, organizations, products, domain names, e-mail addresses, logos, people, places, and events depicted herein are fictitious, and no association with any real company, organization, product, domain name, e-mail address, logo, person, place or event is intended or should be inferred. Complying with all applicable copyright laws is the responsibility of the user. Without limiting the rights under copyright, no part of this document may be reproduced, stored in or introduced into a retrieval system, or transmitted in any form or by any means (electronic, mechanical, photocopying, recording, or otherwise), or for any purpose, without the express written permission of Microsoft Corporation.
-
-Microsoft may have patents, patent applications, trademarks, copyrights, or other intellectual property rights covering subject matter in this document. Except as expressly provided in any written license agreement from Microsoft, the furnishing of this document does not give you any license to these patents, trademarks, copyrights, or other intellectual property.
-
-The names of manufacturers, products, or URLs are provided for informational purposes only and Microsoft makes no representations and warranties, either expressed, implied, or statutory, regarding these manufacturers or the use of the products with any Microsoft technologies. The inclusion of a manufacturer or product does not imply endorsement of Microsoft of the manufacturer or product. Links may be provided to third party sites. Such sites are not under the control of Microsoft and Microsoft is not responsible for the contents of any linked site or any link contained in a linked site, or any changes or updates to such sites. Microsoft is not responsible for webcasting or any other form of transmission received from any linked site. Microsoft is providing these links to you only as a convenience, and the inclusion of any link does not imply endorsement of Microsoft of the site or the products contained therein.
-
-© 2019 Microsoft Corporation. All rights reserved.
-
-Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/Usage/General.aspx> are trademarks of the Microsoft group of companies. All other trademarks are property of their respective owners.
-
-**Contents**
+# Cosmos DB scenario-based labs - Retail before the hands-on lab setup guide
 
 <!-- TOC -->
 
@@ -29,11 +7,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Before the hands-on lab](#before-the-hands-on-lab)
     - [Task 1: Download GitHub resources](#task-1-download-github-resources)
     - [Task 2: Get a Movie Api Key](#task-2-get-a-movie-api-key)
-    - [Task 3: Deploy resources to Azure](#task-2-deploy-resources-to-azure)
+    - [Task 3: Deploy resources to Azure](#task-3-deploy-resources-to-azure)
 
 <!-- /TOC -->
-
-# Cosmos DB scenario-based labs - Retail before the hands-on lab setup guide
 
 ## Requirements
 
@@ -53,7 +29,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 Duration: 10 minutes
 
-Synopsis: In this exercise, you will set up your environment for use in the rest of the hands-on lab. You should follow all the steps provided in the Before the Hands-on Lab section to prepare your environment *before* attempting the labs.
+Synopsis: In this exercise, you will set up your environment for use in the rest of the hands-on lab. You should follow all the steps provided in the Before the Hands-on Lab section to prepare your environment _before_ attempting the labs.
 
 ### Task 1: Download GitHub resources
 
@@ -61,11 +37,11 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 1.  Select **Clone or download**, then select **Download Zip**.
 
-    ![Clone or download and Download ZIP are highlighted in this screenshot of the  GitHub repository.](./media/beforehol-image1.png "Download the zip file")
+    ![Clone or download and Download ZIP are highlighted in this screenshot of the  GitHub repository.](./media/beforehol-image1.png 'Download the zip file')
 
 1.  Extract the zip file to your local machine, be sure to keep note of where you have extracted the files. You should now see a set of folders:
 
-    ![A set of extracted folders and files are visible in File Explorer: Hands On Lab, Media, Whiteboard design session, README.md., etc.](./media/beforehol-image2.png "Extract the zip file")
+    ![A set of extracted folders and files are visible in File Explorer: Hands On Lab, Media, Whiteboard design session, README.md., etc.](./media/beforehol-image2.png 'Extract the zip file')
 
 ### Task 2: Get a Movie Api Key
 
@@ -88,15 +64,15 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 1.  Open a browser window to the [Azure Portal](https://portal.azure.com), be sure to login as the user that has access to your soon to be created resource group
 
->NOTE: This is necessary as the script will open a window that requires you to have already logged in to the portal.
+> NOTE: This is necessary as the script will open a window that requires you to have already logged in to the portal.
 
 1.  Open a **PowerShell ISE** window
 
-1.  Browse to the **$githubdir/Retail/deploy/deploy.ps1** PowerShell script in an PowerShell ISE window
+1.  Browse to the **\$githubdir/Retail/deploy/deploy.ps1** PowerShell script in an PowerShell ISE window
 
 1.  Set the following variables:
 
->NOTE:  If you are performing a demo of this solution, select the "demo" setting, otherwise leave as "lab"
+> NOTE: If you are performing a demo of this solution, select the "demo" setting, otherwise leave as "lab"
 
 ```PoweShell
 $mode = "lab"  #can be 'lab' or 'demo'
@@ -109,15 +85,15 @@ $movieApiKey = "YOUR MOVIE API KEY"
 $githubPath = "PATH YOU EXTRACTED REPO ZIP TOO"
 ```
 
->NOTE:  You should have Azure CLI 2.0.68 or higher to run this script.  You can check by running `az --version`
+> NOTE: You should have Azure CLI 2.0.68 or higher to run this script. You can check by running `az --version`
 
 3.  Press **F5** to run the script, this will do the following:
 
--   Deploy the starter ARM template(s)
--   Deploy the initial web and function apps
--   Setup the web and function app configuration variables
--   Create starter objects in the 'object' collection of the Comos DB database
--   Update your project application configuration files with the target azure keys and settings
+- Deploy the starter ARM template(s)
+- Deploy the initial web and function apps
+- Setup the web and function app configuration variables
+- Create starter objects in the 'object' collection of the Comos DB database
+- Update your project application configuration files with the target azure keys and settings
 
 4.  The deployment will take 15-25 minutes to complete. You will be prompted for information in both `demo` and `lab` modes.  As part of the deployment, you will see the following items created:
 
@@ -152,4 +128,4 @@ $githubPath = "PATH YOU EXTRACTED REPO ZIP TOO"
 
 10.  Record the values that were output from the script for use in the lab
 
-You should follow all steps provided *before* attending the hands-on lab.
+You should follow all steps provided _before_ attending the hands-on lab.

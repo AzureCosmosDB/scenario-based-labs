@@ -1,26 +1,4 @@
-<div class="MCWHeader1">
-Cosmos DB scenario-based labs - IoT
-</div>
-
-<div class="MCWHeader2">
-Demo step-by-step
-</div>
-
-<div class="MCWHeader3">
-September 2019
-</div>
-
-Information in this document, including URL and other Internet Web site references, is subject to change without notice. Unless otherwise noted, the example companies, organizations, products, domain names, e-mail addresses, logos, people, places, and events depicted herein are fictitious, and no association with any real company, organization, product, domain name, e-mail address, logo, person, place or event is intended or should be inferred. Complying with all applicable copyright laws is the responsibility of the user. Without limiting the rights under copyright, no part of this document may be reproduced, stored in or introduced into a retrieval system, or transmitted in any form or by any means (electronic, mechanical, photocopying, recording, or otherwise), or for any purpose, without the express written permission of Microsoft Corporation.
-
-Microsoft may have patents, patent applications, trademarks, copyrights, or other intellectual property rights covering subject matter in this document. Except as expressly provided in any written license agreement from Microsoft, the furnishing of this document does not give you any license to these patents, trademarks, copyrights, or other intellectual property.
-
-The names of manufacturers, products, or URLs are provided for informational purposes only and Microsoft makes no representations and warranties, either expressed, implied, or statutory, regarding these manufacturers or the use of the products with any Microsoft technologies. The inclusion of a manufacturer or product does not imply endorsement of Microsoft of the manufacturer or product. Links may be provided to third party sites. Such sites are not under the control of Microsoft and Microsoft is not responsible for the contents of any linked site or any link contained in a linked site, or any changes or updates to such sites. Microsoft is not responsible for webcasting or any other form of transmission received from any linked site. Microsoft is providing these links to you only as a convenience, and the inclusion of any link does not imply endorsement of Microsoft of the site or the products contained therein.
-
-© 2019 Microsoft Corporation. All rights reserved.
-
-Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/Usage/General.aspx> are trademarks of the Microsoft group of companies. All other trademarks are property of their respective owners.
-
-**Contents**
+# Cosmos DB scenario-based labs - IoT hands-on lab step-by-step
 
 <!-- TOC -->
 
@@ -30,11 +8,18 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Requirements](#requirements)
   - [Exercise 1: Configure environment](#exercise-1-configure-environment)
     - [Task 1: Run deployment scripts](#task-1-run-deployment-scripts)
-    - [Task 2: Open Logic App workflow and connect to Office 365 for email alerts](#task-2-open-logic-app-workflow-and-connect-to-office-365-for-email-alerts)
+    - [Task 2: Authenticate the Office 365 API Connection for sending email alerts](#task-2-authenticate-the-office-365-api-connection-for-sending-email-alerts)
+    - [Task 3: Add Stream Analytics Event Hubs input](#task-3-add-stream-analytics-event-hubs-input)
+    - [Task 4: Add Stream Analytics outputs](#task-4-add-stream-analytics-outputs)
+    - [Task 5: Create Stream Analytics query](#task-5-create-stream-analytics-query)
+    - [Task 6: Run Stream Analytics job](#task-6-run-stream-analytics-job)
+    - [Task 7: Deploy Cosmos DB Processing Function App](#task-7-deploy-cosmos-db-processing-function-app)
+    - [Task 8: Deploy Stream Processing Function App](#task-8-deploy-stream-processing-function-app)
+    - [Task 9: Deploy Web App](#task-9-deploy-web-app)
     - [Task 3: Create Azure Databricks cluster](#task-3-create-azure-databricks-cluster)
     - [Task 4: Configure Key Vault-backed Databricks secret store](#task-4-configure-key-vault-backed-databricks-secret-store)
     - [Task 5: Import lab notebooks into Azure Databricks](#task-5-import-lab-notebooks-into-azure-databricks)
-    - [Task 6: Run Stream Analytics job](#task-6-run-stream-analytics-job)
+    - [Task 6: Run Stream Analytics job](#task-6-run-stream-analytics-job-1)
     - [Task 7: View Cosmos DB processing Function App in the portal](#task-7-view-cosmos-db-processing-function-app-in-the-portal)
     - [Task 8: Open the data generator project](#task-8-open-the-data-generator-project)
     - [Task 9: Update application configuration](#task-9-update-application-configuration)
@@ -62,8 +47,6 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
 <!-- /TOC -->
-
-# Cosmos DB scenario-based labs - IoT hands-on lab step-by-step
 
 ## Overview
 
@@ -127,7 +110,27 @@ In this exercise, you will configure your lab environment so you can start sendi
 
 ### Task 1: Run deployment scripts
 
-TODO
+In this task, you will deploy the infrastructure for this demo using an ARM Template deployment.
+
+1. In the [Azure portal](https://portal.azure.com), select **+ Create a resource** then create a new **Template deployment**.
+
+2. On the **Custom deployment** pane, select **Build your own template in the editor**.
+
+3. On the **Edit template** blade, select the **Load file** button and upload the **demoDeploy.json** ARM Template located at `\cosmos-db-scenario-based-labs\IoT\deploy\demoDeploy.json`.
+
+4. Select **Save**.
+
+5. Enter the following values:
+
+    - Resource group: enter a Resource group name; like `cosmos-db-iot`
+    - Location: _it doesn't matter which region is selected, the template will use West US to ensure everything works_
+    - Recipient Email: **Enter an email address to receive notifications from the Logic App**
+
+6. Check the **I agree to the terms and conditions stated above** box.
+
+7. Select **Purchase**
+
+> The template deployment will take a few minutes to complete. Continue with the guide once it completes
 
 ### Task 2: Authenticate the Office 365 API Connection for sending email alerts
 
@@ -144,6 +147,194 @@ In this task, you will open the deployed Logic App workflow and configure it to 
     ![Edit API connection](media/office365-api-connection-edit.png 'Edit API connection')
 
 4. Click **Save**.
+
+### Task 3: Add Stream Analytics Event Hubs input
+
+1. In the [Azure portal](https://portal.azure.com), open your lab resource group, then open your **Stream Analytics job**.
+
+   ![The Stream Analytics job is highlighted in the resource group.](media/resource-group-stream-analytics.png 'Resource Group')
+
+2. Select **Inputs** in the left-hand menu. In the Inputs blade, select **+ Add stream input**, then select **Event Hub** from the list.
+
+   ![The Event Hub input is selected in the Add Stream Input menu.](media/stream-analytics-inputs-add-event-hub.png 'Inputs')
+
+3. In the **New input** form, specify the following configuration options:
+
+   1. **Input alias**: Enter **events**.
+   2. Select the **Select Event Hub from your subscriptions** option beneath.
+   3. **Subscription**: Choose your Azure subscription for this lab.
+   4. **Event Hub namespace**: Find and select your Event Hub namespace (eg. `iot-namespace`).
+   5. **Event Hub name**: Select **Use existing**, then **reporting**.
+   6. **Event Hub policy name**: Choose the default `RootManageSharedAccessKey` policy.
+
+   ![The New Input form is displayed with the previously described values.](media/stream-analytics-new-input.png 'New input')
+
+4. Select **Save**.
+
+You should now see your Event Hubs input listed.
+
+![The Event Hubs input is listed.](media/stream-analytics-inputs.png 'Inputs')
+
+### Task 4: Add Stream Analytics outputs
+
+1. While remaining in the Outputs blade, select **+ Add** once again, then select **Power BI** from the list.
+
+   ![The Power BI output is selected in the Add menu.](media/stream-analytics-outputs-add-power-bi.png 'Outputs')
+
+2. In the **New output** form, look toward the bottom to find the **Authorize connection** section, then select **Authorize** to sign in to your Power BI account. If you do not have a Power BI account, select the _Sign up_ option first.
+
+   ![The Authorize connection section is displayed.](media/stream-analytics-authorize-power-bi.png 'Authorize connection')
+
+3. After authorizing the connection to Power BI, specify the following configuration options in the form:
+
+   1. **Output alias**: Enter **powerbi**.
+   2. **Group workspace**: Select **My workspace**.
+   3. **Dataset name**: Enter **Contoso Auto IoT Events**.
+   4. **Table name**: Enter **FleetEvents**.
+
+   ![The New Output form is displayed with the previously described values.](media/stream-analytics-new-output-power-bi.png 'New output')
+
+4. Select **Save**.
+
+You should now have two outputs listed.
+
+![The two added outputs are listed.](media/stream-analytics-outputs.png 'Outputs')
+
+### Task 5: Create Stream Analytics query
+
+The Query is Stream Analytics' work horse. This is where we process streaming inputs and write data to our outputs. The Stream Analytics query language is SQL-like, allowing you to use familiar syntax to explore and transform the streaming data, create aggregates, and create materialized views that can be used to help shape your data structure before writing to the output sinks. Stream Analytics jobs can only have one Query, but you can write to multiple outputs in a single Query, as you will do in the steps that follow.
+
+Please take a moment to analyze the query below. Notice how we are using the `events` input name for the Event Hubs input you created, and the `powerbi` and `cosmosDB` outputs, respectively. Also see where we use the `TumblingWindow` in durations of 30 seconds for `VehicleData`, and 10 seconds for `VehicleDataAll`. The `TumblingWindow` helps us evaluate events that occurred during the past X seconds and, in our case, create averages over those time periods for reporting.
+
+1. Select **Query** in the left-hand menu. Replace the contents of the query window with the script below:
+
+    ```sql
+    WITH
+    VehicleData AS (
+        select
+            vin,
+            AVG(engineTemperature) AS engineTemperature,
+            AVG(speed) AS speed,
+            AVG(refrigerationUnitKw) AS refrigerationUnitKw,
+            AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,
+            (case when AVG(engineTemperature) >= 400 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,
+            (case when AVG(engineoil) <= 18 then 1 else 0 end) as oilAnomaly,
+            (case when AVG(transmission_gear_position) <= 3.5 AND
+                AVG(accelerator_pedal_position) >= 50 AND
+                AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,
+            (case when AVG(refrigerationUnitTemp) >= 30 then 1 else 0 end) as refrigerationTempAnomaly,
+            System.TimeStamp() as snapshot
+        from events TIMESTAMP BY [timestamp]
+        GROUP BY
+            vin,
+            TumblingWindow(Duration(second, 30))
+    ),
+    VehicleDataAll AS (
+        select
+            AVG(engineTemperature) AS engineTemperature,
+            AVG(speed) AS speed,
+            AVG(refrigerationUnitKw) AS refrigerationUnitKw,
+            AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,
+            COUNT(*) AS eventCount,
+            (case when AVG(engineTemperature) >= 318 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,
+            (case when AVG(engineoil) <= 20 then 1 else 0 end) as oilAnomaly,
+            (case when AVG(transmission_gear_position) <= 4 AND
+                AVG(accelerator_pedal_position) >= 50 AND
+                AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,
+            (case when AVG(refrigerationUnitTemp) >= 22.5 then 1 else 0 end) as refrigerationTempAnomaly,
+            System.TimeStamp() as snapshot
+        from events t TIMESTAMP BY [timestamp]
+        GROUP BY
+            TumblingWindow(Duration(second, 10))
+    )
+    -- INSERT INTO POWER BI
+    SELECT
+        *
+    INTO
+        powerbi
+    FROM
+        VehicleDataAll
+    -- INSERT INTO COSMOS DB
+    SELECT
+        *,
+        entityType = 'VehicleAverage',
+        partitionKey = vin
+    INTO
+        cosmosdb
+    FROM
+        VehicleData
+    ```
+
+   ![The Stream Analytics job Query is displayed.](media/stream-analytics-query.png 'Query')
+
+2. Select **Save query**.
+
+### Task 6: Run Stream Analytics job
+
+Next, we will start the Stream Analytics job so we can begin processing event data once it starts to flow through the services.
+
+1. Select **Overview**.
+
+2. In the Overview blade, select **Start** and select **Now** for the job output start time.
+
+3. Select **Start** to beginning running the Stream Analytics job.
+
+   ![The steps to start the job as described are displayed.](media/stream-analytics-start-job.png 'Start job')
+
+### Task 7: Deploy Cosmos DB Processing Function App
+
+1. Open the Visual Studio solution file **CosmosDbIoTScenario.sln** within the `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Solution` folder.
+
+2. In the Visual Studio Solution Explorer, right-click on the **Functions.CosmosDB** project, then select **Publish...**.
+
+    ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
+
+3. In the publish dialog, select the **Azure Functions Consumption Plan** publish target. Next, select the **Select Existing** radio and make sure **Run from package file (recommended)** is checked. Select **Publish** on the bottom of the form.
+
+    ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
+
+4. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-CosmosDBProcessing**, then select **OK**.
+
+    ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-cosmos.png "App Service")
+
+    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
+
+### Task 8: Deploy Stream Processing Function App
+
+1. In the Visual Studio Solution Explorer, right-click on the **Functions.StreamProcessing** project, then select **Publish...**.
+
+    ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
+
+2. In the publish dialog, select the **Azure Functions Consumption Plan** publish target. Next, select the **Select Existing** radio and make sure **Run from package file (recommended)** is checked. Select **Publish** on the bottom of the form.
+
+    ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
+
+3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-StreamProcessing**, then select **OK**.
+
+    ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-stream.png "App Service")
+
+    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
+
+### Task 9: Deploy Web App
+
+1. In the Visual Studio Solution Explorer, right-click on the **FleetManagementWebApp** project, then select **Publish...**.
+
+    ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
+
+2. In the publish dialog, select the **App Service** publish target. Next, select the **Select Existing** radio, then select **Publish** on the bottom of the form.
+
+    ![The publish dialog is displayed.](media/vs-publish-target-webapp.png "Pick a publish target")
+
+3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-StreamProcessing**, then select **OK**.
+
+    ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-webapp.png "App Service")
+
+    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish. Also, the web app should open in a new browser window. If you try to navigate through the site, you will notice there is no data. We will seed the Cosmos DB `metadata` container with data in the next exercise.
+
+    ![The Fleet Management web app home page is displayed.](media/webapp-home-page.png "Fleet Management home page")
+
+> **NOTE:** If the web application displays an error, then go into the Azure Portal for the **IoTWebApp** and click **Restart**. When the Azure Web App is created from the ARM Template and configured for .NET Core, it may need to be restarted for the .NET Core configuration to be fully installed and ready for the application to run. Once restarted, the web application will run as expected.
+> ![App Service blade with Restart button highlighted](media/IoTWebApp-App-Service-Restart-Button.png "App Service blade with Restart button highlighted")
 
 ### Task 3: Create Azure Databricks cluster
 

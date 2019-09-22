@@ -2,12 +2,48 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "RecipientEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "Enter a valid email address you want to receive notification emails from the Logic App."
+            }
+        }
     },
     "variables": {
-        "location": "WestUS",
+        "location": "westus",
         "name-suffix": "[uniqueString(resourceGroup().id)]",
 
+        "iotHubName": "[concat('iot-hub-', variables('name-suffix'))]",
+
+        "appServicePlanIoTWebAppNameName": "[concat('IoTWebAppNamePlan-', variables('name-suffix'))]",
+        "iotWebAppName": "[concat('IoTWebApp-', variables('name-suffix'))]",
+        
+        "appServicePlanFunctionAppsName": "[concat('FunctionAppPlan-', variables('name-suffix'))]",
+        "functionAppStreamProcessingName": "[concat('IoT-StreamProcessing-', variables('name-suffix'))]",
+        "functionAppCosmosDBProcessingName": "[concat('IoT-CosmosDBProcessing-', variables('name-suffix'))]",
+        
+        "keyVaultName": "[concat('keyvault-', variables('name-suffix'))]",
+        
+        "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
+        "storageAccountStreamProcessing-website-contentshare": "[concat('iot-streamprocessing-', variables('name-suffix'))]",
+
+        "storageAccountCosmosDBProcessingName": "[concat('iotfunc2', variables('name-suffix'))]",
+        "storageAccountCosmosDBProcessing-website-contentshare": "[concat('iot-cosmosdbprocessing-', variables('name-suffix'))]",
+
+        "storageAccountIoTStoreName": "[concat('iotstore', variables('name-suffix'))]",
+
+        "eventHubsNamespaceIoTName": "[concat('iot-namespace-', variables('name-suffix'))]",
+
         "cosmosDbAccountName": "[concat('cosmos-db-iot-', variables('name-suffix'))]",
+        "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('name-suffix'))]",
+        
+        "streamAnalyticsJobName": "[concat('Cosmos-DB-IoT-Analytics-', variables('name-suffix'))]",
+
+        "databricksWorkspaceName": "[concat('iot-databricks-', variables('name-suffix'))]",
+
+
+
+
 
 
         "cosmosDbDatabaseName": "ContosoAuto",
@@ -21,12 +57,104 @@
             "properties": {
               "mode": "Incremental",
               "templateLink": {
-                "uri": "https://publicstorage42.blob.core.windows.net/arm/labDeploy.json",
+                "uri": "https://raw.githubusercontent.com/solliancenet/cosmos-db-scenario-based-labs/master/IoT/deploy/labDeploy.json?token=AAC7Y2MUHVWYU52HZSHGR525R4JJO",
                 "contentVersion": "1.0.0.0"
               },
               "parameters": { }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
+            ]
+        },
+
+
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2015-05-01",
+            "name": "[variables('appInsightsName')]",
+            "location": "[variables('location')]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            },
+            "metadata": {
+                "description": "This was copied here from labDeploy.json. It needs to be in this template otherwise reference() calls to it will fail on deployment. Yes, this is to work around a bug with Nested ARM Template deployments."
             }
         },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('storageAccountStreamProcessingName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "metadata": {
+                "description": "This was copied here from labDeploy.json. It needs to be in this template otherwise reference() calls to it will fail on deployment. Yes, this is to work around a bug with Nested ARM Template deployments."
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('storageAccountCosmosDBProcessingName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "metadata": {
+                "description": "This was copied here from labDeploy.json. It needs to be in this template otherwise reference() calls to it will fail on deployment. Yes, this is to work around a bug with Nested ARM Template deployments."
+            }
+        },
+
+
+
+
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/apis/databases",
             "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'))]",
@@ -45,6 +173,7 @@
             "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'), '/', 'metadata')]",
             "apiVersion": "2016-03-31",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('cosmosDbDatabaseName'))]"
             ],
             "properties":
@@ -66,6 +195,7 @@
             "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'), '/', 'telemetry')]",
             "apiVersion": "2016-03-31",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('cosmosDbDatabaseName'))]"
             ],
             "properties":
@@ -111,6 +241,7 @@
             "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'), '/', 'maintenance')]",
             "apiVersion": "2016-03-31",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
                 "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('cosmosDbDatabaseName'))]"
             ],
             "properties":
@@ -131,7 +262,7 @@
 
 
 
-        
+
 
 
 
@@ -147,7 +278,7 @@
             "name": "office365",
             "location": "[variables('location')]",
             "properties": {
-                "displayName": "cpietschmann@solliance.net",
+                "displayName": "[parameters('RecipientEmail')]",
                 "api": {
                     "id": "[concat(subscription().id,'/providers/Microsoft.Web/locations/', variables('location'), '/managedApis/office365')]"
                 }
@@ -273,6 +404,390 @@
                     }
                 }
             }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBConnection')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.CosmosDBConnection.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBEndpoint')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.CosmosDBEndpoint.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBPrimaryKey')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.CosmosDBPrimaryKey.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'IoTHubConnection')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.IoTHubConnection.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'ColdStorageAccount')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.ColdStorageAccount.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'EventHubsConnection')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[reference('labDeployment').outputs.EventHubsConnection.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'LogicAppUrl')]",
+            "apiVersion": "2018-02-14",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('cosmosIoTLogicAppName')), '/triggers/manual'), '2016-06-01').value]"
+            }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[variables('functionAppStreamProcessingName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')]",
+                "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName')),'2019-04-01').keys[0].value)]"
+        
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName')),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName')),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('storageAccountStreamProcessing-website-contentshare')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
+                        },
+
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
+                        },
+
+                        {
+                            "name": "CosmosDBConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "IoTHubConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')).secretUriWithVersion, ')')]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[variables('functionAppCosmosDBProcessingName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'ColdStorageAccount')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'EventHubsConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'LogicAppUrl')]",
+                "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName')),'2019-04-01').keys[0].value)]"
+        
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName')),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName')),'2019-04-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('storageAccountCosmosDBProcessing-website-contentshare')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
+                        },
+
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
+                        },
+
+                        {
+                            "name": "CosmosDBConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "ColdStorageAccount",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'ColdStorageAccount')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "EventHubsConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'EventHubsConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "LogicAppUrl",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'LogicAppUrl')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "RecipientEmail",
+                            "value": "[parameters('RecipientEmail')]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[variables('iotWebAppName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
+                "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+
+                        {
+                            "name": "CosmosDBConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "DatabaseName",
+                            "value": "[variables('cosmosDbDatabaseName')]"
+                        },
+                        {
+                            "name": "ContainerName",
+                            "value": "metadata"
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "name": "CURRENT_STACK",
+                            "value": "dotnetcore"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/accessPolicies",
+            "name": "[concat(variables('keyVaultName'), '/add')]",
+            "apiVersion": "2018-02-14",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
+                "[resourceId('Microsoft.Web/sites', variables('iotWebAppName'))]",
+                "[resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName'))]",
+                "[resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName'))]"
+            ],
+            "properties": {
+                "accessPolicies": [
+                    {
+                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('iotWebAppName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').tenantId]",
+                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('iotWebAppName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
+                        "permissions": {
+                            "secrets": ["get"]
+                        }
+                    },
+                    {
+                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').tenantId]",
+                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
+                        "permissions": {
+                            "secrets": ["get"]
+                        }
+                    },
+                    {
+                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').tenantId]",
+                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
+                        "permissions": {
+                            "secrets": ["get"]
+                        }
+                    }
+                ]
+            }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+        {
+            "type": "Microsoft.StreamAnalytics/streamingjobs/outputs",
+            "apiVersion": "2016-03-01",
+            "name": "[concat(variables('streamAnalyticsJobName'), '/cosmosdb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
+            ],
+            "properties": {
+                "datasource": {
+                    "type": "Microsoft.Storage/DocumentDB",
+                    "properties": {
+                        "accountId": "[variables('cosmosDbAccountName')]",
+                        "accountKey": "[reference('labDeployment').outputs.CosmosDBPrimaryKey.value]",
+                        "database": "[variables('cosmosDbDatabaseName')]",
+                        "collectionNamePattern": "metadata"
+                    }
+                }
+            }
         }
 
 
@@ -283,10 +798,7 @@
 
 
 
-
-
-
-
-
-    ]
+    ],
+    "outputs": {
+    }
 }
