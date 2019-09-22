@@ -150,7 +150,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1. Within Azure Databricks, select **Workspace** on the menu, then **Users**, select your user, then select the down arrow on the top of your user workspace. Select **Import**.
 
-2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it (\$githubdirectory/lab-files/Retail/Notebooks/02 Retail.dbc)
+2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it ({un-zipped repo folder}/lab-files/Retail/Notebooks/02 Retail.dbc)
 
 3. Select **Import**
 
@@ -160,17 +160,23 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 5.  Select the **Shared-Configuration** notebook
 
+![The workspace menu is displayed with `includes` and `shared-configuration` highlighted.](./media/xx_DataBricks_08.png 'Navigate to Shared-Configuration')
+
 6. Update the configuration settings and set the following using the values from your lab setup script output:
 
 - Endpoint = Cosmos DB endpoint url
 - Masterkey = Cosmos DB master key
 - Database = Database id of the cosmos db ('movies')
 
-6.  Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
+7. Attach your cluster to the notebook using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
 
-7. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
+8.  Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
 
-8.  Select **Run All**
+9. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+
+![Click the `detached` drop down, select the small cluster.](./media/xx_DataBricks_09.png 'Set the cluster')
+
+10.  Select **Run All**
 
 > NOTE: With the default RUs on the Cosmos DB, this process will take up to 25 minutes to generate the event data. You could increase the RUs and get it under 5 minutes.
 
@@ -192,7 +198,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 ### Task 4: Review the aggregation and import utility
 
-1.  Browse to the **\$githubdirectory/lab-files/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
+1.  Browse to the **{un-zipped repo folder}/lab-files/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
 2.  In the **/Utilities/MovieDataImport** project, open the **program.cs** file, browse code and various methods. Notice that it:
 
@@ -296,7 +302,7 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 1.  Switch back to your Databricks workspace, select the **02 Association Rules** workbook
 
-1. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
@@ -386,7 +392,7 @@ return View(vm);
 
 1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see the same results as you received previously.
 
-2.  Select **login**, select the **comedy@contosomovies.com** account
+2.  In the top navigation, select **LOGIN**, then select the **comedy@contosomovies.com** account
 
 3.  Notice the main page now has different recommendations than what you received earlier, but we are still missing the similar 'liked' items
 
@@ -400,9 +406,15 @@ In this exercise you will defined
 
 1.  Switch back to your Databricks workspace, select **03 Ratings**
 
-1. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+
+1.  Switch back to the Azure Portal
+
+1.  In your resource group, navigate to your Cosmos DB instance
+
+1.  Open the **ratings** collection, review the items in the collection
 
 ![An example item from the ratings collection is displayed.](./media/xx_RatingsColl.png 'The ratings collection')
 
@@ -412,7 +424,7 @@ In this exercise you will defined
 
 1.  Switch back to your Databricks workspace, select **04 Similarity**
 
-1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown.
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **04 Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
@@ -538,7 +550,9 @@ foreach(PredictionModel pm in sortedItems)
 
 1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see the same results as you received previously.
 
-2.  Select **login**, select the **comedy@contosomovies.com** account
+2.  If you are not already logged in, select **LOGIN**, then select the **comedy@contosomovies.com** account
+
+![Select the comedy fan user.](./media/xx_ComedyUser_01.png 'Log in as the comedy fan')
 
 3.  Notice the main page now has both the associative and collaborative results displayed::
 
@@ -700,9 +714,11 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 ### Task 5: Setup Power BI Dashabord
 
-1.  Open a new window to [Power BI](https://www.powerbi.com)
+1.  Open a new browser window to [Power BI](https://www.powerbi.com)
 
-1.  Select on **My workspace**
+1.  Click **Sign In**, sign in using the same credentials you used to authorize your outputs for Stream Analytics above.
+
+1.  Select **My workspace**
 
 1.  Select **+Create**, then select **Dashboard**
 

@@ -654,7 +654,6 @@ $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings m
 #########################
 
 write-host "Setting key vault values..."
-<#
 az keyvault secret set --vault-name $keyvault.Name --name "AzureQueueConnectionString" --value $azurequeueConnString;
 az keyvault secret set --vault-name $keyvault.Name --name "paymentsAPIUrl" --value $paymentsApiUrlah;
 az keyvault secret set --vault-name $keyvault.Name --name "funcAPIUrl" --value $funcApiUrl;
@@ -668,7 +667,6 @@ az keyvault secret set --vault-name $keyvault.Name --name "eventHub" --value "st
 az keyvault secret set --vault-name $keyvault.Name --name "movieApiKey" --value $movieApiKey;
 az keyvault secret set --vault-name $keyvault.Name --name "LogicAppUrl" --value "";
 az keyvault secret set --vault-name $keyvault.Name --name "RecipientEmail" --value $userEmail;
-#>
 
 ########################
 #
