@@ -269,3 +269,12 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\C
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\obj\Debug\Contoso.Apps.Movies.Admin.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\obj\Debug\Contoso.Apps.Movies.Admin.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\obj\Debug\Contoso.Apps.Movies.Admin.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Microsoft.Azure.KeyVault.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Microsoft.Azure.Services.AppAuthentication.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Microsoft.Rest.ClientRuntime.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Microsoft.Rest.ClientRuntime.Azure.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Microsoft.Azure.KeyVault.WebKey.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Microsoft.Rest.ClientRuntime.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Microsoft.Rest.ClientRuntime.Azure.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Admin\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.xml

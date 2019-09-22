@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.Azure.DocumentDB" Version="2.6.0" />
     <PackageReference Include="Microsoft.Azure.EventHubs" Version="4.1.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Azure.Management.CosmosDB.Fluent" Version="1.26.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.4" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="2.2.0" />
@@ -24,6 +25,7 @@
     <PackageReference Include="Wkhtmltopdf.NetCore" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Contoso.Apps.Common\Contoso.Apps.Common.csproj" />
     <ProjectReference Include="..\Contoso.Apps.Movies.Data\Contoso.Apps.Movies.Data.csproj" />
   </ItemGroup>
   <ItemGroup>

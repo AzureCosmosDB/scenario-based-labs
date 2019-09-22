@@ -248,3 +248,12 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\C
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\obj\Debug\Contoso.Apps.PaymentGateway.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.KeyVault.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.Services.AppAuthentication.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Rest.ClientRuntime.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Rest.ClientRuntime.Azure.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Azure.KeyVault.WebKey.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Rest.ClientRuntime.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.Rest.ClientRuntime.Azure.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.PaymentGateway\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.xml

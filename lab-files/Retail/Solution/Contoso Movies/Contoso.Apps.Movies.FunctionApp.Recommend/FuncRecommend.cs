@@ -14,13 +14,22 @@ using System.Collections.Generic;
 using Contoso.Apps.Movies.Data.Models;
 using Contoso.Apps.Movies.Logic;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Azure.Cosmos;
 
 namespace ContosoFunctionApp
 {
-    public static class FuncRecommend
+    public class FuncRecommend
     {
+        private readonly CosmosClient _cosmosClient;
+
+        // Use Dependency Injection to inject the HttpClientFactory service and Cosmos DB client that were configured in Startup.cs.
+        public FuncRecommend(CosmosClient cosmosClient)
+        {
+            _cosmosClient = cosmosClient;
+        }
+
         [FunctionName("Recommend")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req, ILogger log, ExecutionContext ctx)
         {
             var config = new ConfigurationBuilder()
@@ -31,11 +40,9 @@ namespace ContosoFunctionApp
 
             List<Item> products = new List<Item>();
 
-            log.LogInformation($"Webhook was triggered!");
+            log.LogInformation($"Recommend http was triggered");
 
-            RecommendationHelper.databaseId = config["databaseId"];
-            RecommendationHelper.endpointUrl = config["dbConnectionUrl"];
-            RecommendationHelper.authorizationKey = config["dbConnectionKey"];
+            RecommendationHelper.client = _cosmosClient;
             RecommendationHelper.Init();
 
             try

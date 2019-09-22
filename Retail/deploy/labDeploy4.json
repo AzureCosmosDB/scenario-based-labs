@@ -109,7 +109,8 @@
                         ],
                         "kind": "Hash"
                     }
-                }
+                },
+				"options": { "throughput": 10000 }
             }
         }
 		,

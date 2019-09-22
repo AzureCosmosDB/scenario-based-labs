@@ -16,17 +16,19 @@ using System.Text;
 
 namespace ContosoFunctionApp
 {
+    
     public class FuncChangeFeed
     {
+        private readonly CosmosClient _cosmosClient;
         private IHttpClientFactory _httpClientFactory;
-        private CosmosClient _cosmosClient;
         private ILogger log;
         private IConfigurationRoot config;
 
         // Use Dependency Injection to inject the HttpClientFactory service that was configured in Startup.cs.
-        public FuncChangeFeed(IHttpClientFactory httpClientFactory)
+        public FuncChangeFeed(IHttpClientFactory httpClientFactory, CosmosClient cosmosClient)
         {
             _httpClientFactory = httpClientFactory;
+            _cosmosClient = cosmosClient;
         }
 
         [FunctionName("ChangeFeed")]
@@ -43,7 +45,7 @@ namespace ContosoFunctionApp
         {
             log = inlog;
 
-            var databaseId = "movies";
+            var databaseName = "movies";
 
             //config
             config = new ConfigurationBuilder()
@@ -52,11 +54,8 @@ namespace ContosoFunctionApp
                 .AddEnvironmentVariables()
                 .Build();
 
-            //cosmob connection
-            CosmosClient client = new CosmosClient(config["dbConnectionUrl"], config["dbConnectionKey"]);
-            
-            DbHelper.client = client;
-            DbHelper.databaseId = databaseId;
+            DbHelper.client = _cosmosClient;
+            DbHelper.databaseId = databaseName;
 
             //TODO 1 - Aggregate into cosmos for top products calcluation
             DoAggregateCalculations(events);
@@ -65,9 +64,7 @@ namespace ContosoFunctionApp
             AddEventToEventHub(events);
 
             //TODO 3 - Fire the logic app
-            CallLogicApp(events);
-
-            
+            CallLogicApp(events);            
         }        
 
         public async void DoAggregateCalculations(IReadOnlyList<Document> events)

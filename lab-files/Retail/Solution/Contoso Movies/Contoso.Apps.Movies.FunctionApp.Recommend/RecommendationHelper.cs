@@ -21,7 +21,7 @@ namespace Contoso.Apps.Movies.Logic
         static public string authorizationKey;
         static public string databaseId;
 
-        static protected CosmosClient client;
+        static public CosmosClient client;
 
         protected static IQueryable<Item> items;
         protected static IQueryable<Item> events;
@@ -35,7 +35,8 @@ namespace Contoso.Apps.Movies.Logic
         {
             try
             {
-                client = new CosmosClient(endpointUrl, authorizationKey);
+                if (client == null)
+                    client = new CosmosClient(endpointUrl, authorizationKey);
 
                 DbHelper.client = client;
                 DbHelper.databaseId = databaseId;

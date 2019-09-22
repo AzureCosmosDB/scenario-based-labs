@@ -220,3 +220,12 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\D
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\obj\Debug\MovieDataImport.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\obj\Debug\MovieDataImport.exe
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\obj\Debug\MovieDataImport.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\bin\Debug\Microsoft.Azure.KeyVault.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\bin\Debug\Microsoft.Azure.Services.AppAuthentication.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\bin\Debug\Microsoft.Rest.ClientRuntime.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\bin\Debug\Microsoft.Rest.ClientRuntime.Azure.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\bin\Debug\Microsoft.Azure.KeyVault.WebKey.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\bin\Debug\Microsoft.IdentityModel.Clients.ActiveDirectory.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\bin\Debug\Microsoft.Rest.ClientRuntime.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\bin\Debug\Microsoft.Rest.ClientRuntime.Azure.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Data Import\bin\Debug\Microsoft.IdentityModel.Clients.ActiveDirectory.xml

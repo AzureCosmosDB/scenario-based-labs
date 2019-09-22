@@ -161,3 +161,12 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\C
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\obj\Debug\Contoso.Apps.Common.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\obj\Debug\Contoso.Apps.Common.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\obj\Debug\Contoso.Apps.Common.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Debug\Microsoft.Azure.KeyVault.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Debug\Microsoft.Azure.KeyVault.WebKey.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Debug\Microsoft.Azure.Services.AppAuthentication.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Debug\Microsoft.IdentityModel.Clients.ActiveDirectory.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Debug\Microsoft.Rest.ClientRuntime.Azure.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Debug\Microsoft.Rest.ClientRuntime.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Debug\Microsoft.IdentityModel.Clients.ActiveDirectory.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Debug\Microsoft.Rest.ClientRuntime.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Common\bin\Debug\Microsoft.Rest.ClientRuntime.Azure.xml

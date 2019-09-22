@@ -731,3 +731,10 @@ C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\C
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Web\obj\Debug\Contoso.Apps.Movies.Web.csproj.CopyComplete
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Web\obj\Debug\Contoso.Apps.Movies.Web.dll
 C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Web\obj\Debug\Contoso.Apps.Movies.Web.pdb
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Web\bin\Microsoft.Azure.KeyVault.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Web\bin\Microsoft.Azure.Services.AppAuthentication.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Web\bin\Microsoft.Rest.ClientRuntime.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Web\bin\Microsoft.Rest.ClientRuntime.Azure.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Web\bin\Microsoft.Azure.KeyVault.WebKey.dll
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Web\bin\Microsoft.Rest.ClientRuntime.xml
+C:\github\solliancenet\cosmos-db-scenario-based-labs\lab-files\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.Web\bin\Microsoft.Rest.ClientRuntime.Azure.xml

@@ -181,17 +181,15 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 ![Workspace is highlighted with the user expanded and the Import option highlighted.](./media/xx_Databricks_07.png "Import the Databricks notebook")
 
-4. After importing, select the new **02 Retail** folder.
-
-5.  Select **Event Generator**
-
-6. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. 
-
-7.  Update the configuration settings for both the **readConfig** and the **writeConfig**, set the following using the values from your lab setup script output:
+4.  After importing, select the new **/Includes/Configuration** notebook.  Update the configuration settings by setting the following using the values from your lab setup script output:
 
 - Endpoint = Cosmos DB endpoint url
 - Masterkey = Cosmos DB master key
 - Database = Database id of the cosmos db ('movies')
+
+5.  Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
+
+6. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. 
 
 ![The configuration values in the notebook are highlighted.](./media/xx_Databricks_06.png "Add the databrick notebook configuration settings")
 
@@ -319,17 +317,11 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 ### Task 1: Generate the Associations 
 
-1.  Switch back to your Databricks workspace, select the **Association Rules** workbook
+1.  Switch back to your Databricks workspace, select the **02 Association Rules** workbook
 
 1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
 
-1.  Update the configuration settings for both the **readEventsConfig** AND the **writeAssociationConfig**, set the following:
-
-- Endpoint = Cosmos DB endpoint url
-- Masterkey = Cosmos DB master key
-- Database = Database id of the cosmos db
-
-1. Run each cell of the **Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+1. Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
 ### Task 2: Review the data generated
 
@@ -429,17 +421,11 @@ In this exercise you will defined
 
 ### Task 1: Compute the user implicit ratings
 
-1.  Switch back to your Databricks workspace, select **Ratings**
+1.  Switch back to your Databricks workspace, select **03 Ratings**
 
 1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. You will need to do this for each notebook you open. 
 
-1.  Update the configuration settings for both the **readEventsConfig** AND the **writeAssociationConfig**, set the following:
-
-- Endpoint = Cosmos DB endpoint url
-- Masterkey = Cosmos DB master key
-- Database = Database id of the cosmos db
-
-1. Run each cell of the **Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+1. Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
 ![An example item from the ratings collection is displayed.](./media/xx_RatingsColl.png "The ratings collection")
 
@@ -447,11 +433,11 @@ In this exercise you will defined
 
 ### Task 2: Generate the Collaborative Rules
 
-1.  Switch back to your Databricks workspace, select **Similarity**
+1.  Switch back to your Databricks workspace, select **04 Similarity**
 
 1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown. 
 
-1. Run each cell of the **Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+1. Run each cell of the **04 Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
 ### Task 3: Review the data generated
 
@@ -621,41 +607,11 @@ In this exercise you will setup stream analytics to process the change feed even
 
 1.  Select **Save**
 
-1.  Select **+Add**, then select **Power BI**
+1.  Repeat for steps 11-16, but replace **eventOrdersLastHour** with:
 
-1.  For the output alias, type **eventSummary**
-
-1.  For the dataset, type **eventSummary**
-
-1.  For the table name, type **eventSummary**
-
-1.  Select **Authorize**, login to your Power BI instance
-
-1.  Select **Save**
-
-1.  Select **+Add**, then select **Power BI**
-
-1.  For the output alias, type **failureCount**
-
-1.  For the dataset, type **failureCount**
-
-1.  For the table name, type **failureCount**
-
-1.  Select **Authorize**, login to your Power BI instance
-
-1.  Select **Save**
-
-1.  Select **+Add**, then select **Power BI**
-
-1.  For the output alias, type **eventData**
-
-1.  For the dataset, type **eventData**
-
-1.  For the table name, type **eventData**
-
-1.  Select **Authorize**, login to your Power BI instance
-
-1.  Select **Save**
+-   eventSummary
+-   failureCount
+-   eventData
 
 1.  Select **Query**
 
@@ -972,7 +928,7 @@ public async void CallLogicApp(IReadOnlyList<Document> events)
 
 1.  For each `buy` event, you will receive an email
 
->NOTE:  You could receive quite a `few` emails.
+>NOTE:  It can take up to 5 minutes to receive emails, when you do you could receive quite a `few` emails.
 
 ## After the hands-on lab 
 

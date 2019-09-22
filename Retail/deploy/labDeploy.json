@@ -2,7 +2,19 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-		
+		"region": {
+            "type": "string",
+            "defaultValue": "westus"
+        },
+        "prefix": {
+            "type": "string",
+            "defaultValue": ""
+        }
+		,
+        "tenantId": {
+            "type": "string",
+            "defaultValue": ""
+        }
     },
     "variables": {
         "location": "westus",
@@ -36,6 +48,13 @@
 		"workflows_s2scenerio_name" : "[concat('s2_logicapp_', variables('name-suffix'))]"
     },
     "resources": [
+		{
+		  "name": "s2retailmsi",
+		  "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+		  "location": "[variables('location')]",
+		  "apiVersion": "2018-11-30",
+		  "tags": {}
+		},
         {
             "type": "Microsoft.DocumentDB/databaseAccounts",
             "apiVersion": "2015-04-08",
@@ -112,62 +131,6 @@
                     "family": "A",
                     "name": "standard"
                 },
-                "tenantId": "bafd4066-3e66-4e2e-aa8d-ee093097beda",
-                "accessPolicies": [
-                    {
-                        "tenantId": "bafd4066-3e66-4e2e-aa8d-ee093097beda",
-                        "objectId": "b3907bfd-df36-490d-b7cd-d21a3ecf28d7",
-                        "permissions": {
-                            "keys": [
-                                "get",
-                                "create",
-                                "delete",
-                                "list",
-                                "update",
-                                "import",
-                                "backup",
-                                "restore",
-                                "recover"
-                            ],
-                            "secrets": [
-                                "get",
-                                "list",
-                                "set",
-                                "delete",
-                                "backup",
-                                "restore",
-                                "recover"
-                            ],
-                            "certificates": [
-                                "get",
-                                "list",
-                                "delete",
-                                "create",
-                                "import",
-                                "update",
-                                "managecontacts",
-                                "getissuers",
-                                "listissuers",
-                                "setissuers",
-                                "deleteissuers",
-                                "manageissuers",
-                                "recover"
-                            ],
-                            "storage": [
-                                "get",
-                                "list",
-                                "delete",
-                                "set",
-                                "update",
-                                "regeneratekey",
-                                "setsas",
-                                "listsas",
-                                "getsas",
-                                "deletesas"
-                            ]
-                        }
-                    }
-                ],
                 "enabledForDeployment": false
             }
         },
@@ -405,7 +368,6 @@
                 "ipRules": []
             }
         },
-
         {
             "name": "DatabricksWorkspaceDeployment",
             "type": "Microsoft.Resources/deployments",
