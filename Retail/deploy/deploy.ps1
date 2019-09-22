@@ -183,7 +183,6 @@ function SetupDatabricks()
         add-content $sharedConfigPath $content;
 
         #create the includes folder
-        $databricktoken = "dapi682a444966f0ea03dc224550a878698f"
         $userFolderName = $userEmail.ToLower()
         $notebookFolderName = "02 Retail"
         $data = @{"path"="/Users/$userFolderName/$notebookFolderName/Includes"} | ConvertTo-Json
