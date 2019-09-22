@@ -5,12 +5,12 @@
 #################
 #Install-Module -Name Az -AllowClobber -Scope CurrentUser
 #################
-$githubPath = "C:\cosmos-db-scenario-based-labs-master";
+$githubPath = "C:\github\solliancenet\cosmos-db-scenario-based-labs";
 $mode = "demo"  #can be 'lab' or 'demo'
 $subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
 $subName = "Solliance MPN 12K"
 
-$prefix = "zt5"
+$prefix = "cjg"
 $rgName = $prefix + "_s2_retail"
 $databaseId = "movies";
 $region = "westus";
@@ -27,8 +27,6 @@ $databrickToken = ""
 #this should get set on a successful deployment...
 $suffix = ""
 
-
-
 ###################################
 #
 #  Functions
@@ -44,13 +42,16 @@ function DeployTemplate($filename, $skipDeployment, $parameters)
         #deploy the template
         $deployId = "Microsoft.Template"
 
+        Remove-Item "parameters.json" -ea SilentlyContinue;
+        add-content "parameters.json" $parameters;
+
         if (!$parameters)
         {
             $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\$fileName") --output json)
         }
         else
         {
-            $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\$fileName") --output json --parameters "$parameters")
+            $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\$fileName") --output json --parameters `@$githubpath\parameters.json)
         }
         
 
@@ -373,6 +374,12 @@ $json = ConvertObjectToJson $res
 #help out with the email address...
 $userEmail = $json[0].user.name;
 
+$res = az ad user show --upn-or-object-id $userEmail
+$json = ConvertObjectToJson $res
+
+#get object id for current user to assign to key vault
+$userObjectId = $json.objectId;
+
 #select the subscription if you set it
 if ($subName)
 {
@@ -387,14 +394,26 @@ $tenantId = $json.tenantId;
 #create the resource group
 $result = az group create --name $rgName --location $region;
 
-<#
-$parameters = @{
-             "region"=@{"value"="$region"}
-             "prefix"=@{"value"="$prefix"}
-             "tenantId"=@{"value"="$tenantId"}
-            } | ConvertTo-Json
-            #>
+#deploy the managed service identity
+$deployment = DeployTemplate "labdeploy5.json" $skipDeployment $parameters;
 
+$res = $(az identity list --resource-group $rgname)
+$json = ConvertObjectToJson $res;
+
+$msIdentity = $json | where {$_.type -eq "Microsoft.ManagedIdentity/userAssignedIdentities"};
+
+$parameters = @{
+            "schema"="http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
+            "contentVersion"="1.0.0.0"
+            "parameters"=@{
+                 "region"=@{"value"="$region"}
+                 "msiId"=@{"value"="$($msidentity.principalId)"}
+                 "prefix"=@{"value"="$prefix"}
+                 "tenantId"=@{"value"="$tenantId"}
+                 "userObjectId"=@{"value"="$userObjectId"}
+                 }
+            } | ConvertTo-Json
+            
 $deployment = DeployTemplate "labdeploy.json" $skipDeployment $parameters;
 
 #need the suffix...
@@ -439,7 +458,7 @@ if (!$logicApp)
     $deployment = DeployTemplate "labdeploy3.json" $skipDeployment;
 }
 
-#used later (keyvault)
+#used later (databricks)
 $databricksName = "s2_databricks_" + $suffix;
 $databricks = $json | where {$_.type -eq "Microsoft.Databricks/workspaces" -and $_.name -eq $databricksName};
 
