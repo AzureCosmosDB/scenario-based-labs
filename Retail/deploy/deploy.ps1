@@ -264,10 +264,12 @@ function ExecuteDatabrickNotebook($notebookPath, $jobName, $waitToComplete, $clu
         $res = curl -Method Get "$databricksInstance/api/2.0/jobs/runs/get?run_id=$runId" -H @{'Authorization' = "Bearer $databricktoken"};
         $json = ConvertFrom-json $res.Content
 
-        if ($json.state.life_cycle_state -eq "RUNNING")
+        while ($json.state.life_cycle_state -eq "PENDING" -or $json.state.life_cycle_state -eq "RUNNING")
         {
             Write-Host "Waiting for Job[$jobId] : Run[$runId] to complete..."
-            start-sleep 30;
+            start-sleep 10;
+            $res = curl -Method Get "$databricksInstance/api/2.0/jobs/runs/get?run_id=$runId" -H @{'Authorization' = "Bearer $databricktoken"};
+            $json = ConvertFrom-json $res.Content
         }
     }
 }
