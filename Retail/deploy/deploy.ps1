@@ -203,6 +203,11 @@ function SetupDatabricks()
         remove-item $sharedConfigPath
         add-content $sharedConfigPath $content;
 
+        #create the includes folder
+        $data = @{"path"="/Users/$userEmail/Includes"} | ConvertTo-Json
+        $res = curl -Method Post "$databricksurl/api/2.0/workspace/mkdirs" -H @{'Authorization' = "Bearer $databricktoken"} -Body $data;
+
+        #upload all the files
         $di = new-object System.IO.DirectoryInfo ("$githubPath/lab-files/retail/notebooks/export/02 retail")
 
         $files = $di.GetFiles("*.*", [System.IO.SearchOption]::AllDirectories);
@@ -237,13 +242,13 @@ function SetupDatabricks()
         }
 
         #execute the event generation
-        ExecuteDatabrickNotebook "/Users/$userEmail/02 Retail/01 Event Generator" "01 Event Generator" $true
+        ExecuteDatabrickNotebook "/Users/$userEmail/01 Event Generator" "01 Event Generator" $true
         
-        ExecuteDatabrickNotebook "/Users/$userEmail/02 Retail/02 Association Rules" "02 Association Rules" $true
+        ExecuteDatabrickNotebook "/Users/$userEmail/02 Association Rules" "02 Association Rules" $true
         
-        ExecuteDatabrickNotebook "/Users/$userEmail/02 Retail/03 Ratings" "03 Ratings" $true
+        ExecuteDatabrickNotebook "/Users/$userEmail/03 Ratings" "03 Ratings" $true
         
-        ExecuteDatabrickNotebook "/Users/$userEmail/02 Retail/04 Similarity" "04 Similarity" $true
+        ExecuteDatabrickNotebook "/Users/$userEmail/04 Similarity" "04 Similarity" $true
     }   
 }
 
@@ -253,7 +258,7 @@ function ExecuteDatabrickNotebook($notebookPath, $jobName, $waitToComplete)
     $json = @{
         "name"=1
         "existing_cluster_id"=$clusterId
-        "notebook_task"= @{ "notebook_path"="notebookPath"}
+        "notebook_task"= @{ "notebook_path"="$notebookPath"}
     } | ConvertTo-Json
 
     $res = curl -Method Post "$databricksurl/api/2.0/jobs/create" -H @{'Authorization' = "Bearer $databricktoken"} -Body $json;
@@ -460,6 +465,10 @@ $keyvault = $json | where {$_.type -eq "Microsoft.KeyVault/vaults" -and $_.name 
 $funcAppName = "s2func" + $suffix;
 $funcApp = $json | where {$_.type -eq "Microsoft.Web/sites" -and $_.name -eq $funcAppName};
 
+#used later (web app)
+$webAppName = "s2web" + $suffix;
+$webApp = $json | where {$_.type -eq "Microsoft.Web/sites" -and $_.name -eq $webAppName};
+
 #get all the settings
 $azurequeueConnString = "";
 $paymentsApiUrl = "";
@@ -592,6 +601,7 @@ $funcApiUrl = "https://" + $func.defaultHostName;
 
 #open the function app endpoint to create the host.json file:
 $url = "https://portal.azure.com/#blade/WebsitesExtension/FunctionsIFrameBlade/id/$($func.id)"
+write-host "Action Requires: Opening url: $url";
 Start-Process $url;
 
 $res = read-host "Did you click to the function application's settings page yet?";
@@ -639,6 +649,7 @@ $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings m
 #########################
 
 write-host "Setting key vault values..."
+<#
 az keyvault secret set --vault-name $keyvault.Name --name "AzureQueueConnectionString" --value $azurequeueConnString;
 az keyvault secret set --vault-name $keyvault.Name --name "paymentsAPIUrl" --value $paymentsApiUrlah;
 az keyvault secret set --vault-name $keyvault.Name --name "funcAPIUrl" --value $funcApiUrl;
@@ -652,6 +663,7 @@ az keyvault secret set --vault-name $keyvault.Name --name "eventHub" --value "st
 az keyvault secret set --vault-name $keyvault.Name --name "movieApiKey" --value $movieApiKey;
 az keyvault secret set --vault-name $keyvault.Name --name "LogicAppUrl" --value "";
 az keyvault secret set --vault-name $keyvault.Name --name "RecipientEmail" --value $userEmail;
+#>
 
 ########################
 #
@@ -706,6 +718,7 @@ foreach($folder in $folders)
 ########################
 if ($mode -eq "demo")
 { 
+    write-host "Action Required - Opening url: $databricksInstance";
     start-process $databricksInstance;
 
     $databrickToken = read-host "Enter your databricks api token";
@@ -724,6 +737,18 @@ if ($mode -eq "demo")
 
     #run the import tool
     . "$githubpath\lab-files\Retail\Starter\Data Import\bin\Debug\MovieDataImport.exe"
+}
+
+########################
+#
+# Open the web site
+#
+########################
+if ($mode -eq "demo")
+{
+    $url = $webapp.HostName;
+    write-host "Opening url: $url";
+    Start-Process $url;
 }
 
 ########################
