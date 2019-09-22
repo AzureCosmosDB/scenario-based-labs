@@ -5,18 +5,18 @@
 #################
 #Install-Module -Name Az -AllowClobber -Scope CurrentUser
 #################
-$githubPath = "C:\github\solliancenet\cosmos-db-scenario-based-labs";
-$mode = "lab"  #can be 'lab' or 'demo'
-$subscriptionId = "YOUR SUBSCRIPTION ID"
-$subName = "YOUR SUBSCRIPTION NAME"
+$githubPath = "C:\cosmos-db-scenario-based-labs-master";
+$mode = "demo"  #can be 'lab' or 'demo'
+$subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
+$subName = "Solliance MPN 12K"
 
-$prefix = "YOUR INITIALS"
+$prefix = "zt4"
 $rgName = $prefix + "_s2_retail"
 $databaseId = "movies";
 $region = "westus";
 
 #register at https://api.themoviedb.org
-$movieApiKey = "YOUR API KEY";
+$movieApiKey = "cd5bbb81e62dba0a7f95933fdb9ef536";
 
 #toggles for skipping items
 $skipDeployment = $false;
@@ -27,29 +27,7 @@ $databrickToken = ""
 #this should get set on a successful deployment...
 $suffix = ""
 
-###################################
-#
-#  Solliance settings
-#
-###################################
-$githubPath = "C:\github\solliancenet\cosmos-db-scenario-based-labs";
-$mode = "demo"  #can be 'lab' or 'demo'
-$subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
-$subName = "Solliance MPN 12K"
 
-$prefix = "cjg"
-$rgName = $prefix + "_s2_retail"
-$databaseId = "movies";
-$region = "centralus";
-
-#register at https://api.themoviedb.org
-$movieApiKey = "6918a9db428b01e4a7a88757e7c6467c";
-
-#databricks api token
-$databrickToken = "dapie5a250a148d3dc3481fa8d525a8f1d02"
-
-#this should get set on a successful deployment...
-$suffix = ""
 
 ###################################
 #
@@ -177,20 +155,21 @@ function SetupDatabricks()
 {
     if ($mode -eq "demo")
     {
-        #create the custer node
+        #create the cluster node
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         $json = "{`"cluster_name`": `"small`",`"spark_version`": `"5.5.x-scala2.11`",`"node_type_id`": `"Standard_DS3_v2`",`"num_workers`" : 1}"
-        $res = curl -Method Post "$databricksurl/api/2.0/clusters/create" -H @{'Authorization' = "Bearer $databricktoken"; 'Content-Type' = 'application/json'} -Body "$json";
+        $res = curl -Method Post "$databricksInstance/api/2.0/clusters/create" -H @{'Authorization' = "Bearer $databricktoken"; 'Content-Type' = 'application/json'} -Body "$json";
         $json = ConvertFrom-json $res.Content
 
         $clusterId = $json.cluster_id
         
         #install the library
         $json = "{`"cluster_id`": `"$clusterid`",`"libraries`": [{`"maven`": {`"coordinates`": `"com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1`",`"exclusions`": [`"slf4j:slf4j`"]}}]}";
-        $res = curl -Method Post "$databricksurl/api/2.0/libraries/install" -H @{'Authorization' = "Bearer $databricktoken"; 'Content-Type' = 'application/json'} -Body $json;
+        $res = curl -Method Post "$databricksInstance/api/2.0/libraries/install" -H @{'Authorization' = "Bearer $databricktoken"; 'Content-Type' = 'application/json'} -Body $json;
         $json = ConvertFrom-json $res.Content
 
         #extract the file
-        $filePath = "$githubPath/lab-files/retail/notebooks/02 retail.zip";
+        $filePath = "$githubPath\lab-files\retail\notebooks\02 retail.zip";
         Expand-Archive -LiteralPath $filePath -DestinationPath "$githubPath/lab-files/retail/notebooks/export"
 
         #update the variables
@@ -204,8 +183,11 @@ function SetupDatabricks()
         add-content $sharedConfigPath $content;
 
         #create the includes folder
-        $data = @{"path"="/Users/$userEmail/Includes"} | ConvertTo-Json
-        $res = curl -Method Post "$databricksurl/api/2.0/workspace/mkdirs" -H @{'Authorization' = "Bearer $databricktoken"} -Body $data;
+        $databricktoken = "dapi682a444966f0ea03dc224550a878698f"
+        $userFolderName = $userEmail.ToLower()
+        $notebookFolderName = "02 Retail"
+        $data = @{"path"="/Users/$userFolderName/$notebookFolderName/Includes"} | ConvertTo-Json
+        $res = curl -Method Post "$databricksInstance/api/2.0/workspace/mkdirs" -H @{'Authorization' = "Bearer $databricktoken"} -Body $data;
 
         #upload all the files
         $di = new-object System.IO.DirectoryInfo ("$githubPath/lab-files/retail/notebooks/export/02 retail")
@@ -228,31 +210,31 @@ function SetupDatabricks()
 
             #import the notebooks
             $data = @{
-             "path"="/Users/$userEmail$path"
-             "format"="JUPYTER"
-             "overwrite"=$true
-             "language"="PYTHON"
-             "content"=$base64string
+                "path"="/Users/$userFolderName/$notebookFolderName$path"
+                "format"="JUPYTER"
+                "overwrite"=$true
+                "language"="PYTHON"
+                "content"=$base64string
             } | ConvertTo-Json
 
             $data
 
-            $res = curl -Method Post "$databricksurl/api/2.0/workspace/import" -H @{'Authorization' = "Bearer $databricktoken"} -Body $data;
+            $res = curl -Method Post "$databricksInstance/api/2.0/workspace/import" -H @{'Authorization' = "Bearer $databricktoken"} -Body $data;
             $json = ConvertFrom-json $res.Content
         }
 
         #execute the event generation
-        ExecuteDatabrickNotebook "/Users/$userEmail/01 Event Generator" "01 Event Generator" $true
+        ExecuteDatabrickNotebook "/Users/$userFolderName/01 Event Generator" "01 Event Generator" $true $clusterId
         
-        ExecuteDatabrickNotebook "/Users/$userEmail/02 Association Rules" "02 Association Rules" $true
+        ExecuteDatabrickNotebook "/Users/$userFolderName/02 Association Rules" "02 Association Rules" $true $clusterId
         
-        ExecuteDatabrickNotebook "/Users/$userEmail/03 Ratings" "03 Ratings" $true
+        ExecuteDatabrickNotebook "/Users/$userFolderName/03 Ratings" "03 Ratings" $true $clusterId
         
-        ExecuteDatabrickNotebook "/Users/$userEmail/04 Similarity" "04 Similarity" $true
+        ExecuteDatabrickNotebook "/Users/$userFolderName/04 Similarity" "04 Similarity" $true $clusterId
     }   
 }
 
-function ExecuteDatabrickNotebook($notebookPath, $jobName, $waitToComplete)
+function ExecuteDatabrickNotebook($notebookPath, $jobName, $waitToComplete, $clusterId)
 {
     #create a job
     $json = @{
@@ -261,7 +243,7 @@ function ExecuteDatabrickNotebook($notebookPath, $jobName, $waitToComplete)
         "notebook_task"= @{ "notebook_path"="$notebookPath"}
     } | ConvertTo-Json
 
-    $res = curl -Method Post "$databricksurl/api/2.0/jobs/create" -H @{'Authorization' = "Bearer $databricktoken"} -Body $json;
+    $res = curl -Method Post "$databricksInstance/api/2.0/jobs/create" -H @{'Authorization' = "Bearer $databricktoken"} -Body $json;
     $json = ConvertFrom-json $res.Content
 
     $jobId = $json.job_id;
@@ -273,14 +255,14 @@ function ExecuteDatabrickNotebook($notebookPath, $jobName, $waitToComplete)
         "timeout_secods"=3600
     } | ConvertTo-Json
 
-    $res = curl -Method Post "$databricksurl/api/2.0/jobs/run-now" -H @{'Authorization' = "Bearer $databricktoken"} -Body $json;
+    $res = curl -Method Post "$databricksInstance/api/2.0/jobs/run-now" -H @{'Authorization' = "Bearer $databricktoken"} -Body $json;
     $json = ConvertFrom-json $res.Content
 
     $runid = $json.run_id;
 
     if ($waitToComplete)
     {
-        $res = curl -Method Get "$databricksurl/api/2.0/jobs/runs/get?run_id=$runId" -H @{'Authorization' = "Bearer $databricktoken"};
+        $res = curl -Method Get "$databricksInstance/api/2.0/jobs/runs/get?run_id=$runId" -H @{'Authorization' = "Bearer $databricktoken"};
         $json = ConvertFrom-json $res.Content
 
         if ($json.state.life_cycle_state -eq "RUNNING")
