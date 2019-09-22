@@ -193,62 +193,6 @@
                     "family": "A",
                     "name": "standard"
                 },
-                "tenantId": "bafd4066-3e66-4e2e-aa8d-ee093097beda",
-                "accessPolicies": [
-                    {
-                        "tenantId": "bafd4066-3e66-4e2e-aa8d-ee093097beda",
-                        "objectId": "b3907bfd-df36-490d-b7cd-d21a3ecf28d7",
-                        "permissions": {
-                            "keys": [
-                                "get",
-                                "create",
-                                "delete",
-                                "list",
-                                "update",
-                                "import",
-                                "backup",
-                                "restore",
-                                "recover"
-                            ],
-                            "secrets": [
-                                "get",
-                                "list",
-                                "set",
-                                "delete",
-                                "backup",
-                                "restore",
-                                "recover"
-                            ],
-                            "certificates": [
-                                "get",
-                                "list",
-                                "delete",
-                                "create",
-                                "import",
-                                "update",
-                                "managecontacts",
-                                "getissuers",
-                                "listissuers",
-                                "setissuers",
-                                "deleteissuers",
-                                "manageissuers",
-                                "recover"
-                            ],
-                            "storage": [
-                                "get",
-                                "list",
-                                "delete",
-                                "set",
-                                "update",
-                                "regeneratekey",
-                                "setsas",
-                                "listsas",
-                                "getsas",
-                                "deletesas"
-                            ]
-                        }
-                    }
-                ],
                 "enabledForDeployment": false
             }
         },
