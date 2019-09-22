@@ -10,7 +10,7 @@ $mode = "demo"  #can be 'lab' or 'demo'
 $subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
 $subName = "Solliance MPN 12K"
 
-$prefix = "zt4"
+$prefix = "zt5"
 $rgName = $prefix + "_s2_retail"
 $databaseId = "movies";
 $region = "westus";
@@ -162,6 +162,9 @@ function SetupDatabricks()
         $json = ConvertFrom-json $res.Content
 
         $clusterId = $json.cluster_id
+
+        # allow the creation of the cluster to begin before installing libraries
+        start-sleep 10;
         
         #install the library
         $json = "{`"cluster_id`": `"$clusterid`",`"libraries`": [{`"maven`": {`"coordinates`": `"com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1`",`"exclusions`": [`"slf4j:slf4j`"]}}]}";
