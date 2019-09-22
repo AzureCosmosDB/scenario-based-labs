@@ -12,20 +12,19 @@
     - [Task 3: Add Stream Analytics Event Hubs input](#task-3-add-stream-analytics-event-hubs-input)
     - [Task 4: Add Stream Analytics outputs](#task-4-add-stream-analytics-outputs)
     - [Task 5: Create Stream Analytics query](#task-5-create-stream-analytics-query)
-    - [Task 6: Run Stream Analytics job](#task-6-run-stream-analytics-job)
-    - [Task 7: Deploy Cosmos DB Processing Function App](#task-7-deploy-cosmos-db-processing-function-app)
-    - [Task 8: Deploy Stream Processing Function App](#task-8-deploy-stream-processing-function-app)
-    - [Task 9: Deploy Web App](#task-9-deploy-web-app)
-    - [Task 3: Create Azure Databricks cluster](#task-3-create-azure-databricks-cluster)
-    - [Task 4: Configure Key Vault-backed Databricks secret store](#task-4-configure-key-vault-backed-databricks-secret-store)
-    - [Task 5: Import lab notebooks into Azure Databricks](#task-5-import-lab-notebooks-into-azure-databricks)
-    - [Task 6: Run Stream Analytics job](#task-6-run-stream-analytics-job-1)
-    - [Task 7: View Cosmos DB processing Function App in the portal](#task-7-view-cosmos-db-processing-function-app-in-the-portal)
-    - [Task 8: Open the data generator project](#task-8-open-the-data-generator-project)
-    - [Task 9: Update application configuration](#task-9-update-application-configuration)
-    - [Task 10: Run generator](#task-10-run-generator)
-    - [Task 11: Log in to Power BI online and create real-time dashboard](#task-11-log-in-to-power-bi-online-and-create-real-time-dashboard)
-    - [Task 12: Import report in Power BI Desktop and update report data sources](#task-12-import-report-in-power-bi-desktop-and-update-report-data-sources)
+    - [Task 6: Deploy Cosmos DB Processing Function App](#task-6-deploy-cosmos-db-processing-function-app)
+    - [Task 7: Deploy Stream Processing Function App](#task-7-deploy-stream-processing-function-app)
+    - [Task 8: Deploy Web App](#task-8-deploy-web-app)
+    - [Task 9: Create Azure Databricks cluster](#task-9-create-azure-databricks-cluster)
+    - [Task 10: Configure Key Vault-backed Databricks secret store](#task-10-configure-key-vault-backed-databricks-secret-store)
+    - [Task 11: Import lab notebooks into Azure Databricks](#task-11-import-lab-notebooks-into-azure-databricks)
+    - [Task 12: Run Stream Analytics job](#task-12-run-stream-analytics-job-1)
+    - [Task 13: View Cosmos DB processing Function App in the portal](#task-13-view-cosmos-db-processing-function-app-in-the-portal)
+    - [Task 14: Open the data generator project](#task-14-open-the-data-generator-project)
+    - [Task 15: Update application configuration](#task-15-update-application-configuration)
+    - [Task 16: Run generator](#task-16-run-generator)
+    - [Task 17: Log in to Power BI online and create real-time dashboard](#task-17-log-in-to-power-bi-online-and-create-real-time-dashboard)
+    - [Task 18: Import report in Power BI Desktop and update report data sources](#task-18-import-report-in-power-bi-desktop-and-update-report-data-sources)
   - [Exercise 2: Observe Change Feed using Azure Functions and App Insights](#exercise-2-observe-change-feed-using-azure-functions-and-app-insights)
     - [Task 1: View devices in IoT Hub](#task-1-view-devices-in-iot-hub)
     - [Task 2: Open App Insights Live Metrics Stream](#task-2-open-app-insights-live-metrics-stream)
@@ -269,19 +268,7 @@ Please take a moment to analyze the query below. Notice how we are using the `ev
 
 2. Select **Save query**.
 
-### Task 6: Run Stream Analytics job
-
-Next, we will start the Stream Analytics job so we can begin processing event data once it starts to flow through the services.
-
-1. Select **Overview**.
-
-2. In the Overview blade, select **Start** and select **Now** for the job output start time.
-
-3. Select **Start** to beginning running the Stream Analytics job.
-
-   ![The steps to start the job as described are displayed.](media/stream-analytics-start-job.png 'Start job')
-
-### Task 7: Deploy Cosmos DB Processing Function App
+### Task 6: Deploy Cosmos DB Processing Function App
 
 1. Open the Visual Studio solution file **CosmosDbIoTScenario.sln** within the `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Solution` folder.
 
@@ -299,7 +286,7 @@ Next, we will start the Stream Analytics job so we can begin processing event da
 
     After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
 
-### Task 8: Deploy Stream Processing Function App
+### Task 7: Deploy Stream Processing Function App
 
 1. In the Visual Studio Solution Explorer, right-click on the **Functions.StreamProcessing** project, then select **Publish...**.
 
@@ -315,7 +302,7 @@ Next, we will start the Stream Analytics job so we can begin processing event da
 
     After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
 
-### Task 9: Deploy Web App
+### Task 8: Deploy Web App
 
 1. In the Visual Studio Solution Explorer, right-click on the **FleetManagementWebApp** project, then select **Publish...**.
 
@@ -336,7 +323,7 @@ Next, we will start the Stream Analytics job so we can begin processing event da
 > **NOTE:** If the web application displays an error, then go into the Azure Portal for the **IoTWebApp** and click **Restart**. When the Azure Web App is created from the ARM Template and configured for .NET Core, it may need to be restarted for the .NET Core configuration to be fully installed and ready for the application to run. Once restarted, the web application will run as expected.
 > ![App Service blade with Restart button highlighted](media/IoTWebApp-App-Service-Restart-Button.png "App Service blade with Restart button highlighted")
 
-### Task 3: Create Azure Databricks cluster
+### Task 9: Create Azure Databricks cluster
 
 Contoso Auto wants to use the valuable data they are collecting from their vehicles to make predictions about the health of their fleet to reduce downtime due to maintenance-related issues. One of the predictions they would like to make is whether a vehicle's battery is likely to fail within the next 30 days, based on historical data. They would like to run a nightly batch process to identify vehicles that should be serviced, based on these predictions. They also want to have a way to make a prediction in real time when viewing a vehicle on their fleet management website.
 
@@ -372,7 +359,7 @@ In this task, you will create a new cluster on which data exploration and model 
 
 5. Select **Create Cluster**.
 
-### Task 4: Configure Key Vault-backed Databricks secret store
+### Task 10: Configure Key Vault-backed Databricks secret store
 
 In an earlier task, you added application secrets to Key Vault, such as the Cosmos DB connection string. In this task, you will configure the Key Vault-backed Databricks secret store to securely access these secrets.
 
@@ -404,7 +391,7 @@ Azure Databricks has two types of secret scopes: Key Vault-backed and Databricks
 
 After a moment, you will see a dialog verifying that the secret scope has been created.
 
-### Task 5: Import lab notebooks into Azure Databricks
+### Task 11: Import lab notebooks into Azure Databricks
 
 In this task, you will import the Databricks notebooks into your workspace.
 
@@ -428,7 +415,7 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
 
-### Task 6: Run Stream Analytics job
+### Task 12: Run Stream Analytics job
 
 If you examine the right-hand side of the solution architecture diagram, you will see a flow of event data that feeds into Event Hubs from a Cosmos DB change feed-triggered function. Stream Analytics uses the event hub as an input source for a set of time window queries that create aggregates for individual vehicle telemetry, and overall vehicle telemetry that flows through the architecture from the vehicle IoT devices. Stream Analytics has two output data sinks:
 
@@ -449,7 +436,7 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 
    ![The steps to start the job as described are displayed.](media/stream-analytics-start-job.png 'Start job')
 
-### Task 7: View Cosmos DB processing Function App in the portal
+### Task 13: View Cosmos DB processing Function App in the portal
 
 **Note**: It is important to complete this step prior to running the data generator. If you do not initially activate the function by viewing it in the portal after publishing it, then it can take some time before it starts processing the data from the change feed.
 
@@ -461,7 +448,7 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 
 3. View the **function.json** file to the right. This file was generated when you published the Function App in Visual Studio. The bindings are the same as you saw in the project code for the function. When new instances of the Function App are created, the generated `function.json` file and a ZIP file containing the compiled application are copied to these instances, and these instances run in parallel to share the load as data flows through the architecture. The `function.json` file instructs each instance how to bind attributes to the functions, where to find application settings, and information about the compiled application (`scriptFile` and `entryPoint`).
 
-### Task 8: Open the data generator project
+### Task 14: Open the data generator project
 
 1. If the Visual Studio solution is not already open, navigate to `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Starter` and open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
 
@@ -469,7 +456,7 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 
    ![The Program.cs file is highlighted in the Solution Explorer.](media/vs-data-generator-program.png 'Solution Explorer')
 
-### Task 9: Update application configuration
+### Task 15: Update application configuration
 
 The data generator needs two connection strings before it can successfully run; the IoT Hub connection string, and the Cosmos DB connection string. The IoT Hub connection string can be found by selecting **Shared access policies** in IoT Hub, selecting the **iothubowner** policy, then copying the **Connection string--primary key** value. This is different from the Event Hub-compatible endpoint connection string you copied earlier.
 
@@ -487,7 +474,7 @@ The data generator needs two connection strings before it can successfully run; 
 
 > As an alternative, you may save these settings as environment variables on your machine, or through the FleetDataGenerator properties. Doing this will remove the risk of accidentally saving your secrets to source control.
 
-### Task 10: Run generator
+### Task 16: Run generator
 
 In this exercise, we will explore the data generator project, **FleetDataGenerator**, update the application configuration, and run it in order to seed the metadata database with data and simulate a single vehicle.
 
@@ -529,7 +516,7 @@ In this task, you will run the generator and have it generate events for 50 truc
 
    ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png 'Generator')
 
-### Task 11: Log in to Power BI online and create real-time dashboard
+### Task 17: Log in to Power BI online and create real-time dashboard
 
 1. Browse to <https://powerbi.microsoft.com> and sign in with the same account you used when you created the Power BI output in Stream Analytics.
 
@@ -677,7 +664,7 @@ In this task, you will run the generator and have it generate events for 50 truc
 
     ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png 'Power BI dashboard')
 
-### Task 12: Import report in Power BI Desktop and update report data sources
+### Task 18: Import report in Power BI Desktop and update report data sources
 
 In this task, you will import a Power BI report that has been created for you. After opening it, you will update the data source to point to your Power BI instance.
 
