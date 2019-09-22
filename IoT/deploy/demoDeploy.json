@@ -630,7 +630,7 @@
 
                         {
                             "name": "CosmosDBConnection",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                            "value": "[reference('labDeployment').outputs.CosmosDBConnection.value]"
                         },
                         {
                             "name": "IoTHubConnection",
@@ -701,7 +701,7 @@
 
                         {
                             "name": "CosmosDBConnection",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                            "value": "[reference('labDeployment').outputs.CosmosDBConnection.value]"
                         },
                         {
                             "name": "ColdStorageAccount",
@@ -746,7 +746,7 @@
 
                         {
                             "name": "CosmosDBConnection",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                            "value": "[reference('labDeployment').outputs.CosmosDBConnection.value]"
                         },
                         {
                             "name": "DatabaseName",
