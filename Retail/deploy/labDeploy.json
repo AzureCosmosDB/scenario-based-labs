@@ -2,6 +2,14 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+		"msiId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+		"userObjectId": {
+            "type": "string",
+            "defaultValue": ""
+        },
 		"region": {
             "type": "string",
             "defaultValue": "westus"
@@ -132,7 +140,28 @@
                     "name": "standard"
                 },
                 "tenantId": "[subscription().tenantId]",
-				"accessPolicies" : [],
+				"accessPolicies" : [
+				{
+				 "tenantId": "[subscription().tenantid]",
+				 "objectId": "[parameters('userObjectId')]",
+			  "permissions": {
+						"keys": ["all"],
+						"secrets": ["all"],
+						"certificates": ["all"],
+						"storage": ["all"]
+					}
+			   },
+			   {
+				 "tenantId": "[subscription().tenantid]",
+				 "objectId": "[parameters('msiId')]",
+			  "permissions": {
+						"keys": ["all"],
+						"secrets": ["all"],
+						"certificates": ["all"],
+						"storage": ["all"]
+					}
+			   }
+			   ],
                 "enabledForDeployment": false
             }
         },
@@ -267,6 +296,12 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]",
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
             ],
+			"identity": {
+				"type": "userAssigned",
+				"userAssignedIdentities": {
+					"[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/','s2retailmsi')]": {}
+				}
+			},
             "kind": "functionapp",
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanFunctionAppsName'))]",
@@ -329,7 +364,13 @@
                         }
                     ]
                 }
-            }
+            },
+			"identity": {
+				"type": "userAssigned",
+				"userAssignedIdentities": {
+					"[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/','s2retailmsi')]": {}
+				}
+			}
         },
         {
             "type": "Microsoft.EventHub/namespaces/eventhubs",
