@@ -558,7 +558,7 @@
                 "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]"
             ],
             "properties": {
-                "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('cosmosIoTLogicAppName')), '/triggers/manual'), '2016-06-01').value]"
+                "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('cosmosIoTLogicAppName')), '/triggers/manual'), '2016-10-01').value]"
             }
         },
 
