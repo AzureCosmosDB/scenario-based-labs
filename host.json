@@ -1,0 +1,19 @@
+{
+  "masterKey": {
+    "name": "master",
+    "value": "CfDJ8AAAAAAAAAAAAAAAAAAAAADsXvXjc2KhXiqWLyIOg7wGB28Ecl0f1nfZLR-g-eHw4wPsFk5sN1k1g3LgherHXj2n6laDSK_mHoeq0e7k6pBASTN8skdyyArWMa6Lr57ZUHk8yprGlOX8LiJfybeRjwra9YY-hwjk-0uQHrQsI_FFnL3L7E_ZdQHyR0pJDS201A",
+    "encrypted": true
+  },
+  "functionKeys": [
+    {
+      "name": "default",
+      "value": "CfDJ8AAAAAAAAAAAAAAAAAAAAABBphiqk8sWf9whiOOIEdedfj0o2j4JGxDOnV8g9q1m8I6Hvbwc5fOCpfNyQoDhHzJsE43Zbs-bn_QDeKHZrk3YhYpjIetk9DvTswUT5lz8iHbp-W32xK_pHIhaSQMcOxtbmkHy2bgnfMNAecYqc5GepziSD5sRGOPoASRogzjpNQ",
+      "encrypted": true
+    }
+  ],
+  "systemKeys": [],
+  "hostName": "s2funcbtnis54yegnmy.azurewebsites.net",
+  "instanceId": "0ba78dffa618a60516959c0666483417",
+  "source": "runtime",
+  "decryptionKeyId": "MACHINEKEY_DecryptionKey=QtT9JFRc4e45RzjW/cFoxvonJ9jMKwfRMcIH93aRc+4=;"
+}
