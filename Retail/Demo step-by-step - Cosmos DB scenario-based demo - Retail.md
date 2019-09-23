@@ -2,39 +2,39 @@
 
 <!-- TOC -->
 
-- [Cosmos DB scenario-based labs - Retail hands-on lab step-by-step](#cosmos-db-scenario-based-labs---retail-hands-on-lab-step-by-step)
-  - [Abstract and learning objectives](#abstract-and-learning-objectives)
-  - [Overview](#overview)
-  - [Solution architecture (High-level)](#solution-architecture-high-level)
-  - [Requirements](#requirements)
-  - [Before the demo](#before-the-demo)
-  - [Exercise 1: Deployment and Setup](#exercise-1-deployment-and-setup)
-    - [Task 1: Setup Stream Analytics](#task-1-setup-stream-analytics)
-    - [Task 2: Generate user events for PowerBI](#task-2-generate-user-events-for-powerbi)
-    - [Task 3: Setup Power BI Dashboard](#task-3-setup-power-bi-dashboard)
-    - [Task 4: Generate user events for real time](#task-4-generate-user-events-for-real-time)
-  - [Exercise 2: Explore Contoso Movie Store](#exercise-2-explore-contoso-movie-store)
-    - [Task 1: Explore the Contoso Movie Store](#task-1-explore-the-contoso-movie-store)
-  - [Exercise 4: Email alerts using Logic Apps](#exercise-4-email-alerts-using-logic-apps)
-    - [Task 1: Setup Logic App](#task-1-setup-logic-app)
-    - [Task 2: Configure the function app settings](#task-2-configure-the-function-app-settings)
-    - [Task 3: Test order email delivery](#task-3-test-order-email-delivery)
-  - [After the hands-on lab](#after-the-hands-on-lab)
-    - [Task 1: Delete resource group](#task-1-delete-resource-group)
+- [Cosmos DB scenario-based labs - Retail hands-on lab step-by-step](#Cosmos-DB-scenario-based-labs---Retail-hands-on-lab-step-by-step)
+  - [Abstract and learning objectives](#Abstract-and-learning-objectives)
+  - [Overview](#Overview)
+  - [Solution architecture (High-level)](#Solution-architecture-High-level)
+  - [Requirements](#Requirements)
+  - [Before the demo](#Before-the-demo)
+  - [Exercise 1: Deployment and Setup](#Exercise-1-Deployment-and-Setup)
+    - [Task 1: Setup Stream Analytics](#Task-1-Setup-Stream-Analytics)
+    - [Task 2: Generate user events for PowerBI](#Task-2-Generate-user-events-for-PowerBI)
+    - [Task 3: Setup Power BI Dashboard](#Task-3-Setup-Power-BI-Dashboard)
+    - [Task 4: Generate user events for real time](#Task-4-Generate-user-events-for-real-time)
+  - [Exercise 2: Explore Contoso Movie Store](#Exercise-2-Explore-Contoso-Movie-Store)
+    - [Task 1: Explore the Contoso Movie Store](#Task-1-Explore-the-Contoso-Movie-Store)
+  - [Exercise 4: Email alerts using Logic Apps](#Exercise-4-Email-alerts-using-Logic-Apps)
+    - [Task 1: Setup Logic App](#Task-1-Setup-Logic-App)
+    - [Task 2: Configure the function app settings](#Task-2-Configure-the-function-app-settings)
+    - [Task 3: Test order email delivery](#Task-3-Test-order-email-delivery)
+  - [After the hands-on lab](#After-the-hands-on-lab)
+    - [Task 1: Delete resource group](#Task-1-Delete-resource-group)
 
 <!-- /TOC -->
 
 ## Abstract and learning objectives
 
-In this demo you will show your audience how to uiltize Azure services to host a movie retail store with custom AI models and CosmosDb. Several other PaaS based technologies will be used to show how Azure can be used to migrate legacy applications to the cloud.
+In this demo you will show your audience how to utilize Azure services to host a movie retail store with custom AI models and CosmosDb. Several other PaaS based technologies will be used to show how Azure can be used to migrate legacy applications to the cloud.
 
 ## Overview
 
-Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services including CosmosDb, Functions, EventHubs, Stream Analytics, Power BI and Logic Apps. As part of this redesign they have also implemented a new recommendation system based on custom AI models. These AI models are done **offline** and stored in CosmosDb for reference when users are browing a site. User events will immplicitly rank the items they are clicking on and then modify their recommendations based on these events.
+Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services including CosmosDb, Functions, EventHubs, Stream Analytics, Power BI and Logic Apps. As part of this redesign they have also implemented a new recommendation system based on custom AI models. These AI models are done **offline** and stored in CosmosDb for reference when users are browsing a site. User events will implicitly rank the items they are clicking on and then modify their recommendations based on these events.
 
 ## Solution architecture (High-level)
 
-![TODO.](./Media/solution-diagram-1.png 'Solution Architecture')
+![The Cosmos DB high level solution diagram.](./Media/solution-diagram-1.png 'Solution Architecture')
 
 ## Requirements
 
