@@ -7,11 +7,19 @@
 #################
 $githubPath = "C:\github\solliancenet\cosmos-db-scenario-based-labs";
 $mode = "demo"  #can be 'lab' or 'demo'
-$subscriptionId = "8c924580-ce70-48d0-a031-1b21726acc1a"
-$subName = "Solliance MPN 12K"
+$subscriptionId = "7a2f51a1-ab51-42a4-b672-8fa0c2e9ff9b"
+$subName = "Microsoft Managed Labs Spektra - 13"
 
 $prefix = "cjg"
 $rgName = $prefix + "_s2_retail"
+
+if ($isSpektra)
+{
+    #if you are using spektra...you have to set your resource group here:
+    $rgName = read-host "What is your spektra resource group name?";
+    $rgName = "Retail-91779"
+}
+
 $databaseId = "movies";
 $region = "westus";
 
@@ -21,11 +29,11 @@ $movieApiKey = "cd5bbb81e62dba0a7f95933fdb9ef536";
 #toggles for skipping items
 $skipDeployment = $false;
 
-#databricks api token
-$databrickToken = ""
-
 #this should get set on a successful deployment...
 $suffix = ""
+
+#Implicit Key Vault usage
+$useKeyVault = $true
 
 ###################################
 #
@@ -35,7 +43,7 @@ $suffix = ""
 
 function DeployTemplate($filename, $skipDeployment, $parameters)
 {
-    write-host "Deploying $filename - Please wait";
+    write-host "Deploying [$filename] - Please wait";
 
     if (!$skipDeployment)
     {
@@ -73,6 +81,8 @@ function DeployTemplate($filename, $skipDeployment, $parameters)
 
             write-host "Deployment status is : $($deployment.properties.provisioningState)";
         }
+
+        Remove-Item "parameters.json" -ea SilentlyContinue;
 
         write-host "Deploying [$fileName] finished with status $($deployment.properties.provisioningState)";
     }
@@ -172,9 +182,23 @@ function SetupDatabricks()
         $res = curl -Method Post "$databricksInstance/api/2.0/libraries/install" -H @{'Authorization' = "Bearer $databricktoken"; 'Content-Type' = 'application/json'} -Body $json;
         $json = ConvertFrom-json $res.Content
 
-        #extract the file
+        #wait for the cluster to start...
+        $res = curl -Method Get "$databricksInstance/api/2.0/clusters/get?cluster_id=$clusterId" -H @{'Authorization' = "Bearer $databricktoken"; 'Content-Type' = 'application/json'}
+        $json = ConvertFrom-json $res.Content
+
+        while($json.state -ne "RUNNING")
+        {
+            write-host "Waiting for cluster [$clusterId] to start";
+
+            start-sleep 10;
+
+            $res = curl -Method Get "$databricksInstance/api/2.0/clusters/get?cluster_id=$clusterId" -H @{'Authorization' = "Bearer $databricktoken"; 'Content-Type' = 'application/json'}
+            $json = ConvertFrom-json $res.Content
+        }
+
+        #extract the files
         $filePath = "$githubPath\lab-files\retail\notebooks\02 retail.zip";
-        Expand-Archive -LiteralPath $filePath -DestinationPath "$githubPath/lab-files/retail/notebooks/export"
+        Expand-Archive -LiteralPath $filePath -DestinationPath "$githubPath/lab-files/retail/notebooks/export" -force
 
         #update the variables
         $sharedConfigPath = "$githubPath/lab-files/retail/notebooks/export/02 retail/includes/Shared-Configuration.ipynb"
@@ -629,6 +653,8 @@ $json = ConvertFrom-json $data;
 
 $funcApiKey = $json.masterkey.value;
 
+Remove-Item "host.json" -ea SilentlyContinue;
+
 ########################
 #
 # save key vault values
@@ -639,8 +665,6 @@ write-host "Setting key vault values..."
 
 $res = $(az keyvault secret set --vault-name $keyvault.Name --name "paymentsAPIUrl" --value $paymentsApiUrl);
 $res = $(az keyvault secret set --vault-name $keyvault.Name --name "AzureQueueConnectionString" --value $azurequeueConnString);
-
-#"@Microsoft.KeyVault(SecretUri=https://iot-keyvault-501993860.vault.azure.net/secrets/CosmosDBConnection/794f93084861483d823d37233569561d)"
 
 $res = $(az keyvault secret set --vault-name $keyvault.Name --name "funcApiUrl" --value $funcApiUrl);
 $json = ConvertObjectToJson $res;
@@ -693,14 +717,29 @@ $kvRecipientEmail = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 #########################
 write-host "Saving app settings to web application"
 
-$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$azurequeueConnString)
-$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$paymentsApiUrl)
-$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$funcApiUrl)
-$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$funcApiKey)
-$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$databaseId)
-$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$dbConnectionUrl)
-$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$dbConnectionKey)
-$res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKey=$movieApiKey)
+if($useKeyVault)
+{
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$kvazurequeueConnString)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$kvpaymentsApiUrl)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$kvfuncApiUrl)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$kvfuncApiKey)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$kvdatabaseId)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$kvdbConnectionUrl)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$kvdbConnectionKey)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKey=$kvmovieApiKey)
+}
+else
+{
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$azurequeueConnString)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$paymentsApiUrl)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$funcApiUrl)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$funcApiKey)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$databaseId)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$dbConnectionUrl)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$dbConnectionKey)
+    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKey=$movieApiKey)
+}
+
 
 ########################
 #
@@ -709,19 +748,38 @@ $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings m
 #########################
 write-host "Saving app settings to func app..."
 
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$azurequeueConnString)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$paymentsApiUrlah)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings CosmosDBConnection=$CosmosDBConnection)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHub=store)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$movieApiKey)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings LogicAppUrl=empty)
-$res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings RecipientEmail=$userEmail)
+if ($useKeyVault)
+{
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$kvazurequeueConnString)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$kvpaymentsApiUrlah)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$kvfuncApiUrl)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$kvfuncApiKey)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$kvdatabaseId)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings CosmosDBConnection=$kvCosmosDBConnection)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$kvdbConnectionUrl)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$kvdbConnectionKey)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$kveventHubConnection)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHub=store)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$kvmovieApiKey)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings LogicAppUrl=empty)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings RecipientEmail=$kvuserEmail)
+}
+else
+{
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$azurequeueConnString)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$paymentsApiUrlah)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings CosmosDBConnection=$CosmosDBConnection)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionKey=$dbConnectionKey)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHubConnection=$eventHubConnection)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings eventHub=store)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings movieApiKey=$movieApiKey)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings LogicAppUrl=empty)
+    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings RecipientEmail=$userEmail)
+}
 
 ########################
 #
@@ -759,6 +817,9 @@ if ($mode -eq "demo")
     start-process $databricksInstance;
 
     $databrickToken = read-host "Enter your databricks api token";
+
+    #need to wait for a few seconds for the token to kick in or you might get an error.
+    start-sleep 15;
 
     SetupDatabricks
 }
