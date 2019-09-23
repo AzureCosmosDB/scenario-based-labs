@@ -268,54 +268,7 @@
                 }
             }
         },
-        {
-            "type": "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers",
-            "name": "[concat(variables('cosmosDbAccountName'), '/sql/', variables('cosmosDbDatabaseName'), '/', 'leases')]",
-            "apiVersion": "2016-03-31",
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/apis/databases', variables('cosmosDbAccountName'), 'sql', variables('cosmosDbDatabaseName'))]"
-            ],
-            "properties":
-            {
-                "resource": {
-                    "id":  "leases",
-                    "partitionKey": {
-                        "paths": [
-                        "/_partitionKey"
-                        ],
-                        "kind": "Hash"
-                    },
-                    "throughput": "400",
-                    "indexingPolicy": {
-                        "indexingMode": "consistent",
-                        "automatic": true,
-                        "includedPaths": [
-                            {
-                                "path": "/*",
-                                "indexes": [
-                                    {
-                                        "kind": "Range",
-                                        "dataType": "Number",
-                                        "precision": -1
-                                    },
-                                    {
-                                        "kind": "Range",
-                                        "dataType": "String",
-                                        "precision": -1
-                                    }
-                                ]
-                            }
-                        ],
-                        "excludedPaths": [
-                            {
-                                "path": "/\"_etag\"/?"
-                            }
-                        ]
-                    }
-                }
-            }
-        },
+
 
 
 
