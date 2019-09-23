@@ -167,6 +167,10 @@ namespace FleetDataGenerator
                             ConsoleColor.Green);
                     }
 
+                    // Ensure the telemetry container throughput is set to 15,000 RU/s.
+                    var telemetryContainer = await GetContainerIfExists(TelemetryContainerName);
+                    await ChangeContainerPerformance(telemetryContainer, 15000);
+
                     // Initially seed the Cosmos DB database with metadata if empty.
                     await SeedDatabase(cosmosDbConnectionString, cancellationToken);
                     trips = await GetTripsFromDatabase(numberSimulatedTrucks, container);

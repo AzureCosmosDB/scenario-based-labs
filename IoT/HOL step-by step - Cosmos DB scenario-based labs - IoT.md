@@ -614,14 +614,36 @@ In this task, you will create a new cluster on which data exploration and model 
    3. **Pool**: Select **None**.
    4. **Databricks Runtime Version**: Select **Runtime 5.5 LTS (Scala 2.11, Spark 2.4.3)**.
    5. **Python Version**: Enter **3**.
-   6. **Autopilot Options**: Check **Enable autoscaling** and **Terminate after...**, with a value of **120** minutes.
+   6. **Autopilot Options**: Uncheck **Enable autoscaling** and **Terminate after...**, with a value of **120** minutes.
    7. **Worker Type**: Select **Standard_DS3_v2**.
    8. **Driver Type**: Select **Same as worker**.
-   9. Enter **2** and **8** into **Min Workers** and **Max Workers**, respectively.
+   9. **Workers**: Enter **1**.
 
    ![The New Cluster form is displayed with the previously described values.](media/databricks-new-cluster.png 'New Cluster')
 
 5. Select **Create Cluster**.
+
+6. Before continuing to the next step, verify that your new cluster is running. Wait for the state to change from **Pending** to **Running**
+
+7. Select the **lab** cluster, then select **Libraries**.
+
+8. Select **Install New**.
+
+    ![Navigate to the libraries tab and select `Install New`.](media/databricks-new-library.png 'Adding a new library')
+
+9. In the Install Library dialog, select **Maven** for the Library Source.
+
+10. In the Coordinates field type:
+
+    ```text
+    com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
+    ```
+
+11. Select **Install**
+
+    ![Populated library dialog for Maven.](media/databricks-install-library-cosmos.png 'Add the Maven library')
+
+12. **Wait** until the library's status shows as **Installed** before continuing.
 
 ### Task 8: Configure Key Vault-backed Databricks secret store
 
@@ -1931,11 +1953,23 @@ To run this notebook, perform the following steps:
 
 3. As with the Batch Scoring notebook, be sure to attach your lab cluster before executing cells.
 
+4. **After you are finished running the notebook**, open the Azure Machine Learning service workspace in the portal, then select **Models** in the left-hand menu to view the pre-trained model.
+
+   ![The models blade is displayed in the AML service workspace.](media/aml-models.png 'Models')
+
+5. Select **Deployments** in the left-hand menu, then select the Azure Container Instances deployment that was created when you ran the notebook.
+
+    ![The deployments blade is displayed in the AML service workspace.](media/aml-deployments.png "Deployments")
+
+6. Copy the **Scoring URI** value. This will be used by the deployed web app to request predictions in real time.
+
+    ![The deployment's scoring URI is highlighted.](media/aml-deployment-scoring-uri.png "Scoring URI")
+
 ### Task 2: Call the deployed scoring web service from the Web App
 
 Now that the web service is deployed to ACI, we can call it to make predictions from the Fleet Management Web App. To enable this capability, we first need to update the Web App's application configuration settings with the scoring URI.
 
-1. In the last cell you executed within the `Model Deployment` notebook in Azure Databricks, you should see a scoring URI for the deployed service similar to `http://89058a71-7e98-4e19-9a1e-27262bf0a91b.westus.azurecontainer.io/score`. **Copy this value**.
+1. Make sure you have copied the Scoring URI of your deployed service, as instructed in the previous task.
 
 2. Open the Web App (App Service) whose name begins with **IoTWebApp**.
 
