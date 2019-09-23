@@ -388,7 +388,7 @@
             },
 			"identity": {
 				"type": "SystemAssigned"
-			},
+			}
         },
         {
             "type": "Microsoft.EventHub/namespaces/eventhubs",
