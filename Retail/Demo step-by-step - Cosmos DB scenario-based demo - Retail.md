@@ -34,7 +34,7 @@ Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services i
 
 ## Solution architecture (High-level)
 
-![The Cosmos DB high level solution diagram.](./Media/solution-diagram-1.png 'Solution Architecture')
+![The Cosmos DB high level solution diagram.](./media/solution-diagram-1.png 'Solution Architecture')
 
 ## Requirements
 
