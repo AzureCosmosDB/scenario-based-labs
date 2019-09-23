@@ -554,7 +554,9 @@ foreach(PredictionModel pm in sortedItems)
 
 3.  Notice the main page now has both the associative and collaborative results displayed::
 
-**TODO IMAGE**
+![The Contoso Movie website is displayed with the Associations items as suggestions.](./media/xx_WebSite_02.png 'Contoso Movies web site')
+
+![The Contoso Movie website is displayed with the Collaborative items as suggestions.](./media/xx_WebSite_03.png 'Contoso Movies web site')
 
 ## Exercise 6: Reporting with Stream Analytics and Power BI
 

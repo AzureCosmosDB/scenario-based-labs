@@ -137,7 +137,7 @@ namespace Contoso.Apps.Movies.Logic
             var container = client.GetContainer(databaseId, "events");
 
             var query = container.GetItemLinqQueryable<CollectorLog>(true)
-                .Where(c => c.UserId == userId);
+                .Where(c => c.UserId == userId.ToString());
                 
             if (take > 0)
                 return query.Take(take).ToList();
@@ -250,7 +250,7 @@ namespace Contoso.Apps.Movies.Logic
             try
             {
                 var container = client.GetContainer(databaseId, "ratings");
-                var query = container.GetItemLinqQueryable<ItemRating>(true).Where(c => c.UserId == userId).Take(take);
+                var query = container.GetItemLinqQueryable<ItemRating>(true).Where(c => c.UserId == userId.ToString()).Take(take);
                 items = query.ToList();
             }
             catch (Exception ex)

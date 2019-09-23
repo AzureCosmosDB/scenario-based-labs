@@ -13,7 +13,7 @@ namespace Contoso.Apps.Movies.Data.Models
         public string ItemId { get; set; }
 
         [JsonProperty(PropertyName = "userId")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         [JsonProperty(PropertyName = "rating")]
         public double Rating { get; set; }
@@ -21,6 +21,6 @@ namespace Contoso.Apps.Movies.Data.Models
         [JsonProperty(PropertyName = "ratingTimestamp")]
         public DateTime RatingTimestamp { get; set; }
 
-        public string EntityType { get { return "ItemRating"; } }
+        override public string EntityType { get { return "ItemRating"; } }
     }
 }
