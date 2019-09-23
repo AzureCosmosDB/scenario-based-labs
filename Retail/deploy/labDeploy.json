@@ -53,9 +53,10 @@
 		
 		"connections_office365_name" : "[concat('s2_o365_', variables('name-suffix'))]",
 		
-		"workflows_s2scenerio_name" : "[concat('s2_logicapp_', variables('name-suffix'))]"
+		"workflows_s2scenerio_name" : "[concat('s2_logicapp_', variables('name-suffix'))]",
 		
-		"webAppIdentity": "[concat(resourceId('Microsoft.Web/sites', variables('webAppName')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
+		"webAppIdentity": "[concat(resourceId('Microsoft.Web/sites', variables('webAppName')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
+		
 		"funcIdentity": "[concat(resourceId('Microsoft.Web/sites', variables('functionAppName')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
     },
     "resources": [
