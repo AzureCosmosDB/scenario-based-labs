@@ -5,26 +5,26 @@
 #################
 #Install-Module -Name Az -AllowClobber -Scope CurrentUser
 #################
-$githubPath = "C:\github\solliancenet\cosmos-db-scenario-based-labs";
+$githubPath = "YOUR GIT HUB PATH";
 $mode = "demo"  #can be 'lab' or 'demo'
-$subscriptionId = "7a2f51a1-ab51-42a4-b672-8fa0c2e9ff9b"
-$subName = "Microsoft Managed Labs Spektra - 13"
+$subscriptionId = "YOUR SUB ID"
+$subName = "YOUR SUB NAME"
+$isSpektra = $false;
 
-$prefix = "cjg"
+$prefix = "YOUR INIT"
 $rgName = $prefix + "_s2_retail"
 
 if ($isSpektra)
 {
     #if you are using spektra...you have to set your resource group here:
     $rgName = read-host "What is your spektra resource group name?";
-    $rgName = "Retail-91779"
 }
 
 $databaseId = "movies";
 $region = "westus";
 
 #register at https://api.themoviedb.org
-$movieApiKey = "cd5bbb81e62dba0a7f95933fdb9ef536";
+$movieApiKey = "YOUR KEY";
 
 #toggles for skipping items
 $skipDeployment = $false;
@@ -33,7 +33,7 @@ $skipDeployment = $false;
 $suffix = ""
 
 #Implicit Key Vault usage
-$useKeyVault = $true
+$useKeyVault = $false
 
 ###################################
 #
