@@ -1038,11 +1038,13 @@ To run this notebook, perform the following steps:
 
 1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
 
-2. Select the `01 IoT (clean)` folder, then select the **Batch Scoring** notebook to open it.
+2. Select the `01 IoT` folder, then select the **Batch Scoring** notebook to open it.
 
    ![The Batch Scoring notebook is highlighted.](media/databricks-batch-scoring-notebook.png 'Workspace')
 
 3. Open and talk through batch scoring notebook. Notebook retrieves pre-trained model and has saved cell outputs so it does not need to be run to demo.
+
+4. If you desire, you may continue running from cell 17 (*Load the data from Cosmos DB to batch score it*) where you left off in Exercise 1 **if** the cluster is still up and running. Otherwise, you'll have to run through the notebook from the beginning. After running, you can show that the notebook wrote new documents in the `maintenance` container. This data also appears in the Power BI Desktop report.
 
 > If you wish to execute this notebook on a scheduled basis, such as every evening, you can use the Jobs feature in Azure Databricks to accomplish this.
 
@@ -1064,7 +1066,7 @@ To view this notebook, perform the following steps:
 
    ![The Model Deployment notebook is highlighted.](media/databricks-model-deployment-notebook.png 'Workspace')
 
-3. Open model training notebook and show last cell that persists model to AML model registry.
+3. Open model training notebook and show last cell that deploys the web service with the trained model.
 
 4. Navigate to the Azure portal, then open the Azure Container Instances service to show where the model deployed.
 
