@@ -189,6 +189,7 @@
             "name": "[variables('keyVaultName')]",
             "location": "[variables('location')]",
             "properties": {
+                "tenantid": "[subscription().tenantId]",
                 "sku": {
                     "family": "A",
                     "name": "standard"
