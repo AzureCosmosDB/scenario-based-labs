@@ -474,13 +474,13 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
 
-5. After importing, select your username. You will see a new folder named `01 IoT (clean)`, which contains two notebooks.
+5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks.
 
    ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
 
 6. Complete the **Batch Scoring** notebook to download the trained model. **Note**: Since we've not loaded any data in Cosmos DB at this point, you can stop at **cell 17** (*Load the data from Cosmos DB to batch score it*).
 
-7. Complete the **Model Deployment** notebook to deploy the model to ACI.
+7. Complete the **Model Deployment** notebook to deploy the model to ACI. **Note**: You can continue with the rest of the tasks while the last cell runs (deploying the web service).
 
 ### Task 13: View Cosmos DB processing Function App in the portal
 
