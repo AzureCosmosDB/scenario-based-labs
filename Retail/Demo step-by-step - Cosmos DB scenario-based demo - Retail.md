@@ -146,7 +146,7 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 ### Task 2: Generate user events for PowerBI
 
-1.  Browse to the **{un-zipped repo folder}/lab-files/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
+1.  Browse to the **{un-zipped repo folder}/lab-files/Retail/Solution/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
 1.  Right-click the **DataGenerator** project, select **Set as startup project**
 
@@ -214,27 +214,7 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 ![This graphic shows the layout of the tiles in the Power BI Dashboard when the event stream is running.](./media/xx_PowerBI_04.png 'Continuously updating dashboard')
 
-## Exercise 2: Explore Contoso Movie Store
-
-Duration: 15 minutes
-
-Synopsis: You will show your attendees the Contoso Movies store. It is an ecommerce site setup using Cosmos DB as its data store. In addition, Azure Functions are monitoring the `changefeed` of Cosmos DB to execute reporting and notification activities. A second function is in charge of providing recommendations based on the logged in user. This function calls logic and pre-calculated offline AI models based on user behavior to make movie recommendations.
-
-### Task 1: Explore the Contoso Movie Store
-
-1.  Open the deployed Conotos Movie web site
-
-> NOTE: This should have opened as part of the setup script.
-
-2.  Mention that you are not logged in as any user and the results that are being displayed are based on the **top** purchased items in the Cosmso database.
-
-3.  In the top navigation, cLick the **Login** link
-
-4.  Mention that there are several pre-populated _personalities_. Select the **comedy@contosomovies.com** personality
-
-5.  Mention that you now have targeted movies based on two different algorithms (Association and Collaborative)
-
-## Exercise 4: Email alerts using Logic Apps
+## Exercise 2: Email alerts using Logic Apps
 
 Duration: 30 minutes
 
@@ -284,7 +264,58 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Click **Save**
 
-### Task 3: Test order email delivery
+### Task 3: Explore the Databricks notebooks
+
+1.  Switch back to the Azure Portal
+
+1.  Select your Databricks instance, then click **Launch Workspace**
+
+1.  Browse to each of the notebooks that were deployed as part of your deployment script and review the contents with your audience.  Note the following:
+
+- 01 Event Generator - this notebook will generate a random set of events for each target user and their personality.  This is then used to generate the 'ratings'.  Most of the generation code is in Cmd 9 and you can focus your converstation around that cell.
+
+- 02 Associations Rules - Review the comments in Cmd 7, this describes what is happening in the rest of the notebook
+
+- 03 Ratings - Review Cmd 9, point out the weightings for each action and then where the implict rating is created.
+
+- 04 Similarity - REview the comments in Cmd 7, this describes what is happening in the rest of the notebook
+
+### Task 4: Explore the Function App Recommendation Code
+
+1.  Switch to Visual Studio and open the **Contoso.Apps.FunctionApp** project, then open the **RecommendationHelper.cs** file
+
+1.  Navigate to the `public static List<Item> Get(string algo, int userId, int contentId, int take)` Get method signature.  Point out that this is the entry point for where a recommedation will start based on the algorithm requested.
+
+1.  Review the following methods and their code:
+
+- TopRecommendation - this is the basic method for randomly selecting a set of top purchased items.
+- AssociationRecommendationByUser - 
+- CollaborativeBasedRecommendation -
+
+### Task 5: Explore the Function App ChangeFeed Code
+
+1.  Switch to Visual Studio and open the **Contoso.Apps.FunctionApp** project, then open the **FuncChangeFeed.cs** file
+
+2.  Review the Dependency Injection for the **IHttpClientFactory** and the **CosmosClient** objects:
+
+```csharp
+// Use Dependency Injection to inject the HttpClientFactory service that was configured in Startup.cs.
+public FuncChangeFeed(IHttpClientFactory httpClientFactory, CosmosClient cosmosClient)
+{
+    _httpClientFactory = httpClientFactory;
+    _cosmosClient = cosmosClient;
+}
+```
+
+3.  Review the following methods and their code:
+
+- **DoAggregateCalculations** - This method updates the item aggregations for the `buy` events to keep track of the top items purchased.  This will continually update and drive the `top` suggestions.  You will see this when you execute the Data Generator tool.
+
+- **AddEventToEventHub** - This method will forward the changefeed item to the event hub where Stream Analytics will then process the data.
+
+- **CallLogicApp** - This method will forward the changefeed item to the logic app's http endpoint that will generate an email
+
+### Task 6: Test order email delivery
 
 1.  Switch to Visual Studio, right-click the **DataGenerator** project, select **Set as startup project**
 
@@ -293,6 +324,44 @@ In this exercise you will configure your change feed function to call an HTTP lo
 1.  For each `buy` event, you should receive an email
 
 > NOTE: You could receive quite a `few` emails.
+
+## Exercise 3: Explore Contoso Movie Store
+
+Duration: 15 minutes
+
+Synopsis: You will show your attendees the Contoso Movies store. It is an ecommerce site setup using Cosmos DB as its data store. In addition, Azure Functions are monitoring the `changefeed` of Cosmos DB to execute reporting and notification activities. A second function is in charge of providing recommendations based on the logged in user. This function calls logic and pre-calculated offline AI models based on user behavior to make movie recommendations.
+
+### Task 1: Explore the Contoso Movie Store
+
+1.  Open the deployed Conotos Movie web site
+
+> NOTE: This should have opened as part of the `demo` mode setup script.
+
+1.  Mention that you are not logged in as any user and the results that are being displayed are based on the **top** purchased items in the Cosmso database.
+
+1.  In the top navigation, select the **Login** link
+
+1.  Mention that there are several pre-populated _personalities_. Select the **COMEDY@CONTOSOMOVIES.COM** personality
+
+1.  Mention that you now have targeted movies based on two different algorithms (Association and Collaborative)
+
+1.  In the top navigation, select the **COMEDY@CONTOSOMOVIES.COM** link, then select **SWITCH**
+
+1.  Change the user to the **DRAMA@CONTOSOMOVIES.COM** user.  Note how the recommendations are different from the comedy user.
+
+### Task 2: Create a new personality
+
+1.  In the top navigation, select the **DRAMA@CONTOSOMOVIES.COM** link, then select **SWITCH**
+
+1.  Select **New User**.  This will create a session as a new user that has no implict ratings (no actions have been generated).  
+
+1.  Point out that you have no **Association** or **Collaboration** recommendations.
+
+1.  Click on a few movies in the portal, then select **Add to Cart** for a random set.  These actions will generate events for the new user.  
+
+1.  Click **Home**, you should now see recommendations displayed.
+
+>NOTE:  Some movies may not have a corresponding similarity or assocations depending on the randomness of the Databricks notebook execution.  You may need to click on a few movies before you see any recommendations.
 
 ## After the hands-on lab
 

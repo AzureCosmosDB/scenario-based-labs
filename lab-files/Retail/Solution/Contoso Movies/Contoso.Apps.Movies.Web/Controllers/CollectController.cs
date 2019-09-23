@@ -1,12 +1,9 @@
-﻿using Contoso.Apps.Common.Controllers;
+﻿using Contoso.Apps.Common;
+using Contoso.Apps.Common.Controllers;
 using Contoso.Apps.Movies.Data.Models;
-using Contoso.Apps.Movies.Web.Controllers;
-using Contoso.Apps.Movies.Web.Models;
-using Microsoft.Azure.Documents.Client;
 using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-
 
 namespace Contoso.Apps.Movies.Controllers
 {
@@ -23,17 +20,23 @@ namespace Contoso.Apps.Movies.Controllers
                 string name = user.Email;
                 int userId = user.UserId;
 
-                CollectorLog log = new CollectorLog();
+                Item i = await DbHelper.GetItem(int.Parse(item_id));
 
-                log.UserId = userId.ToString();
-                log.ItemId = item_id;
-                log.Event = event_type;
-                log.SessionId = session_id;
-                log.Created = DateTime.Now;
+                if (i != null)
+                {
+                    CollectorLog log = new CollectorLog();
+                    log.id = Guid.NewGuid().ToString();
+                    log.UserId = userId.ToString();
+                    log.ContentId = i.ImdbId;
+                    log.ItemId = item_id;
+                    log.Event = event_type;
+                    log.SessionId = session_id;
+                    log.Created = DateTime.Now;
 
-                //add to cosmos db
-                var container = client.GetContainer(databaseId, "events");
-                await container.UpsertItemAsync(log);                
+                    //add to cosmos db
+                    var container = client.GetContainer(databaseId, "events");
+                    await container.CreateItemAsync(log);
+                }
             }
 
             return true;
