@@ -57,7 +57,7 @@
             "properties": {
               "mode": "Incremental",
               "templateLink": {
-                "uri": "https://raw.githubusercontent.com/solliancenet/cosmos-db-scenario-based-labs/master/IoT/deploy/labDeploy.json?token=AAC7Y2MUHVWYU52HZSHGR525R4JJO",
+                "uri": "https://raw.githubusercontent.com/solliancenet/cosmos-db-scenario-based-labs/master/IoT/deploy/labDeploy.json",
                 "contentVersion": "1.0.0.0"
               },
               "parameters": { }
