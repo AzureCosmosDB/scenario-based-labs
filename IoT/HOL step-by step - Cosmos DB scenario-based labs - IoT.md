@@ -1586,7 +1586,7 @@ In this exercise, we use the Live Metrics Stream feature of Application Insights
 
     Please note, you may not have any trips that have completed yet. Try querying where the `status` = **Active** instead. Active trips are those that are currently running.
 
-    Here is an example completed trip record (several trips removed for brevity):
+    Here is an example completed trip record (several packages removed for brevity):
 
     ```json
     {
