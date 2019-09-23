@@ -153,15 +153,19 @@ In this task, you will open the deployed Logic App workflow and configure it to 
 
 1. In the [Azure portal](https://portal.azure.com), navigate to your resource group for this demo and open the **Logic App**.
 
-2. Go to view the **office365** **API Connection**, and select the **This connection is not authenticated** message.
+2. Select **API connections** in the left-hand menu, then select the **office365** API connection.
 
-    ![office365 API Connection is not authenticated.](media/office365-api-connection-not-authenticated.png 'Office 365 API Connection')
+    ![API connections lists the office365 connection in its blade.](media/logic-app-connections.png "API connections")
 
-3. Enter your email in the **Display Name** field, then click **Authorize** and authenticate your Office 365 account.
+3. Select the **This connection is not authenticated** message.
 
-    ![Edit API connection](media/office365-api-connection-edit.png 'Edit API connection')
+    ![office365 API Connection is not authenticated.](media/logic-app-office365api-connection-not-authenticated.png 'Office 365 API Connection')
 
-4. Click **Save**.
+4. Enter your email in the **Display Name** field, then select **Authorize** and authenticate your Office 365 account.
+
+    ![Edit API connection](media/logic-app-office365-api-connection-edit.png 'Edit API connection')
+
+5. Select **Save**.
 
 ### Task 3: Add Stream Analytics Event Hubs input
 
@@ -305,73 +309,7 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 
    ![The steps to start the job as described are displayed.](media/stream-analytics-start-job.png 'Start job')
 
-### Task 7: Add Function Apps and Web App to Key Vault access policy
-
-Perform these steps to create an access policy that enables the "Get" secret permission:
-
-1. Open your Key Vault service.
-
-2. Select **Access policies** in the left-hand menu.
-
-3. Select **+ Add Access Policy**.
-
-   ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png 'Access policies')
-
-4. Select the **Select principal** section on the Add access policy form.
-
-   ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
-
-5. In the Principal blade, search for your `IoT-CosmosDBProcessing` Function App's service principal, select it, then select the **Select** button.
-
-   ![The Function App's principal is selected.](media/key-vault-principal-function1.png 'Principal')
-
-6. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
-
-   ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
-
-7. Select **Add** to add the new access policy.
-
-8. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
-
-   ![Key Vault access policies.](media/key-vault-access-policies-function1.png 'Access policies')
-
-9. Select the **Select principal** section on the Add access policy form.
-
-   ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
-
-10. In the Principal blade, search for your `IoT-StreamProcessing` Function App's service principal, select it, then select the **Select** button.
-
-    ![The Function App's principal is selected.](media/key-vault-principal-function2.png 'Principal')
-
-11. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
-
-    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
-
-12. Select **Add** to add the new access policy.
-
-13. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
-
-    ![Key Vault access policies.](media/key-vault-access-policies-function2.png 'Access policies')
-
-14. Select the **Select principal** section on the Add access policy form.
-
-    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
-
-15. In the Principal blade, search for your `IoTWebApp` Web App's service principal, select it, then select the **Select** button.
-
-    ![The Web App's principal is selected.](media/key-vault-principal-webapp.png 'Principal')
-
-16. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
-
-    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
-
-17. Select **Add** to add the new access policy.
-
-18. When you are done, you should have an access policy for the Web App's managed identity. Select **Save** to save your new access policies.
-
-    ![Key Vault access policies.](media/key-vault-access-policies-webapp.png 'Access policies')
-
-### Task 8: Deploy Cosmos DB Processing Function App
+### Task 7: Deploy Cosmos DB Processing Function App
 
 1. Open the Visual Studio solution file **CosmosDbIoTScenario.sln** within the `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Solution` folder.
 
@@ -389,7 +327,7 @@ Perform these steps to create an access policy that enables the "Get" secret per
 
     After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
 
-### Task 9: Deploy Stream Processing Function App
+### Task 8: Deploy Stream Processing Function App
 
 1. In the Visual Studio Solution Explorer, right-click on the **Functions.StreamProcessing** project, then select **Publish...**.
 
@@ -405,7 +343,7 @@ Perform these steps to create an access policy that enables the "Get" secret per
 
     After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
 
-### Task 10: Deploy Web App
+### Task 9: Deploy Web App
 
 1. In the Visual Studio Solution Explorer, right-click on the **FleetManagementWebApp** project, then select **Publish...**.
 
@@ -415,7 +353,7 @@ Perform these steps to create an access policy that enables the "Get" secret per
 
     ![The publish dialog is displayed.](media/vs-publish-target-webapp.png "Pick a publish target")
 
-3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-StreamProcessing**, then select **OK**.
+3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Web App whose name starts with **IoTWebApp**, then select **OK**.
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-webapp.png "App Service")
 
@@ -426,7 +364,7 @@ Perform these steps to create an access policy that enables the "Get" secret per
 > **NOTE:** If the web application displays an error, then go into the Azure Portal for the **IoTWebApp** and click **Restart**. When the Azure Web App is created from the ARM Template and configured for .NET Core, it may need to be restarted for the .NET Core configuration to be fully installed and ready for the application to run. Once restarted, the web application will run as expected.
 > ![App Service blade with Restart button highlighted](media/IoTWebApp-App-Service-Restart-Button.png "App Service blade with Restart button highlighted")
 
-### Task 11: Create Azure Databricks cluster
+### Task 10: Create Azure Databricks cluster
 
 Contoso Auto wants to use the valuable data they are collecting from their vehicles to make predictions about the health of their fleet to reduce downtime due to maintenance-related issues. One of the predictions they would like to make is whether a vehicle's battery is likely to fail within the next 30 days, based on historical data. They would like to run a nightly batch process to identify vehicles that should be serviced, based on these predictions. They also want to have a way to make a prediction in real time when viewing a vehicle on their fleet management website.
 
@@ -484,7 +422,7 @@ In this task, you will create a new cluster on which data exploration and model 
 
 12. **Wait** until the library's status shows as **Installed** before continuing.
 
-### Task 12: Configure Key Vault-backed Databricks secret store
+### Task 11: Configure Key Vault-backed Databricks secret store
 
 In an earlier task, you added application secrets to Key Vault, such as the Cosmos DB connection string. In this task, you will configure the Key Vault-backed Databricks secret store to securely access these secrets.
 
@@ -516,7 +454,7 @@ Azure Databricks has two types of secret scopes: Key Vault-backed and Databricks
 
 After a moment, you will see a dialog verifying that the secret scope has been created.
 
-### Task 13: Import lab notebooks into Azure Databricks
+### Task 12: Import lab notebooks into Azure Databricks
 
 In this task, you will import the Databricks notebooks into your workspace.
 
@@ -536,13 +474,15 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
 
-5. After importing, select your username. You will see a new folder named `01 IoT (clean)`, which contains two notebooks.
+5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks.
 
    ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
 
-6. Complete the **Model Deployment** notebook to deploy the model to ACI.
+6. Complete the **Batch Scoring** notebook to download the trained model. **Note**: Since we've not loaded any data in Cosmos DB at this point, you can stop at **cell 17** (*Load the data from Cosmos DB to batch score it*).
 
-### Task 14: View Cosmos DB processing Function App in the portal
+7. Complete the **Model Deployment** notebook to deploy the model to ACI. **Note**: You can continue with the rest of the tasks below while the last cell runs (deploying the web service).
+
+### Task 13: View Cosmos DB processing Function App in the portal
 
 **Note**: It is important to complete this step prior to running the data generator. If you do not initially activate the function by viewing it in the portal after publishing it, then it can take some time before it starts processing the data from the change feed.
 
@@ -554,7 +494,7 @@ In this task, you will import the Databricks notebooks into your workspace.
 
 3. View the **function.json** file to the right. This file was generated when you published the Function App in Visual Studio. The bindings are the same as you saw in the project code for the function. When new instances of the Function App are created, the generated `function.json` file and a ZIP file containing the compiled application are copied to these instances, and these instances run in parallel to share the load as data flows through the architecture. The `function.json` file instructs each instance how to bind attributes to the functions, where to find application settings, and information about the compiled application (`scriptFile` and `entryPoint`).
 
-### Task 15: Open the data generator project
+### Task 14: Open the data generator project
 
 1. If the Visual Studio solution is not already open, navigate to `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Starter` and open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
 
@@ -562,7 +502,7 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The Program.cs file is highlighted in the Solution Explorer.](media/vs-data-generator-program.png 'Solution Explorer')
 
-### Task 16: Update application configuration
+### Task 15: Update application configuration
 
 The data generator needs two connection strings before it can successfully run; the IoT Hub connection string, and the Cosmos DB connection string. The IoT Hub connection string can be found by selecting **Shared access policies** in IoT Hub, selecting the **iothubowner** policy, then copying the **Connection string--primary key** value. This is different from the Event Hub-compatible endpoint connection string you copied earlier.
 
@@ -580,7 +520,7 @@ The data generator needs two connection strings before it can successfully run; 
 
 > As an alternative, you may save these settings as environment variables on your machine, or through the FleetDataGenerator properties. Doing this will remove the risk of accidentally saving your secrets to source control.
 
-### Task 17: Run generator
+### Task 16: Run generator
 
 In this exercise, we will explore the data generator project, **FleetDataGenerator**, update the application configuration, and run it in order to seed the metadata database with data and simulate a single vehicle.
 
@@ -607,6 +547,8 @@ In this task, you will run the generator and have it generate events for 50 truc
    ![The debug button is highlighted.](media/vs-debug.png 'Debug')
 
 3. When the console window appears, enter **3** to simulate 50 vehicles. The generator will resize the requested throughput for the `metadata` container, uses the bulk importer to seed the container, and resize the throughput back to 15,000 RU/s.
+   
+   > Please note: The data seeding step can take anywhere from one to several minutes, depending on your machine and internet speed.
 
    ![3 has been entered in the console window.](media/cmd-run.png 'Generator')
 
@@ -622,7 +564,7 @@ In this task, you will run the generator and have it generate events for 50 truc
 
    ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png 'Generator')
 
-### Task 18: Log in to Power BI online and create real-time dashboard
+### Task 17: Log in to Power BI online and create real-time dashboard
 
 1. Browse to <https://powerbi.microsoft.com> and sign in with the same account you used when you created the Power BI output in Stream Analytics.
 
@@ -770,7 +712,7 @@ In this task, you will run the generator and have it generate events for 50 truc
 
     ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png 'Power BI dashboard')
 
-### Task 19: Import report in Power BI Desktop and update report data sources
+### Task 18: Import report in Power BI Desktop and update report data sources
 
 In this task, you will import a Power BI report that has been created for you. After opening it, you will update the data source to point to your Power BI instance.
 
@@ -1096,11 +1038,13 @@ To run this notebook, perform the following steps:
 
 1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
 
-2. Select the `01 IoT (clean)` folder, then select the **Batch Scoring** notebook to open it.
+2. Select the `01 IoT` folder, then select the **Batch Scoring** notebook to open it.
 
    ![The Batch Scoring notebook is highlighted.](media/databricks-batch-scoring-notebook.png 'Workspace')
 
 3. Open and talk through batch scoring notebook. Notebook retrieves pre-trained model and has saved cell outputs so it does not need to be run to demo.
+
+4. If you desire, you may continue running from cell 17 (*Load the data from Cosmos DB to batch score it*) where you left off in Exercise 1 **if** the cluster is still up and running. Otherwise, you'll have to run through the notebook from the beginning. After running, you can show that the notebook wrote new documents in the `maintenance` container. This data also appears in the Power BI Desktop report.
 
 > If you wish to execute this notebook on a scheduled basis, such as every evening, you can use the Jobs feature in Azure Databricks to accomplish this.
 
@@ -1122,7 +1066,7 @@ To view this notebook, perform the following steps:
 
    ![The Model Deployment notebook is highlighted.](media/databricks-model-deployment-notebook.png 'Workspace')
 
-3. Open model training notebook and show last cell that persists model to AML model registry.
+3. Open model training notebook and show last cell that deploys the web service with the trained model.
 
 4. Navigate to the Azure portal, then open the Azure Container Instances service to show where the model deployed.
 
