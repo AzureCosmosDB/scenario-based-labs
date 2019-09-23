@@ -44,10 +44,10 @@
 
 
 
-
-
         "cosmosDbDatabaseName": "ContosoAuto",
-        "cosmosIoTLogicAppName": "[concat('Cosmos-IoT-Logic-', variables('name-suffix'))]"
+        "cosmosIoTLogicAppName": "[concat('Cosmos-IoT-Logic-', variables('name-suffix'))]",
+        "machineLearningServicesWorkspaceName": "[concat('Cosmos-DB-IoT-ML-', variables('name-suffix'))]",
+        "machineLearningServicesStorageAccountName": "[concat('mlstore', variables('name-suffix'))]"
     },
     "resources": [
         {
@@ -68,6 +68,10 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
             ]
         },
+
+
+
+
 
 
         {
@@ -151,6 +155,12 @@
                 "description": "This was copied here from labDeploy.json. It needs to be in this template otherwise reference() calls to it will fail on deployment. Yes, this is to work around a bug with Nested ARM Template deployments."
             }
         },
+
+
+
+
+
+
 
 
 
@@ -836,7 +846,78 @@
                     }
                 }
             }
-        }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('machineLearningServicesStorageAccountName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": false,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces",
+            "apiVersion": "2018-11-19",
+            "name": "[variables('machineLearningServicesWorkspaceName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+              "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
+              "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
+              "[resourceId('Microsoft.Storage/storageAccounts', variables('machineLearningServicesStorageAccountName'))]"
+            ],
+            "identity": {
+              "type": "systemAssigned"
+            },
+            "properties": {
+              "friendlyName": "[variables('machineLearningServicesWorkspaceName')]",
+              "keyVault": "[resourceId('Microsoft.KeyVault/vaults',variables('keyVaultName'))]",
+              "applicationInsights": "[resourceId('Microsoft.Insights/components',variables('appInsightsName'))]",
+              "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts/',variables('machineLearningServicesStorageAccountName'))]"
+            }
+          }
+
+
+
+
 
 
 

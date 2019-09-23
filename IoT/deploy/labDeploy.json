@@ -189,6 +189,7 @@
             "name": "[variables('keyVaultName')]",
             "location": "[variables('location')]",
             "properties": {
+                "tenantid": "[subscription().tenantId]",
                 "sku": {
                     "family": "A",
                     "name": "standard"
@@ -735,7 +736,7 @@
 
         "CosmosDBConnection": {
             "type": "string",
-            "value": "[concat('AccountEndpoint=', reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosDbAccountName'))).documentEndpoint, '​;AccountKey=', listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts/', variables('cosmosDbAccountName')), '2015-04-08').primaryMasterKey)]"
+            "value": "[concat('AccountEndpoint=', reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosDbAccountName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts/', variables('cosmosDbAccountName')), '2015-04-08').primaryMasterKey)]"
         },
         "CosmosDBEndpoint": {
             "type": "string",
