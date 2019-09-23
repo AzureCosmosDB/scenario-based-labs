@@ -60,7 +60,7 @@ Be sure that you change the script mode to `demo` such that the solution code is
 
 Duration: 60 minutes
 
-Synopsis: In this exercise you will TODO
+Synopsis: In this exercise you will do the necessary setup items that could not be done in the deployment scripts.
 
 ### Task 1: Setup Stream Analytics
 
