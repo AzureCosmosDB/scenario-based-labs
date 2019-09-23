@@ -121,11 +121,14 @@ namespace Contoso.Apps.Common
 
             CollectorLog log = new CollectorLog();
             log.id = Guid.NewGuid().ToString();
-            log.UserId = userId;
+            log.UserId = userId.ToString();
             log.ItemId = itemId;
             log.Event = eventType;
             log.SessionId = sessionId;
             log.Created = DateTime.Now;
+
+            if (eventType == "buy")
+                log.OrderId = Guid.NewGuid().ToString().Replace("-", "");
 
             //add to cosmos db
             var container = client.GetContainer(databaseId, "events");

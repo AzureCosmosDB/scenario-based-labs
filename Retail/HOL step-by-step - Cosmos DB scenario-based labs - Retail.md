@@ -2,49 +2,49 @@
 
 <!-- TOC -->
 
-- [Cosmos DB scenario-based labs - IoT hands-on lab step-by-step](#cosmos-db-scenario-based-labs---iot-hands-on-lab-step-by-step)
-  - [Abstract and learning objectives](#abstract-and-learning-objectives)
-  - [Overview](#overview)
-  - [Solution architecture (High-level)](#solution-architecture-high-level)
-  - [Requirements](#requirements)
-  - [Before the hands-on lab](#before-the-hands-on-lab)
-  - [Exercise 1: Configure Databricks and generate event data](#exercise-1-configure-databricks-and-generate-event-data)
-    - [Task 1: Configure Azure Databricks](#task-1-configure-azure-databricks)
-    - [Task 2: Populate event data](#task-2-populate-event-data)
-    - [Task 3: Review the data generated](#task-3-review-the-data-generated)
-    - [Task 4: Review the aggregation and import utility](#task-4-review-the-aggregation-and-import-utility)
-  - [Exercise 2: Complete and deploy Web and Function Apps](#exercise-2-complete-and-deploy-web-and-function-apps)
-    - [Task 1: Implement the Top Items recommendation](#task-1-implement-the-top-items-recommendation)
-    - [Task 2: Deploy the applications](#task-2-deploy-the-applications)
-    - [Task 3: Test the applications](#task-3-test-the-applications)
-  - [Exercise 3: Perform and deploy association rules calculation for offline algorithms](#exercise-3-perform-and-deploy-association-rules-calculation-for-offline-algorithms)
-    - [Task 1: Generate the Associations](#task-1-generate-the-associations)
-    - [Task 2: Review the data generated](#task-2-review-the-data-generated)
-  - [Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)](#exercise-4-complete-and-deploy-web-app-and-function-apps-association-rules)
-    - [Task 1: Implement the Associations recommendation rules](#task-1-implement-the-associations-recommendation-rules)
-    - [Task 2: Deploy the applications](#task-2-deploy-the-applications-1)
-    - [Task 3: Test the applications](#task-3-test-the-applications-1)
-  - [Exercise 5: Perform and deploy collaborative filtering rules calculation](#exercise-5-perform-and-deploy-collaborative-filtering-rules-calculation)
-    - [Task 1: Compute the user implicit ratings](#task-1-compute-the-user-implicit-ratings)
-    - [Task 2: Generate the Collaborative Rules](#task-2-generate-the-collaborative-rules)
-    - [Task 3: Review the data generated](#task-3-review-the-data-generated-1)
-    - [Task 4: Implement the Collaborative recommendation rules](#task-4-implement-the-collaborative-recommendation-rules)
-    - [Task 5: Deploy the applications](#task-5-deploy-the-applications)
-    - [Task 6: Test the applications](#task-6-test-the-applications)
-  - [Exercise 6: Reporting with Stream Analytics and Power BI](#exercise-6-reporting-with-stream-analytics-and-power-bi)
-    - [Task 1: Setup Stream Analytics](#task-1-setup-stream-analytics)
-    - [Task 2: Configure the ChangeFeed Function](#task-2-configure-the-changefeed-function)
-    - [Task 3: Deploy the ChangeFeed Function](#task-3-deploy-the-changefeed-function)
-    - [Task 4: Generate user events for PowerBI](#task-4-generate-user-events-for-powerbi)
-    - [Task 5: Setup Power BI Dashabord](#task-5-setup-power-bi-dashabord)
-    - [Task 6: Generate user events for real time analytics](#task-6-generate-user-events-for-real-time-analytics)
-  - [Exercise 7: Email alerts using Logic Apps](#exercise-7-email-alerts-using-logic-apps)
-    - [Task 1: Setup Logic App](#task-1-setup-logic-app)
-    - [Task 2: Configure the function app settings](#task-2-configure-the-function-app-settings)
-    - [Task 3: Update and deploy function app](#task-3-update-and-deploy-function-app)
-    - [Task 4: Test order email delivery](#task-4-test-order-email-delivery)
-  - [After the hands-on lab](#after-the-hands-on-lab)
-    - [Task 1: Delete resource group](#task-1-delete-resource-group)
+- [Cosmos DB scenario-based labs - IoT hands-on lab step-by-step](#Cosmos-DB-scenario-based-labs---IoT-hands-on-lab-step-by-step)
+  - [Abstract and learning objectives](#Abstract-and-learning-objectives)
+  - [Overview](#Overview)
+  - [Solution architecture (High-level)](#Solution-architecture-High-level)
+  - [Requirements](#Requirements)
+  - [Before the hands-on lab](#Before-the-hands-on-lab)
+  - [Exercise 1: Configure Databricks and generate event data](#Exercise-1-Configure-Databricks-and-generate-event-data)
+    - [Task 1: Configure Azure Databricks](#Task-1-Configure-Azure-Databricks)
+    - [Task 2: Populate event data](#Task-2-Populate-event-data)
+    - [Task 3: Review the data generated](#Task-3-Review-the-data-generated)
+    - [Task 4: Review the aggregation and import utility](#Task-4-Review-the-aggregation-and-import-utility)
+  - [Exercise 2: Complete and deploy Web and Function Apps](#Exercise-2-Complete-and-deploy-Web-and-Function-Apps)
+    - [Task 1: Implement the Top Items recommendation](#Task-1-Implement-the-Top-Items-recommendation)
+    - [Task 2: Deploy the applications](#Task-2-Deploy-the-applications)
+    - [Task 3: Test the applications](#Task-3-Test-the-applications)
+  - [Exercise 3: Perform and deploy association rules calculation for offline algorithms](#Exercise-3-Perform-and-deploy-association-rules-calculation-for-offline-algorithms)
+    - [Task 1: Generate the Associations](#Task-1-Generate-the-Associations)
+    - [Task 2: Review the data generated](#Task-2-Review-the-data-generated)
+  - [Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)](#Exercise-4-Complete-and-deploy-Web-App-and-Function-Apps-Association-Rules)
+    - [Task 1: Implement the Associations recommendation rules](#Task-1-Implement-the-Associations-recommendation-rules)
+    - [Task 2: Deploy the applications](#Task-2-Deploy-the-applications-1)
+    - [Task 3: Test the applications](#Task-3-Test-the-applications-1)
+  - [Exercise 5: Perform and deploy collaborative filtering rules calculation](#Exercise-5-Perform-and-deploy-collaborative-filtering-rules-calculation)
+    - [Task 1: Compute the user implicit ratings](#Task-1-Compute-the-user-implicit-ratings)
+    - [Task 2: Generate the Collaborative Rules](#Task-2-Generate-the-Collaborative-Rules)
+    - [Task 3: Review the data generated](#Task-3-Review-the-data-generated-1)
+    - [Task 4: Implement the Collaborative recommendation rules](#Task-4-Implement-the-Collaborative-recommendation-rules)
+    - [Task 5: Deploy the applications](#Task-5-Deploy-the-applications)
+    - [Task 6: Test the applications](#Task-6-Test-the-applications)
+  - [Exercise 6: Reporting with Stream Analytics and Power BI](#Exercise-6-Reporting-with-Stream-Analytics-and-Power-BI)
+    - [Task 1: Setup Stream Analytics](#Task-1-Setup-Stream-Analytics)
+    - [Task 2: Configure the ChangeFeed Function](#Task-2-Configure-the-ChangeFeed-Function)
+    - [Task 3: Deploy the ChangeFeed Function](#Task-3-Deploy-the-ChangeFeed-Function)
+    - [Task 4: Generate user events for PowerBI](#Task-4-Generate-user-events-for-PowerBI)
+    - [Task 5: Setup Power BI Dashabord](#Task-5-Setup-Power-BI-Dashabord)
+    - [Task 6: Generate user events for real time analytics](#Task-6-Generate-user-events-for-real-time-analytics)
+  - [Exercise 7: Email alerts using Logic Apps](#Exercise-7-Email-alerts-using-Logic-Apps)
+    - [Task 1: Setup Logic App](#Task-1-Setup-Logic-App)
+    - [Task 2: Configure the function app settings](#Task-2-Configure-the-function-app-settings)
+    - [Task 3: Update and deploy function app](#Task-3-Update-and-deploy-function-app)
+    - [Task 4: Test order email delivery](#Task-4-Test-order-email-delivery)
+  - [After the hands-on lab](#After-the-hands-on-lab)
+    - [Task 1: Delete resource group](#Task-1-Delete-resource-group)
 
 <!-- /TOC -->
 
@@ -60,7 +60,7 @@ Contoso Movies, Ltd. has expressed their desire to move to a more modern and clo
 
 ## Solution architecture (High-level)
 
-![The Cosmos DB high level solution diagram.](./Media/solution-diagram-1.png 'Solution Architecture')
+![The Cosmos DB high level solution diagram.](./media/solution-diagram-1.png 'Solution Architecture')
 
 ## Requirements
 
@@ -150,7 +150,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1. Within Azure Databricks, select **Workspace** on the menu, then **Users**, select your user, then select the down arrow on the top of your user workspace. Select **Import**.
 
-2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it (\$githubdirectory/lab-files/Retail/Notebooks/02 Retail.dbc)
+2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it ({un-zipped repo folder}/lab-files/Retail/Notebooks/02 Retail.dbc)
 
 3. Select **Import**
 
@@ -160,17 +160,23 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 5.  Select the **Shared-Configuration** notebook
 
+![The workspace menu is displayed with `includes` and `shared-configuration` highlighted.](./media/xx_DataBricks_08.png 'Navigate to Shared-Configuration')
+
 6. Update the configuration settings and set the following using the values from your lab setup script output:
 
 - Endpoint = Cosmos DB endpoint url
 - Masterkey = Cosmos DB master key
 - Database = Database id of the cosmos db ('movies')
 
-6.  Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
+7. Attach your cluster to the notebook using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
 
-7. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
+8.  Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
 
-8.  Select **Run All**
+9. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+
+![Click the `detached` drop down, select the small cluster.](./media/xx_DataBricks_09.png 'Set the cluster')
+
+10.  Select **Run All**
 
 > NOTE: With the default RUs on the Cosmos DB, this process will take up to 25 minutes to generate the event data. You could increase the RUs and get it under 5 minutes.
 
@@ -192,7 +198,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 ### Task 4: Review the aggregation and import utility
 
-1.  Browse to the **\$githubdirectory/lab-files/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
+1.  Browse to the **{un-zipped repo folder}/lab-files/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
 2.  In the **/Utilities/MovieDataImport** project, open the **program.cs** file, browse code and various methods. Notice that it:
 
@@ -296,7 +302,7 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 1.  Switch back to your Databricks workspace, select the **02 Association Rules** workbook
 
-1. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
@@ -359,14 +365,12 @@ var vm = new HomeModel();
 
 Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
 
+vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
+
 if (user != null)
 {
     vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", user.UserId, 0);
     vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", user.UserId, 0);
-}
-else
-{
-    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 }
 
 return View(vm);
@@ -386,7 +390,7 @@ return View(vm);
 
 1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see the same results as you received previously.
 
-2.  Select **login**, select the **comedy@contosomovies.com** account
+2.  In the top navigation, select **LOGIN**, then select the **comedy@contosomovies.com** account
 
 3.  Notice the main page now has different recommendations than what you received earlier, but we are still missing the similar 'liked' items
 
@@ -400,9 +404,15 @@ In this exercise you will defined
 
 1.  Switch back to your Databricks workspace, select **03 Ratings**
 
-1. Before you begin, make sure you attach your cluster to the notebooks using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+
+1.  Switch back to the Azure Portal
+
+1.  In your resource group, navigate to your Cosmos DB instance
+
+1.  Open the **ratings** collection, review the items in the collection
 
 ![An example item from the ratings collection is displayed.](./media/xx_RatingsColl.png 'The ratings collection')
 
@@ -412,7 +422,7 @@ In this exercise you will defined
 
 1.  Switch back to your Databricks workspace, select **04 Similarity**
 
-1.  Before you begin, make sure you attach your cluster to the notebooks, using the dropdown.
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **04 Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
@@ -538,11 +548,15 @@ foreach(PredictionModel pm in sortedItems)
 
 1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see the same results as you received previously.
 
-2.  Select **login**, select the **comedy@contosomovies.com** account
+2.  If you are not already logged in, select **LOGIN**, then select the **comedy@contosomovies.com** account
+
+![Select the comedy fan user.](./media/xx_ComedyUser_01.png 'Log in as the comedy fan')
 
 3.  Notice the main page now has both the associative and collaborative results displayed::
 
-**TODO IMAGE**
+![The Contoso Movie website is displayed with the Associations items as suggestions.](./media/xx_WebSite_02.png 'Contoso Movies web site')
+
+![The Contoso Movie website is displayed with the Collaborative items as suggestions.](./media/xx_WebSite_03.png 'Contoso Movies web site')
 
 ## Exercise 6: Reporting with Stream Analytics and Power BI
 
@@ -700,9 +714,11 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 ### Task 5: Setup Power BI Dashabord
 
-1.  Open a new window to [Power BI](https://www.powerbi.com)
+1.  Open a new browser window to [Power BI](https://www.powerbi.com)
 
-1.  Select on **My workspace**
+1.  Click **Sign In**, sign in using the same credentials you used to authorize your outputs for Stream Analytics above.
+
+1.  Select **My workspace**
 
 1.  Select **+Create**, then select **Dashboard**
 
@@ -728,65 +744,15 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Select **+Add tile**, you may need to select the **...** ellipses first
 
-1.  Select **Custom Streaming Data**, select **Next**
+1.  Select **Custom Streaming Data**, select **Next**.  Use the following table to create the needed tiles:
 
-1.  Select the **eventData** data set, then select **Next**
-
-1.  For the visualization type, select **Card**
-
-1.  For the Fields, select **UserCount**, select **Next**
-
-1.  For the title, type **User Count**, then select **Apply**
-
-1.  Select **+Add tile**, you may need to select the **...** ellipses first
-
-1.  Select **Custom Streaming Data**, select **Next**
-
-1.  Select the **failureCount** data set, then select **Next**
-
-1.  For the visualization type, select **Card**
-
-1.  For the Fields, select **FailureCount**
-
-1.  Select **Next**
-
-1.  For the title, type **Payment Failures**, then select **Apply**
-
-1.  Select **+Add tile**, you may need to select the **...** ellipses first
-
-1.  Select **Custom Streaming Data**, select **Next**
-
-1.  Select the **eventSummary** data set, then select **Next**
-
-1.  For the visualization type, select **Line chart**
-
-1.  For the axis, select **Time**
-
-1.  For the legend, select **Event**
-
-1.  For the values, select **Count**
-
-1.  Select **Next**
-
-1.  For the title, type **Count By Event**, then select **Apply**
-
-1.  Select **+Add tile**, you may need to select the **...** ellipses first
-
-1.  Select **Custom Streaming Data**, select **Next**
-
-1.  Select the **eventOrdersLastHour** data set, then select **Next**
-
-1.  For the visualization type, select **Gauge**
-
-1.  For the value, select **Count**
-
-1.  For minimum value, select **Min**
-
-1.  For target value, select **Target**
-
-1.  Select **Next**
-
-1.  For the title, type **Orders Per Hour**, then select **Apply**
+|    |    |    |    |
+|----------|-------------|-------------|:-------------:|
+| **Dataset** | **Type** | **Fields** | **Title** |
+| eventData | Card | UserCount  | User Count |
+| failureCount | Card |FailureCount  | Payment Failures |
+| eventSummary | Line cart | Axis = UserCount, Legend = Event, Values = Count  | Count By Event |
+| eventOrdersLastHour | Gauge |  Value = Count, Minimum = Min, Target = Target  | Orders Per Hour |
 
 1.  Your dashboard should look similar to the following:
 

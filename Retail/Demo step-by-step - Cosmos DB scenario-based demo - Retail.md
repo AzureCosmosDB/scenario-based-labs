@@ -2,39 +2,39 @@
 
 <!-- TOC -->
 
-- [Cosmos DB scenario-based labs - Retail hands-on lab step-by-step](#cosmos-db-scenario-based-labs---retail-hands-on-lab-step-by-step)
-  - [Abstract and learning objectives](#abstract-and-learning-objectives)
-  - [Overview](#overview)
-  - [Solution architecture (High-level)](#solution-architecture-high-level)
-  - [Requirements](#requirements)
-  - [Before the demo](#before-the-demo)
-  - [Exercise 1: Deployment and Setup](#exercise-1-deployment-and-setup)
-    - [Task 1: Setup Stream Analytics](#task-1-setup-stream-analytics)
-    - [Task 2: Generate user events for PowerBI](#task-2-generate-user-events-for-powerbi)
-    - [Task 3: Setup Power BI Dashboard](#task-3-setup-power-bi-dashboard)
-    - [Task 4: Generate user events for real time](#task-4-generate-user-events-for-real-time)
-  - [Exercise 2: Explore Contoso Movie Store](#exercise-2-explore-contoso-movie-store)
-    - [Task 1: Explore the Contoso Movie Store](#task-1-explore-the-contoso-movie-store)
-  - [Exercise 4: Email alerts using Logic Apps](#exercise-4-email-alerts-using-logic-apps)
-    - [Task 1: Setup Logic App](#task-1-setup-logic-app)
-    - [Task 2: Configure the function app settings](#task-2-configure-the-function-app-settings)
-    - [Task 3: Test order email delivery](#task-3-test-order-email-delivery)
-  - [After the hands-on lab](#after-the-hands-on-lab)
-    - [Task 1: Delete resource group](#task-1-delete-resource-group)
+- [Cosmos DB scenario-based labs - Retail hands-on lab step-by-step](#Cosmos-DB-scenario-based-labs---Retail-hands-on-lab-step-by-step)
+  - [Abstract and learning objectives](#Abstract-and-learning-objectives)
+  - [Overview](#Overview)
+  - [Solution architecture (High-level)](#Solution-architecture-High-level)
+  - [Requirements](#Requirements)
+  - [Before the demo](#Before-the-demo)
+  - [Exercise 1: Deployment and Setup](#Exercise-1-Deployment-and-Setup)
+    - [Task 1: Setup Stream Analytics](#Task-1-Setup-Stream-Analytics)
+    - [Task 2: Generate user events for PowerBI](#Task-2-Generate-user-events-for-PowerBI)
+    - [Task 3: Setup Power BI Dashboard](#Task-3-Setup-Power-BI-Dashboard)
+    - [Task 4: Generate user events for real time](#Task-4-Generate-user-events-for-real-time)
+  - [Exercise 2: Explore Contoso Movie Store](#Exercise-2-Explore-Contoso-Movie-Store)
+    - [Task 1: Explore the Contoso Movie Store](#Task-1-Explore-the-Contoso-Movie-Store)
+  - [Exercise 4: Email alerts using Logic Apps](#Exercise-4-Email-alerts-using-Logic-Apps)
+    - [Task 1: Setup Logic App](#Task-1-Setup-Logic-App)
+    - [Task 2: Configure the function app settings](#Task-2-Configure-the-function-app-settings)
+    - [Task 3: Test order email delivery](#Task-3-Test-order-email-delivery)
+  - [After the hands-on lab](#After-the-hands-on-lab)
+    - [Task 1: Delete resource group](#Task-1-Delete-resource-group)
 
 <!-- /TOC -->
 
 ## Abstract and learning objectives
 
-In this demo you will show your audience how to uiltize Azure services to host a movie retail store with custom AI models and CosmosDb. Several other PaaS based technologies will be used to show how Azure can be used to migrate legacy applications to the cloud.
+In this demo you will show your audience how to utilize Azure services to host a movie retail store with custom AI models and CosmosDb. Several other PaaS based technologies will be used to show how Azure can be used to migrate legacy applications to the cloud.
 
 ## Overview
 
-Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services including CosmosDb, Functions, EventHubs, Stream Analytics, Power BI and Logic Apps. As part of this redesign they have also implemented a new recommendation system based on custom AI models. These AI models are done **offline** and stored in CosmosDb for reference when users are browing a site. User events will immplicitly rank the items they are clicking on and then modify their recommendations based on these events.
+Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services including CosmosDb, Functions, EventHubs, Stream Analytics, Power BI and Logic Apps. As part of this redesign they have also implemented a new recommendation system based on custom AI models. These AI models are done **offline** and stored in CosmosDb for reference when users are browsing a site. User events will implicitly rank the items they are clicking on and then modify their recommendations based on these events.
 
 ## Solution architecture (High-level)
 
-![TODO.](./Media/solution-diagram-1.png 'Solution Architecture')
+![The Cosmos DB high level solution diagram.](./media/solution-diagram-1.png 'Solution Architecture')
 
 ## Requirements
 
@@ -66,9 +66,9 @@ Synopsis: In this exercise you will TODO
 
 1.  Open the Azure Portal, navigate to your Stream Analytics job that was created for you in the setup script
 
-1.  Click **Inputs**
+1.  Select **Inputs**
 
-1.  Click **+Add stream input**, then select **Event Hub**
+1.  Select **+Add stream input**, then select **Event Hub**
 
 1.  For the alias, type **s2events**
 
@@ -80,23 +80,11 @@ Synopsis: In this exercise you will TODO
 
 1.  For the policy name, select **RootManageSharedAccessKey**
 
-1.  Click **Save**
+1.  Select **Save**
 
-1.  Click **Outputs**
+1.  Select **Outputs**
 
-1.  Click **+Add**, then select **Power BI**
-
-1.  For the output alias, type **eventCount**
-
-1.  For the dataset, type **eventCount**
-
-1.  For the table name, type **eventCount**
-
-1.  Click **Authorize**, login to your Power BI instance
-
-1.  Click **Save**
-
-1.  Click **+Add**, then select **Power BI**
+1.  Select **+Add**, then select **Power BI**
 
 1.  For the output alias, type **eventOrdersLastHour**
 
@@ -104,41 +92,17 @@ Synopsis: In this exercise you will TODO
 
 1.  For the table name, type **eventOrdersLastHour**
 
-1.  Click **Authorize**, login to your Power BI instance
+1.  Select **Authorize**, login to your Power BI instance
 
-1.  Click **+Add**, then select **Power BI**
+1.  Select **Save**
 
-1.  For the output alias, type **eventSummary**
+1.  Repeat for steps 11-16, but replace **eventOrdersLastHour** with:
 
-1.  For the dataset, type **eventSummary**
+-   eventSummary
+-   failureCount
+-   eventData
 
-1.  For the table name, type **eventSummary**
-
-1.  Click **Authorize**, login to your Power BI instance
-
-1.  Click **+Add**, then select **Power BI**
-
-1.  For the output alias, type **failureCount**
-
-1.  For the dataset, type **failureCount**
-
-1.  For the table name, type **failureCount**
-
-1.  Click **Authorize**, login to your Power BI instance
-
-1.  Click **+Add**, then select **Power BI**
-
-1.  For the output alias, type **eventData**
-
-1.  For the dataset, type **eventData**
-
-1.  For the table name, type **eventData**
-
-1.  Click **Authorize**, login to your Power BI instance
-
-1.  Click **Save**
-
-1.  Click **Query**
+1.  Select **Query**
 
 1.  Update the query to the following:
 
@@ -170,19 +134,19 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 ![An example item from the ratings collection is displayed.](./media/xx_StreamAnalytics_05.png 'The ratings collection')
 
-1.  Click **Save query**
+1.  Select **Save query**
 
-1.  Click **Overview**, in the menu, click **Start** to start your stream analytics job
+1.  Select **Overview**, in the menu, select **Start** to start your stream analytics job
 
-![Go to the overview tab, then click 'start'.](./media/xx_StreamAnalytics_05.png 'Start the analytics job')
+![Go to the overview tab, then select 'start'.](./media/xx_StreamAnalytics_05.png 'Start the analytics job')
 
-1.  In the dialog, ensure that **Now** is selected, then click **Start**
+1.  In the dialog, ensure that **Now** is selected, then select **Start**
 
 > NOTE: If your job fails for any reason, you can use the **Activity Log** to see what the error(s) were.
 
 ### Task 2: Generate user events for PowerBI
 
-1.  Open Visual Studio, browse to the Solution
+1.  Browse to the **{un-zipped repo folder}/lab-files/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
 1.  Right-click the **DataGenerator** project, select **Set as startup project**
 
@@ -196,103 +160,53 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 1.  After about 1 minute, close the DataGenerator console program
 
-### Task 3: Setup Power BI Dashboard
+### Task 5: Setup Power BI Dashabord
 
-1.  Open a new window to [Power BI](https://www.powerbi.com)
+1.  Open a new browser window to [Power BI](https://www.powerbi.com)
 
-1.  Click on **My workspace**
+1.  Click **Sign In**, sign in using the same credentials you used to authorize your outputs for Stream Analytics above.
 
-1.  Click **+Create**, then select **Dashboard**
+1.  Select **My workspace**
+
+1.  Select **+Create**, then select **Dashboard**
 
 ![The main Power BI dashboard page is displayed with the '+Create' highlighted.](./media/xx_PowerBI_01.png 'Create a dashboard')
 
-1.  For the name, type **Contoso Movies**, click **Create**
+1.  For the name, type **Contoso Movies**, select **Create**
 
-1.  Click the **...** ellipses, then select **+Add tile**
+1.  Select the **...** ellipses, then select **+Add tile**
 
-1.  Select **Custom Streaming Data**, click **Next**
+1.  Select **Custom Streaming Data**, select **Next**
 
-1.  Select the **eventData** data set, then click **Next**
+1.  Select the **eventData** data set, then select **Next**
 
-![Select the eventCount dataset and click next.](./media/xx_PowerBI_02.png 'Add the eventCount tile')
-
-1.  For the visualization type, select **Card**
-
-1.  For the Fields, select **count**
-
-1.  Click **Next**
-
-1.  For the title, type **Event Count**, then click **Apply**
-
-1.  Click the **...** ellipses, then select **+Add tile**
-
-1.  Select **Custom Streaming Data**, click **Next**
-
-1.  Select the **eventData** data set, then click **Next**
+![Select the eventCount dataset and select next.](./media/xx_PowerBI_02.png 'Add the eventCount tile')
 
 1.  For the visualization type, select **Card**
 
-1.  For the Fields, select **UserCount**, click **Next**
+1.  For the Fields, select **EventCount**
 
-1.  For the title, type **User Count**, then click **Apply**
+1.  Select **Next**
 
-1.  Click the **...** ellipses, then select **+Add tile**
+1.  For the title, type **Event Count**, then select **Apply**
 
-1.  Select **Custom Streaming Data**, click **Next**
+1.  Select **+Add tile**, you may need to select the **...** ellipses first
 
-1.  Select the **failureCount** data set, then click **Next**
+1.  Select **Custom Streaming Data**, select **Next**.  Use the following table to create the needed tiles:
 
-1.  For the visualization type, select **Card**
-
-1.  For the Fields, select **FailureCount**
-
-1.  Click **Next**
-
-1.  For the title, type **Payment Failures**, then click **Apply**
-
-1.  Click the **...** ellipses, then select **+Add tile**
-
-1.  Select **Custom Streaming Data**, click **Next**
-
-1.  Select the **eventSummary** data set, then click **Next**
-
-1.  For the visualization type, select **Line chart**
-
-1.  For the axis, select **Time**
-
-1.  For the legend, select **Event**
-
-1.  For the values, select **Count**
-
-1.  Click **Next**
-
-1.  For the title, type **Count By Event**, then click **Apply**
-
-1.  Click the **...** ellipses, then select **+Add tile**
-
-1.  Select **Custom Streaming Data**, click **Next**
-
-1.  Select the **evetOrdersLastHour** data set, then click **Next**
-
-1.  For the visualization type, select **Gauge**
-
-1.  For the value, select **Count**
-
-1.  For minimum value, select **Min**
-
-1.  For target value, select **Target**
-
-1.  For the legend, select **Event**
-
-1.  Click **Next**
-
-1.  For the title, type **Orders Per Hour**, then click **Apply**
+|    |    |    |    |
+|----------|-------------|-------------|:-------------:|
+| **Dataset** | **Type** | **Fields** | **Title** |
+| eventData | Card | UserCount  | User Count |
+| failureCount | Card |FailureCount  | Payment Failures |
+| eventSummary | Line cart | Axis = UserCount, Legend = Event, Values = Count  | Count By Event |
+| eventOrdersLastHour | Gauge |  Value = Count, Minimum = Min, Target = Target  | Orders Per Hour |
 
 1.  Your dashboard should look similar to the following:
 
 ![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_PowerBI_03.png 'Configure the dashboard')
 
-### Task 4: Generate user events for real time
+### Task 6: Generate user events for real time analytics
 
 1.  Switch back to Visual Studio, press **F5** to run the data generator project
 
@@ -308,7 +222,7 @@ Synopsis: You will show your attendees the Contoso Movies store. It is an ecomme
 
 ### Task 1: Explore the Contoso Movie Store
 
-1.  Open the deployed web site
+1.  Open the deployed Conotos Movie web site
 
 > NOTE: This should have opened as part of the setup script.
 
@@ -318,7 +232,7 @@ Synopsis: You will show your attendees the Contoso Movies store. It is an ecomme
 
 4.  Mention that there are several pre-populated _personalities_. Select the **comedy@contosomovies.com** personality
 
-5.  Mention that you now have targeted movies based on two different algorithms
+5.  Mention that you now have targeted movies based on two different algorithms (Association and Collaborative)
 
 ## Exercise 4: Email alerts using Logic Apps
 
