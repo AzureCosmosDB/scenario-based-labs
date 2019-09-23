@@ -194,7 +194,8 @@
                     "family": "A",
                     "name": "standard"
                 },
-                "enabledForDeployment": false
+                "enabledForDeployment": false,
+                "accessPolicies": []
             }
         },
         {
