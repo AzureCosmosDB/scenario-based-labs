@@ -891,7 +891,7 @@ The data generator registered and activated each simulated vehicle in IoT Hub as
 
    Please note, you may not have any trips that have completed yet. Try querying where the `status` = **Active** instead. Active trips are those that are currently running.
 
-   Here is an example completed trip record (several trips removed for brevity):
+   Here is an example completed trip record (several packages removed for brevity):
 
    ```json
    {
