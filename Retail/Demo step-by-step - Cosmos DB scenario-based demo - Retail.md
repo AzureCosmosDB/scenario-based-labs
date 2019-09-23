@@ -234,11 +234,11 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Search for **send an email**, then select the Office 365 outlook connector
 
-![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./media/xx_logicapp_03.png 'Add Send an Email action')
+![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./media/xx_LogicApp_03.png 'Add Send an Email action')
 
 1.  Click **Sign in**, login using your Azure AD credentials
 
-![Sign in button is highlighted.](./media/xx_logicapp_04.png 'Sign in to Office 365')
+![Sign in button is highlighted.](./media/xx_LogicApp_04.png 'Sign in to Office 365')
 
 1.  Set the **To** as your email
 
