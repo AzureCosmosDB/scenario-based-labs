@@ -322,7 +322,7 @@
             ],
 			"identity": {
 				 "type": "SystemAssigned",
-				 },
+				 }
 			},
             "kind": "functionapp",
             "properties": {
@@ -389,7 +389,7 @@
             },
 			"identity": {
 				 "type": "SystemAssigned",
-				 },
+				 }
 			}
         },
         {
