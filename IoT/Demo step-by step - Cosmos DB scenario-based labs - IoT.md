@@ -478,7 +478,9 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
 
-6. Complete the **Model Deployment** notebook to deploy the model to ACI.
+6. Complete the **Batch Scoring** notebook to download the trained model. **Note**: Since we've not loaded any data in Cosmos DB at this point, you can stop at **cell 17** (*Load the data from Cosmos DB to batch score it*).
+
+7. Complete the **Model Deployment** notebook to deploy the model to ACI.
 
 ### Task 13: View Cosmos DB processing Function App in the portal
 
