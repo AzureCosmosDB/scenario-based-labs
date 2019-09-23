@@ -480,7 +480,7 @@ In this task, you will import the Databricks notebooks into your workspace.
 
 6. Complete the **Batch Scoring** notebook to download the trained model. **Note**: Since we've not loaded any data in Cosmos DB at this point, you can stop at **cell 17** (*Load the data from Cosmos DB to batch score it*).
 
-7. Complete the **Model Deployment** notebook to deploy the model to ACI. **Note**: You can continue with the rest of the tasks while the last cell runs (deploying the web service).
+7. Complete the **Model Deployment** notebook to deploy the model to ACI. **Note**: You can continue with the rest of the tasks below while the last cell runs (deploying the web service).
 
 ### Task 13: View Cosmos DB processing Function App in the portal
 
@@ -547,6 +547,8 @@ In this task, you will run the generator and have it generate events for 50 truc
    ![The debug button is highlighted.](media/vs-debug.png 'Debug')
 
 3. When the console window appears, enter **3** to simulate 50 vehicles. The generator will resize the requested throughput for the `metadata` container, uses the bulk importer to seed the container, and resize the throughput back to 15,000 RU/s.
+   
+   > Please note: The data seeding step can take anywhere from one to several minutes, depending on your machine and internet speed.
 
    ![3 has been entered in the console window.](media/cmd-run.png 'Generator')
 

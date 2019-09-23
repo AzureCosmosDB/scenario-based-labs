@@ -414,15 +414,22 @@ namespace FleetDataGenerator
             // Retrieve the existing throughput.
             var throughputResponse = await container.ReadThroughputAsync();
 
-            WriteLineInColor($"\nThe {container.Id} is configured with the existing throughput: {throughputResponse}\nChanging throughput to {desiredThroughput}", ConsoleColor.White);
+            if (throughputResponse.HasValue && throughputResponse.Value == desiredThroughput)
+            {
+                WriteLineInColor($"\nThe {container.Id} container is already configured with the following throughput: {desiredThroughput}. Skipping performance change request...", ConsoleColor.Yellow);
+            }
+            else
+            {
+                WriteLineInColor($"\nThe {container.Id} container is configured with the existing throughput: {throughputResponse}\nChanging throughput to {desiredThroughput}", ConsoleColor.White);
 
-            // Change the throughput performance.
-            await container.ReplaceThroughputAsync(desiredThroughput);
+                // Change the throughput performance.
+                await container.ReplaceThroughputAsync(desiredThroughput);
 
-            // Verify the changed throughput.
-            throughputResponse = await container.ReadThroughputAsync();
+                // Verify the changed throughput.
+                throughputResponse = await container.ReadThroughputAsync();
 
-            WriteLineInColor($"\nChanged {container.Id}'s requested throughput to {throughputResponse}", ConsoleColor.Cyan);
+                WriteLineInColor($"\nChanged {container.Id}'s requested throughput to {throughputResponse}", ConsoleColor.Cyan);
+            }
         }
 
         /// <summary>
