@@ -46,10 +46,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/22/2019 15:28:17</publishTime>
     </File>
     <File Include="bin/Contoso.Apps.Movies.Web.dll">
-      <publishTime>09/22/2019 15:29:43</publishTime>
+      <publishTime>09/23/2019 12:49:41</publishTime>
     </File>
     <File Include="bin/Contoso.Apps.Movies.Web.pdb">
-      <publishTime>09/22/2019 15:29:43</publishTime>
+      <publishTime>09/23/2019 12:49:41</publishTime>
     </File>
     <File Include="bin/Cosmos.CRTCompat.dll">
       <publishTime>08/09/2019 14:48:16</publishTime>
@@ -661,7 +661,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/31/2019 21:17:26</publishTime>
     </File>
     <File Include="Scripts/main.js">
-      <publishTime>09/17/2019 08:41:42</publishTime>
+      <publishTime>09/23/2019 12:31:25</publishTime>
     </File>
     <File Include="Scripts/plugins.js">
       <publishTime>03/31/2019 21:17:26</publishTime>
@@ -736,13 +736,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/05/2019 15:04:53</publishTime>
     </File>
     <File Include="Views/Shared/_MoviesTeaser.cshtml">
-      <publishTime>09/17/2019 08:42:09</publishTime>
+      <publishTime>09/23/2019 12:31:00</publishTime>
     </File>
     <File Include="Views/Shared/_MoviesTeaserList.cshtml">
       <publishTime>09/05/2019 19:43:52</publishTime>
     </File>
     <File Include="Views/Store/Details.cshtml">
-      <publishTime>09/17/2019 08:42:18</publishTime>
+      <publishTime>09/23/2019 12:32:29</publishTime>
     </File>
     <File Include="Views/Store/Genre.cshtml">
       <publishTime>09/17/2019 08:42:26</publishTime>
@@ -763,7 +763,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/31/2019 21:17:26</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>09/22/2019 15:29:43</publishTime>
+      <publishTime>09/23/2019 12:49:41</publishTime>
     </File>
   </ItemGroup>
 </Project>
