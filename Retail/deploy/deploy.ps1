@@ -220,8 +220,6 @@ function SetupDatabricks()
                 "content"=$base64string
             } | ConvertTo-Json
 
-            $data
-
             $res = curl -Method Post "$databricksInstance/api/2.0/workspace/import" -H @{'Authorization' = "Bearer $databricktoken"} -Body $data;
             $json = ConvertFrom-json $res.Content
         }
@@ -633,6 +631,63 @@ $funcApiKey = $json.masterkey.value;
 
 ########################
 #
+# save key vault values
+#
+#########################
+
+write-host "Setting key vault values..."
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "paymentsAPIUrl" --value $paymentsApiUrl);
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "AzureQueueConnectionString" --value $azurequeueConnString);
+
+#"@Microsoft.KeyVault(SecretUri=https://iot-keyvault-501993860.vault.azure.net/secrets/CosmosDBConnection/794f93084861483d823d37233569561d)"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "funcApiUrl" --value $funcApiUrl);
+$json = ConvertObjectToJson $res;
+$kvFuncApiUrl = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "funcApiKey" --value $funcApiKey);
+$json = ConvertObjectToJson $res;
+$kvfuncApiKey = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "databaseId" --value $databaseId);
+$json = ConvertObjectToJson $res;
+$kvdatabaseId = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "CosmosDBConnection" --value $CosmosDBConnection);
+$json = ConvertObjectToJson $res;
+$kvCosmosDBConnection = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "dbConnectionUrl" --value $dbConnectionUrl);
+$json = ConvertObjectToJson $res;
+$kvdbConnectionUrl = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "dbConnectionKey" --value $dbConnectionKey);
+$json = ConvertObjectToJson $res;
+$kvdbConnectionKey = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "eventHubConnection" --value $eventHubConnection);
+$json = ConvertObjectToJson $res;
+$kveventHubConnection = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "eventHub" --value "store");
+$json = ConvertObjectToJson $res;
+$kveventHub = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "movieApiKey" --value $movieApiKey);
+$json = ConvertObjectToJson $res;
+$kvmovieApiKey = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "LogicAppUrl" --value "");
+$json = ConvertObjectToJson $res;
+$kvLogicAppUrl = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+$res = $(az keyvault secret set --vault-name $keyvault.Name --name "RecipientEmail" --value $userEmail);
+$json = ConvertObjectToJson $res;
+$kvRecipientEmail = "@Microsoft.KeyVault(SecretUri=$($json.id))"
+
+########################
+#
 #set the web app properties
 #
 #########################
@@ -646,32 +701,6 @@ $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings d
 $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$dbConnectionUrl)
 $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$dbConnectionKey)
 $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings movieApiKey=$movieApiKey)
-
-########################
-#
-# save key vault values
-#
-#########################
-
-write-host "Setting key vault values..."
-
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "AzureQueueConnectionString" --value $azurequeueConnString);
-$json = ConvertObjectToJson $res;
-
-#"@Microsoft.KeyVault(SecretUri=https://iot-keyvault-501993860.vault.azure.net/secrets/CosmosDBConnection/794f93084861483d823d37233569561d)"
-
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "paymentsAPIUrl" --value $paymentsApiUrlah);
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "funcApiUrl" --value $funcApiUrl);
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "funcApiKey" --value $funcApiKey);
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "databaseId" --value $databaseId);
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "CosmosDBConnection" --value $CosmosDBConnection);
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "dbConnectionUrl" --value $dbConnectionUrl);
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "dbConnectionKey" --value $dbConnectionKey);
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "eventHubConnection" --value $eventHubConnection);
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "eventHub" --value "store");
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "movieApiKey" --value $movieApiKey);
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "LogicAppUrl" --value "");
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "RecipientEmail" --value $userEmail);
 
 ########################
 #

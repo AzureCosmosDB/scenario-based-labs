@@ -321,9 +321,8 @@
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
             ],
 			"identity": {
-				 "type": "SystemAssigned",
-				 }
-			},
+				"type": "SystemAssigned"
+			 },
             "kind": "functionapp",
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanFunctionAppsName'))]",
@@ -388,8 +387,7 @@
                 }
             },
 			"identity": {
-				 "type": "SystemAssigned",
-				 }
+				"type": "SystemAssigned"
 			}
         },
         {
