@@ -96,6 +96,7 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
    - **IMPORTANT**: To complete the OAuth 2.0 access components of this hands-on lab you must have permissions within your Azure subscription to create an App Registration and service principal within Azure Active Directory.
 2. Install [Power BI Desktop](https://powerbi.microsoft.com/desktop/)
 3. Install [Visual Studio 2019 Community](https://visualstudio.microsoft.com/vs/) or greater
+4. Install [.NET Core SDK 2.2](https://dotnet.microsoft.com/download/dotnet-core/2.2) or greater
 
 ## Exercise 1: Configure environment
 
@@ -120,6 +121,10 @@ Download a starter project that includes a vehicle simulator, Azure Function App
    ![Download .zip containing the repository](media/github-download-repo.png 'Download ZIP')
 
 4. Unzip the contents to your root hard drive (i.e. `C:\`). This will create a folder on your root drive named `cosmos-db-scenario-based-labs`.
+
+5. Navigate to the [.NET Core 2.2 download page](https://dotnet.microsoft.com/download/dotnet-core/2.2), then download the SDK for your environment, such as Windows .NET Core Installer x64.
+
+   ![The webpage is displayed with the SDK download section highlighted.](media/dotnet-sdk-2-2.png 'Download .NET Core 2.2')
 
 ### Task 1: Run deployment scripts
 

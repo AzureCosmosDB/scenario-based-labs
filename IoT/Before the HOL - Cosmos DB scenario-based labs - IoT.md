@@ -17,7 +17,8 @@
     - [Task 10: Create Azure Databricks workspace](#task-10-create-azure-databricks-workspace)
     - [Task 11: Create Stream Analytics job](#task-11-create-stream-analytics-job)
     - [Task 12: Create and configure Application Insights](#task-12-create-and-configure-application-insights)
-    - [Task 13: Download the starter files](#task-13-download-the-starter-files)
+    - [Task 13: Install .NET Core SDK 2.2 (or greater)](#task-13-install-net-core-sdk-22-or-greater)
+    - [Task 14: Download the starter files](#task-14-download-the-starter-files)
 
 <!-- /TOC -->
 
@@ -28,6 +29,7 @@
    - **IMPORTANT**: To complete the OAuth 2.0 access components of this hands-on lab you must have permissions within your Azure subscription to create an App Registration and service principal within Azure Active Directory.
 2. Install [Power BI Desktop](https://powerbi.microsoft.com/desktop/)
 3. Install [Visual Studio 2019 Community](https://visualstudio.microsoft.com/vs/) or greater
+4. Install [.NET Core SDK 2.2](https://dotnet.microsoft.com/download/dotnet-core/2.2) or greater
 
 ## Before the hands-on lab
 
@@ -343,7 +345,15 @@ Application Insights helps you visualize application performance, availability, 
 
     ![The Save button is highlighted.](media/web-app-save-app-settings.png 'Save Application settings')
 
-### Task 13: Download the starter files
+### Task 13: Install .NET Core SDK 2.2 (or greater)
+
+The starter solution requires .NET Core SDK 2.2 or greater to be installed on your machine.
+
+1. Navigate to the [.NET Core 2.2 download page](https://dotnet.microsoft.com/download/dotnet-core/2.2), then download the SDK for your environment, such as Windows .NET Core Installer x64.
+
+   ![The webpage is displayed with the SDK download section highlighted.](media/dotnet-sdk-2-2.png 'Download .NET Core 2.2')
+
+### Task 14: Download the starter files
 
 Download a starter project that includes a vehicle simulator, Azure Function App projects, a Web App project, Azure Databricks notebooks, and data files used in the lab.
 

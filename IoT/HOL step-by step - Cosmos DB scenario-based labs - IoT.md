@@ -112,6 +112,7 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
    - **IMPORTANT**: To complete the OAuth 2.0 access components of this hands-on lab you must have permissions within your Azure subscription to create an App Registration and service principal within Azure Active Directory.
 2. Install [Power BI Desktop](https://powerbi.microsoft.com/desktop/)
 3. Install [Visual Studio 2019 Community](https://visualstudio.microsoft.com/vs/) or greater
+4. Install [.NET Core SDK 2.2](https://dotnet.microsoft.com/download/dotnet-core/2.2) or greater
 
 ## Before the hands-on lab
 
