@@ -197,11 +197,11 @@ function SetupDatabricks()
         }
 
         #extract the files
-        $filePath = "$githubPath\lab-files\retail\notebooks\02 retail.zip";
-        Expand-Archive -LiteralPath $filePath -DestinationPath "$githubPath/lab-files/retail/notebooks/export" -force
+        $filePath = "$githubPath\retail\notebooks\02 retail.zip";
+        Expand-Archive -LiteralPath $filePath -DestinationPath "$githubPath/retail/notebooks/export" -force
 
         #update the variables
-        $sharedConfigPath = "$githubPath/lab-files/retail/notebooks/export/02 retail/includes/Shared-Configuration.ipynb"
+        $sharedConfigPath = "$githubPath/retail/notebooks/export/02 retail/includes/Shared-Configuration.ipynb"
         $content = get-content $sharedConfigPath
         $content = $content.replace("cosmos_db_endpoint = \`"\`"", "cosmos_db_endpoint = \`"$dbConnectionUrl\`"");
         $content = $content.replace("cosmos_db_master_key = \`"\`"", "cosmos_db_master_key = \`"$dbConnectionKey\`"");
@@ -217,7 +217,7 @@ function SetupDatabricks()
         $res = curl -Method Post "$databricksInstance/api/2.0/workspace/mkdirs" -H @{'Authorization' = "Bearer $databricktoken"} -Body $data;
 
         #upload all the files
-        $di = new-object System.IO.DirectoryInfo ("$githubPath/lab-files/retail/notebooks/export/02 retail")
+        $di = new-object System.IO.DirectoryInfo ("$githubPath/retail/notebooks/export/02 retail")
 
         $files = $di.GetFiles("*.*", [System.IO.SearchOption]::AllDirectories);
 
@@ -792,17 +792,17 @@ $folders = ("starter", "solution")
 
 foreach($folder in $folders)
 {
-    $filePath = "$githubpath\lab-files\Retail\$folder\Data Import\app.config"
+    $filePath = "$githubpath\Retail\$folder\Data Import\app.config"
     UpdateConfig $filePath;
 
-    $filePath = "$githubpath\lab-files\Retail\$folder\DataGenerator\app.config"
+    $filePath = "$githubpath\Retail\$folder\DataGenerator\app.config"
     UpdateConfig $filePath;
 
-    $filePath = "$githubpath\lab-files\Retail\$folder\Contoso Movies\Contoso.Apps.Movies.Web\web.config"
+    $filePath = "$githubpath\Retail\$folder\Contoso Movies\Contoso.Apps.Movies.Web\web.config"
     UpdateConfig $filePath;
 
     #update the app.config file with the new values
-    $filePath = "$githubpath\lab-files\Retail\$folder\Data Import\bin\Debug\MovieDataImport.exe.config"
+    $filePath = "$githubpath\Retail\$folder\Data Import\bin\Debug\MovieDataImport.exe.config"
     UpdateConfig $filePath;
 }
 
@@ -834,7 +834,7 @@ if ($mode -eq "demo")
     write-host "Importing all the movie data"
 
     #run the import tool
-    . "$githubpath\lab-files\Retail\Starter\Data Import\bin\Debug\MovieDataImport.exe"
+    . "$githubpath\Retail\Starter\Data Import\bin\Debug\MovieDataImport.exe"
 }
 
 ########################
