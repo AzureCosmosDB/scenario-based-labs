@@ -120,7 +120,7 @@ Download a starter project that includes a vehicle simulator, Azure Function App
 
    ![Download .zip containing the repository](media/github-download-repo.png 'Download ZIP')
 
-4. Unzip the contents to your root hard drive (i.e. `C:\`). This will create a folder on your root drive named `cosmos-db-scenario-based-labs`.
+4. Unzip the contents to your root hard drive (i.e. `C:\`). This will create a folder on your root drive named `cosmos-db-scenario-based-labs-master`.
 
 5. Navigate to the [.NET Core 2.2 download page](https://dotnet.microsoft.com/download/dotnet-core/2.2), then download the SDK for your environment, such as Windows .NET Core Installer x64.
 
@@ -314,7 +314,7 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 
 ### Task 7: Deploy Cosmos DB Processing Function App
 
-1. Open the Visual Studio solution file **CosmosDbIoTScenario.sln** within the `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Solution` folder.
+1. Open the Visual Studio solution file **CosmosDbIoTScenario.sln** within the `C:\cosmos-db-scenario-based-labs-master\IoT\Solution` folder.
 
 2. In the Visual Studio Solution Explorer, right-click on the **Functions.CosmosDB** project, then select **Publish...**.
 
@@ -473,7 +473,7 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The Import link is highlighted in the Workspace.](media/databricks-import-link.png 'Workspace')
 
-4. Select **URL** next to **Import from**, paste the following into the text box: `https://github.com/solliancenet/cosmos-db-scenario-based-labs/blob/master/lab-files/IoT/Notebooks/01%20IoT.dbc`, then select **Import**.
+4. Select **URL** next to **Import from**, paste the following into the text box: `https://github.com/solliancenet/cosmos-db-scenario-based-labs/blob/master/IoT/Notebooks/01%20IoT.dbc`, then select **Import**.
 
    ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
 
@@ -499,9 +499,9 @@ In this task, you will import the Databricks notebooks into your workspace.
 
 ### Task 14: Open the data generator project
 
-1. If the Visual Studio solution is not already open, navigate to `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Starter` and open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
+1. If the Visual Studio solution is not already open, navigate to `C:\cosmos-db-scenario-based-labs-master\IoT\Starter` and open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
 
-2. Expand the **FleetDataGenerator** project and open **Program.cs** in the Solution Explorer.
+2. Expand the **FleetDataGenerator** project and open **Program.cs** in the Solution Explore
 
    ![The Program.cs file is highlighted in the Solution Explorer.](media/vs-data-generator-program.png 'Solution Explorer')
 
@@ -723,7 +723,7 @@ In this task, you will import a Power BI report that has been created for you. A
 
    ![The Open other reports link is highlighted.](media/pbi-splash-screen.png 'Power BI Desktop')
 
-2. In the Open report dialog, browse to `C:\cosmos-db-scenario-based-labs-master\lab-files\IoT\Reports`, then select **FleetReport.pbix**. Click **Open**.
+2. In the Open report dialog, browse to `C:\cosmos-db-scenario-based-labs-master\IoT\Reports`, then select **FleetReport.pbix**. Click **Open**.
 
    ![The FleetReport.pbix file is selected in the dialog.](media/pbi-open-report.png 'Open report dialog')
 
