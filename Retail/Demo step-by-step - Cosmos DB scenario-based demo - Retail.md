@@ -146,7 +146,7 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 ### Task 2: Generate user events for PowerBI
 
-1.  Browse to the **{un-zipped repo folder}/lab-files/Retail/Solution/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
+1.  Browse to the **{un-zipped repo folder}/Retail/Solution/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
 1.  Right-click the **DataGenerator** project, select **Set as startup project**
 

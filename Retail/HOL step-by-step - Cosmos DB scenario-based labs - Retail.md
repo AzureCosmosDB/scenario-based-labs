@@ -150,7 +150,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 1. Within Azure Databricks, select **Workspace** on the menu, then **Users**, select your user, then select the down arrow on the top of your user workspace. Select **Import**.
 
-2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it ({un-zipped repo folder}/lab-files/Retail/Notebooks/02 Retail.dbc)
+2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it ({un-zipped repo folder}/Retail/Notebooks/02 Retail.dbc)
 
 3. Select **Import**
 
@@ -198,7 +198,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 ### Task 4: Review the aggregation and import utility
 
-1.  Browse to the **{un-zipped repo folder}/lab-files/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
+1.  Browse to the **{un-zipped repo folder}/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
 2.  In the **/Utilities/MovieDataImport** project, open the **program.cs** file, browse code and various methods. Notice that it:
 
