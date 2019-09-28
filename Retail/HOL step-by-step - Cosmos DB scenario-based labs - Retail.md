@@ -1,8 +1,8 @@
-# Cosmos DB scenario-based labs - IoT hands-on lab step-by-step
+# Cosmos DB scenario-based labs - Retail hands-on lab step-by-step
 
 <!-- TOC -->
 
-- [Cosmos DB scenario-based labs - IoT hands-on lab step-by-step](#Cosmos-DB-scenario-based-labs---IoT-hands-on-lab-step-by-step)
+- [Cosmos DB scenario-based labs - Retail hands-on lab step-by-step](#Cosmos-DB-scenario-based-labs---Retail-hands-on-lab-step-by-step)
   - [Abstract and learning objectives](#Abstract-and-learning-objectives)
   - [Overview](#Overview)
   - [Solution architecture (High-level)](#Solution-architecture-High-level)
@@ -50,17 +50,47 @@
 
 ## Abstract and learning objectives
 
-In this hands-on-lab, you will complete various tasks to implement a recommendation engine using several Microsoft Azure PaaS services.
+In this hands-on-lab, you will complete various tasks to complete the implementation of an ecommerce site that utilizes an AI driven recomendation engine using several Microsoft Azure PaaS services.
 
-At the end of this lab you will understand how to design recommendation systems that store data in Cosmos DB using Databricks. You will also see how to implement a ecommerce store front utilizing Cosmos DB. Additionally, you will see how to utilize the Cosmos DB change feed to execute functions for reporting and monitoring activities with Power BI and Logic Apps.
+At the end of this lab you will understand how to design recommendation systems that store data in Cosmos DB using Databricks. You will also see how to implement an ecommerce store front with Cosmos DB as its data store. Additionally, you will see how to leverage the Cosmos DB change feed to execute functions for reporting and monitoring activities with Stream Analytics, Power BI and Logic Apps.
 
 ## Overview
 
-Contoso Movies, Ltd. has expressed their desire to move to a more modern and cloud-based approach to their online ecommerce presence. The have decided to utilize Cosmos DB and Azure Databricks to implement their next generate recommendation system.
+Contoso Movies, Ltd. has expressed their desire to move to a more modern and cloud-based approach to their online ecommerce presence. The have decided to utilize Cosmos DB and Azure Databricks to implement their next generation recommendation system using various popular AI driven recommendation algorithms.
+
+They would also like to have real-time reporting on user site actions such as viewing item details, adding items to carts and purchase events.  Based on this data, they would like to know immediately if there are potential issues with the order processing pipeline.
 
 ## Solution architecture (High-level)
 
+Below is a diagram of the solution architecture you will build in this lab. Please study this carefully, so you understand the whole of the solution as you are working on the various components.
+
 ![The Cosmos DB high level solution diagram.](./media/solution-diagram-1.png 'Solution Architecture')
+
+- Data ingest, event processing, and storage:
+
+  The solution for the Retail scenario centers around **Cosmos DB**, which acts as the globally-available, highly scalable data storage for streaming event data for reporting and external integrations. User telemetry data flows in from the data generator where an **Azure function** processes the event data and inserts it into a container in Cosmos DB.
+
+  - Event processing with Azure Functions:
+
+  The Cosmos DB change feed triggers a single Azure function (although the functionality could be broken into many different functions). The single function provides three pieces of functionality. 
+
+    - **Aggregate Calculations** - This code updates the item aggregations for the `buy` events to keep track of the top items purchased.  This will continually update and drive the `top` suggestions.  You will see this when you execute the Data Generator tool.
+
+    - **Forward events to EventHub** - This code will forward the changefeed item to the event hub where Stream Analytics will then process the data.
+
+    - **Call a Logic App** - This code will forward the changefeed item to the logic app's http endpoint that will generate an email
+
+- Stream processing, dashboards, and reports:
+
+  Stream Analytics queries the forwarded event data and aggregates to **Power BI** to display a real-time dashboard of user activity. 
+
+- Advanced analytics and ML model training:
+
+  **Azure Databricks** is used to generate a set of offline calcuations based on user events to create implict ratings and associations used to drive new and current user recommendations. 
+
+- eCommerce web app:
+
+  A **Web App** allows Contoso customers to browse and purchase movies. **Azure Key Vault** is used to securely store centralized application secrets, such as connection strings and access keys, and is used by the Function Apps, Web App, and Azure Databricks. Finally, **Application Insights** provides real-time monitoring, metrics, and logging information for the Function Apps and Web App.
 
 ## Requirements
 
@@ -82,9 +112,11 @@ Refer to the Before the hands-on lab setup guide manual before continuing to the
 
 ## Exercise 1: Configure Databricks and generate event data
 
-Duration: 30 minutes
+**Duration**: 30 minutes
 
-Synopsis: We have pre-generated a set of events that include **buy** and **details** events. Based on this data, a **Top Items** recommendation will be made to users that are new to the site (aka a cold start recommendation). You will implement this top items code in the web application and function applications, then deploy the applications to test the functionality.
+**Synopsis**: We have pre-generated a set of events that include **buy** and **details** events. Based on this data, a **Top Items** recommendation will be made to users that are new to the site (aka a cold start recommendation). You will implement this top items code in the web application and function applications, then deploy the applications to test the functionality.
+
+The algorithms for creating the offline calcuations are written in Python and are executed via Azure Databricks.  
 
 ### Task 1: Configure Azure Databricks
 
@@ -172,6 +204,14 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 8.  Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
 
+> This notebook will simulate the browsing and purchasing activity for six users with different personality based preferences and save the result to the `events` collection in Cosmos DB.
+
+>The movies have been pre-selected and sorted into the genres of comedy, drama and action. While the actual movie selection and activity taken is random, it is weighted to respect the user's preferences in each genere to hit a distribution that would mirror that user's taste.
+
+>For example, user 400001 has the preference of 20 for comedy, 30 for drama, 50 for action. This will result in the user logging more activity with action movies.
+
+>NOTE: Your results (aka the `events` generated) may be different from your fellow lab participants
+
 9. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 ![Click the `detached` drop down, select the small cluster.](./media/xx_DataBricks_09.png 'Set the cluster')
@@ -215,9 +255,9 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 ## Exercise 2: Complete and deploy Web and Function Apps
 
-Duration: 30 minutes
+**Duration**: 30 minutes
 
-Synopsis: We have pre-generated a set of events that include **buy** events. Based on this information, a **Top Items** recommendation will be made to users that are new to the site. You will implement this code in the web application and function applications, then deploy the applications to test the functionality.
+**Synopsis**: We have pre-generated a set of events that include **buy** events. Based on this information, a **Top Items** recommendation will be made to users that are new to the site. You will implement this code in the web application and function applications, then deploy the applications to test the functionality.
 
 ### Task 1: Implement the Top Items recommendation
 
@@ -294,9 +334,9 @@ topItems = GetItemsByImdbIds(itemIds);
 
 ## Exercise 3: Perform and deploy association rules calculation for offline algorithms
 
-Duration: 30 minutes
+**Duration**: 30 minutes
 
-Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-defined personality types (Comedy fan, Drama fan, etc), you will implement and deploy an algorithm that will generate these associations and put them in Cosmos DB for offline processing by the web and function applications.
+**Synopsis**: Based on the pre-calculated events in the Cosmos DB for our pre-defined personality types (Comedy fan, Drama fan, etc), you will implement and deploy an algorithm that will generate these associations and put them in Cosmos DB for offline processing by the web and function applications.
 
 ### Task 1: Generate the Associations
 
@@ -320,9 +360,9 @@ Synopsis: Based on the pre-calculated events in the Cosmos DB for our pre-define
 
 ## Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)
 
-Duration: 30 minutes
+**Duration**: 30 minutes
 
-Synopsis: Now that we have data for our association calculations, we will add code to the web app and function app to support this new recommendation engine.
+**Synopsis**: Now that we have data for our association calculations, we will add code to the web app and function app to support this new recommendation engine.
 
 ### Task 1: Implement the Associations recommendation rules
 
@@ -396,9 +436,9 @@ return View(vm);
 
 ## Exercise 5: Perform and deploy collaborative filtering rules calculation
 
-Duration: 30 minutes
+**Duration**: 30 minutes
 
-In this exercise you will defined
+**Synopsis**: In this exercise you will TODO
 
 ### Task 1: Compute the user implicit ratings
 
@@ -560,9 +600,9 @@ foreach(PredictionModel pm in sortedItems)
 
 ## Exercise 6: Reporting with Stream Analytics and Power BI
 
-Duration: 30 minutes
+**Duration**: 30 minutes
 
-In this exercise you will setup stream analytics to process the change feed events fired from Cosmos DB into an Azure Function which then forwards to an event hub for real time Power BI analytics.
+**Synopsis**: In this exercise you will setup stream analytics to process the change feed events fired from Cosmos DB into an Azure Function which then forwards to an event hub for real time Power BI analytics.
 
 ### Task 1: Setup Stream Analytics
 
@@ -768,7 +808,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 ## Exercise 7: Email alerts using Logic Apps
 
-Duration: 30 minutes
+**Duration**: 30 minutes
 
 In this exercise you will configure your change feed function to call an HTTP login app endpoint that will then send an email when an order event occurs. The function will be using Polly to handle retries in the case the function app is not available.
 
@@ -875,7 +915,7 @@ public async void CallLogicApp(IReadOnlyList<Document> events)
 
 ## After the hands-on lab
 
-Duration: 10 minutes
+**Duration**: 5 minutes
 
 In this exercise, attendees will deprovision any Azure resources that were created in support of the lab.
 

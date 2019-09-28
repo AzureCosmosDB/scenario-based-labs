@@ -272,13 +272,13 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Browse to each of the notebooks that were deployed as part of your deployment script and review the contents with your audience.  Note the following:
 
-- 01 Event Generator - this notebook will generate a random set of events for each target user and their personality.  This is then used to generate the 'ratings'.  Most of the generation code is in Cmd 9 and you can focus your converstation around that cell.
+- **01 Event Generator** - this notebook will generate a random set of events for each target user and their personality.  This is then used to generate the 'ratings'.  Most of the generation code is in Cmd 9 and you can focus your converstation around that cell.
 
-- 02 Associations Rules - Review the comments in Cmd 7, this describes what is happening in the rest of the notebook
+- **02 Associations Rules** - Review the comments in Cmd 7, this describes what is happening in the rest of the notebook
 
-- 03 Ratings - Review Cmd 9, point out the weightings for each action and then where the implict rating is created.
+- **03 Ratings** - Review Cmd 9, point out the weightings for each action and then where the implict rating is created.
 
-- 04 Similarity - REview the comments in Cmd 7, this describes what is happening in the rest of the notebook
+- **04 Similarity** - REview the comments in Cmd 7, this describes what is happening in the rest of the notebook
 
 ### Task 4: Explore the Function App Recommendation Code
 
