@@ -234,7 +234,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 ![An example item from the events collection is displayed.](./media/xx_EventsColl.png 'The events collection')
 
-> NOTE: These items are created from the Databricks solution and include a random set of generated events for each user personality type. You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated (via the contentId field) with the event.
+> NOTE: These items are created from the Databricks solution and include a random set of generated events for each user personality type. You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated with the event (via the contentId field).
 
 ### Task 4: Review the aggregation and import utility
 
@@ -269,6 +269,8 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 ```
 
+> The `RecommendationHelper` class is responsible for making the call to the Azure Function to get the recommendations based on the information submitted that includes the algorithm, user and content being used to compute the recommendations.
+
 3.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
 4.  In the **TopRecommendation** method, find the todo task #2 and complete it with the following:
@@ -295,6 +297,16 @@ topItems = GetItemsByImdbIds(itemIds);
 
 - We are querying an "object" collection for an entity type called 'ItemAggregation' and sorting it by the 'BuyCount'. Essentially these are the top purchased items.
 - We are then querying the object collection for all the top movie items to get their metadata for display on the web front end
+
+> This code is responsible for querying the Cosmos DB `object` table to find the item aggregation information, for example all the `buy` events for a movie.  It is important that you utilize aggregations to do this as Cosmos Db will charge you based on RUs.  If you were to query the `events` table which is expected to get incredibly large as your user count and activity increaes, you can imagine the costs for making this query can become incredibly expensive.
+
+#### About Cosmos DB throughput
+
+In the ARM templates, you will notice that we have intentionally set the **throughput** in RU/s for each container, based on our anticipated event processing and reporting workloads. In Azure Cosmos DB, provisioned throughput is represented as request units/second (RUs). RUs measure the cost of both read and write operations against your Cosmos DB container. Because Cosmos DB is designed with transparent horizontal scaling (e.g., scale out) and multi-master replication, you can very quickly and easily increase or decrease the number of RUs to handle thousands to hundreds of millions of requests per second around the globe with a single API call.
+
+Cosmos DB allows you to increment/decrement the RUs in small increments of 100 at the database level, or at the container level. It is recommended that you configure throughput at the container granularity for guaranteed performance for the container all the time, backed by SLAs. Other guarantees that Cosmos DB delivers are 99.999% read and write availability all around the world, with those reads and writes being served in less than 10 milliseconds at the 99th percentile.
+
+When you set a number of RUs for a container, Cosmos DB ensures that those RUs are available in all regions associated with your Cosmos DB account. When you scale out the number of regions by adding a new one, Cosmos will automatically provision the same quantity of RUs in the newly added region. You cannot selectively assign different RUs to a specific region. These RUs are provisioned for a container (or database) for all associated regions.
 
 6.  Compile the solution, fix any errors
 
@@ -810,7 +822,7 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 **Duration**: 30 minutes
 
-In this exercise you will configure your change feed function to call an HTTP login app endpoint that will then send an email when an order event occurs. The function will be using Polly to handle retries in the case the function app is not available.
+In this exercise you will configure your Cosmos DB change feed function to call an HTTP Logic App endpoint that will then send an email when an order event occurs. The function will be using Polly to handle retries in the case the Function App is not available.
 
 ### Task 1: Setup Logic App
 
