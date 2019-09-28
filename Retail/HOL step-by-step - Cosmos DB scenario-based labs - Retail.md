@@ -358,6 +358,12 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 1. Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
+> The goal of this algorithm is to compute two metrics that indicate the strength of a relationship between a source item and a target item based on event history, and then save that matrix to the associations collection in Cosmos DB.
+
+>The algorithm begins with grouping events with a buy action into a transaction, grouping by the sessionId. This provides the set of items bough together.
+
+>For example, a transaction with two items would look like: `'404973': ['5512872', '4172430']` where 404973 is the sessionId that is used as the transactionId, and the the array contains the id's of the items bought ('5512872' and '4172430').
+
 ### Task 2: Review the data generated
 
 1.  Switch back to the Azure Portal
@@ -450,7 +456,7 @@ return View(vm);
 
 **Duration**: 30 minutes
 
-**Synopsis**: In this exercise you will TODO
+**Synopsis**: In this exercise you will execute the implict ratings notebook in Azure Databricks to generate the implict rating for each user that has event data.  You will only execute this once during this lab, however this notebook would need to be run on a set schedule to ensure that the users rating data is up to date.
 
 ### Task 1: Compute the user implicit ratings
 
@@ -459,6 +465,8 @@ return View(vm);
 1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+
+>This notebook will use the implict events captured in the events collection in Cosmos DB to calculate what a user would rate a given item, based on their actions. In other words it converts a users buy, addToCart and details actions into a numeric score for the item. The resulting user to item ratings matrix will be saved to the ratings collection in Cosmos DB.
 
 1.  Switch back to the Azure Portal
 
@@ -477,6 +485,18 @@ return View(vm);
 1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **04 Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+
+>The notebook logic uses the user to item ratings previously created to calculate a score indicating the similarity between a source item and a target item. The process begins by loading the ratings matrix and for each user to item rating, calculating a new normalized rating (to adjust for the user's bias).
+
+>An overlap matrix is calculated that identifies, for any pair of items, how many users rated both items. First, the normalized ratings matrix is converted to a boolean matrix. That is, if an item for a user has a rating (regardless of the value of the rating), it has a value of 1, otherwise it is zero. Then dot product of the normalized ratings matrix against its transpose is calculated. This yields a simpler matrix where the value each cell now contains the count of the number users who rated both items. Cells that don't have any overlap, have a value of zero.
+
+>Separately, the cosine similarity of the normalized ratings matrix is computed. It's easiest to understand the cosine similarity calculation as being done between an item `i` and another item `j`. The cosine similarity is a ratio:
+
+-   The numerator is computed as the sum of the product of the normalized rating of item i multiplied with the rating of j, for all users who have provided ratings.
+The denominator is computed as the square root of the sum of the squares of the normalized rating of item i multiplied by the square root of the sum of thesquares of the normalized rating of item j.
+In Python, the logic uses the cosine_similarity method from scikit-learn to compute the similarity between items by providing it our normalized user-to-items ratings matrix.
+
+>The result is then filtered to remove entries with a similarity score lower than configured, and having an overlap in the overlap matrix of less than a configured overlap in quantity of ratings for the pair of items. Just before saving, any resulting similarities with scores less than the configured minimum similarity are removed, so that weaker similarities are not recommended.
 
 ### Task 3: Review the data generated
 
@@ -585,6 +605,8 @@ foreach(PredictionModel pm in sortedItems)
     }
 }
 ```
+
+>This code will grab 100 ratings for a specific user, then query for any associated items that were generated in the association notebook within a preset `neighbohood` size (in this case 15).  With a set of similar items, you will then filter out any items that fall outside the user's mean `ratings`.  You will then sort the remaining items by the similiarity and present those as the recommendations.
 
 ### Task 5: Deploy the applications
 
