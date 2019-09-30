@@ -54,13 +54,13 @@
 
 ## Abstract and learning objectives
 
-In this hands-on-lab, you will complete various tasks to complete the implementation of an ecommerce site that utilizes an AI driven recomendation engine using several Microsoft Azure PaaS services.
+In this hands-on-lab, you will complete various tasks to complete the implementation of an e-commerce site that utilizes an AI driven recommendation engine using several Microsoft Azure PaaS services.
 
-At the end of this lab you will understand how to design recommendation systems that store data in Cosmos DB using Databricks. You will also see how to implement an ecommerce store front with Cosmos DB as its data store. Additionally, you will see how to leverage the Cosmos DB change feed to execute functions for reporting and monitoring activities with Stream Analytics, Power BI and Logic Apps.
+At the end of this lab you will understand how to design recommendation systems that store data in Cosmos DB using Databricks. You will also see how to implement an e-commerce store front with Cosmos DB as its data store. Additionally, you will see how to leverage the Cosmos DB change feed to execute functions for reporting and monitoring activities with Stream Analytics, Power BI and Logic Apps.
 
 ## Overview
 
-Contoso Movies, Ltd. has expressed their desire to move to a more modern and cloud-based approach to their online ecommerce presence. The have decided to utilize Cosmos DB and Azure Databricks to implement their next generation recommendation system using various popular AI driven recommendation algorithms.
+Contoso Movies, Ltd. has expressed their desire to move to a more modern and cloud-based approach to their online e-commerce presence. The have decided to utilize Cosmos DB and Azure Databricks to implement their next generation recommendation system using various popular AI driven recommendation algorithms.
 
 They would also like to have real-time reporting on user site actions such as viewing item details, adding items to carts and purchase events. Based on this data, they would like to know immediately if there are potential issues with the order processing pipeline.
 
@@ -90,7 +90,7 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
 
 - Advanced analytics and ML model training:
 
-  **Azure Databricks** is used to generate a set of offline calcuations based on user events to create implict ratings and associations used to drive new and current user recommendations.
+  **Azure Databricks** is used to generate a set of offline calculations based on user events to create implicit ratings and associations used to drive new and current user recommendations.
 
 - eCommerce web app:
 
@@ -120,7 +120,7 @@ Refer to the Before the hands-on lab setup guide manual before continuing to the
 
 **Synopsis**: We have pre-generated a set of events that include **buy** and **details** events. Based on this data, a **Top Items** recommendation will be made to users that are new to the site (aka a cold start recommendation). You will implement this top items code in the web application and function applications, then deploy the applications to test the functionality.
 
-The algorithms for creating the offline calcuations are written in Python and are executed via Azure Databricks.
+The algorithms for creating the offline calculations are written in Python and are executed via Azure Databricks.
 
 ### Task 1: Configure Azure Databricks
 
