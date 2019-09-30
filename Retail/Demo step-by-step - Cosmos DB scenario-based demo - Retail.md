@@ -1,28 +1,35 @@
 # Cosmos DB scenario-based labs - Retail hands-on lab step-by-step
 
+<details>
+<summary><strong><em>Table of Contents</em></strong></summary>
 <!-- TOC -->
 
-- [Cosmos DB scenario-based labs - Retail hands-on lab step-by-step](#Cosmos-DB-scenario-based-labs---Retail-hands-on-lab-step-by-step)
-  - [Abstract and learning objectives](#Abstract-and-learning-objectives)
-  - [Overview](#Overview)
-  - [Solution architecture (High-level)](#Solution-architecture-High-level)
-  - [Requirements](#Requirements)
-  - [Before the demo](#Before-the-demo)
-  - [Exercise 1: Deployment and Setup](#Exercise-1-Deployment-and-Setup)
-    - [Task 1: Setup Stream Analytics](#Task-1-Setup-Stream-Analytics)
-    - [Task 2: Generate user events for PowerBI](#Task-2-Generate-user-events-for-PowerBI)
-    - [Task 3: Setup Power BI Dashboard](#Task-3-Setup-Power-BI-Dashboard)
-    - [Task 4: Generate user events for real time](#Task-4-Generate-user-events-for-real-time)
-  - [Exercise 2: Explore Contoso Movie Store](#Exercise-2-Explore-Contoso-Movie-Store)
-    - [Task 1: Explore the Contoso Movie Store](#Task-1-Explore-the-Contoso-Movie-Store)
-  - [Exercise 4: Email alerts using Logic Apps](#Exercise-4-Email-alerts-using-Logic-Apps)
-    - [Task 1: Setup Logic App](#Task-1-Setup-Logic-App)
-    - [Task 2: Configure the function app settings](#Task-2-Configure-the-function-app-settings)
-    - [Task 3: Test order email delivery](#Task-3-Test-order-email-delivery)
-  - [After the hands-on lab](#After-the-hands-on-lab)
-    - [Task 1: Delete resource group](#Task-1-Delete-resource-group)
+- [Cosmos DB scenario-based labs - Retail hands-on lab step-by-step](#cosmos-db-scenario-based-labs---retail-hands-on-lab-step-by-step)
+  - [Abstract and learning objectives](#abstract-and-learning-objectives)
+  - [Overview](#overview)
+  - [Solution architecture (High-level)](#solution-architecture-high-level)
+  - [Requirements](#requirements)
+  - [Before the demo](#before-the-demo)
+  - [Exercise 1: Deployment and Setup](#exercise-1-deployment-and-setup)
+    - [Task 1: Setup Stream Analytics](#task-1-setup-stream-analytics)
+    - [Task 2: Generate user events for PowerBI](#task-2-generate-user-events-for-powerbi)
+    - [Task 5: Setup Power BI Dashabord](#task-5-setup-power-bi-dashabord)
+    - [Task 6: Generate user events for real time analytics](#task-6-generate-user-events-for-real-time-analytics)
+  - [Exercise 2: Email alerts using Logic Apps](#exercise-2-email-alerts-using-logic-apps)
+    - [Task 1: Setup Logic App](#task-1-setup-logic-app)
+    - [Task 2: Configure the function app settings](#task-2-configure-the-function-app-settings)
+    - [Task 3: Explore the Databricks notebooks](#task-3-explore-the-databricks-notebooks)
+    - [Task 4: Explore the Function App Recommendation Code](#task-4-explore-the-function-app-recommendation-code)
+    - [Task 5: Explore the Function App ChangeFeed Code](#task-5-explore-the-function-app-changefeed-code)
+    - [Task 6: Test order email delivery](#task-6-test-order-email-delivery)
+  - [Exercise 3: Explore Contoso Movie Store](#exercise-3-explore-contoso-movie-store)
+    - [Task 1: Explore the Contoso Movie Store](#task-1-explore-the-contoso-movie-store)
+    - [Task 2: Create a new personality](#task-2-create-a-new-personality)
+  - [After the hands-on lab](#after-the-hands-on-lab)
+    - [Task 1: Delete resource group](#task-1-delete-resource-group)
 
 <!-- /TOC -->
+</details>
 
 ## Abstract and learning objectives
 
@@ -98,9 +105,9 @@ Synopsis: In this exercise you will do the necessary setup items that could not 
 
 1.  Repeat for steps 11-16, but replace **eventOrdersLastHour** with:
 
--   eventSummary
--   failureCount
--   eventData
+- eventSummary
+- failureCount
+- eventData
 
 1.  Select **Query**
 
@@ -192,15 +199,15 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 1.  Select **+Add tile**, you may need to select the **...** ellipses first
 
-1.  Select **Custom Streaming Data**, select **Next**.  Use the following table to create the needed tiles:
+1.  Select **Custom Streaming Data**, select **Next**. Use the following table to create the needed tiles:
 
-|    |    |    |    |
-|----------|-------------|-------------|:-------------:|
-| **Dataset** | **Type** | **Fields** | **Title** |
-| eventData | Card | UserCount  | User Count |
-| failureCount | Card |FailureCount  | Payment Failures |
-| eventSummary | Line cart | Axis = UserCount, Legend = Event, Values = Count  | Count By Event |
-| eventOrdersLastHour | Gauge |  Value = Count, Minimum = Min, Target = Target  | Orders Per Hour |
+|                     |           |                                                  |                  |
+| ------------------- | --------- | ------------------------------------------------ | :--------------: |
+| **Dataset**         | **Type**  | **Fields**                                       |    **Title**     |
+| eventData           | Card      | UserCount                                        |    User Count    |
+| failureCount        | Card      | FailureCount                                     | Payment Failures |
+| eventSummary        | Line cart | Axis = UserCount, Legend = Event, Values = Count |  Count By Event  |
+| eventOrdersLastHour | Gauge     | Value = Count, Minimum = Min, Target = Target    | Orders Per Hour  |
 
 1.  Your dashboard should look similar to the following:
 
@@ -270,9 +277,9 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Select your Databricks instance, then click **Launch Workspace**
 
-1.  Browse to each of the notebooks that were deployed as part of your deployment script and review the contents with your audience.  Note the following:
+1.  Browse to each of the notebooks that were deployed as part of your deployment script and review the contents with your audience. Note the following:
 
-- **01 Event Generator** - this notebook will generate a random set of events for each target user and their personality.  This is then used to generate the 'ratings'.  Most of the generation code is in Cmd 9 and you can focus your converstation around that cell.
+- **01 Event Generator** - this notebook will generate a random set of events for each target user and their personality. This is then used to generate the 'ratings'. Most of the generation code is in Cmd 9 and you can focus your converstation around that cell.
 
 - **02 Associations Rules** - Review the comments in Cmd 7, this describes what is happening in the rest of the notebook
 
@@ -284,12 +291,12 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 1.  Switch to Visual Studio and open the **Contoso.Apps.FunctionApp** project, then open the **RecommendationHelper.cs** file
 
-1.  Navigate to the `public static List<Item> Get(string algo, int userId, int contentId, int take)` Get method signature.  Point out that this is the entry point for where a recommedation will start based on the algorithm requested.
+1.  Navigate to the `public static List<Item> Get(string algo, int userId, int contentId, int take)` Get method signature. Point out that this is the entry point for where a recommedation will start based on the algorithm requested.
 
 1.  Review the following methods and their code:
 
 - TopRecommendation - this is the basic method for randomly selecting a set of top purchased items.
-- AssociationRecommendationByUser - 
+- AssociationRecommendationByUser -
 - CollaborativeBasedRecommendation -
 
 ### Task 5: Explore the Function App ChangeFeed Code
@@ -309,7 +316,7 @@ public FuncChangeFeed(IHttpClientFactory httpClientFactory, CosmosClient cosmosC
 
 3.  Review the following methods and their code:
 
-- **DoAggregateCalculations** - This method updates the item aggregations for the `buy` events to keep track of the top items purchased.  This will continually update and drive the `top` suggestions.  You will see this when you execute the Data Generator tool.
+- **DoAggregateCalculations** - This method updates the item aggregations for the `buy` events to keep track of the top items purchased. This will continually update and drive the `top` suggestions. You will see this when you execute the Data Generator tool.
 
 - **AddEventToEventHub** - This method will forward the changefeed item to the event hub where Stream Analytics will then process the data.
 
@@ -347,21 +354,21 @@ Synopsis: You will show your attendees the Contoso Movies store. It is an ecomme
 
 1.  In the top navigation, select the **COMEDY@CONTOSOMOVIES.COM** link, then select **SWITCH**
 
-1.  Change the user to the **DRAMA@CONTOSOMOVIES.COM** user.  Note how the recommendations are different from the comedy user.
+1.  Change the user to the **DRAMA@CONTOSOMOVIES.COM** user. Note how the recommendations are different from the comedy user.
 
 ### Task 2: Create a new personality
 
 1.  In the top navigation, select the **DRAMA@CONTOSOMOVIES.COM** link, then select **SWITCH**
 
-1.  Select **New User**.  This will create a session as a new user that has no implict ratings (no actions have been generated).  
+1.  Select **New User**. This will create a session as a new user that has no implict ratings (no actions have been generated).
 
 1.  Point out that you have no **Association** or **Collaboration** recommendations.
 
-1.  Click on a few movies in the portal, then select **Add to Cart** for a random set.  These actions will generate events for the new user.  
+1.  Click on a few movies in the portal, then select **Add to Cart** for a random set. These actions will generate events for the new user.
 
 1.  Click **Home**, you should now see recommendations displayed.
 
->NOTE:  Some movies may not have a corresponding similarity or assocations depending on the randomness of the Databricks notebook execution.  You may need to click on a few movies before you see any recommendations.
+> NOTE: Some movies may not have a corresponding similarity or assocations depending on the randomness of the Databricks notebook execution. You may need to click on a few movies before you see any recommendations.
 
 ## After the hands-on lab
 
