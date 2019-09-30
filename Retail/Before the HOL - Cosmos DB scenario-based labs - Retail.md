@@ -1,5 +1,7 @@
 # Cosmos DB scenario-based labs - Retail before the hands-on lab setup guide
 
+<details>
+<summary><strong><em>Table of Contents</em></strong></summary>
 <!-- TOC -->
 
 - [Cosmos DB scenario-based labs - Retail before the hands-on lab setup guide](#cosmos-db-scenario-based-labs---retail-before-the-hands-on-lab-setup-guide)
@@ -10,6 +12,7 @@
     - [Task 3: Deploy resources to Azure](#task-3-deploy-resources-to-azure)
 
 <!-- /TOC -->
+</details>
 
 ## Requirements
 
@@ -49,16 +52,16 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 1.  Create an account and copy your API Key for use in the next task
 
-    -   Click **SIGN UP**
-    -   Fill in your account details, click **Sign up**
-    -   Click your profile icon in the menu, select **Settings**
-    -   Click **API**
+    - Click **SIGN UP**
+    - Fill in your account details, click **Sign up**
+    - Click your profile icon in the menu, select **Settings**
+    - Click **API**
 
-    ![The movie db right navigation.](./media/xx_MovieKey_01.png "API Link")
+    ![The movie db right navigation.](./media/xx_MovieKey_01.png 'API Link')
 
-    -   Copy the `API Key (v3 auth)` key for later use
+    - Copy the `API Key (v3 auth)` key for later use
 
-    ![Copy the API Key v3.](./media/xx_MovieKey_02.png "Copy the API Key v3")
+    ![Copy the API Key v3.](./media/xx_MovieKey_02.png 'Copy the API Key v3')
 
 ### Task 3: Deploy resources to Azure
 
@@ -95,7 +98,7 @@ $githubPath = "PATH YOU EXTRACTED REPO ZIP TOO"
 - Create starter objects in the 'object' collection of the Comos DB database
 - Update your project application configuration files with the target azure keys and settings
 
-4.  The deployment will take 15-25 minutes to complete. You will be prompted for information in both `demo` and `lab` modes.  As part of the deployment, you will see the following items created:
+4.  The deployment will take 15-25 minutes to complete. You will be prompted for information in both `demo` and `lab` modes. As part of the deployment, you will see the following items created:
 
 - Function App
 - Web App
@@ -108,24 +111,24 @@ $githubPath = "PATH YOU EXTRACTED REPO ZIP TOO"
 - Storage Accounts
 - Application Insights
 
-5.  If you run the setup in `lab` or `demo` mode, you will be prompted to navigate to the generated functions app settings page before continuing.  When the browser window is displayed, do the following:
+5.  If you run the setup in `lab` or `demo` mode, you will be prompted to navigate to the generated functions app settings page before continuing. When the browser window is displayed, do the following:
 
--   Select your function app, it will start with **s2func...**
--   Select the **Function app settings** link
--   Respond `yes` to the PowerShell prompt
+- Select your function app, it will start with **s2func...**
+- Select the **Function app settings** link
+- Respond `yes` to the PowerShell prompt
 
-6.  If you run the setup in `demo` mode, you will be prompted to enter your Databricks API token.  A new browser window will open to allow you to login to your databricks instance.
+6.  If you run the setup in `demo` mode, you will be prompted to enter your Databricks API token. A new browser window will open to allow you to login to your databricks instance.
 
 7.  When the browser window opens, select your Databricks instance, it should start with **s2databricks...**
 
 8.  Once logged in, click the user icon and select **User settings**
 
-![Click your icon, then select User Settings.](./media/xx_DatabricksKey_01.png "User Settings link")
+![Click your icon, then select User Settings.](./media/xx_DatabricksKey_01.png 'User Settings link')
 
-8.  Click **Generate New Token**, copy the API key and enter into the PowerShell window.  Databricks will proceed to configure itself and execute the necessary notebooks.
+8.  Click **Generate New Token**, copy the API key and enter into the PowerShell window. Databricks will proceed to configure itself and execute the necessary notebooks.
 
-![Click the Generate New Token button.](./media/xx_DatabricksKey_02.png "Generate a Token")
+![Click the Generate New Token button.](./media/xx_DatabricksKey_02.png 'Generate a Token')
 
-10.  Record the values that were output from the script for use in the lab
+10. Record the values that were output from the script for use in the lab
 
 You should follow all steps provided _before_ attending the hands-on lab.
