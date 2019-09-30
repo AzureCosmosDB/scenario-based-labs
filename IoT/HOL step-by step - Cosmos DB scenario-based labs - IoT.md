@@ -1,5 +1,7 @@
 # Cosmos DB scenario-based labs - IoT hands-on lab step-by-step
 
+<details>
+<summary><strong><em>Table of Contents</em></strong></summary>
 <!-- TOC -->
 
 - [Cosmos DB scenario-based labs - IoT hands-on lab step-by-step](#cosmos-db-scenario-based-labs---iot-hands-on-lab-step-by-step)
@@ -64,6 +66,7 @@
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
 <!-- /TOC -->
+</details>
 
 ## Overview
 
@@ -1897,7 +1900,7 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
 
-5. After importing, select your username. You will see a new folder named `01 IoT (clean)`, which contains two notebooks.
+5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks.
 
    ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
 
@@ -1916,7 +1919,7 @@ To run this notebook, perform the following steps:
 
 1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
 
-2. Select the `01 IoT (clean)` folder, then select the **Batch Scoring** notebook to open it.
+2. Select the `01 IoT` folder, then select the **Batch Scoring** notebook to open it.
 
    ![The Batch Scoring notebook is highlighted.](media/databricks-batch-scoring-notebook.png 'Workspace')
 
@@ -1944,7 +1947,7 @@ To run this notebook, perform the following steps:
 
 1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
 
-2. Select the `01 IoT (clean)` folder, then select the **Model Deployment** notebook to open it.
+2. Select the `01 IoT` folder, then select the **Model Deployment** notebook to open it.
 
    ![The Model Deployment notebook is highlighted.](media/databricks-model-deployment-notebook.png 'Workspace')
 
