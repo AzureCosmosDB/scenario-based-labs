@@ -1,5 +1,7 @@
 # Cosmos DB scenario-based labs - IoT hands-on lab step-by-step
 
+<details>
+<summary><strong><em>Table of Contents</em></strong></summary>
 <!-- TOC -->
 
 - [Cosmos DB scenario-based labs - IoT hands-on lab step-by-step](#cosmos-db-scenario-based-labs---iot-hands-on-lab-step-by-step)
@@ -14,19 +16,18 @@
     - [Task 4: Add Stream Analytics outputs](#task-4-add-stream-analytics-outputs)
     - [Task 5: Create Stream Analytics query](#task-5-create-stream-analytics-query)
     - [Task 6: Run Stream Analytics job](#task-6-run-stream-analytics-job)
-    - [Task 7: Add Function Apps and Web App to Key Vault access policy](#task-7-add-function-apps-and-web-app-to-key-vault-access-policy)
-    - [Task 8: Deploy Cosmos DB Processing Function App](#task-8-deploy-cosmos-db-processing-function-app)
-    - [Task 9: Deploy Stream Processing Function App](#task-9-deploy-stream-processing-function-app)
-    - [Task 10: Deploy Web App](#task-10-deploy-web-app)
-    - [Task 11: Create Azure Databricks cluster](#task-11-create-azure-databricks-cluster)
-    - [Task 12: Configure Key Vault-backed Databricks secret store](#task-12-configure-key-vault-backed-databricks-secret-store)
-    - [Task 13: Import lab notebooks into Azure Databricks](#task-13-import-lab-notebooks-into-azure-databricks)
-    - [Task 14: View Cosmos DB processing Function App in the portal](#task-14-view-cosmos-db-processing-function-app-in-the-portal)
-    - [Task 15: Open the data generator project](#task-15-open-the-data-generator-project)
-    - [Task 16: Update application configuration](#task-16-update-application-configuration)
-    - [Task 17: Run generator](#task-17-run-generator)
-    - [Task 18: Log in to Power BI online and create real-time dashboard](#task-18-log-in-to-power-bi-online-and-create-real-time-dashboard)
-    - [Task 19: Import report in Power BI Desktop and update report data sources](#task-19-import-report-in-power-bi-desktop-and-update-report-data-sources)
+    - [Task 7: Deploy Cosmos DB Processing Function App](#task-7-deploy-cosmos-db-processing-function-app)
+    - [Task 8: Deploy Stream Processing Function App](#task-8-deploy-stream-processing-function-app)
+    - [Task 9: Deploy Web App](#task-9-deploy-web-app)
+    - [Task 10: Create Azure Databricks cluster](#task-10-create-azure-databricks-cluster)
+    - [Task 11: Configure Key Vault-backed Databricks secret store](#task-11-configure-key-vault-backed-databricks-secret-store)
+    - [Task 12: Import lab notebooks into Azure Databricks](#task-12-import-lab-notebooks-into-azure-databricks)
+    - [Task 13: View Cosmos DB processing Function App in the portal](#task-13-view-cosmos-db-processing-function-app-in-the-portal)
+    - [Task 14: Open the data generator project](#task-14-open-the-data-generator-project)
+    - [Task 15: Update application configuration](#task-15-update-application-configuration)
+    - [Task 16: Run generator](#task-16-run-generator)
+    - [Task 17: Log in to Power BI online and create real-time dashboard](#task-17-log-in-to-power-bi-online-and-create-real-time-dashboard)
+    - [Task 18: Import report in Power BI Desktop and update report data sources](#task-18-import-report-in-power-bi-desktop-and-update-report-data-sources)
   - [Exercise 2: Observe Change Feed using Azure Functions and App Insights](#exercise-2-observe-change-feed-using-azure-functions-and-app-insights)
     - [Task 1: View devices in IoT Hub](#task-1-view-devices-in-iot-hub)
     - [Task 2: Open App Insights Live Metrics Stream](#task-2-open-app-insights-live-metrics-stream)
@@ -48,6 +49,7 @@
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
 <!-- /TOC -->
+</details>
 
 ## Overview
 
