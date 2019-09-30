@@ -1,5 +1,7 @@
 # Cosmos DB scenario-based labs - IoT before the hands-on lab setup guide
 
+<details>
+<summary><strong><em>Table of Contents</em></strong></summary>
 <!-- TOC -->
 
 - [Cosmos DB scenario-based labs - IoT before the hands-on lab setup guide](#cosmos-db-scenario-based-labs---iot-before-the-hands-on-lab-setup-guide)
@@ -21,6 +23,7 @@
     - [Task 14: Download the starter files](#task-14-download-the-starter-files)
 
 <!-- /TOC -->
+</details>
 
 ## Requirements
 
