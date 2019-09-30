@@ -1,52 +1,56 @@
 # Cosmos DB scenario-based labs - Retail hands-on lab step-by-step
 
+<details>
+<summary><strong><em>Table of Contents</em></strong></summary>
 <!-- TOC -->
 
-- [Cosmos DB scenario-based labs - Retail hands-on lab step-by-step](#Cosmos-DB-scenario-based-labs---Retail-hands-on-lab-step-by-step)
-  - [Abstract and learning objectives](#Abstract-and-learning-objectives)
-  - [Overview](#Overview)
-  - [Solution architecture (High-level)](#Solution-architecture-High-level)
-  - [Requirements](#Requirements)
-  - [Before the hands-on lab](#Before-the-hands-on-lab)
-  - [Exercise 1: Configure Databricks and generate event data](#Exercise-1-Configure-Databricks-and-generate-event-data)
-    - [Task 1: Configure Azure Databricks](#Task-1-Configure-Azure-Databricks)
-    - [Task 2: Populate event data](#Task-2-Populate-event-data)
-    - [Task 3: Review the data generated](#Task-3-Review-the-data-generated)
-    - [Task 4: Review the aggregation and import utility](#Task-4-Review-the-aggregation-and-import-utility)
-  - [Exercise 2: Complete and deploy Web and Function Apps](#Exercise-2-Complete-and-deploy-Web-and-Function-Apps)
-    - [Task 1: Implement the Top Items recommendation](#Task-1-Implement-the-Top-Items-recommendation)
-    - [Task 2: Deploy the applications](#Task-2-Deploy-the-applications)
-    - [Task 3: Test the applications](#Task-3-Test-the-applications)
-  - [Exercise 3: Perform and deploy association rules calculation for offline algorithms](#Exercise-3-Perform-and-deploy-association-rules-calculation-for-offline-algorithms)
-    - [Task 1: Generate the Associations](#Task-1-Generate-the-Associations)
-    - [Task 2: Review the data generated](#Task-2-Review-the-data-generated)
-  - [Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)](#Exercise-4-Complete-and-deploy-Web-App-and-Function-Apps-Association-Rules)
-    - [Task 1: Implement the Associations recommendation rules](#Task-1-Implement-the-Associations-recommendation-rules)
-    - [Task 2: Deploy the applications](#Task-2-Deploy-the-applications-1)
-    - [Task 3: Test the applications](#Task-3-Test-the-applications-1)
-  - [Exercise 5: Perform and deploy collaborative filtering rules calculation](#Exercise-5-Perform-and-deploy-collaborative-filtering-rules-calculation)
-    - [Task 1: Compute the user implicit ratings](#Task-1-Compute-the-user-implicit-ratings)
-    - [Task 2: Generate the Collaborative Rules](#Task-2-Generate-the-Collaborative-Rules)
-    - [Task 3: Review the data generated](#Task-3-Review-the-data-generated-1)
-    - [Task 4: Implement the Collaborative recommendation rules](#Task-4-Implement-the-Collaborative-recommendation-rules)
-    - [Task 5: Deploy the applications](#Task-5-Deploy-the-applications)
-    - [Task 6: Test the applications](#Task-6-Test-the-applications)
-  - [Exercise 6: Reporting with Stream Analytics and Power BI](#Exercise-6-Reporting-with-Stream-Analytics-and-Power-BI)
-    - [Task 1: Setup Stream Analytics](#Task-1-Setup-Stream-Analytics)
-    - [Task 2: Configure the ChangeFeed Function](#Task-2-Configure-the-ChangeFeed-Function)
-    - [Task 3: Deploy the ChangeFeed Function](#Task-3-Deploy-the-ChangeFeed-Function)
-    - [Task 4: Generate user events for PowerBI](#Task-4-Generate-user-events-for-PowerBI)
-    - [Task 5: Setup Power BI Dashabord](#Task-5-Setup-Power-BI-Dashabord)
-    - [Task 6: Generate user events for real time analytics](#Task-6-Generate-user-events-for-real-time-analytics)
-  - [Exercise 7: Email alerts using Logic Apps](#Exercise-7-Email-alerts-using-Logic-Apps)
-    - [Task 1: Setup Logic App](#Task-1-Setup-Logic-App)
-    - [Task 2: Configure the function app settings](#Task-2-Configure-the-function-app-settings)
-    - [Task 3: Update and deploy function app](#Task-3-Update-and-deploy-function-app)
-    - [Task 4: Test order email delivery](#Task-4-Test-order-email-delivery)
-  - [After the hands-on lab](#After-the-hands-on-lab)
-    - [Task 1: Delete resource group](#Task-1-Delete-resource-group)
+- [Cosmos DB scenario-based labs - Retail hands-on lab step-by-step](#cosmos-db-scenario-based-labs---retail-hands-on-lab-step-by-step)
+  - [Abstract and learning objectives](#abstract-and-learning-objectives)
+  - [Overview](#overview)
+  - [Solution architecture (High-level)](#solution-architecture-high-level)
+  - [Requirements](#requirements)
+  - [Before the hands-on lab](#before-the-hands-on-lab)
+  - [Exercise 1: Configure Databricks and generate event data](#exercise-1-configure-databricks-and-generate-event-data)
+    - [Task 1: Configure Azure Databricks](#task-1-configure-azure-databricks)
+    - [Task 2: Populate event data](#task-2-populate-event-data)
+    - [Task 3: Review the data generated](#task-3-review-the-data-generated)
+    - [Task 4: Review the aggregation and import utility](#task-4-review-the-aggregation-and-import-utility)
+  - [Exercise 2: Complete and deploy Web and Function Apps](#exercise-2-complete-and-deploy-web-and-function-apps)
+    - [Task 1: Implement the Top Items recommendation](#task-1-implement-the-top-items-recommendation)
+      - [About Cosmos DB throughput](#about-cosmos-db-throughput)
+    - [Task 2: Deploy the applications](#task-2-deploy-the-applications)
+    - [Task 3: Test the applications](#task-3-test-the-applications)
+  - [Exercise 3: Perform and deploy association rules calculation for offline algorithms](#exercise-3-perform-and-deploy-association-rules-calculation-for-offline-algorithms)
+    - [Task 1: Generate the Associations](#task-1-generate-the-associations)
+    - [Task 2: Review the data generated](#task-2-review-the-data-generated)
+  - [Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)](#exercise-4-complete-and-deploy-web-app-and-function-apps-association-rules)
+    - [Task 1: Implement the Associations recommendation rules](#task-1-implement-the-associations-recommendation-rules)
+    - [Task 2: Deploy the applications](#task-2-deploy-the-applications-1)
+    - [Task 3: Test the applications](#task-3-test-the-applications-1)
+  - [Exercise 5: Perform and deploy collaborative filtering rules calculation](#exercise-5-perform-and-deploy-collaborative-filtering-rules-calculation)
+    - [Task 1: Compute the user implicit ratings](#task-1-compute-the-user-implicit-ratings)
+    - [Task 2: Generate the Collaborative Rules](#task-2-generate-the-collaborative-rules)
+    - [Task 3: Review the data generated](#task-3-review-the-data-generated-1)
+    - [Task 4: Implement the Collaborative recommendation rules](#task-4-implement-the-collaborative-recommendation-rules)
+    - [Task 5: Deploy the applications](#task-5-deploy-the-applications)
+    - [Task 6: Test the applications](#task-6-test-the-applications)
+  - [Exercise 6: Reporting with Stream Analytics and Power BI](#exercise-6-reporting-with-stream-analytics-and-power-bi)
+    - [Task 1: Setup Stream Analytics](#task-1-setup-stream-analytics)
+    - [Task 2: Configure the ChangeFeed Function](#task-2-configure-the-changefeed-function)
+    - [Task 3: Deploy the ChangeFeed Function](#task-3-deploy-the-changefeed-function)
+    - [Task 4: Generate user events for PowerBI](#task-4-generate-user-events-for-powerbi)
+    - [Task 5: Setup Power BI Dashabord](#task-5-setup-power-bi-dashabord)
+    - [Task 6: Generate user events for real time analytics](#task-6-generate-user-events-for-real-time-analytics)
+  - [Exercise 7: Email alerts using Logic Apps](#exercise-7-email-alerts-using-logic-apps)
+    - [Task 1: Setup Logic App](#task-1-setup-logic-app)
+    - [Task 2: Configure the function app settings](#task-2-configure-the-function-app-settings)
+    - [Task 3: Update and deploy function app](#task-3-update-and-deploy-function-app)
+    - [Task 4: Test order email delivery](#task-4-test-order-email-delivery)
+  - [After the hands-on lab](#after-the-hands-on-lab)
+    - [Task 1: Delete resource group](#task-1-delete-resource-group)
 
 <!-- /TOC -->
+</details>
 
 ## Abstract and learning objectives
 
@@ -58,7 +62,7 @@ At the end of this lab you will understand how to design recommendation systems 
 
 Contoso Movies, Ltd. has expressed their desire to move to a more modern and cloud-based approach to their online ecommerce presence. The have decided to utilize Cosmos DB and Azure Databricks to implement their next generation recommendation system using various popular AI driven recommendation algorithms.
 
-They would also like to have real-time reporting on user site actions such as viewing item details, adding items to carts and purchase events.  Based on this data, they would like to know immediately if there are potential issues with the order processing pipeline.
+They would also like to have real-time reporting on user site actions such as viewing item details, adding items to carts and purchase events. Based on this data, they would like to know immediately if there are potential issues with the order processing pipeline.
 
 ## Solution architecture (High-level)
 
@@ -72,21 +76,21 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
 
   - Event processing with Azure Functions:
 
-  The Cosmos DB change feed triggers a single Azure function (although the functionality could be broken into many different functions). The single function provides three pieces of functionality. 
+  The Cosmos DB change feed triggers a single Azure function (although the functionality could be broken into many different functions). The single function provides three pieces of functionality.
 
-    - **Aggregate Calculations** - This code updates the item aggregations for the `buy` events to keep track of the top items purchased.  This will continually update and drive the `top` suggestions.  You will see this when you execute the Data Generator tool.
+  - **Aggregate Calculations** - This code updates the item aggregations for the `buy` events to keep track of the top items purchased. This will continually update and drive the `top` suggestions. You will see this when you execute the Data Generator tool.
 
-    - **Forward events to EventHub** - This code will forward the changefeed item to the event hub where Stream Analytics will then process the data.
+  - **Forward events to EventHub** - This code will forward the changefeed item to the event hub where Stream Analytics will then process the data.
 
-    - **Call a Logic App** - This code will forward the changefeed item to the logic app's http endpoint that will generate an email
+  - **Call a Logic App** - This code will forward the changefeed item to the logic app's http endpoint that will generate an email
 
 - Stream processing, dashboards, and reports:
 
-  Stream Analytics queries the forwarded event data and aggregates to **Power BI** to display a real-time dashboard of user activity. 
+  Stream Analytics queries the forwarded event data and aggregates to **Power BI** to display a real-time dashboard of user activity.
 
 - Advanced analytics and ML model training:
 
-  **Azure Databricks** is used to generate a set of offline calcuations based on user events to create implict ratings and associations used to drive new and current user recommendations. 
+  **Azure Databricks** is used to generate a set of offline calcuations based on user events to create implict ratings and associations used to drive new and current user recommendations.
 
 - eCommerce web app:
 
@@ -116,7 +120,7 @@ Refer to the Before the hands-on lab setup guide manual before continuing to the
 
 **Synopsis**: We have pre-generated a set of events that include **buy** and **details** events. Based on this data, a **Top Items** recommendation will be made to users that are new to the site (aka a cold start recommendation). You will implement this top items code in the web application and function applications, then deploy the applications to test the functionality.
 
-The algorithms for creating the offline calcuations are written in Python and are executed via Azure Databricks.  
+The algorithms for creating the offline calcuations are written in Python and are executed via Azure Databricks.
 
 ### Task 1: Configure Azure Databricks
 
@@ -190,7 +194,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 4. After importing, select the new **02 Retail** folder, then navigation to the **Includes** folder
 
-5.  Select the **Shared-Configuration** notebook
+5. Select the **Shared-Configuration** notebook
 
 ![The workspace menu is displayed with `includes` and `shared-configuration` highlighted.](./media/xx_DataBricks_08.png 'Navigate to Shared-Configuration')
 
@@ -202,21 +206,21 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 7. Attach your cluster to the notebook using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
 
-8.  Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
+8. Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
 
 > This notebook will simulate the browsing and purchasing activity for six users with different personality based preferences and save the result to the `events` collection in Cosmos DB.
 
->The movies have been pre-selected and sorted into the genres of comedy, drama and action. While the actual movie selection and activity taken is random, it is weighted to respect the user's preferences in each genere to hit a distribution that would mirror that user's taste.
+> The movies have been pre-selected and sorted into the genres of comedy, drama and action. While the actual movie selection and activity taken is random, it is weighted to respect the user's preferences in each genere to hit a distribution that would mirror that user's taste.
 
->For example, user 400001 has the preference of 20 for comedy, 30 for drama, 50 for action. This will result in the user logging more activity with action movies.
+> For example, user 400001 has the preference of 20 for comedy, 30 for drama, 50 for action. This will result in the user logging more activity with action movies.
 
->NOTE: Your results (aka the `events` generated) may be different from your fellow lab participants
+> NOTE: Your results (aka the `events` generated) may be different from your fellow lab participants
 
 9. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 ![Click the `detached` drop down, select the small cluster.](./media/xx_DataBricks_09.png 'Set the cluster')
 
-10.  Select **Run All**
+10. Select **Run All**
 
 > NOTE: With the default RUs on the Cosmos DB, this process will take up to 25 minutes to generate the event data. You could increase the RUs and get it under 5 minutes.
 
@@ -298,7 +302,7 @@ topItems = GetItemsByImdbIds(itemIds);
 - We are querying an "object" collection for an entity type called 'ItemAggregation' and sorting it by the 'BuyCount'. Essentially these are the top purchased items.
 - We are then querying the object collection for all the top movie items to get their metadata for display on the web front end
 
-> This code is responsible for querying the Cosmos DB `object` table to find the item aggregation information, for example all the `buy` events for a movie.  It is important that you utilize aggregations to do this as Cosmos Db will charge you based on RUs.  If you were to query the `events` table which is expected to get incredibly large as your user count and activity increaes, you can imagine the costs for making this query can become incredibly expensive.
+> This code is responsible for querying the Cosmos DB `object` table to find the item aggregation information, for example all the `buy` events for a movie. It is important that you utilize aggregations to do this as Cosmos Db will charge you based on RUs. If you were to query the `events` table which is expected to get incredibly large as your user count and activity increaes, you can imagine the costs for making this query can become incredibly expensive.
 
 #### About Cosmos DB throughput
 
@@ -354,15 +358,15 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 1.  Switch back to your Databricks workspace, select the **02 Association Rules** workbook
 
-1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+1.  Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
-1. Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+1.  Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
 > The goal of this algorithm is to compute two metrics that indicate the strength of a relationship between a source item and a target item based on event history, and then save that matrix to the associations collection in Cosmos DB.
 
->The algorithm begins with grouping events with a buy action into a transaction, grouping by the sessionId. This provides the set of items bough together.
+> The algorithm begins with grouping events with a buy action into a transaction, grouping by the sessionId. This provides the set of items bough together.
 
->For example, a transaction with two items would look like: `'404973': ['5512872', '4172430']` where 404973 is the sessionId that is used as the transactionId, and the the array contains the id's of the items bought ('5512872' and '4172430').
+> For example, a transaction with two items would look like: `'404973': ['5512872', '4172430']` where 404973 is the sessionId that is used as the transactionId, and the the array contains the id's of the items bought ('5512872' and '4172430').
 
 ### Task 2: Review the data generated
 
@@ -456,17 +460,17 @@ return View(vm);
 
 **Duration**: 30 minutes
 
-**Synopsis**: In this exercise you will execute the implict ratings notebook in Azure Databricks to generate the implict rating for each user that has event data.  You will only execute this once during this lab, however this notebook would need to be run on a set schedule to ensure that the users rating data is up to date.
+**Synopsis**: In this exercise you will execute the implict ratings notebook in Azure Databricks to generate the implict rating for each user that has event data. You will only execute this once during this lab, however this notebook would need to be run on a set schedule to ensure that the users rating data is up to date.
 
 ### Task 1: Compute the user implicit ratings
 
 1.  Switch back to your Databricks workspace, select **03 Ratings**
 
-1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+1.  Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
-1. Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+1.  Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
->This notebook will use the implict events captured in the events collection in Cosmos DB to calculate what a user would rate a given item, based on their actions. In other words it converts a users buy, addToCart and details actions into a numeric score for the item. The resulting user to item ratings matrix will be saved to the ratings collection in Cosmos DB.
+> This notebook will use the implict events captured in the events collection in Cosmos DB to calculate what a user would rate a given item, based on their actions. In other words it converts a users buy, addToCart and details actions into a numeric score for the item. The resulting user to item ratings matrix will be saved to the ratings collection in Cosmos DB.
 
 1.  Switch back to the Azure Portal
 
@@ -482,21 +486,21 @@ return View(vm);
 
 1.  Switch back to your Databricks workspace, select **04 Similarity**
 
-1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+1.  Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
-1. Run each cell of the **04 Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+1.  Run each cell of the **04 Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
->The notebook logic uses the user to item ratings previously created to calculate a score indicating the similarity between a source item and a target item. The process begins by loading the ratings matrix and for each user to item rating, calculating a new normalized rating (to adjust for the user's bias).
+> The notebook logic uses the user to item ratings previously created to calculate a score indicating the similarity between a source item and a target item. The process begins by loading the ratings matrix and for each user to item rating, calculating a new normalized rating (to adjust for the user's bias).
 
->An overlap matrix is calculated that identifies, for any pair of items, how many users rated both items. First, the normalized ratings matrix is converted to a boolean matrix. That is, if an item for a user has a rating (regardless of the value of the rating), it has a value of 1, otherwise it is zero. Then dot product of the normalized ratings matrix against its transpose is calculated. This yields a simpler matrix where the value each cell now contains the count of the number users who rated both items. Cells that don't have any overlap, have a value of zero.
+> An overlap matrix is calculated that identifies, for any pair of items, how many users rated both items. First, the normalized ratings matrix is converted to a boolean matrix. That is, if an item for a user has a rating (regardless of the value of the rating), it has a value of 1, otherwise it is zero. Then dot product of the normalized ratings matrix against its transpose is calculated. This yields a simpler matrix where the value each cell now contains the count of the number users who rated both items. Cells that don't have any overlap, have a value of zero.
 
->Separately, the cosine similarity of the normalized ratings matrix is computed. It's easiest to understand the cosine similarity calculation as being done between an item `i` and another item `j`. The cosine similarity is a ratio:
+> Separately, the cosine similarity of the normalized ratings matrix is computed. It's easiest to understand the cosine similarity calculation as being done between an item `i` and another item `j`. The cosine similarity is a ratio:
 
--   The numerator is computed as the sum of the product of the normalized rating of item i multiplied with the rating of j, for all users who have provided ratings.
-The denominator is computed as the square root of the sum of the squares of the normalized rating of item i multiplied by the square root of the sum of thesquares of the normalized rating of item j.
-In Python, the logic uses the cosine_similarity method from scikit-learn to compute the similarity between items by providing it our normalized user-to-items ratings matrix.
+- The numerator is computed as the sum of the product of the normalized rating of item i multiplied with the rating of j, for all users who have provided ratings.
+  The denominator is computed as the square root of the sum of the squares of the normalized rating of item i multiplied by the square root of the sum of thesquares of the normalized rating of item j.
+  In Python, the logic uses the cosine_similarity method from scikit-learn to compute the similarity between items by providing it our normalized user-to-items ratings matrix.
 
->The result is then filtered to remove entries with a similarity score lower than configured, and having an overlap in the overlap matrix of less than a configured overlap in quantity of ratings for the pair of items. Just before saving, any resulting similarities with scores less than the configured minimum similarity are removed, so that weaker similarities are not recommended.
+> The result is then filtered to remove entries with a similarity score lower than configured, and having an overlap in the overlap matrix of less than a configured overlap in quantity of ratings for the pair of items. Just before saving, any resulting similarities with scores less than the configured minimum similarity are removed, so that weaker similarities are not recommended.
 
 ### Task 3: Review the data generated
 
@@ -606,7 +610,7 @@ foreach(PredictionModel pm in sortedItems)
 }
 ```
 
->This code will grab 100 ratings for a specific user, then query for any associated items that were generated in the association notebook within a preset `neighbohood` size (in this case 15).  With a set of similar items, you will then filter out any items that fall outside the user's mean `ratings`.  You will then sort the remaining items by the similiarity and present those as the recommendations.
+> This code will grab 100 ratings for a specific user, then query for any associated items that were generated in the association notebook within a preset `neighbohood` size (in this case 15). With a set of similar items, you will then filter out any items that fall outside the user's mean `ratings`. You will then sort the remaining items by the similiarity and present those as the recommendations.
 
 ### Task 5: Deploy the applications
 
@@ -674,9 +678,9 @@ foreach(PredictionModel pm in sortedItems)
 
 1.  Repeat for steps 11-16, but replace **eventOrdersLastHour** with:
 
--   eventSummary
--   failureCount
--   eventData
+- eventSummary
+- failureCount
+- eventData
 
 1.  Select **Query**
 
@@ -818,15 +822,15 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1.  Select **+Add tile**, you may need to select the **...** ellipses first
 
-1.  Select **Custom Streaming Data**, select **Next**.  Use the following table to create the needed tiles:
+1.  Select **Custom Streaming Data**, select **Next**. Use the following table to create the needed tiles:
 
-|    |    |    |    |
-|----------|-------------|-------------|:-------------:|
-| **Dataset** | **Type** | **Fields** | **Title** |
-| eventData | Card | UserCount  | User Count |
-| failureCount | Card |FailureCount  | Payment Failures |
-| eventSummary | Line cart | Axis = UserCount, Legend = Event, Values = Count  | Count By Event |
-| eventOrdersLastHour | Gauge |  Value = Count, Minimum = Min, Target = Target  | Orders Per Hour |
+|                     |           |                                                  |                  |
+| ------------------- | --------- | ------------------------------------------------ | :--------------: |
+| **Dataset**         | **Type**  | **Fields**                                       |    **Title**     |
+| eventData           | Card      | UserCount                                        |    User Count    |
+| failureCount        | Card      | FailureCount                                     | Payment Failures |
+| eventSummary        | Line cart | Axis = UserCount, Legend = Event, Values = Count |  Count By Event  |
+| eventOrdersLastHour | Gauge     | Value = Count, Minimum = Min, Target = Target    | Orders Per Hour  |
 
 1.  Your dashboard should look similar to the following:
 
@@ -945,7 +949,7 @@ public async void CallLogicApp(IReadOnlyList<Document> events)
 
 1.  For each `buy` event, you will receive an email
 
->NOTE:  It can take up to 5 minutes to receive emails, when you do you could receive quite a `few` emails.
+> NOTE: It can take up to 5 minutes to receive emails, when you do you could receive quite a `few` emails.
 
 ## After the hands-on lab
 
