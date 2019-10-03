@@ -467,7 +467,7 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
 
 2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
 
-3. Open the your **Key Vault**. The name should begin with `iot-keyvault`.
+3. Open the your **Key Vault**. The name should begin with `iot-vault`.
 
    ![The Key Vault is highlighted in the resource group.](media/resource-group-keyvault.png 'Resource group')
 
@@ -671,7 +671,7 @@ Azure Databricks has two types of secret scopes: Key Vault-backed and Databricks
 
    > Your account must have the Azure Databricks Premium Plan for you to be able to select Creator. This is the recommended approach: grant MANAGE permission to the Creator when you create the secret scope, and then assign more granular access permissions after you have tested the scope.
 
-7. Enter the **DNS Name** (for example, <https://iot-keyvault.vault.azure.net/>) and **Resource ID** you copied earlier during the Key Vault creation step, for example: `/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/cosmos-db-iot/providers/Microsoft.KeyVault/vaults/iot-keyvault`.
+7. Enter the **DNS Name** (for example, <https://iot-vault.vault.azure.net/>) and **Resource ID** you copied earlier during the Key Vault creation step, for example: `/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/cosmos-db-iot/providers/Microsoft.KeyVault/vaults/iot-vault`.
 
    ![Create Secret Scope form](media/create-secret-scope.png 'Create Secret Scope')
 
@@ -896,7 +896,7 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
    For example, a complete reference would look like the following:
 
-   `@Microsoft.KeyVault(SecretUri=https://iot-keyvault-501993860.vault.azure.net/secrets/CosmosDBConnection/794f93084861483d823d37233569561d)`
+   `@Microsoft.KeyVault(SecretUri=https://iot-vault-501993860.vault.azure.net/secrets/CosmosDBConnection/794f93084861483d823d37233569561d)`
 
 ### Task 2: Configure application settings in Azure
 
@@ -906,7 +906,7 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
 2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
 
-3. Open the your **Key Vault**. The name should begin with `iot-keyvault`.
+3. Open the your **Key Vault**. The name should begin with `iot-vault`.
 
    ![The Key Vault is highlighted in the resource group.](media/resource-group-keyvault.png 'Resource group')
 
