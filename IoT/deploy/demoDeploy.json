@@ -532,11 +532,11 @@
 
                         {
                             "name": "CosmosDBConnection",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
                         },
                         {
                             "name": "IoTHubConnection",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')).secretUriWithVersion, ')')]"
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'IoTHubConnection')).secretUriWithVersion, ')')]"
                         }
                     ]
                 }
