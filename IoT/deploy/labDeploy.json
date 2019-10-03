@@ -16,9 +16,9 @@
         "functionAppStreamProcessingName": "[concat('IoT-StreamProcessing-', variables('name-suffix'))]",
         "functionAppCosmosDBProcessingName": "[concat('IoT-CosmosDBProcessing-', variables('name-suffix'))]",
 
-        "keyVaultName": "[concat('aml-keyvault-', variables('name-suffix'))]",
+        "keyVaultName": "[concat('aml-vault-', variables('name-suffix'))]",
 
-        "keyVaultIoTName": "[concat('iot-keyvault-', variables('name-suffix'))]",
+        "keyVaultIoTName": "[concat('iot-vault-', variables('name-suffix'))]",
 
         "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
         "storageAccountStreamProcessing-website-contentshare": "[concat('iot-streamprocessing-', variables('name-suffix'))]",
