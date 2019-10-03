@@ -11,13 +11,13 @@
 
         "appServicePlanIoTWebAppNameName": "[concat('IoTWebAppNamePlan-', variables('name-suffix'))]",
         "iotWebAppName": "[concat('IoTWebApp-', variables('name-suffix'))]",
-        
+
         "appServicePlanFunctionAppsName": "[concat('FunctionAppPlan-', variables('name-suffix'))]",
         "functionAppStreamProcessingName": "[concat('IoT-StreamProcessing-', variables('name-suffix'))]",
         "functionAppCosmosDBProcessingName": "[concat('IoT-CosmosDBProcessing-', variables('name-suffix'))]",
-        
+
         "keyVaultName": "[concat('keyvault-', variables('name-suffix'))]",
-        
+
         "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
         "storageAccountStreamProcessing-website-contentshare": "[concat('iot-streamprocessing-', variables('name-suffix'))]",
 
@@ -30,10 +30,13 @@
 
         "cosmosDbAccountName": "[concat('cosmos-db-iot-', variables('name-suffix'))]",
         "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('name-suffix'))]",
-        
+
         "streamAnalyticsJobName": "[concat('Cosmos-DB-IoT-Analytics-', variables('name-suffix'))]",
 
-        "databricksWorkspaceName": "[concat('iot-databricks-', variables('name-suffix'))]"
+        "databricksWorkspaceName": "[concat('iot-databricks-', variables('name-suffix'))]",
+
+        "machineLearningServicesWorkspaceName": "[concat('Cosmos-DB-IoT-ML-', variables('name-suffix'))]",
+        "machineLearningServicesStorageAccountName": "[concat('mlstore', variables('name-suffix'))]"
     },
     "resources": [
         {
@@ -58,7 +61,8 @@
                         "Routes": "None"
                     }
                 },
-                "ipFilterRules": [],
+                "ipFilterRules": [
+                ],
                 "eventHubEndpoints": {
                     "events": {
                         "retentionTimeInDays": 1,
@@ -85,12 +89,17 @@
                 },
                 "routing": {
                     "endpoints": {
-                        "serviceBusQueues": [],
-                        "serviceBusTopics": [],
-                        "eventHubs": [],
-                        "storageContainers": []
+                        "serviceBusQueues": [
+                        ],
+                        "serviceBusTopics": [
+                        ],
+                        "eventHubs": [
+                        ],
+                        "storageContainers": [
+                        ]
                     },
-                    "routes": [],
+                    "routes": [
+                    ],
                     "fallbackRoute": {
                         "name": "$fallback",
                         "source": "DeviceMessages",
@@ -138,7 +147,8 @@
                 "enableAutomaticFailover": false,
                 "enableMultipleWriteLocations": false,
                 "isVirtualNetworkFilterEnabled": false,
-                "virtualNetworkRules": [],
+                "virtualNetworkRules": [
+                ],
                 "databaseAccountOfferType": "Standard",
                 "consistencyPolicy": {
                     "defaultConsistencyLevel": "Session",
@@ -153,7 +163,8 @@
                         "isZoneRedundant": false
                     }
                 ],
-                "capabilities": []
+                "capabilities": [
+                ]
             }
         },
         {
@@ -195,7 +206,8 @@
                     "name": "standard"
                 },
                 "enabledForDeployment": false,
-                "accessPolicies": []
+                "accessPolicies": [
+                ]
             }
         },
         {
@@ -211,8 +223,10 @@
             "properties": {
                 "networkAcls": {
                     "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
                     "defaultAction": "Allow"
                 },
                 "supportsHttpsTrafficOnly": true,
@@ -238,7 +252,8 @@
             ],
             "properties": {
                 "cors": {
-                    "corsRules": []
+                    "corsRules": [
+                    ]
                 },
                 "deleteRetentionPolicy": {
                     "enabled": false
@@ -290,8 +305,10 @@
             "properties": {
                 "networkAcls": {
                     "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
                     "defaultAction": "Allow"
                 },
                 "supportsHttpsTrafficOnly": true,
@@ -317,7 +334,8 @@
             ],
             "properties": {
                 "cors": {
-                    "corsRules": []
+                    "corsRules": [
+                    ]
                 },
                 "deleteRetentionPolicy": {
                     "enabled": false
@@ -369,8 +387,10 @@
             "properties": {
                 "networkAcls": {
                     "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
                     "defaultAction": "Allow"
                 },
                 "supportsHttpsTrafficOnly": true,
@@ -396,7 +416,8 @@
             ],
             "properties": {
                 "cors": {
-                    "corsRules": []
+                    "corsRules": [
+                    ]
                 },
                 "deleteRetentionPolicy": {
                     "enabled": false
@@ -479,7 +500,7 @@
                         {
                             "name": "AzureWebJobsDashboard",
                             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName')),'2019-04-01').keys[0].value)]"
-        
+
                         },
                         {
                             "name": "AzureWebJobsStorage",
@@ -531,7 +552,7 @@
                         {
                             "name": "AzureWebJobsDashboard",
                             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName')),'2019-04-01').keys[0].value)]"
-        
+
                         },
                         {
                             "name": "AzureWebJobsStorage",
@@ -598,9 +619,10 @@
                     "name": "Microsoft.AspNetCore.AzureAppServices.SiteExtension",
                     "type": "siteextensions",
                     "dependsOn": [
-                    "[resourceId('Microsoft.Web/Sites', variables('iotWebAppName'))]"
+                        "[resourceId('Microsoft.Web/Sites', variables('iotWebAppName'))]"
                     ],
-                    "properties": {}
+                    "properties": {
+                    }
                 }
             ]
         },
@@ -627,7 +649,8 @@
                 "[resourceId('Microsoft.EventHub/namespaces/eventhubs', variables('eventHubsNamespaceIoTName'), 'reporting')]",
                 "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubsNamespaceIoTName'))]"
             ],
-            "properties": {}
+            "properties": {
+            }
         },
         {
             "type": "Microsoft.EventHub/namespaces/NetworkRuleSets",
@@ -639,8 +662,10 @@
             ],
             "properties": {
                 "defaultAction": "Deny",
-                "virtualNetworkRules": [],
-                "ipRules": []
+                "virtualNetworkRules": [
+                ],
+                "ipRules": [
+                ]
             }
         },
 
@@ -648,20 +673,80 @@
             "name": "DatabricksWorkspaceDeployment",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
-            "dependsOn": [],
+            "dependsOn": [
+            ],
             "properties": {
-              "mode": "Incremental",
-              "templateLink": {
-                "uri": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-databricks-workspace/azuredeploy.json",
-                "contentVersion": "1.0.0.0"
-              },
-              "parameters": {
-                "workspaceName": { "value": "[variables('databricksWorkspaceName')]" },
-                "pricingTier": { "value": "premium" },
-                "location": { "value": "[variables('location')]" }
-              }
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-databricks-workspace/azuredeploy.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[variables('databricksWorkspaceName')]"
+                    },
+                    "pricingTier": {
+                        "value": "premium"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    }
+                }
             }
-          }
+        },
+
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('machineLearningServicesStorageAccountName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": false,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces",
+            "apiVersion": "2018-11-19",
+            "name": "[variables('machineLearningServicesWorkspaceName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('machineLearningServicesStorageAccountName'))]"
+            ],
+            "identity": {
+                "type": "systemAssigned"
+            },
+            "properties": {
+                "friendlyName": "[variables('machineLearningServicesWorkspaceName')]",
+                "keyVault": "[resourceId('Microsoft.KeyVault/vaults',variables('keyVaultName'))]",
+                "applicationInsights": "[resourceId('Microsoft.Insights/components',variables('appInsightsName'))]",
+                "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts/',variables('machineLearningServicesStorageAccountName'))]"
+            }
+        }
     ],
     "outputs": {
         "location": {
@@ -759,7 +844,7 @@
             "type": "string",
             "value": "[listKeys(resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventHubsNamespaceIoTName'), 'RootManageSharedAccessKey'), '2017-04-01').primaryConnectionString]"
         }
-        
-        
+
+
     }
 }

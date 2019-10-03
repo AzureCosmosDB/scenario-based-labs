@@ -616,7 +616,7 @@ In this task, you will create a new cluster on which data exploration and model 
    3. **Pool**: Select **None**.
    4. **Databricks Runtime Version**: Select **Runtime 5.5 LTS (Scala 2.11, Spark 2.4.3)**.
    5. **Python Version**: Enter **3**.
-   6. **Autopilot Options**: Uncheck **Enable autoscaling** and **Terminate after...**, with a value of **120** minutes.
+   6. **Autopilot Options**: Uncheck **Enable autoscaling** and check **Terminate after...**, with a value of **120** minutes.
    7. **Worker Type**: Select **Standard_DS3_v2**.
    8. **Driver Type**: Select **Same as worker**.
    9. **Workers**: Enter **1**.
