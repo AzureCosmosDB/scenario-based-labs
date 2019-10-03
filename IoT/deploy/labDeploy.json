@@ -16,7 +16,9 @@
         "functionAppStreamProcessingName": "[concat('IoT-StreamProcessing-', variables('name-suffix'))]",
         "functionAppCosmosDBProcessingName": "[concat('IoT-CosmosDBProcessing-', variables('name-suffix'))]",
 
-        "keyVaultName": "[concat('keyvault-', variables('name-suffix'))]",
+        "keyVaultName": "[concat('aml-keyvault-', variables('name-suffix'))]",
+
+        "keyVaultIoTName": "[concat('iot-keyvault-', variables('name-suffix'))]",
 
         "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
         "storageAccountStreamProcessing-website-contentshare": "[concat('iot-streamprocessing-', variables('name-suffix'))]",
@@ -198,6 +200,22 @@
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2016-10-01",
             "name": "[variables('keyVaultName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "tenantid": "[subscription().tenantId]",
+                "sku": {
+                    "family": "A",
+                    "name": "standard"
+                },
+                "enabledForDeployment": false,
+                "accessPolicies": [
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "name": "[variables('keyVaultIoTName')]",
             "location": "[variables('location')]",
             "properties": {
                 "tenantid": "[subscription().tenantId]",
@@ -785,6 +803,10 @@
             "type": "string",
             "value": "[variables('keyVaultName')]"
         },
+        "keyVaultIoTName": {
+            "type": "string",
+            "value": "[variables('keyVaultIoTName')]"
+        },
         "storageAccountStreamProcessingName": {
             "type": "string",
             "value": "[variables('storageAccountStreamProcessingName')]"
@@ -817,7 +839,10 @@
             "type": "string",
             "value": "[variables('databricksWorkspaceName')]"
         },
-
+        "machineLearningServicesWorkspaceName": {
+            "type": "string",
+            "value": "[variables('machineLearningServicesWorkspaceName')]"
+        },
 
 
         "CosmosDBConnection": {
