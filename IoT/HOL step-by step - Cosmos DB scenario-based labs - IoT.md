@@ -610,7 +610,15 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
    | EventHubsConnection | Your Event Hubs connection string found here: **Event Hubs namespace > Shared access policies > RootManageSharedAccessKey > Connection string-primary key** |
    | LogicAppUrl         |                         Your Logic App's HTTP Post URL found here: **Logic App Designer > Select the HTTP trigger > HTTP POST URL**                         |
 
-   When you are finished creating the secrets, your list should look similar to the following:
+3. You can locate most of your secrets by viewing the outputs of your deployment. To do this, open your resource group then select **Deployments** in the left-hand menu. Select the **Microsoft.Template** deployment.
+
+    ![The resource group deployments blade is shown.](media/resource-group-deployments.png "Deployments")
+
+4. Select **Outputs** in the left-hand menu. You can find most of the values above and simply copy them.
+
+    ![The outputs are displayed.](media/resource-group-deployment-outputs.png "Outputs")
+
+5. When you are finished creating the secrets, your list should look similar to the following:
 
    ![The list of secrets is displayed.](media/key-vault-keys.png 'Key Vault Secrets')
 
