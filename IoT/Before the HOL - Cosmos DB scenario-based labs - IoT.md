@@ -57,38 +57,51 @@ Download a starter project that includes a vehicle simulator, Azure Function App
 
 In this task, you will deploy the infrastructure for this demo using an ARM Template deployment.
 
-1. In the [Azure portal](https://portal.azure.com), select **+ Create a resource**. Enter **template** in the search box, then select **Template deployment (deploy using custom templates)**.
+1. In the [Azure portal](https://portal.azure.com), navigate to **Azure Active Directory** in the left-hand menu, then select **Users** under Manage.
+
+   ![Azure Active Directory blade with Users highlighted](media/deploy-azure-ad-users-link.png 'Azure Active Directory blade with Users highlighted')
+
+2. Select your user from the list with which you logged in to the portal.
+
+   ![All users list with user highlighted](media/deploy-azure-ad-user-list.png 'All users list with user highlighted')
+
+3. On the **User** blade, copy the **Object ID** for this user.
+
+   ![User blade is shown with Object ID highlighted](media/deploy-azure-ad-user-object-id.png 'User blade is shown with Object ID highlighted')
+
+4. In the Azure portal, select **+ Create a resource**. Enter **template** in the search box, then select **Template deployment (deploy using custom templates)**.
 
    ![Create a resource is highlighted, and template is entered in the search box.](media/portal-search-template.png 'New Template Resource')
 
-2. Select **Create** on the Template deployment overview blade.
+5. Select **Create** on the Template deployment overview blade.
 
-3. On the **Custom deployment** pane, select **Build your own template in the editor**.
+6. On the **Custom deployment** pane, select **Build your own template in the editor**.
 
    ![The Build your own template in the editor option is highlighted.](media/portal-custom-deployment-build-own.png 'Custom deployment')
 
-4. On the **Edit template** blade, select the **Load file** button and upload the **labDeploy.json** ARM Template located at `\cosmos-db-scenario-based-labs\IoT\deploy\labDeploy.json`.
+7. On the **Edit template** blade, select the **Load file** button and upload the **labDeploy.json** ARM Template located at `\cosmos-db-scenario-based-labs\IoT\deploy\labDeploy.json`.
 
    ![The load file button is highlighted and the labDeploy.json file is selected](media/portal-custom-deployment-load.png 'Load file')
 
-5. Select **Save**.
+8. Select **Save**.
 
-6. Enter the following values:
+9. Enter the following values:
 
    - Subscription: select the Azure subscription you are using for this lab.
    - Resource group: _if you are using a hosted environment, select the existing `iot` resource group provided for you_; Otherwise, create a new resource group like `cosmos-db-iot`.
    - Location: _it doesn't matter which region is selected, the template will use West US to ensure everything works_
+   - Key Vault Access Policy User Object Id: paste your user account's `Object ID` you copied earlier.
 
-7. Check the **I agree to the terms and conditions stated above** box.
+10. Check the **I agree to the terms and conditions stated above** box.
 
-   ![The fields are completed as shown.](media/portal-template-params.png 'Custom template form')
+    ![The fields are completed as shown.](media/portal-template-params.png 'Custom template form')
 
-8. Select **Purchase**
+11. Select **Purchase**
 
-   After the deployment completes, you can select **Outputs** from the left-hand menu to find the names of your new Azure resources, as well as useful information like connection strings and endpoints.
+    After the deployment completes, you can select **Outputs** from the left-hand menu to find the names of your new Azure resources, as well as useful information like connection strings and endpoints.
 
-   ![The outputs are displayed after the template deployment is completed.](media/portal-deployment-outputs.png 'Microsoft Template - Outputs')
+    ![The outputs are displayed after the template deployment is completed.](media/portal-deployment-outputs.png 'Microsoft Template - Outputs')
 
-   > The template deployment will take a few minutes to complete. Continue with the hands-on lab guide once it completes.
+    > The template deployment will take a few minutes to complete. Continue with the hands-on lab guide once it completes.
 
 You should follow all steps provided _before_ performing the Hands-on lab.

@@ -2,6 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "KeyVaultAccessPolicyUserObjectId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "ObjectId for the Azure AD User running the Template Deployment"
+            }
+        }
     },
     "variables": {
         "location": "westus",
@@ -16,9 +23,7 @@
         "functionAppStreamProcessingName": "[concat('IoT-StreamProcessing-', variables('name-suffix'))]",
         "functionAppCosmosDBProcessingName": "[concat('IoT-CosmosDBProcessing-', variables('name-suffix'))]",
 
-        "keyVaultName": "[concat('aml-vault-', variables('name-suffix'))]",
-
-        "keyVaultIoTName": "[concat('iot-vault-', variables('name-suffix'))]",
+        "keyVaultName": "[concat('iot-vault-', variables('name-suffix'))]",
 
         "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
         "storageAccountStreamProcessing-website-contentshare": "[concat('iot-streamprocessing-', variables('name-suffix'))]",
@@ -209,23 +214,53 @@
                 },
                 "enabledForDeployment": false,
                 "accessPolicies": [
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.KeyVault/vaults",
-            "apiVersion": "2016-10-01",
-            "name": "[variables('keyVaultIoTName')]",
-            "location": "[variables('location')]",
-            "properties": {
-                "tenantid": "[subscription().tenantId]",
-                "sku": {
-                    "family": "A",
-                    "name": "standard"
-                },
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[parameters('KeyVaultAccessPolicyUserObjectId')]",
+                        "permissions": {
+                            "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "certificates": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "ManageContacts",
+                                "ManageIssuers",
+                                "GetIssuers",
+                                "ListIssuers",
+                                "SetIssuers",
+                                "DeleteIssuers"
+                            ]
+                        }
+                    }
+                ],
                 "enabledForDeployment": false,
-                "accessPolicies": [
-                ]
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false
             }
         },
         {
@@ -802,10 +837,6 @@
         "keyVaultName": {
             "type": "string",
             "value": "[variables('keyVaultName')]"
-        },
-        "keyVaultIoTName": {
-            "type": "string",
-            "value": "[variables('keyVaultIoTName')]"
         },
         "storageAccountStreamProcessingName": {
             "type": "string",

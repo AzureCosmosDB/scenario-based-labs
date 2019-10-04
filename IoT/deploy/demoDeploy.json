@@ -22,9 +22,7 @@
         "functionAppStreamProcessingName": "[concat('IoT-StreamProcessing-', variables('name-suffix'))]",
         "functionAppCosmosDBProcessingName": "[concat('IoT-CosmosDBProcessing-', variables('name-suffix'))]",
 
-        "keyVaultName": "[concat('aml-vault-', variables('name-suffix'))]",
-
-        "keyVaultIoTName": "[concat('iot-vault-', variables('name-suffix'))]",
+        "keyVaultName": "[concat('iot-vault-', variables('name-suffix'))]",
 
         "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
         "storageAccountStreamProcessing-website-contentshare": "[concat('iot-streamprocessing-', variables('name-suffix'))]",
@@ -390,7 +388,7 @@
 
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(variables('keyVaultIoTName'), '/', 'CosmosDBConnection')]",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBConnection')]",
             "apiVersion": "2018-02-14",
             "location": "[variables('location')]",
             "dependsOn": [
@@ -402,7 +400,7 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(variables('keyVaultIoTName'), '/', 'CosmosDBEndpoint')]",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBEndpoint')]",
             "apiVersion": "2018-02-14",
             "location": "[variables('location')]",
             "dependsOn": [
@@ -414,7 +412,7 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(variables('keyVaultIoTName'), '/', 'CosmosDBPrimaryKey')]",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBPrimaryKey')]",
             "apiVersion": "2018-02-14",
             "location": "[variables('location')]",
             "dependsOn": [
@@ -426,7 +424,7 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(variables('keyVaultIoTName'), '/', 'IoTHubConnection')]",
+            "name": "[concat(variables('keyVaultName'), '/', 'IoTHubConnection')]",
             "apiVersion": "2018-02-14",
             "location": "[variables('location')]",
             "dependsOn": [
@@ -438,7 +436,7 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(variables('keyVaultIoTName'), '/', 'ColdStorageAccount')]",
+            "name": "[concat(variables('keyVaultName'), '/', 'ColdStorageAccount')]",
             "apiVersion": "2018-02-14",
             "location": "[variables('location')]",
             "dependsOn": [
@@ -450,7 +448,7 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(variables('keyVaultIoTName'), '/', 'EventHubsConnection')]",
+            "name": "[concat(variables('keyVaultName'), '/', 'EventHubsConnection')]",
             "apiVersion": "2018-02-14",
             "location": "[variables('location')]",
             "dependsOn": [
@@ -462,7 +460,7 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(variables('keyVaultIoTName'), '/', 'LogicAppUrl')]",
+            "name": "[concat(variables('keyVaultName'), '/', 'LogicAppUrl')]",
             "apiVersion": "2018-02-14",
             "location": "[variables('location')]",
             "dependsOn": [
@@ -480,8 +478,8 @@
             "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
-                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'CosmosDBConnection')]",
-                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'IoTHubConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')]",
                 "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]"
             ],
@@ -532,11 +530,11 @@
 
                         {
                             "name": "CosmosDBConnection",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
                         },
                         {
                             "name": "IoTHubConnection",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'IoTHubConnection')).secretUriWithVersion, ')')]"
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')).secretUriWithVersion, ')')]"
                         }
                     ]
                 }
@@ -549,10 +547,10 @@
             "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
-                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'CosmosDBConnection')]",
-                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'ColdStorageAccount')]",
-                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'EventHubsConnection')]",
-                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'LogicAppUrl')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'ColdStorageAccount')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'EventHubsConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'LogicAppUrl')]",
                 "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]"
             ],
@@ -603,19 +601,19 @@
 
                         {
                             "name": "CosmosDBConnection",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
                         },
                         {
                             "name": "ColdStorageAccount",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'ColdStorageAccount')).secretUriWithVersion, ')')]"
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'ColdStorageAccount')).secretUriWithVersion, ')')]"
                         },
                         {
                             "name": "EventHubsConnection",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'EventHubsConnection')).secretUriWithVersion, ')')]"
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'EventHubsConnection')).secretUriWithVersion, ')')]"
                         },
                         {
                             "name": "LogicAppUrl",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'LogicAppUrl')).secretUriWithVersion, ')')]"
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'LogicAppUrl')).secretUriWithVersion, ')')]"
                         },
                         {
                             "name": "RecipientEmail",
@@ -632,7 +630,7 @@
             "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
-                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'CosmosDBConnection')]",
+                "[concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')]",
                 "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]"
             ],
             "identity": {
@@ -648,7 +646,7 @@
 
                         {
                             "name": "CosmosDBConnection",
-                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultIoTName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'CosmosDBConnection')).secretUriWithVersion, ')')]"
                         },
                         {
                             "name": "DatabaseName",
@@ -670,7 +668,7 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/accessPolicies",
-            "name": "[concat(variables('keyVaultIoTName'), '/add')]",
+            "name": "[concat(variables('keyVaultName'), '/add')]",
             "apiVersion": "2018-02-14",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
