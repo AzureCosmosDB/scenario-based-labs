@@ -142,11 +142,15 @@ In this task, you will deploy the infrastructure for this demo using an ARM Temp
 
 5. Enter the following values:
 
-    - Resource group: enter a Resource group name; like `cosmos-db-iot`
+    - Subscription: select the Azure subscription you are using for this lab.
+    - Resource group: _if you are using a hosted environment, select the existing `iot` resource group provided for you_; Otherwise, create a new resource group like `cosmos-db-iot`.
     - Location: _it doesn't matter which region is selected, the template will use West US to ensure everything works_
     - Recipient Email: **Enter an email address to receive notifications from the Logic App**
+    - Key Vault Access Policy User Object Id: paste your user account's `Object ID` you copied earlier.
 
 6. Check the **I agree to the terms and conditions stated above** box.
+
+    ![The template form is displayed with the previously described values.](media/portal-deploy-template-form.png "Custom Template")
 
 7. Select **Purchase**
 

@@ -7,6 +7,13 @@
             "metadata": {
                 "description": "Enter a valid email address you want to receive notification emails from the Logic App."
             }
+        },
+        "KeyVaultAccessPolicyUserObjectId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "ObjectId for the Azure AD User running the Template Deployment"
+            }
         }
     },
     "variables": {
