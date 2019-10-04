@@ -16,11 +16,12 @@
     - [Task 2: Configure Cosmos DB container indexing and TTL](#task-2-configure-cosmos-db-container-indexing-and-ttl)
       - [About the Cosmos DB indexing policies](#about-the-cosmos-db-indexing-policies)
     - [Task 3: Create a Logic App workflow for email alerts](#task-3-create-a-logic-app-workflow-for-email-alerts)
-    - [Task 4: Add Key Vault secrets](#task-4-add-key-vault-secrets)
-    - [Task 5: Create system-assigned managed identities for your Function Apps and Web App to connect to Key Vault](#task-5-create-system-assigned-managed-identities-for-your-function-apps-and-web-app-to-connect-to-key-vault)
-    - [Task 6: Add Function Apps and Web App to Key Vault access policy](#task-6-add-function-apps-and-web-app-to-key-vault-access-policy)
-    - [Task 7: Create Azure Databricks cluster](#task-7-create-azure-databricks-cluster)
-    - [Task 8: Configure Key Vault-backed Databricks secret store](#task-8-configure-key-vault-backed-databricks-secret-store)
+    - [Task 4: Create system-assigned managed identities for your Function Apps and Web App to connect to Key Vault](#task-4-create-system-assigned-managed-identities-for-your-function-apps-and-web-app-to-connect-to-key-vault)
+    - [Task 5: Add Function Apps and Web App to Key Vault access policy](#task-5-add-function-apps-and-web-app-to-key-vault-access-policy)
+    - [Task 6: Add your user account to Key Vault access policy](#task-6-add-your-user-account-to-key-vault-access-policy)
+    - [Task 7: Add Key Vault secrets](#task-7-add-key-vault-secrets)
+    - [Task 8: Create Azure Databricks cluster](#task-8-create-azure-databricks-cluster)
+    - [Task 9: Configure Key Vault-backed Databricks secret store](#task-9-configure-key-vault-backed-databricks-secret-store)
   - [Exercise 2: Configure windowed queries in Stream Analytics](#exercise-2-configure-windowed-queries-in-stream-analytics)
     - [Task 1: Add Stream Analytics Event Hubs input](#task-1-add-stream-analytics-event-hubs-input)
     - [Task 2: Add Stream Analytics outputs](#task-2-add-stream-analytics-outputs)
@@ -453,45 +454,7 @@ In this task, you will create a new Logic App workflow and configure it to send 
 
     ![The http post URL is highlighted.](media/logic-app-url.png 'Logic App')
 
-### Task 4: Add Key Vault secrets
-
-Azure Key Vault is used to Securely store and tightly control access to tokens, passwords, certificates, API keys, and other secrets. In addition, secrets that are stored in Azure Key Vault are centralized, giving the added benefits of only needing to update secrets in one place, such as an application key value after recycling the key for security purposes. In this task, we will store application secrets in Azure Key Vault, then configure the Function Apps and Web App to securely connect to Azure Key Vault by performing the following steps:
-
-- Add secrets to the provisioned Key Vault.
-- Create a system-assigned managed identity for each Azure Function App and the Web App to read from the vault.
-- Create an access policy in Key Vault with the "Get" secret permission, assigned to each of these application identities.
-
-> We recommend that you open two browser tabs for these steps. One to copy secrets from each Azure service, and the other to add the secrets to Key Vault.
-
-1. Using a new tab or instance of your browser, navigate to the Azure portal, <https://portal.azure.com>.
-
-2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
-
-3. Open the your **Key Vault**. The name should begin with `iot-vault`.
-
-   ![The Key Vault is highlighted in the resource group.](media/resource-group-keyvault.png 'Resource group')
-
-4. Select **Secrets** in the left-hand menu, then select **+ Generate/Import** to create a new secret.
-
-   ![The Secrets menu item is highlighted, and the Generate/Import button is selected.](media/key-vault-secrets-generate.png 'Key Vault Secrets')
-
-5. Use the table below for the Name / Value pairs to use when creating the secrets. You only need to populate the **Name** and **Value** fields for each secret, and can leave the other fields at their default values.
-
-   | **Name**            |                                                                          **Value**                                                                          |
-   | ------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
-   | CosmosDBConnection  |                            Your Cosmos DB connection string found here: **Cosmos DB account > Keys > Primary Connection String**                            |
-   | CosmosDBEndpoint    |                                           Your Cosmos DB endpoint found here: **Cosmos DB account > Keys > URI**                                            |
-   | CosmosDBPrimaryKey  |                                      Your Cosmos DB primary key found here: **Cosmos DB account > Keys > Primary Key**                                      |
-   | IoTHubConnection    |                         Your IoT Hub connection string found here: **IoT Hub > Built-in endpoints > Event Hub-compatible endpoint**                         |
-   | ColdStorageAccount  |  Connection string to the Azure Storage account whose name starts with `iotstore`, found here: **Storage account > Access keys > key1 Connection string**   |
-   | EventHubsConnection | Your Event Hubs connection string found here: **Event Hubs namespace > Shared access policies > RootManageSharedAccessKey > Connection string-primary key** |
-   | LogicAppUrl         |                         Your Logic App's HTTP Post URL found here: **Logic App Designer > Select the HTTP trigger > HTTP POST URL**                         |
-
-   When you are finished creating the secrets, your list should look similar to the following:
-
-   ![The list of secrets is displayed.](media/key-vault-keys.png 'Key Vault Secrets')
-
-### Task 5: Create system-assigned managed identities for your Function Apps and Web App to connect to Key Vault
+### Task 4: Create system-assigned managed identities for your Function Apps and Web App to connect to Key Vault
 
 In order for your Function Apps and Web App to be able to access Key Vault to read the secrets, you must [create a system-assigned managed identity](https://docs.microsoft.com/azure/app-service/overview-managed-identity#adding-a-system-assigned-identity) for each, and [create an access policy in Key Vault](https://docs.microsoft.com/azure/key-vault/key-vault-secure-your-key-vault#key-vault-access-policies) for the application identities.
 
@@ -523,73 +486,134 @@ In order for your Function Apps and Web App to be able to access Key Vault to re
 
    ![The Web App Identity value is set to On.](media/web-app-identity.png 'Identity')
 
-### Task 6: Add Function Apps and Web App to Key Vault access policy
+### Task 5: Add Function Apps and Web App to Key Vault access policy
+
+> We recommend that you open two browser tabs for this and the following Key Vault tasks. One tab will be used to copy secrets from each Azure service, and the other to add the secrets to Key Vault.
 
 Perform these steps to create an access policy that enables the "Get" secret permission:
 
-1. Open your Key Vault service.
+1. Using a new tab or instance of your browser, navigate to the Azure portal, <https://portal.azure.com>.
 
-2. Select **Access policies** in the left-hand menu.
+2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
 
-3. Select **+ Add Access Policy**.
+3. Open the your **Key Vault**. The name should begin with `iot-vault`.
+
+   ![The Key Vault is highlighted in the resource group.](media/resource-group-keyvault.png 'Resource group')
+
+4. Select **Access policies** in the left-hand menu.
+
+5. Select **+ Add Access Policy**.
 
    ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png 'Access policies')
 
-4. Select the **Select principal** section on the Add access policy form.
-
+6. Select the **Select principal** section on the Add access policy form.
    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-5. In the Principal blade, search for your `IoT-CosmosDBProcessing` Function App's service principal, select it, then select the **Select** button.
+7. In the Principal blade, search for your `IoT-CosmosDBProcessing` Function App's service principal, select it, then select the **Select** button.
 
    ![The Function App's principal is selected.](media/key-vault-principal-function1.png 'Principal')
 
-6. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
+8. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
 
    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
-7. Select **Add** to add the new access policy.
+9. Select **Add** to add the new access policy.
 
-8. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
+10. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
 
    ![Key Vault access policies.](media/key-vault-access-policies-function1.png 'Access policies')
 
-9. Select the **Select principal** section on the Add access policy form.
+11. Select the **Select principal** section on the Add access policy form.
 
    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-10. In the Principal blade, search for your `IoT-StreamProcessing` Function App's service principal, select it, then select the **Select** button.
+12. In the Principal blade, search for your `IoT-StreamProcessing` Function App's service principal, select it, then select the **Select** button.
 
     ![The Function App's principal is selected.](media/key-vault-principal-function2.png 'Principal')
 
-11. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
+13. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
 
     ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
-12. Select **Add** to add the new access policy.
+14. Select **Add** to add the new access policy.
 
-13. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
+15. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
 
     ![Key Vault access policies.](media/key-vault-access-policies-function2.png 'Access policies')
 
-14. Select the **Select principal** section on the Add access policy form.
+16. Select the **Select principal** section on the Add access policy form.
 
     ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-15. In the Principal blade, search for your `IoTWebApp` Web App's service principal, select it, then select the **Select** button.
+17. In the Principal blade, search for your `IoTWebApp` Web App's service principal, select it, then select the **Select** button.
 
     ![The Web App's principal is selected.](media/key-vault-principal-webapp.png 'Principal')
 
-16. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
+18. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
 
     ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
-17. Select **Add** to add the new access policy.
+19. Select **Add** to add the new access policy.
 
-18. When you are done, you should have an access policy for the Web App's managed identity. Select **Save** to save your new access policies.
+20. When you are done, you should have an access policy for the Web App's managed identity. Select **Save** to save your new access policies.
 
     ![Key Vault access policies.](media/key-vault-access-policies-webapp.png 'Access policies')
 
-### Task 7: Create Azure Databricks cluster
+### Task 6: Add your user account to Key Vault access policy
+
+Perform these steps to create an access policy for your user account so you can manage secrets. Since we created Key Vault with a template, your account was not automatically added to the access policies.
+
+1. Within Key Vault, select **Access policies** in the left-hand menu.
+
+2. Select **+ Add Access Policy**.
+
+   ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png 'Access policies')
+
+3. Select the **Select principal** section on the Add access policy form.
+
+   ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
+
+4. In the Principal blade, search for your Azure account you are using for this lab, select it, then select the **Select** button.
+
+   ![The user principal is selected.](media/key-vault-principal-user.png 'Principal')
+
+5. Expand the **Secret permissions** and check **Select all** under Secret Management Operations. All 8 should be selected.
+
+   ![The Select all checkbox is checked under the Secret permissions dropdown.](media/key-vault-all-secret-policy.png 'Add access policy')
+
+6. Select **Add** to add the new access policy.. When you are done, you should have an access policy for your user account. Select **Save** to save your new access policy.
+
+    ![Key Vault access policies.](media/key-vault-access-policies-user.png 'Access policies')
+
+### Task 7: Add Key Vault secrets
+
+Azure Key Vault is used to Securely store and tightly control access to tokens, passwords, certificates, API keys, and other secrets. In addition, secrets that are stored in Azure Key Vault are centralized, giving the added benefits of only needing to update secrets in one place, such as an application key value after recycling the key for security purposes. In this task, we will store application secrets in Azure Key Vault, then configure the Function Apps and Web App to securely connect to Azure Key Vault by performing the following steps:
+
+- Add secrets to the provisioned Key Vault.
+- Create a system-assigned managed identity for each Azure Function App and the Web App to read from the vault.
+- Create an access policy in Key Vault with the "Get" secret permission, assigned to each of these application identities.
+
+1. Within Key Vault, select **Secrets** in the left-hand menu, then select **+ Generate/Import** to create a new secret.
+
+   ![The Secrets menu item is highlighted, and the Generate/Import button is selected.](media/key-vault-secrets-generate.png 'Key Vault Secrets')
+
+2. Use the table below for the Name / Value pairs to use when creating the secrets. You only need to populate the **Name** and **Value** fields for each secret, and can leave the other fields at their default values.
+
+   | **Name**            |                                                                          **Value**                                                                          |
+   | ------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
+   | CosmosDBConnection  |                            Your Cosmos DB connection string found here: **Cosmos DB account > Keys > Primary Connection String**                            |
+   | CosmosDBEndpoint    |                                           Your Cosmos DB endpoint found here: **Cosmos DB account > Keys > URI**                                            |
+   | CosmosDBPrimaryKey  |                                      Your Cosmos DB primary key found here: **Cosmos DB account > Keys > Primary Key**                                      |
+   | IoTHubConnection    |                         Your IoT Hub connection string found here: **IoT Hub > Built-in endpoints > Event Hub-compatible endpoint**                         |
+   | ColdStorageAccount  |  Connection string to the Azure Storage account whose name starts with `iotstore`, found here: **Storage account > Access keys > key1 Connection string**   |
+   | EventHubsConnection | Your Event Hubs connection string found here: **Event Hubs namespace > Shared access policies > RootManageSharedAccessKey > Connection string-primary key** |
+   | LogicAppUrl         |                         Your Logic App's HTTP Post URL found here: **Logic App Designer > Select the HTTP trigger > HTTP POST URL**                         |
+
+   When you are finished creating the secrets, your list should look similar to the following:
+
+   ![The list of secrets is displayed.](media/key-vault-keys.png 'Key Vault Secrets')
+
+### Task 8: Create Azure Databricks cluster
 
 Contoso Auto wants to use the valuable data they are collecting from their vehicles to make predictions about the health of their fleet to reduce downtime due to maintenance-related issues. One of the predictions they would like to make is whether a vehicle's battery is likely to fail within the next 30 days, based on historical data. They would like to run a nightly batch process to identify vehicles that should be serviced, based on these predictions. They also want to have a way to make a prediction in real time when viewing a vehicle on their fleet management website.
 
@@ -647,7 +671,7 @@ In this task, you will create a new cluster on which data exploration and model 
 
 12. **Wait** until the library's status shows as **Installed** before continuing.
 
-### Task 8: Configure Key Vault-backed Databricks secret store
+### Task 9: Configure Key Vault-backed Databricks secret store
 
 In an earlier task, you added application secrets to Key Vault, such as the Cosmos DB connection string. In this task, you will configure the Key Vault-backed Databricks secret store to securely access these secrets.
 
