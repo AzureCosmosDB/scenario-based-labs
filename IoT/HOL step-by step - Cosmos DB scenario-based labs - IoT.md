@@ -507,6 +507,7 @@ Perform these steps to create an access policy that enables the "Get" secret per
    ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png 'Access policies')
 
 6. Select the **Select principal** section on the Add access policy form.
+
    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
 7. In the Principal blade, search for your `IoT-CosmosDBProcessing` Function App's service principal, select it, then select the **Select** button.
@@ -521,11 +522,11 @@ Perform these steps to create an access policy that enables the "Get" secret per
 
 10. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
 
-   ![Key Vault access policies.](media/key-vault-access-policies-function1.png 'Access policies')
+    ![Key Vault access policies.](media/key-vault-access-policies-function1.png 'Access policies')
 
 11. Select the **Select principal** section on the Add access policy form.
 
-   ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
+    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
 12. In the Principal blade, search for your `IoT-StreamProcessing` Function App's service principal, select it, then select the **Select** button.
 
