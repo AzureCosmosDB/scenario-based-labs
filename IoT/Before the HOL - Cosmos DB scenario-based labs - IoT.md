@@ -57,33 +57,25 @@ Download a starter project that includes a vehicle simulator, Azure Function App
 
 In this task, you will deploy the infrastructure for this demo using an ARM Template deployment.
 
-1. In the [Azure portal](https://portal.azure.com), select **+ Create a resource**. Enter **template** in the search box, then select **Template deployment (deploy using custom templates)**.
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsolliancenet%2Fcosmos-db-scenario-based-labs%2Fmaster%2FIoT%2Fdeploy%2FlabDeploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+
+1. Select the **Deploy to Azure** button below to get started. When prompted, sign in to the Azure portal with your account.
 
    ![Create a resource is highlighted, and template is entered in the search box.](media/portal-search-template.png 'New Template Resource')
 
-2. Select **Create** on the Template deployment overview blade.
-
-3. On the **Custom deployment** pane, select **Build your own template in the editor**.
-
-   ![The Build your own template in the editor option is highlighted.](media/portal-custom-deployment-build-own.png 'Custom deployment')
-
-4. On the **Edit template** blade, select the **Load file** button and upload the **labDeploy.json** ARM Template located at `\cosmos-db-scenario-based-labs\IoT\deploy\labDeploy.json`.
-
-   ![The load file button is highlighted and the labDeploy.json file is selected](media/portal-custom-deployment-load.png 'Load file')
-
-5. Select **Save**.
-
-6. Enter the following values:
+2. Enter the following values:
 
    - Subscription: select the Azure subscription you are using for this lab.
    - Resource group: _if you are using a hosted environment, select the existing `iot` resource group provided for you_; Otherwise, create a new resource group like `cosmos-db-iot`.
-   - Location: _it doesn't matter which region is selected, the template will use West US to ensure everything works_
+   - Location: select the location closest to you.
 
-7. Check the **I agree to the terms and conditions stated above** box.
+3. Check the **I agree to the terms and conditions stated above** box.
 
    ![The fields are completed as shown.](media/portal-template-params.png 'Custom template form')
 
-8. Select **Purchase**
+4. Select **Purchase**
 
    After the deployment completes, you can select **Outputs** from the left-hand menu to find the names of your new Azure resources, as well as useful information like connection strings and endpoints.
 
