@@ -75,7 +75,7 @@ In this task, you will deploy the infrastructure for this demo using an ARM Temp
 
 4. Select **Purchase**
 
-   After the deployment completes, you can select **Outputs** from the left-hand menu to find the names of your new Azure resources, as well as useful information like connection strings and endpoints.
+5. After the deployment completes, you can select **Outputs** from the left-hand menu to find the names of your new Azure resources, as well as useful information like connection strings and endpoints. **Copy these values** to Notepad or similar text editor.
 
    ![The outputs are displayed after the template deployment is completed.](media/portal-deployment-outputs.png 'Microsoft Template - Outputs')
 
