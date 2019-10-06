@@ -31,7 +31,7 @@
         }
     },
     "variables": {
-        "location": "westus",
+        "location": "[parameters('location')]",
         "name-suffix": "[uniqueString(resourceGroup().id)]",
 
         "iotHubName": "[concat('iot-hub-', variables('name-suffix'))]",
