@@ -164,9 +164,11 @@ In this task, you will create a Cosmos DB database and three SQL-based container
 
    d. Partition key: **/partitionKey**
 
-   e. Throughput: **15000**
+   e. Throughput: **50000**
 
    ![The New Container form is displayed with the previously described values.](media/cosmos-new-container-metadata.png 'New metadata container')
+
+   > **Note**: We are initially setting the throughput on this container to `50000` RU/s because the data generator will perform a bulk insert of metadata the first time it runs. After inserting the data, it will programmatically reduce the throughput to `15000`.
 
 6. Select **OK** to create the container.
 
