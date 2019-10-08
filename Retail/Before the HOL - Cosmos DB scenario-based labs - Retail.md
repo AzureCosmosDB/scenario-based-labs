@@ -16,17 +16,19 @@
 
 ## Requirements
 
-1.  Microsoft Azure subscription must be pay-as-you-go or MSDN.
+1. Microsoft Azure subscription must be pay-as-you-go or MSDN.
 
-    - Trial subscriptions will not work.
+   - Trial subscriptions will not work.
 
-1.  [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
+2. [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
 
-1.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
+3. [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
 
-1.  [.Net Framework 4.7.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
+4. [.Net Framework 4.7.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
-1.  [.Net Core 2.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
+5. [.Net Core 2.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
+
+   - If you are running Visual Studio 2017, install SDK 2.2.109
 
 ## Before the hands-on lab
 

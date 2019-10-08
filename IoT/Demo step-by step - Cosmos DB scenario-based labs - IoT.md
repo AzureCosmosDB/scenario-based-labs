@@ -97,8 +97,10 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
    - Trial subscriptions will not work.
    - **IMPORTANT**: To complete the OAuth 2.0 access components of this hands-on lab you must have permissions within your Azure subscription to create an App Registration and service principal within Azure Active Directory.
 2. Install [Power BI Desktop](https://powerbi.microsoft.com/desktop/)
-3. Install [Visual Studio 2019 Community](https://visualstudio.microsoft.com/vs/) or greater
-4. Install [.NET Core SDK 2.2](https://dotnet.microsoft.com/download/dotnet-core/2.2) or greater
+3. [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
+4. Install [Visual Studio 2019 Community](https://visualstudio.microsoft.com/vs/) or greater
+5. Install [.NET Core SDK 2.2](https://dotnet.microsoft.com/download/dotnet-core/2.2) or greater
+   1. If you are running Visual Studio 2017, install SDK 2.2.109
 
 ## Exercise 1: Configure environment
 
@@ -372,6 +374,12 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 
 > **NOTE:** If the web application displays an error, then go into the Azure Portal for the **IoTWebApp** and click **Restart**. When the Azure Web App is created from the ARM Template and configured for .NET Core, it may need to be restarted for the .NET Core configuration to be fully installed and ready for the application to run. Once restarted, the web application will run as expected.
 > ![App Service blade with Restart button highlighted](media/IoTWebApp-App-Service-Restart-Button.png "App Service blade with Restart button highlighted")
+
+> **Further troubleshooting:** If, after restarting the web application more than once, you still encounter a _500_ error, there may be a problem with the system identity for the web app. To check if this is the issue, open the web application's Configuration and view its Application Settings. Open the **CosmosDBConnection** setting and look at the **Key Vault Reference Details** underneath the setting. You should see an output similar to the following, which displays the secret details and indicates that it is using the _System assigned managed identity_:
+
+![The application setting shows the Key Vault reference details underneath.](media/webapp-app-setting-key-vault-reference.png "Key Vault reference details")
+
+> If you see an error in the Key Vault Reference Details, go to Key Vault and delete the access policy for the web app's system identity. Then go back to the web app, turn off the System Identity, turn it back on (which creates a new one), then re-add it to Key Vault's access policies.
 
 ### Task 10: Create Azure Databricks cluster
 
