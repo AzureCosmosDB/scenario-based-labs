@@ -1117,13 +1117,15 @@ Now that the web service is deployed to ACI, we can call it to make predictions 
 
 6. Select **Save** to save your new application setting.
 
-7. Navigate to the deployed Fleet Management web app and open a random Vehicle record. Select **Predict battery failure**, which calls your deployed scoring web service and makes a prediction for the vehicle.
+7. Restart the Web App (Overview blade).
+
+8. Navigate to the deployed Fleet Management web app and open a random Vehicle record. Select **Predict battery failure**, which calls your deployed scoring web service and makes a prediction for the vehicle.
 
    ![The prediction results show that the battery is not predicted to fail in the next 30 days.](media/web-prediction-no.png 'Vehicle details with prediction')
 
    This vehicle has a low number of **Lifetime cycles used**, compared to the battery's rated 200 cycle lifespan. The model predicted that the battery will not fail within the next 30 days.
 
-8. Look through the list of vehicles to find one whose **Lifetime cycles used** value is closer to 200, then make the prediction for the vehicle.
+9. Look through the list of vehicles to find one whose **Lifetime cycles used** value is closer to 200, then make the prediction for the vehicle.
 
    ![The prediction results show that the battery is is predicted to fail in the next 30 days.](media/web-prediction-yes.png 'Vehicle details with prediction')
 
