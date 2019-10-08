@@ -1,0 +1,62 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVaultName": {
+            "type": "string"
+        },
+        "iotWebAppName": {
+            "type": "string"
+        },
+        "functionAppStreamProcessingName": {
+            "type": "string"
+        },
+        "functionAppCosmosDBProcessingName": {
+            "type": "string"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults/accessPolicies",
+            "name": "[concat(parameters('keyVaultName'), '/add')]",
+            "apiVersion": "2018-02-14",
+            "dependsOn": [
+            ],
+            "properties": {
+                "accessPolicies": [
+                    {
+                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', parameters('iotWebAppName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').tenantId]",
+                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', parameters('iotWebAppName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "get"
+                            ]
+                        }
+                    },
+                    {
+                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', parameters('functionAppStreamProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').tenantId]",
+                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', parameters('functionAppStreamProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "get"
+                            ]
+                        }
+                    },
+                    {
+                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', parameters('functionAppCosmosDBProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').tenantId]",
+                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', parameters('functionAppCosmosDBProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "get"
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+
+
+    ]
+}
