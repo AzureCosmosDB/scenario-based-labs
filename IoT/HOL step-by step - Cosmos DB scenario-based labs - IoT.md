@@ -514,6 +514,8 @@ Perform these steps to create an access policy that enables the "Get" secret per
 
    ![The Function App's principal is selected.](media/key-vault-principal-function1.png 'Principal')
 
+   > **Note**: It may take a while before your managed identities appear after adding them in the previous step. If you cannot find this or the other identities, try refreshing the page or wait a minute or two.
+
 8. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
 
    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
@@ -925,7 +927,7 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
    ![The Secret Identifier is highlighted.](media/key-vault-secret-identifier.png 'Secret Identifier')
 
-   When you add the Key Vault reference to this secret within a Function App's App Settings, you will use the following format: `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is replaced by the Secret Identifier (URI) value above.
+   When you add the Key Vault reference to this secret within a Function App's App Settings, you will use the following format: `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is replaced by the Secret Identifier (URI) value above. **Make sure you remove the curly braces (`{}`)**.
 
    For example, a complete reference would look like the following:
 
@@ -993,6 +995,12 @@ When you set the App Settings for the Function Apps and Web App in the next task
     ![In the Application Settings section, the previously mentioned key / value pairs are displayed.](media/application-settings-web-app.png 'Application Settings section')
 
 15. Select **Save** to apply your changes.
+
+> Verify that the system-managed identities for both Function Apps and Web App are working properly and able to access Key Vault. To do this, within each Function App and the Web App, open the **CosmosDBConnection** setting and look at the **Key Vault Reference Details** underneath the setting. You should see an output similar to the following, which displays the secret details and indicates that it is using the _System assigned managed identity_:
+
+![The application setting shows the Key Vault reference details underneath.](media/webapp-app-setting-key-vault-reference.png "Key Vault reference details")
+
+> If you see an error in the Key Vault Reference Details, go to Key Vault and delete the access policy for the related system identity. Then go back to the Function App or web app, turn off the System Identity, turn it back on (which creates a new one), then re-add it to Key Vault's access policies.
 
 ### Task 3: Open solution
 
@@ -1337,7 +1345,14 @@ The Function App and Web App projects contain blocks of code that need to be com
     ![The Fleet Management web app home page is displayed.](media/webapp-home-page.png "Fleet Management home page")
 
 > **NOTE:** If the web application displays an error, then go into the Azure Portal for the **IoTWebApp** and click **Restart**. When the Azure Web App is created from the ARM Template and configured for .NET Core, it may need to be restarted for the .NET Core configuration to be fully installed and ready for the application to run. Once restarted, the web application will run as expected.
+
 > ![App Service blade with Restart button highlighted](media/IoTWebApp-App-Service-Restart-Button.png "App Service blade with Restart button highlighted")
+
+> **Further troubleshooting:** If, after restarting the web application more than once, you still encounter a _500_ error, there may be a problem with the system identity for the web app. To check if this is the issue, open the web application's Configuration and view its Application Settings. Open the **CosmosDBConnection** setting and look at the **Key Vault Reference Details** underneath the setting. You should see an output similar to the following, which displays the secret details and indicates that it is using the _System assigned managed identity_:
+
+![The application setting shows the Key Vault reference details underneath.](media/webapp-app-setting-key-vault-reference.png "Key Vault reference details")
+
+> If you see an error in the Key Vault Reference Details, go to Key Vault and delete the access policy for the web app's system identity. Then go back to the web app, turn off the System Identity, turn it back on (which creates a new one), then re-add it to Key Vault's access policies.
 
 ### Task 8: View Cosmos DB processing Function App in the portal
 
