@@ -1969,11 +1969,11 @@ In this exercise, you will insert, update, and delete a vehicle record.
 
     ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png "Power BI dashboard")
 
-38. If the data generator is finished sending events, you may notice that tiles on the dashboard are empty. If so, start the data generator again, this time selecting option 1 for one vehicle. If you do this, the refrigeration temperature anomaly is guaranteed, and you will see the refrigeration unit temperature gradually climb above the 22.5 degree Fahrenheit alert threshold. Alternatively, you may opt to simulate more vehicles and observe the high event count numbers.
+38. If the data generator is finished sending events, you may notice that tiles on the dashboard are empty. If so, start the data generator again, this time selecting **option 1** for one vehicle. If you do this, the refrigeration temperature anomaly is guaranteed, and you will see the refrigeration unit temperature gradually climb above the 22.5 degree Fahrenheit alert threshold. Alternatively, you may opt to simulate more vehicles and observe the high event count numbers.
 
-    ![The live dashboard is shown with events.](media/power-bi-dashboard-live-results.png "Power BI dashboard")![](media/power-bi-dashboard-live-results.png)
+    ![The live dashboard is shown with events.](media/power-bi-dashboard-live-results.png "Power BI dashboard")
 
-    After the generator starts sending vehicle telemetry, the dashboard should start working after a few seconds. In this screenshot, we are simulating 50 vehicles with 2,486 events in the last 10 seconds.
+    After the generator starts sending vehicle telemetry, the dashboard should start working after a few seconds. In this screenshot, we are simulating 50 vehicles with 2,486 events in the last 10 seconds. You may see a higher or lower value for the `eventCount`, depending on the speed of your computer on which you are running the generator, your network speed and latency, and other factors.
 
 ## Exercise 9: Run the predictive maintenance batch scoring
 
@@ -2031,6 +2031,17 @@ To run this notebook, perform the following steps:
    ![The screenshot displays the lab cluster selected for attaching to the notebook.](media/databricks-notebook-attach-cluster.png 'Attach cluster')
 
 4. You may use keyboard shortcuts to execute the cells, such as **Ctrl+Enter** to execute a single cell, or **Shift+Enter** to execute a cell and move to the next one below.
+
+In both notebooks, you will be required to provide values for your Machine Learning service workspace. You can find these values within the Overview blade of your Machine Learning service workspace that is located in your lab resource group.
+
+The values highlighted in the screenshot below are for the following variables in the notebooks:
+
+1. `subscription_id`
+2. `resource_group`
+3. `workspace_name`
+4. `workspace_region`
+
+![The required values are highlighted.](media/machine-learning-workspace-values.png "Machine Learning service workspace values")
 
 > If you wish to execute this notebook on a scheduled basis, such as every evening, you can use the Jobs feature in Azure Databricks to accomplish this.
 
