@@ -133,29 +133,25 @@ Download a starter project that includes a vehicle simulator, Azure Function App
 
 ### Task 1: Run deployment scripts
 
-In this task, you will deploy the infrastructure for this demo using an ARM Template deployment.
+1. Select the **Deploy to Azure** button below to get started. When prompted, sign in to the Azure portal with your account.
 
-1. In the [Azure portal](https://portal.azure.com), select **+ Create a resource** then create a new **Template deployment**.
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsolliancenet%2Fcosmos-db-scenario-based-labs%2Fmaster%2FIoT%2Fdeploy%2FdemoDeploy.json" target="_blank">
+   <img src="http://azuredeploy.net/deploybutton.png"/>
+   </a>
 
-2. On the **Custom deployment** pane, select **Build your own template in the editor**.
+2. Enter the following values:
 
-3. On the **Edit template** blade, select the **Load file** button and upload the **demoDeploy.json** ARM Template located at `\cosmos-db-scenario-based-labs\IoT\deploy\demoDeploy.json`.
+   - **Subscription**: select the Azure subscription you are using for this lab.
+   - **Resource group**: _if you are using a hosted environment, select the existing `iot` resource group provided for you_; Otherwise, create a new resource group like `cosmos-db-iot`.
+   - **Location**: select the location closest to you. This value sets the Resource Group location.
+   - **Recipient Email**: Enter an email address to receive notifications from the Logic App.
+   - **Location**: select the location closest to you. This value sets the location for all deployed services. _The options in this list are limited to those locations commonly available to all services in this solution_.
 
-4. Select **Save**.
-
-5. Enter the following values:
-
-    - Subscription: select the Azure subscription you are using for this lab.
-    - Resource group: _if you are using a hosted environment, select the existing `iot` resource group provided for you_; Otherwise, create a new resource group like `cosmos-db-iot`.
-    - Location: _it doesn't matter which region is selected, the template will use West US to ensure everything works_
-    - Recipient Email: **Enter an email address to receive notifications from the Logic App**
-    - Key Vault Access Policy User Object Id: paste your user account's `Object ID` you copied earlier.
-
-6. Check the **I agree to the terms and conditions stated above** box.
+3. Check the **I agree to the terms and conditions stated above** box.
 
     ![The template form is displayed with the previously described values.](media/portal-deploy-template-form.png "Custom Template")
 
-7. Select **Purchase**
+4. Select **Purchase**
 
 > The template deployment will take a few minutes to complete. Continue with the guide once it completes
 
