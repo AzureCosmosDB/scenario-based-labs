@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
@@ -24,6 +25,7 @@ namespace FleetDataGenerator
         private static List<SimulatedVehicle> _simulatedVehicles = new List<SimulatedVehicle>();
         private static CancellationTokenSource _cancellationSource;
         private static Dictionary<string, Task> _runningVehicleTasks;
+        private static HttpClient _httpClient = new HttpClient();
 
         private const string DatabaseName = "ContosoAuto";
         private const string TelemetryContainerName = "telemetry";
@@ -146,7 +148,12 @@ namespace FleetDataGenerator
                     break;
             }
 
-            if (runGenerator)
+            // Perform health checks on the Azure Function Apps that will process the vehicle telemetry.
+            // If the health checks fail, do not run the generator.
+            var healthChecksPassed = await PerformFunctionAppHealthChecks(arguments.CosmosProcessingFunctionHealthCheckUrl,
+                arguments.StreamProcessingFunctionHealthCheckUrl);
+
+            if (runGenerator && healthChecksPassed)
             {
                 // Instantiate Cosmos DB client and start sending messages:
                 using (_cosmosDbClient = new CosmosClient(cosmosDbConnectionString.ServiceEndpoint.OriginalString,
@@ -302,12 +309,16 @@ namespace FleetDataGenerator
         /// <returns>
         /// EventHubConnectionString: The primary Event Hubs connection string for sending telemetry.
         /// CosmosDbConnectionString: The primary or secondary connection string copied from your Cosmos DB properties.
+        /// CosmosProcessingFunctionHealthCheckUrl: The URL to the Cosmos DB Processing Function App's health check function.
+        /// StreamProcessingFunctionHealthCheckUrl: The URL to the Stream Processing Function App's health check function.
         /// NumberSimulatedTrucks: The number of trucks to simulate. Must be a number between 1 and 1,000.
         /// MillisecondsToRun: The maximum amount of time to allow the generator to run before stopping transmission of data. The default value is 14,400.
         /// MillisecondsToLead: The amount of time to wait before sending simulated data. Default value is 0.
         /// </returns>
         private static (string IoTHubConnectionString,
             string CosmosDbConnectionString,
+            string CosmosProcessingFunctionHealthCheckUrl,
+            string StreamProcessingFunctionHealthCheckUrl,
             int NumberSimulatedTrucks,
             int MillisecondsToRun,
             int MillisecondsToLead) ParseArguments()
@@ -317,6 +328,8 @@ namespace FleetDataGenerator
                 // The Configuration object will extract values either from the machine's environment variables, or the appsettings.json file.
                 var iotHubConnectionString = _configuration["IOT_HUB_CONNECTION_STRING"];
                 var cosmosDbConnectionString = _configuration["COSMOS_DB_CONNECTION_STRING"];
+                var cosmosProcessingFunctionHealthCheckUrl = _configuration["COSMOS_PROCESSING_FUNCTION_HEALTHCHECK_URL"];
+                var streamProcessingFunctionHealthCheckUrl = _configuration["STREAM_PROCESSING_FUNCTION_HEALTHCHECK_URL"];
                 var numberOfMillisecondsToRun = (int.TryParse(_configuration["SECONDS_TO_RUN"], out var outputSecondToRun) ? outputSecondToRun : 0) * 1000;
                 var numberOfMillisecondsToLead = (int.TryParse(_configuration["SECONDS_TO_LEAD"], out var outputSecondsToLead) ? outputSecondsToLead : 0) * 1000;
                 var numberOfSimulatedTrucks = int.TryParse(_configuration["NUMBER_SIMULATED_TRUCKS"], out var outputSimulatedTrucks) ? outputSimulatedTrucks : 0;
@@ -331,12 +344,23 @@ namespace FleetDataGenerator
                     throw new ArgumentException("IOT_HUB_CONNECTION_STRING must be provided");
                 }
 
+                if (string.IsNullOrWhiteSpace(cosmosProcessingFunctionHealthCheckUrl))
+                {
+                    throw new ArgumentException("COSMOS_PROCESSING_FUNCTION_HEALTHCHECK_URL must be provided");
+                }
+
+                if (string.IsNullOrWhiteSpace(streamProcessingFunctionHealthCheckUrl))
+                {
+                    throw new ArgumentException("STREAM_PROCESSING_FUNCTION_HEALTHCHECK_URL must be provided");
+                }
+
                 if (numberOfSimulatedTrucks < 1 || numberOfSimulatedTrucks > 1000)
                 {
                     throw new ArgumentException("The NUMBER_SIMULATED_TRUCKS value must be a number between 1 and 1000");
                 }
 
-                return (iotHubConnectionString, cosmosDbConnectionString, numberOfSimulatedTrucks, numberOfMillisecondsToRun, numberOfMillisecondsToLead);
+                return (iotHubConnectionString, cosmosDbConnectionString, cosmosProcessingFunctionHealthCheckUrl,
+                    streamProcessingFunctionHealthCheckUrl, numberOfSimulatedTrucks, numberOfMillisecondsToRun, numberOfMillisecondsToLead);
             }
             catch (Exception e)
             {
@@ -507,6 +531,60 @@ namespace FleetDataGenerator
             {
                 WriteLineInColor("\nCosmos DB already contains data. Skipping database seeding step...", ConsoleColor.Yellow);
             }
+        }
+
+        /// <summary>
+        /// Ensures that the Function Apps which process messages originating from the generator are properly configured.
+        /// </summary>
+        /// <param name="cosmosProcessingFunctionHealthCheckUrl">The URL to the Cosmos DB Processing Function App's health check function.</param>
+        /// <param name="streamProcessingFunctionHealthCheckUrl">The URL to the Stream Processing Function App's health check function.</param>
+        /// <returns></returns>
+        private static async Task<bool> PerformFunctionAppHealthChecks(string cosmosProcessingFunctionHealthCheckUrl,
+            string streamProcessingFunctionHealthCheckUrl)
+        {
+            var endpointsHealthy = true;
+
+            WriteLineInColor("\nAccessing Azure Function App health check endpoints...", ConsoleColor.White);
+
+            // Check whether the Cosmos DB Processing Function App's health check passes.
+            var cosmosResult = await _httpClient.GetAsync(cosmosProcessingFunctionHealthCheckUrl);
+
+            if (!cosmosResult.IsSuccessStatusCode)
+            {
+                WriteLineInColor($"\nThe Cosmos DB Processing Function App returned the following error during the health check:\n" +
+                                 $"({cosmosResult.StatusCode}) {await cosmosResult.Content.ReadAsStringAsync()}", ConsoleColor.Yellow);
+                endpointsHealthy = false;
+            }
+            else
+            {
+                WriteLineInColor("\nThe Cosmos DB Processing Function App is healthy", ConsoleColor.Green);
+            }
+
+            // Check whether the Stream Processing Function App's health check passes.
+            var streamResult = await _httpClient.GetAsync(streamProcessingFunctionHealthCheckUrl);
+
+            if (!streamResult.IsSuccessStatusCode)
+            {
+                WriteLineInColor($"\nThe Stream Processing Function App returned the following error during the health check:\n" +
+                                 $"({streamResult.StatusCode}) {await streamResult.Content.ReadAsStringAsync()}", ConsoleColor.Yellow);
+                endpointsHealthy = false;
+            }
+            else
+            {
+                WriteLineInColor("\nThe Stream Processing Function App is healthy", ConsoleColor.Green);
+            }
+
+            if (!endpointsHealthy)
+            {
+                WriteLineInColor("\nPlease resolve the issues with the Function Apps before running the generator. If the health checks " +
+                                 "indicated that application configuration information is missing, check the values for the indicated settings in the portal.", ConsoleColor.Red);
+            }
+            else
+            {
+                WriteLineInColor("\nThe Azure Function Apps passed preliminary health checks", ConsoleColor.White);
+            }
+
+            return endpointsHealthy;
         }
     }
 }

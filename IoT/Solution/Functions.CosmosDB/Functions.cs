@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
 using CosmosDbIoTScenario.Common.Models.Alerts;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.Documents;
@@ -15,6 +17,7 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -244,6 +247,39 @@ namespace Functions.CosmosDB
                         Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleEventOut))));
                 }
             }
+        }
+
+        [FunctionName("HealthCheck")]
+        public static async Task<IActionResult> HealthCheck(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("Performing health check on the Cosmos DB processing Function App.");
+
+            // This is a very simple health check that ensures each configuration setting exists and has a value.
+            // More thorough checks would validate each value against an expected format or by connecting to each service as required.
+            // The function will return an HTTP status of 200 (OK) if all values contain non-zero strings.
+            // If any are null or empty, the function will return an error, indicating which values are missing.
+
+            var cosmosDbConnection = Environment.GetEnvironmentVariable("CosmosDBConnection");
+            var coldStorageAccount = Environment.GetEnvironmentVariable("ColdStorageAccount");
+            var eventHubsConnection = Environment.GetEnvironmentVariable("EventHubsConnection");
+            var logicAppUrl = Environment.GetEnvironmentVariable("LogicAppUrl");
+            var recipientEmail = Environment.GetEnvironmentVariable("RecipientEmail");
+
+            var variableList = new List<string>();
+            if (string.IsNullOrWhiteSpace(cosmosDbConnection)) variableList.Add("CosmosDBConnection");
+            if (string.IsNullOrWhiteSpace(coldStorageAccount)) variableList.Add("ColdStorageAccount");
+            if (string.IsNullOrWhiteSpace(eventHubsConnection)) variableList.Add("EventHubsConnection");
+            if (string.IsNullOrWhiteSpace(logicAppUrl)) variableList.Add("LogicAppUrl");
+            if (string.IsNullOrWhiteSpace(recipientEmail)) variableList.Add("RecipientEmail");
+
+            if (variableList.Count > 0)
+            {
+                return new BadRequestObjectResult($"The service is missing one or more application settings: {string.Join(", ", variableList)}");
+            }
+
+            return new OkObjectResult($"The service contains expected application settings");
         }
     }
 }
