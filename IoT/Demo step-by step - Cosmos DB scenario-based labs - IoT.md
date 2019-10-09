@@ -22,12 +22,13 @@
     - [Task 10: Create Azure Databricks cluster](#task-10-create-azure-databricks-cluster)
     - [Task 11: Configure Key Vault-backed Databricks secret store](#task-11-configure-key-vault-backed-databricks-secret-store)
     - [Task 12: Import lab notebooks into Azure Databricks](#task-12-import-lab-notebooks-into-azure-databricks)
-    - [Task 13: View Cosmos DB processing Function App in the portal](#task-13-view-cosmos-db-processing-function-app-in-the-portal)
-    - [Task 14: Open the data generator project](#task-14-open-the-data-generator-project)
-    - [Task 15: Update application configuration](#task-15-update-application-configuration)
-    - [Task 16: Run generator](#task-16-run-generator)
-    - [Task 17: Log in to Power BI online and create real-time dashboard](#task-17-log-in-to-power-bi-online-and-create-real-time-dashboard)
-    - [Task 18: Import report in Power BI Desktop and update report data sources](#task-18-import-report-in-power-bi-desktop-and-update-report-data-sources)
+    - [Task 13: View Cosmos DB processing Function App in the portal and copy the Health Check URL](#task-13-view-cosmos-db-processing-function-app-in-the-portal-and-copy-the-health-check-url)
+    - [Task 14: View stream processing Function App in the portal and copy the Health Check URL](#task-14-view-stream-processing-function-app-in-the-portal-and-copy-the-health-check-url)
+    - [Task 15: Open the data generator project](#task-15-open-the-data-generator-project)
+    - [Task 16: Update application configuration](#task-16-update-application-configuration)
+    - [Task 17: Run generator](#task-17-run-generator)
+    - [Task 18: Log in to Power BI online and create real-time dashboard](#task-18-log-in-to-power-bi-online-and-create-real-time-dashboard)
+    - [Task 19: Import report in Power BI Desktop and update report data sources](#task-19-import-report-in-power-bi-desktop-and-update-report-data-sources)
   - [Exercise 2: Observe Change Feed using Azure Functions and App Insights](#exercise-2-observe-change-feed-using-azure-functions-and-app-insights)
     - [Task 1: View devices in IoT Hub](#task-1-view-devices-in-iot-hub)
     - [Task 2: Open App Insights Live Metrics Stream](#task-2-open-app-insights-live-metrics-stream)
@@ -499,19 +500,41 @@ In this task, you will import the Databricks notebooks into your workspace.
 
 7. Complete the **Model Deployment** notebook to deploy the model to ACI. **Note**: You can continue with the rest of the tasks below while the last cell runs (deploying the web service).
 
-### Task 13: View Cosmos DB processing Function App in the portal
-
-**Note**: It is important to complete this step prior to running the data generator. If you do not initially activate the function by viewing it in the portal after publishing it, then it can take some time before it starts processing the data from the change feed.
+### Task 13: View Cosmos DB processing Function App in the portal and copy the Health Check URL
 
 1. In the Azure portal (<https://portal.azure.com>), open the Azure Function App whose name begins with **IoT-CosmosDBProcessing**.
 
 2. Expand the **Functions** list in the left-hand menu, then select **TripProcessor**.
 
-   ![The TripProcessor function is displayed.](media/portal-tripprocessor-function.png 'TripProcessor')
+    ![The TripProcessor function is displayed.](media/portal-tripprocessor-function.png "TripProcessor")
 
 3. View the **function.json** file to the right. This file was generated when you published the Function App in Visual Studio. The bindings are the same as you saw in the project code for the function. When new instances of the Function App are created, the generated `function.json` file and a ZIP file containing the compiled application are copied to these instances, and these instances run in parallel to share the load as data flows through the architecture. The `function.json` file instructs each instance how to bind attributes to the functions, where to find application settings, and information about the compiled application (`scriptFile` and `entryPoint`).
 
-### Task 14: Open the data generator project
+4. Select the **HealthCheck** function. This function has an Http trigger that enables users to verify that the Function App is up and running, and that each configuration setting exists and has a value. The data generator calls this function before running.
+
+5. Select **Get function URL**.
+
+    ![The HealthCheck function is selected and the Get function URL link is highlighted.](media/portal-cosmos-function-healthcheck.png "HealthCheck function")
+
+6. **Copy the URL** and save it to Notepad or similar text editor for the exercise that follows.
+
+    ![The HealthCheck URL is highlighted.](media/portal-cosmos-function-healthcheck-url.png "Get function URL")
+
+### Task 14: View stream processing Function App in the portal and copy the Health Check URL
+
+1. In the Azure portal (<https://portal.azure.com>), open the Azure Function App whose name begins with **IoT-StreamProcessing**.
+
+2. Expand the **Functions** list in the left-hand menu, then select the **HealthCheck** function. Next, select **Get function URL**.
+
+    ![The HealthCheck function is selected and the Get function URL link is highlighted.](media/portal-stream-function-healthcheck.png "HealthCheck")
+
+3. **Copy the URL** and save it to Notepad or similar text editor for the exercise that follows.
+
+    ![The HealthCheck URL is highlighted.](media/portal-stream-function-healthcheck-url.png "Get function URL")
+
+> **Hint**: You can paste the Health Check URLs into a web browser to check the status at any time. The data generator programmatically accesses these URLs each time it runs, then reports whether the Function Apps are in a failed state or missing important application settings.
+
+### Task 15: Open the data generator project
 
 1. If the Visual Studio solution is not already open, navigate to `C:\cosmos-db-scenario-based-labs-master\IoT\Starter` and open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
 
@@ -519,25 +542,27 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The Program.cs file is highlighted in the Solution Explorer.](media/vs-data-generator-program.png 'Solution Explorer')
 
-### Task 15: Update application configuration
+### Task 16: Update application configuration
 
 The data generator needs two connection strings before it can successfully run; the IoT Hub connection string, and the Cosmos DB connection string. The IoT Hub connection string can be found by selecting **Shared access policies** in IoT Hub, selecting the **iothubowner** policy, then copying the **Connection string--primary key** value. This is different from the Event Hub-compatible endpoint connection string you copied earlier.
 
-![The iothubowner shared access policy is displayed.](media/iot-hub-connection-string.png 'IoT Hub shared access policy')
+![The iothubowner shared access policy is displayed.](media/iot-hub-connection-string.png "IoT Hub shared access policy")
 
 1. Open **appsettings.json** within the **FleetDataGenerator** project.
 
 2. Paste the IoT Hub connection string value in quotes next to the **IOT_HUB_CONNECTION_STRING** key. Paste the Cosmos DB connection string value in quotes next to the **COSMOS_DB_CONNECTION_STRING** key.
 
-   ![The appsettings.json file is highlighted in the Solution Explorer, and the connection strings are highlighted within the file.](media/vs-appsettings.png 'appsettings.json')
+3. The data generator also requires the Health Check URLs you copied in the previous exercise for the `HealthCheck` functions located in both Function Apps. Paste the Cosmos DB Processing Function App's `HealthCheck` function's URL in quotes next to the **COSMOS_PROCESSING_FUNCTION_HEALTHCHECK_URL** key. Paste the Stream Processing Function App's `HealthCheck` function's URL in quotes next to the **STREAM_PROCESSING_FUNCTION_HEALTHCHECK_URL** key.
 
-   The NUMBER_SIMULATED_TRUCKS value is used when you select option 5 when you run the generator. This gives you the flexibility to simulate between 1 and 1,000 trucks at a time. SECONDS_TO_LEAD specifies how many seconds to wait until the generator starts generating simulated data. The default value is 0. SECONDS_TO_RUN forces the simulated trucks to stop sending generated data to IoT Hub. The default value is 14400. Otherwise, the generator stops sending tasks when all the trips complete or you cancel by entering `Ctrl+C` or `Ctrl+Break` in the console window.
+    ![The appsettings.json file is highlighted in the Solution Explorer, and the connection strings and health check URLs are highlighted within the file.](media/vs-appsettings.png "appsettings.json")
+
+    The NUMBER_SIMULATED_TRUCKS value is used when you select option 5 when you run the generator. This gives you the flexibility to simulate between 1 and 1,000 trucks at a time. SECONDS_TO_LEAD specifies how many seconds to wait until the generator starts generating simulated data. The default value is 0. SECONDS_TO_RUN forces the simulated trucks to stop sending generated data to IoT Hub. The default value is 14400. Otherwise, the generator stops sending tasks when all the trips complete or you cancel by entering `Ctrl+C` or `Ctrl+Break` in the console window.
 
 3. **Save** the `appsettings.json` file.
 
 > As an alternative, you may save these settings as environment variables on your machine, or through the FleetDataGenerator properties. Doing this will remove the risk of accidentally saving your secrets to source control.
 
-### Task 16: Run generator
+### Task 17: Run generator
 
 In this exercise, we will explore the data generator project, **FleetDataGenerator**, update the application configuration, and run it in order to seed the metadata database with data and simulate a single vehicle.
 
@@ -555,33 +580,42 @@ In this task, you will run the generator and have it generate events for 50 truc
 - In the next exercise, we will observe the function triggers and event activities with Application Insights.
 - We need to have completed trips prior to performing batch predictions in a later exercise.
 
+In this task, you will run the generator and have it generate events for 50 trucks. The reason we are generating events for so many vehicles is two-fold:
+
+   - In the next exercise, we will observe the function triggers and event activities with Application Insights.
+   - We need to have completed trips prior to performing batch predictions in a later exercise.
+
+> **Warning**: You will receive a lot of emails when the generator starts sending vehicle telemetry. If you do not wish to receive emails, simply disable the Logic App you created.
+
 1. Within Visual Studio, right-click on the **FleetDataGenerator** project in the Solution Explorer and select **Set as Startup Project**. This will automatically run the data generator each time you debug.
 
-   ![Set as Startup Project is highlighted in the Solution Explorer.](media/vs-set-startup-project.png 'Solution Explorer')
+    ![Set as Startup Project is highlighted in the Solution Explorer.](media/vs-set-startup-project.png "Solution Explorer")
 
 2. Select the Debug button at the top of the Visual Studio window or hit **F5** to run the data generator.
 
-   ![The debug button is highlighted.](media/vs-debug.png 'Debug')
+    ![The debug button is highlighted.](media/vs-debug.png "Debug")
 
-3. When the console window appears, enter **3** to simulate 50 vehicles. The generator will resize the requested throughput for the `metadata` container, uses the bulk importer to seed the container, and resize the throughput back to 15,000 RU/s.
-   
-   > Please note: The data seeding step can take anywhere from one to several minutes, depending on your machine and internet speed.
+3. When the console window appears, enter **3** to simulate 50 vehicles. The generator will perform the Function App health checks, resize the requested throughput for the `metadata` container, use the bulk importer to seed the container, and resize the throughput back to 15,000 RU/s.
 
-   ![3 has been entered in the console window.](media/cmd-run.png 'Generator')
+    ![3 has been entered in the console window.](media/cmd-run.png "Generator")
 
 4. After the seeding is completed the generator will retrieve 50 trips from the database, sorted by shortest trip distance first so we can have completed trip data appear faster. You will see a message output for every 50 events sent, per vehicle with their VIN, the message count, and the number of miles remaining for the trip. For example: `Vehicle 19: C1OVHZ8ILU8TGGPD8 Message count: 3650 -- 3.22 miles remaining`. **Let the generator run in the background and continue to the next exercise**.
 
-   ![Vehicle simulation begins.](media/cmd-simulated-vehicles.png 'Generator')
+    ![Vehicle simulation begins.](media/cmd-simulated-vehicles.png "Generator")
 
 5. As the vehicles complete their trips, you will see a message such as `Vehicle 37 has completed its trip`.
 
-   ![A completed messages is displayed in the generator console.](media/cmd-vehicle-completed.png 'Generator')
+    ![A completed messages is displayed in the generator console.](media/cmd-vehicle-completed.png "Generator")
 
 6. When the generator completes, you will see a message to this effect.
 
-   ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png 'Generator')
+    ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png "Generator")
 
-### Task 17: Log in to Power BI online and create real-time dashboard
+If the health checks fail for the Function Apps, the data generator will display a warning, oftentimes telling you which application settings are missing. The data generator will not run until the health checks pass.
+
+![The failed health checks are highlighted.](media/cmd-healthchecks-failed.png "Generator")
+
+### Task 18: Log in to Power BI online and create real-time dashboard
 
 1. Browse to <https://powerbi.microsoft.com> and sign in with the same account you used when you created the Power BI output in Stream Analytics.
 
@@ -729,7 +763,7 @@ In this task, you will run the generator and have it generate events for 50 truc
 
     ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png 'Power BI dashboard')
 
-### Task 18: Import report in Power BI Desktop and update report data sources
+### Task 19: Import report in Power BI Desktop and update report data sources
 
 In this task, you will import a Power BI report that has been created for you. After opening it, you will update the data source to point to your Power BI instance.
 
