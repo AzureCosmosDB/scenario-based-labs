@@ -83,6 +83,7 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
+                    "location": {"value": "[variables('location')]"}
                 }
             },
             "dependsOn": [
@@ -693,48 +694,40 @@
                 }
             }
         },
+
+
+
         {
-            "type": "Microsoft.KeyVault/vaults/accessPolicies",
-            "name": "[concat(variables('keyVaultName'), '/add')]",
-            "apiVersion": "2018-02-14",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "demoDeploy_accessPolicies",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/solliancenet/cosmos-db-scenario-based-labs/master/IoT/deploy/demoDeploy_accessPolicies.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "keyVaultName": {"value": "[variables('keyVaultName')]"},
+                    "iotWebAppName": {"value": "[variables('iotWebAppName')]"},
+                    "functionAppStreamProcessingName": {"value": "[variables('functionAppStreamProcessingName')]"},
+                    "functionAppCosmosDBProcessingName": {"value": "[variables('functionAppCosmosDBProcessingName')]"}
+                }
+            },
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments/', 'labDeployment')]",
+                "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName'))]",
                 "[resourceId('Microsoft.Web/sites', variables('iotWebAppName'))]",
                 "[resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName'))]",
                 "[resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName'))]"
-            ],
-            "properties": {
-                "accessPolicies": [
-                    {
-                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('iotWebAppName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').tenantId]",
-                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('iotWebAppName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
-                        "permissions": {
-                            "secrets": [
-                                "get"
-                            ]
-                        }
-                    },
-                    {
-                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').tenantId]",
-                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
-                        "permissions": {
-                            "secrets": [
-                                "get"
-                            ]
-                        }
-                    },
-                    {
-                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').tenantId]",
-                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
-                        "permissions": {
-                            "secrets": [
-                                "get"
-                            ]
-                        }
-                    }
-                ]
-            }
+            ]
         },
+        
+
+
+
 
         {
             "type": "Microsoft.StreamAnalytics/streamingjobs/outputs",

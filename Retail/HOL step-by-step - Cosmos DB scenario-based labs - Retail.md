@@ -196,7 +196,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 5. Select the **Shared-Configuration** notebook
 
-![The workspace menu is displayed with `includes` and `shared-configuration` highlighted.](./media/xx_DataBricks_08.png 'Navigate to Shared-Configuration')
+![The workspace menu is displayed with `includes` and `shared-configuration` highlighted.](./media/xx_Databricks_08.png 'Navigate to Shared-Configuration')
 
 6. Update the configuration settings and set the following using the values from your lab setup script output:
 
@@ -218,7 +218,7 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 9. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
-![Click the `detached` drop down, select the small cluster.](./media/xx_DataBricks_09.png 'Set the cluster')
+![Click the `detached` drop down, select the small cluster.](./media/xx_Databricks_09.png 'Set the cluster')
 
 10. Select **Run All**
 
