@@ -777,15 +777,17 @@ You should now see your Event Hubs input listed.
 
 3. Select **Save**.
 
-4. While remaining in the Outputs blade, select **+ Add** once again, then select **Power BI** from the list.
+4. **If you have never signed in to Power BI with this account**, open a new browser tab and navigate to <https://powerbi.com> and sign in. Confirm any messages if they appear and continue to the next step after the home page appears. This will help the connection authorization step from Stream Analytics succeed and find the group workspace.
+
+5. While remaining in the Outputs blade, select **+ Add** once again, then select **Power BI** from the list.
 
    ![The Power BI output is selected in the Add menu.](media/stream-analytics-outputs-add-power-bi.png 'Outputs')
 
-5. In the **New output** form, look toward the bottom to find the **Authorize connection** section, then select **Authorize** to sign in to your Power BI account. If you do not have a Power BI account, select the _Sign up_ option first.
+6. In the **New output** form, look toward the bottom to find the **Authorize connection** section, then select **Authorize** to sign in to your Power BI account. If you do not have a Power BI account, select the _Sign up_ option first.
 
    ![The Authorize connection section is displayed.](media/stream-analytics-authorize-power-bi.png 'Authorize connection')
 
-6. After authorizing the connection to Power BI, specify the following configuration options in the form:
+7. After authorizing the connection to Power BI, specify the following configuration options in the form:
 
    1. **Output alias**: Enter **powerbi**.
    2. **Group workspace**: Select **My workspace**.
@@ -794,7 +796,7 @@ You should now see your Event Hubs input listed.
 
    ![The New Output form is displayed with the previously described values.](media/stream-analytics-new-output-power-bi.png 'New output')
 
-7. Select **Save**.
+8. Select **Save**.
 
 You should now have two outputs listed.
 
@@ -897,15 +899,19 @@ You may wonder, if a Function App contains several functions within, _why do we 
 
 Now let's introduce the Function Apps and Web App and how they contribute to the architecture.
 
-- **IoT-StreamProcessing Function App**: This is the Stream Processing Function App. It contains a single function, named `IoTHubTrigger`, which is automatically triggered by the IoT Hub's Event Hub endpoint as vehicle telemetry is sent by the data generator. The function performs some light processing to the data by defining the partition key value, the document's TTL, adds a timestamp value, then saves the information to Cosmos DB.
+- **IoT-StreamProcessing Function App**: This is the Stream Processing Function App, and it contains a two functions:
+
+  - **IoTHubTrigger**: This function is automatically triggered by the IoT Hub's Event Hub endpoint as vehicle telemetry is sent by the data generator. The function performs some light processing to the data by defining the partition key value, the document's TTL, adds a timestamp value, then saves the information to Cosmos DB.
+  - **HealthCheck**: This function has an Http trigger that enables users to verify that the Function App is up and running, and that each configuration setting exists and has a value. More thorough checks would validate each value against an expected format or by connecting to each service as required. The function will return an HTTP status of `200` (OK) if all values contain non-zero strings. If any are null or empty, the function will return an error (`400`), indicating which values are missing. The data generator calls this function before running.
 
   ![The Event Processing function is shown.](media/solution-architecture-function1.png 'Solution architecture')
 
-- **IoT-CosmosDBProcessing Function App**: This is the Trip Processing Function App. It contains three functions, each triggered by the Cosmos DB Change Feed on the `telemetry` container. Because the Cosmos DB Change Feed supports multiple consumers, these three functions can run in parallel, processing the same information simultaneously without conflicting with one another. When we define the `CosmosDBTrigger` for each of these functions, we configure the trigger settings to connect to a Cosmos DB collection named `leases` to keep track of which change feed events they have processed. We also set the `LeaseCollectionPrefix` value for each function with a unique prefix so one function does not attempt to retrieve or update the lease information for another. The following functions are in this Function App:
+- **IoT-CosmosDBProcessing Function App**: This is the Trip Processing Function App. It contains three functions that are triggered by the Cosmos DB Change Feed on the `telemetry` container. Because the Cosmos DB Change Feed supports multiple consumers, these three functions can run in parallel, processing the same information simultaneously without conflicting with one another. When we define the `CosmosDBTrigger` for each of these functions, we configure the trigger settings to connect to a Cosmos DB collection named `leases` to keep track of which change feed events they have processed. We also set the `LeaseCollectionPrefix` value for each function with a unique prefix so one function does not attempt to retrieve or update the lease information for another. The following functions are in this Function App:
 
   - **TripProcessor**: This function groups vehicle telemetry data by VIN, retrieves the associated Trip record from the `metadata` container, updates the Trip record with a trip start timestamp, an end timestamp if completed, and a status showing whether the trip has started, is delayed, or has completed. It also updates the associated Consignment record with the status, and triggers the Logic App with the trip information if an alert needs to be emailed to the recipient defined in the Function App's app settings (`RecipientEmail`).
   - **ColdStorage**: This function connects to the Azure Storage account (`ColdStorageAccount`) and writes the raw vehicle telemetry data for cold storage in the following time-sliced path format: `telemetry/custom/scenario1/yyyy/MM/dd/HH/mm/ss-fffffff.json`.
   - **SendToEventHubsForReporting**: This function simply sends the vehicle telemetry data straight to Event Hubs, allowing Stream Analytics to apply windowed aggregates and save those aggregates in batches to Power BI and to the Cosmos DB `metadata` container.
+  - **HealthCheck**: As with the function of the same name within the Stream Processing Function App, this function has an Http trigger that enables users to verify that the Function App is up and running, and that each configuration setting exists and has a value. The data generator calls this function before running.
 
   ![The Trip Processing function is shown.](media/solution-architecture-function2.png 'Solution architecture')
 
@@ -1011,6 +1017,8 @@ When you set the App Settings for the Function Apps and Web App in the next task
 In this task, you will open the Visual Studio solution for this lab. It contains projects for both Function Apps, the Web App, and the data generator.
 
 1. Open Windows Explorer and navigate to the location you extracted the solution ZIP file in the _Before the HOL_ guide. If you extracted the ZIP file directly to `C:\`, you need to open the following folder: `C:\cosmos-db-scenario-based-labs-master\IoT\Starter`. Open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
+
+    > If Visual Studio prompts you to sign in when it first launches, use the account provided to you for this lab (if applicable), or an existing Microsoft account.
 
 2. After opening the solution, observe the included projects in the **Solution Explorer**:
 
@@ -1312,7 +1320,11 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-cosmos.png "App Service")
 
+4. Click **Publish** to begin.
+
     After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
+
+    > If you do not see the Output window, select **View** in Visual Studio, then **Output**.
 
 ### Task 6: Deploy Stream Processing Function App
 
@@ -1327,6 +1339,8 @@ The Function App and Web App projects contain blocks of code that need to be com
 3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-StreamProcessing**, then select **OK**.
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-stream.png "App Service")
+
+4. Click **Publish** to begin.
 
     After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
 
@@ -1344,9 +1358,15 @@ The Function App and Web App projects contain blocks of code that need to be com
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-webapp.png "App Service")
 
+4. Click **Publish** to begin.
+
     After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish. Also, the web app should open in a new browser window. If you try to navigate through the site, you will notice there is no data. We will seed the Cosmos DB `metadata` container with data in the next exercise.
 
     ![The Fleet Management web app home page is displayed.](media/webapp-home-page.png "Fleet Management home page")
+
+    If the web app does not automatically open, you can copy its URL on the publish dialog:
+
+    ![The site URL value is highlighted on the publish dialog.](media/vs-publish-site-url.png "Publish dialog")
 
 > **NOTE:** If the web application displays an error, then go into the Azure Portal for the **IoTWebApp** and click **Restart**. When the Azure Web App is created from the ARM Template and configured for .NET Core, it may need to be restarted for the .NET Core configuration to be fully installed and ready for the application to run. Once restarted, the web application will run as expected.
 
@@ -1358,9 +1378,7 @@ The Function App and Web App projects contain blocks of code that need to be com
 
 > If you see an error in the Key Vault Reference Details, go to Key Vault and delete the access policy for the web app's system identity. Then go back to the web app, turn off the System Identity, turn it back on (which creates a new one), then re-add it to Key Vault's access policies.
 
-### Task 8: View Cosmos DB processing Function App in the portal
-
-**Note**: It is important to complete this step prior to running the data generator. If you do not initially activate the function by viewing it in the portal after publishing it, then it can take some time before it starts processing the data from the change feed.
+### Task 8: View Cosmos DB processing Function App in the portal and copy the Health Check URL
 
 1. In the Azure portal (<https://portal.azure.com>), open the Azure Function App whose name begins with **IoT-CosmosDBProcessing**.
 
@@ -1369,6 +1387,30 @@ The Function App and Web App projects contain blocks of code that need to be com
     ![The TripProcessor function is displayed.](media/portal-tripprocessor-function.png "TripProcessor")
 
 3. View the **function.json** file to the right. This file was generated when you published the Function App in Visual Studio. The bindings are the same as you saw in the project code for the function. When new instances of the Function App are created, the generated `function.json` file and a ZIP file containing the compiled application are copied to these instances, and these instances run in parallel to share the load as data flows through the architecture. The `function.json` file instructs each instance how to bind attributes to the functions, where to find application settings, and information about the compiled application (`scriptFile` and `entryPoint`).
+
+4. Select the **HealthCheck** function. This function has an Http trigger that enables users to verify that the Function App is up and running, and that each configuration setting exists and has a value. The data generator calls this function before running.
+
+5. Select **Get function URL**.
+
+    ![The HealthCheck function is selected and the Get function URL link is highlighted.](media/portal-cosmos-function-healthcheck.png "HealthCheck function")
+
+6. **Copy the URL** and save it to Notepad or similar text editor for the exercise that follows.
+
+    ![The HealthCheck URL is highlighted.](media/portal-cosmos-function-healthcheck-url.png "Get function URL")
+
+### Task 9: View stream processing Function App in the portal and copy the Health Check URL
+
+1. In the Azure portal (<https://portal.azure.com>), open the Azure Function App whose name begins with **IoT-StreamProcessing**.
+
+2. Expand the **Functions** list in the left-hand menu, then select the **HealthCheck** function. Next, select **Get function URL**.
+
+    ![The HealthCheck function is selected and the Get function URL link is highlighted.](media/portal-stream-function-healthcheck.png "HealthCheck")
+
+3. **Copy the URL** and save it to Notepad or similar text editor for the exercise that follows.
+
+    ![The HealthCheck URL is highlighted.](media/portal-stream-function-healthcheck-url.png "Get function URL")
+
+> **Hint**: You can paste the Health Check URLs into a web browser to check the status at any time. The data generator programmatically accesses these URLs each time it runs, then reports whether the Function Apps are in a failed state or missing important application settings.
 
 ## Exercise 4: Explore and execute data generator
 
@@ -1525,7 +1567,9 @@ The data generator needs two connection strings before it can successfully run; 
 
 2. Paste the IoT Hub connection string value in quotes next to the **IOT_HUB_CONNECTION_STRING** key. Paste the Cosmos DB connection string value in quotes next to the **COSMOS_DB_CONNECTION_STRING** key.
 
-    ![The appsettings.json file is highlighted in the Solution Explorer, and the connection strings are highlighted within the file.](media/vs-appsettings.png "appsettings.json")
+3. The data generator also requires the Health Check URLs you copied in the previous exercise for the `HealthCheck` functions located in both Function Apps. Paste the Cosmos DB Processing Function App's `HealthCheck` function's URL in quotes next to the **COSMOS_PROCESSING_FUNCTION_HEALTHCHECK_URL** key. Paste the Stream Processing Function App's `HealthCheck` function's URL in quotes next to the **STREAM_PROCESSING_FUNCTION_HEALTHCHECK_URL** key.
+
+    ![The appsettings.json file is highlighted in the Solution Explorer, and the connection strings and health check URLs are highlighted within the file.](media/vs-appsettings.png "appsettings.json")
 
     The NUMBER_SIMULATED_TRUCKS value is used when you select option 5 when you run the generator. This gives you the flexibility to simulate between 1 and 1,000 trucks at a time. SECONDS_TO_LEAD specifies how many seconds to wait until the generator starts generating simulated data. The default value is 0. SECONDS_TO_RUN forces the simulated trucks to stop sending generated data to IoT Hub. The default value is 14400. Otherwise, the generator stops sending tasks when all the trips complete or you cancel by entering `Ctrl+C` or `Ctrl+Break` in the console window.
 
@@ -1540,6 +1584,8 @@ In this task, you will run the generator and have it generate events for 50 truc
    - In the next exercise, we will observe the function triggers and event activities with Application Insights.
    - We need to have completed trips prior to performing batch predictions in a later exercise.
 
+> **Warning**: You will receive a lot of emails when the generator starts sending vehicle telemetry. If you do not wish to receive emails, simply disable the Logic App you created.
+
 1. Within Visual Studio, right-click on the **FleetDataGenerator** project in the Solution Explorer and select **Set as Startup Project**. This will automatically run the data generator each time you debug.
 
     ![Set as Startup Project is highlighted in the Solution Explorer.](media/vs-set-startup-project.png "Solution Explorer")
@@ -1548,7 +1594,7 @@ In this task, you will run the generator and have it generate events for 50 truc
 
     ![The debug button is highlighted.](media/vs-debug.png "Debug")
 
-3. When the console window appears, enter **3** to simulate 50 vehicles. The generator will resize the requested throughput for the `metadata` container, uses the bulk importer to seed the container, and resize the throughput back to 15,000 RU/s.
+3. When the console window appears, enter **3** to simulate 50 vehicles. The generator will perform the Function App health checks, resize the requested throughput for the `metadata` container, use the bulk importer to seed the container, and resize the throughput back to 15,000 RU/s.
 
     ![3 has been entered in the console window.](media/cmd-run.png "Generator")
 
@@ -1563,6 +1609,10 @@ In this task, you will run the generator and have it generate events for 50 truc
 6. When the generator completes, you will see a message to this effect.
 
     ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png "Generator")
+
+If the health checks fail for the Function Apps, the data generator will display a warning, oftentimes telling you which application settings are missing. The data generator will not run until the health checks pass. Refer to Exercise 3, Task 2 above for tips on troubleshooting the application settings.
+
+![The failed health checks are highlighted.](media/cmd-healthchecks-failed.png "Generator")
 
 ### Task 5: View devices in IoT Hub
 

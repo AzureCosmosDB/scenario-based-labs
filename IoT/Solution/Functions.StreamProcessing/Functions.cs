@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using IoTHubTrigger = Microsoft.Azure.WebJobs.EventHubTriggerAttribute;
@@ -67,6 +70,33 @@ namespace Functions.StreamProcessing
 
             if (exceptions.Count == 1)
                 throw exceptions.Single();
+        }
+
+        [FunctionName("HealthCheck")]
+        public static async Task<IActionResult> HealthCheck(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("Performing health check on the Cosmos DB processing Function App.");
+
+            // This is a very simple health check that ensures each configuration setting exists and has a value.
+            // More thorough checks would validate each value against an expected format or by connecting to each service as required.
+            // The function will return an HTTP status of 200 (OK) if all values contain non-zero strings.
+            // If any are null or empty, the function will return an error, indicating which values are missing.
+
+            var cosmosDbConnection = Environment.GetEnvironmentVariable("CosmosDBConnection");
+            var ioTHubConnection = Environment.GetEnvironmentVariable("IoTHubConnection");
+
+            var variableList = new List<string>();
+            if (string.IsNullOrWhiteSpace(cosmosDbConnection)) variableList.Add("CosmosDBConnection");
+            if (string.IsNullOrWhiteSpace(ioTHubConnection)) variableList.Add("IoTHubConnection");
+
+            if (variableList.Count > 0)
+            {
+                return new BadRequestObjectResult($"The service is missing one or more application settings: {string.Join(", ", variableList)}");
+            }
+
+            return new OkObjectResult($"The service contains expected application settings");
         }
     }
 }
