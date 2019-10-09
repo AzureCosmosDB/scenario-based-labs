@@ -69,9 +69,10 @@ In this task, you will deploy the infrastructure for this demo using an ARM Temp
 
 2. Enter the following values:
 
-   - Subscription: select the Azure subscription you are using for this lab.
-   - Resource group: _if you are using a hosted environment, select the existing `iot` resource group provided for you_; Otherwise, create a new resource group like `cosmos-db-iot`.
-   - Location: select the location closest to you.
+   - **Subscription**: select the Azure subscription you are using for this lab.
+   - **Resource group**: _if you are using a hosted environment, select the existing `iot` resource group provided for you_; Otherwise, create a new resource group like `cosmos-db-iot`.
+   - **Location**: select the location closest to you. This value sets the Resource Group location.
+   - **Location**: select the location closest to you. This value sets the location for all deployed services. _The options in this list are limited to those locations commonly available to all services in this solution_.
 
 3. Check the **I agree to the terms and conditions stated above** box.
 
