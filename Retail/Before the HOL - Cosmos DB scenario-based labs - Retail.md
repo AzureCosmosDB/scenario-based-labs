@@ -71,7 +71,11 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 > NOTE: This is necessary as the script will open a window that requires you to have already logged in to the portal.
 
-1.  Open a **PowerShell ISE** window
+1.  Open a **PowerShell ISE** window, run the following command, if prompted, click **Yes to All**:
+
+```PowerShell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
 
 1.  Browse to the **\$githubdir/Retail/deploy/deploy.ps1** PowerShell script in an PowerShell ISE window
 
