@@ -204,7 +204,9 @@ You should now see your Event Hubs input listed.
 
 ### Task 4: Add Stream Analytics outputs
 
-1. While remaining in the Outputs blade, select **+ Add** once again, then select **Power BI** from the list.
+1. **If you have never signed in to Power BI with this account**, open a new browser tab and navigate to <https://powerbi.com> and sign in. Confirm any messages if they appear and continue to the next step after the home page appears. This will help the connection authorization step from Stream Analytics succeed and find the group workspace.
+
+2. While remaining in the Outputs blade, select **+ Add** once again, then select **Power BI** from the list.
 
    ![The Power BI output is selected in the Add menu.](media/stream-analytics-outputs-add-power-bi.png 'Outputs')
 
@@ -212,8 +214,7 @@ You should now see your Event Hubs input listed.
 
    ![The Authorize connection section is displayed.](media/stream-analytics-authorize-power-bi.png 'Authorize connection')
 
-3. After authorizing the connection to Power BI, specify the following configuration options in the form:
-
+4. After authorizing the connection to Power BI, specify the following configuration options in the form:
    1. **Output alias**: Enter **powerbi**.
    2. **Group workspace**: Select **My workspace**.
    3. **Dataset name**: Enter **Contoso Auto IoT Events**.
@@ -221,7 +222,7 @@ You should now see your Event Hubs input listed.
 
    ![The New Output form is displayed with the previously described values.](media/stream-analytics-new-output-power-bi.png 'New output')
 
-4. Select **Save**.
+5. Select **Save**.
 
 You should now have two outputs listed.
 
@@ -333,6 +334,8 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-cosmos.png "App Service")
 
+5. Click **Publish** to begin.
+
     After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
 
 ### Task 8: Deploy Stream Processing Function App
@@ -348,6 +351,8 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-StreamProcessing**, then select **OK**.
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-stream.png "App Service")
+
+4. Click **Publish** to begin.
 
     After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
 
@@ -365,9 +370,15 @@ If you examine the right-hand side of the solution architecture diagram, you wil
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-webapp.png "App Service")
 
+4. Click **Publish** to begin.
+
     After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish. Also, the web app should open in a new browser window. If you try to navigate through the site, you will notice there is no data. We will seed the Cosmos DB `metadata` container with data in the next exercise.
 
     ![The Fleet Management web app home page is displayed.](media/webapp-home-page.png "Fleet Management home page")
+
+    If the web app does not automatically open, you can copy its URL on the publish dialog:
+
+    ![The site URL value is highlighted on the publish dialog.](media/vs-publish-site-url.png "Publish dialog")
 
 > **NOTE:** If the web application displays an error, then go into the Azure Portal for the **IoTWebApp** and click **Restart**. When the Azure Web App is created from the ARM Template and configured for .NET Core, it may need to be restarted for the .NET Core configuration to be fully installed and ready for the application to run. Once restarted, the web application will run as expected.
 > ![App Service blade with Restart button highlighted](media/IoTWebApp-App-Service-Restart-Button.png "App Service blade with Restart button highlighted")
@@ -490,7 +501,18 @@ In this task, you will import the Databricks notebooks into your workspace.
 
 5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks.
 
-   ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
+    ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
+
+    In both notebooks, you will be required to provide values for your Machine Learning service workspace. You can find these values within the Overview blade of your Machine Learning service workspace that is located in your lab resource group.
+
+    The values highlighted in the screenshot below are for the following variables in the notebooks:
+
+    1. `subscription_id`
+    2. `resource_group`
+    3. `workspace_name`
+    4. `workspace_region`
+
+    ![The required values are highlighted.](media/machine-learning-workspace-values.png "Machine Learning service workspace values")
 
 6. Complete the **Batch Scoring** notebook to download the trained model. **Note**: Since we've not loaded any data in Cosmos DB at this point, you can stop at **cell 17** (*Load the data from Cosmos DB to batch score it*).
 
