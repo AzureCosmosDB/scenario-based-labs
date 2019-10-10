@@ -1,10 +1,10 @@
-# Cosmos DB scenario-based labs - IoT hands-on lab step-by-step
+# Cosmos DB scenario-based labs - IoT Demo step-by-step
 
 <details>
 <summary><strong><em>Table of Contents</em></strong></summary>
 <!-- TOC -->
 
-- [Cosmos DB scenario-based labs - IoT hands-on lab step-by-step](#cosmos-db-scenario-based-labs---iot-hands-on-lab-step-by-step)
+- [Cosmos DB scenario-based labs - IoT Demo step-by-step](#cosmos-db-scenario-based-labs---iot-demo-step-by-step)
   - [Overview](#overview)
   - [Solution architecture](#solution-architecture)
   - [Requirements](#requirements)
