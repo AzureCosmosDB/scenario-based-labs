@@ -1201,7 +1201,31 @@ Now that the web service is deployed to ACI, we can call it to make predictions 
 
 1. Open the report in Power BI Desktop. Explore the report, using the slicers (status filter, customer filter, and VIN list) to filter the data for the visualizations. Also be sure to select the different tabs at the bottom of the report, such as Maintenance for more report pages.
 
-   ![The report is displayed.](media/pbi-updated-report.png 'Updated report')
+    ![The report is displayed.](media/pbi-updated-report.png "Updated report")
+
+2. Select a customer from the Customer Filter, which acts as a slicer. This means when you select an item, it applies a filter to the other items on the page and linked pages. After selecting a customer, you should see the map and graphs change. You will also see a filtered list of VINs and Status. Select the **Details** tab.
+
+    ![A customer record is selected, and an arrow is pointed at the Details tab.](media/pbi-customer-slicer.png "Customer selected")
+
+3. The Details page shows related records, filtered on the selected customer and/or VIN. Now select the **Trips** tab.
+
+    ![The details page is displayed.](media/pbi-details-tab.png "Details")
+
+4. The Trips page shows related trip information. Select **Maintenance**.
+
+    ![The trips page is displayed.](media/pbi-trips-tab.png "Trips")
+
+5. The Maintenance page shows results from the batch scoring notebook you executed in Databricks. If you do not see records here, then you need to run the entire batch scoring notebook after some trips have completed.
+
+    ![The maintenance page is displayed.](media/pbi-maintenance-tab.png "Maintenance")
+
+6. If at any time you have a number of filters set and you cannot see records, **Ctrl+Click** the **Clear Filters** button on the main report page (Trip/Consignments).
+
+    ![The Clear Filters button is highlighted.](media/pbi-clear-filters.png "Clear Filters")
+
+7. If your data generator is running while viewing the report, you can update the report with new data by clicking the **Refresh** button at any time.
+
+    ![The refresh button is highlighted.](media/pbi-refresh.png "Refresh")
 
 ## After the demo
 
