@@ -208,8 +208,10 @@
                             "/partitionKey"
                         ],
                         "kind": "Hash"
-                    },
-                    "throughput": "15000"
+                    }
+                },
+                "options": {
+                    "throughput": "50000"
                 }
             }
         },
@@ -230,7 +232,6 @@
                         ],
                         "kind": "Hash"
                     },
-                    "throughput": "15000",
                     "defaultTtl": -1,
                     "indexingPolicy": {
                         "indexingMode": "consistent",
@@ -255,6 +256,9 @@
                             }
                         ]
                     }
+                },
+                "options": {
+                    "throughput": "15000"
                 }
             }
         },
@@ -274,7 +278,9 @@
                             "/vin"
                         ],
                         "kind": "Hash"
-                    },
+                    }
+                },
+                "options": {
                     "throughput": "400"
                 }
             }
