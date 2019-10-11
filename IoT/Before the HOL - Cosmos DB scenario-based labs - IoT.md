@@ -49,7 +49,7 @@ Download a starter project that includes a vehicle simulator, Azure Function App
 
 1. From your lab computer, download the starter files by downloading a .zip copy of the Cosmos DB scenario-based labs GitHub repo.
 
-2. In a web browser, navigate to the [Cosmos DB scenario-based labs repo](https://github.com/solliancenet/cosmos-db-scenario-based-labs).
+2. In a web browser, navigate to the [Cosmos DB scenario-based labs repo](https://github.com/AzureCosmosDB/scenario-based-labs).
 
 3. On the repo page, select **Clone or download**, then select **Download ZIP**.
 
@@ -63,7 +63,7 @@ In this task, you will deploy the infrastructure for this demo using an ARM Temp
 
 1. Select the **Deploy to Azure** button below to get started. When prompted, sign in to the Azure portal with your account.
 
-   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsolliancenet%2Fcosmos-db-scenario-based-labs%2Fmaster%2FIoT%2Fdeploy%2FlabDeploy.json" target="_blank">
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzureCosmosDB%2Fscenario-based-labs%2Fmaster%2FIoT%2Fdeploy%2FlabDeploy.json" target="_blank">
    <img src="http://azuredeploy.net/deploybutton.png"/>
    </a>
 

@@ -1999,7 +1999,7 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The Import link is highlighted in the Workspace.](media/databricks-import-link.png 'Workspace')
 
-4. Select **URL** next to **Import from**, paste the following into the text box: `https://github.com/solliancenet/cosmos-db-scenario-based-labs/blob/master/IoT/Notebooks/01%20IoT.dbc`, then select **Import**.
+4. Select **URL** next to **Import from**, paste the following into the text box: `https://github.com/AzureCosmosDB/scenario-based-labs/blob/master/IoT/Notebooks/01%20IoT.dbc`, then select **Import**.
 
    ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
 

@@ -79,11 +79,13 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/solliancenet/cosmos-db-scenario-based-labs/master/IoT/deploy/labDeploy.json",
+                    "uri": "https://raw.githubusercontent.com/AzureCosmosDB/scenario-based-labs/master/IoT/deploy/labDeploy.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "location": {"value": "[variables('location')]"}
+                    "location": {
+                        "value": "[variables('location')]"
+                    }
                 }
             },
             "dependsOn": [
@@ -704,14 +706,22 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/solliancenet/cosmos-db-scenario-based-labs/master/IoT/deploy/demoDeploy_accessPolicies.json",
+                    "uri": "https://raw.githubusercontent.com/AzureCosmosDB/scenario-based-labs/master/IoT/deploy/demoDeploy_accessPolicies.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "keyVaultName": {"value": "[variables('keyVaultName')]"},
-                    "iotWebAppName": {"value": "[variables('iotWebAppName')]"},
-                    "functionAppStreamProcessingName": {"value": "[variables('functionAppStreamProcessingName')]"},
-                    "functionAppCosmosDBProcessingName": {"value": "[variables('functionAppCosmosDBProcessingName')]"}
+                    "keyVaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "iotWebAppName": {
+                        "value": "[variables('iotWebAppName')]"
+                    },
+                    "functionAppStreamProcessingName": {
+                        "value": "[variables('functionAppStreamProcessingName')]"
+                    },
+                    "functionAppCosmosDBProcessingName": {
+                        "value": "[variables('functionAppCosmosDBProcessingName')]"
+                    }
                 }
             },
             "dependsOn": [
@@ -724,7 +734,7 @@
                 "[resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName'))]"
             ]
         },
-        
+
 
 
 
