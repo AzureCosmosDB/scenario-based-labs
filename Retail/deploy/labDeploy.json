@@ -25,7 +25,7 @@
         }
     },
     "variables": {
-        "location": "westus",
+        "location": "[parameters('region')]",
 		"databaseName": "movies",
 		"throughput": "400",
         "name-suffix": "[uniqueString(resourceGroup().id)]",

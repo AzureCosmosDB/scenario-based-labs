@@ -5,7 +5,7 @@
 #################
 #Install-Module -Name Az -AllowClobber -Scope CurrentUser
 #################
-$githubPath = "YOUR GIT HUB PATH";
+$githubPath = "YOUR GIT PATH";
 $mode = "demo"  #can be 'lab' or 'demo'
 $subscriptionId = "YOUR SUB ID"
 $subName = "YOUR SUB NAME"
@@ -21,7 +21,10 @@ if ($isSpektra)
 }
 
 $databaseId = "movies";
-$region = "westus";
+
+#FYI - not all regions have been tested
+
+$region = "eastus";
 
 #register at https://api.themoviedb.org
 $movieApiKey = "YOUR KEY";
@@ -40,6 +43,93 @@ $useKeyVault = $false
 #  Functions
 #
 ###################################
+
+function SetKeyVaultValue($kvName, $name, $value)
+{
+    if ($value)
+    {
+        $res = $(az keyvault secret set --vault-name $kvName --name $name --value $value);    
+    }
+
+    return $res;
+}
+
+function DownloadNuget()
+{
+    $sourceNugetExe = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+    $targetNugetExe = "$githubPath\nuget.exe"
+    Invoke-WebRequest $sourceNugetExe -OutFile $targetNugetExe
+    Set-Alias nuget $targetNugetExe -Scope Global -Verbose
+}
+
+function BuildVS
+{
+    param
+    (
+        [parameter(Mandatory=$true)]
+        [String] $path,
+
+        [parameter(Mandatory=$false)]
+        [bool] $nuget = $true,
+        
+        [parameter(Mandatory=$false)]
+        [bool] $clean = $true
+    )
+    process
+    {
+        #install nuget...
+        DownloadNuget
+
+        #default
+        $msBuildExe = 'C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild.exe'
+
+        $msBuild = "msbuild"
+
+        try
+        {
+            & $msBuild /version
+            Write-Host "Likely on Linux/macOS."
+        }
+        catch
+        {
+            Write-Host "MSBuild doesn't exist. Use VSSetup instead."
+            
+            Install-Module VSSetup -Scope CurrentUser -Force
+            
+            $instance = Get-VSSetupInstance -All -Prerelease | Select-VSSetupInstance -Require 'Microsoft.Component.MSBuild' -Latest
+            $installDir = $instance.installationPath
+
+            Write-Host "Visual Studio is found at $installDir"
+            
+            $msBuildExe = $installDir + '\MSBuild\Current\Bin\MSBuild.exe' # VS2019
+            
+            if (![System.IO.File]::Exists($msBuildExe))
+            {
+                $msBuild = $installDir + '\MSBuild\15.0\Bin\MSBuild.exe' # VS2017
+
+                if (![System.IO.File]::Exists($msBuildExe))
+                {
+                    Write-Host "MSBuild doesn't exist. Exit."
+                    exit 1
+                }
+
+            }    Write-Host "Likely on Windows."
+        }Write-Host "MSBuild found. Compile the projects."
+
+        if ($nuget) {
+            Write-Host "Restoring NuGet packages" -foregroundcolor green
+            nuget restore "$($path)"
+        }
+
+        if ($clean) {
+            Write-Host "Cleaning $($path)" -foregroundcolor green
+            & "$($msBuildExe)" "$($path)" /t:Clean /m
+        }
+
+        Write-Host "Building $($path)" -foregroundcolor green
+        & "$($msBuildExe)" "$($path)" /t:Build /m
+    }
+}
 
 function DeployTemplate($filename, $skipDeployment, $parameters)
 {
@@ -416,8 +506,16 @@ $tenantId = $json.tenantId;
 #create the resource group
 $result = az group create --name $rgName --location $region;
 
+$parametersRegion = @{
+            "schema"="http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
+            "contentVersion"="1.0.0.0"
+            "parameters"=@{
+                 "region"=@{"value"="$region"}
+                 }
+            } | ConvertTo-Json
+
 #deploy the managed service identity
-$deployment = DeployTemplate "labdeploy5.json" $skipDeployment $parameters;
+$deployment = DeployTemplate "labdeploy5.json" $skipDeployment $parametersRegion;
 
 $res = $(az identity list --resource-group $rgname)
 $json = ConvertObjectToJson $res;
@@ -456,7 +554,7 @@ if (!$suffix)
 }
 
 #deploy containers - this is ok to fail
-$deployment = DeployTemplate "labdeploy4.json" $skipDeployment;
+$deployment = DeployTemplate "labdeploy4.json" $skipDeployment $parametersRegion;
 
 #get all the resources in the RG
 $res = $(az resource list --resource-group $rgName)
@@ -468,7 +566,7 @@ $saJob = $json | where {$_.type -eq "Microsoft.StreamAnalytics/streamingjobs"};
 if (!$saJob)
 {
     #deploy stream analytics
-    $deployment = DeployTemplate "labdeploy2.json" $skipDeployment;
+    $deployment = DeployTemplate "labdeploy2.json" $skipDeployment $parametersRegion;
 }
 
 #LOGIC APPS will overwrite settings if deployed more than once!
@@ -477,7 +575,7 @@ $logicApp = $json | where {$_.type -eq "Microsoft.Logic/workflows"};
 if (!$logicApp)
 {
     #deploy logic app
-    $deployment = DeployTemplate "labdeploy3.json" $skipDeployment;
+    $deployment = DeployTemplate "labdeploy3.json" $skipDeployment $parametersRegion;
 }
 
 #used later (databricks)
@@ -514,6 +612,7 @@ $databricksInstance = "";
 #
 ########################
 
+$databricksInstanceUrl = "https://portal.azure.com/#@$($tenantid)/resource/$($databricks.id)/overview"
 $databricksInstance = "https://$($databricks.location).azuredatabricks.net";
 
 ########################
@@ -663,50 +762,50 @@ Remove-Item "host.json" -ea SilentlyContinue;
 
 write-host "Setting key vault values..."
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "paymentsAPIUrl" --value $paymentsApiUrl);
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "AzureQueueConnectionString" --value $azurequeueConnString);
+$res = SetKeyVaultValue $keyvault.Name "paymentsAPIUrl" $paymentsApiUrl;
+$res = SetKeyVaultValue $keyvault.Name "AzureQueueConnectionString" $azurequeueConnString;
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "funcApiUrl" --value $funcApiUrl);
+$res = SetKeyVaultValue $keyvault.Name "funcApiUrl" $funcApiUrl;
 $json = ConvertObjectToJson $res;
 $kvFuncApiUrl = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "funcApiKey" --value $funcApiKey);
+$res = SetKeyVaultValue $keyvault.Name "funcApiKey" $funcApiKey;
 $json = ConvertObjectToJson $res;
 $kvfuncApiKey = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "databaseId" --value $databaseId);
+$res = SetKeyVaultValue $keyvault.Name "databaseId" $databaseId;
 $json = ConvertObjectToJson $res;
 $kvdatabaseId = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "CosmosDBConnection" --value $CosmosDBConnection);
+$res = SetKeyVaultValue $keyvault.Name "CosmosDBConnection" $CosmosDBConnection;
 $json = ConvertObjectToJson $res;
 $kvCosmosDBConnection = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "dbConnectionUrl" --value $dbConnectionUrl);
+$res = SetKeyVaultValue $keyvault.Name "dbConnectionUrl" $dbConnectionUrl;
 $json = ConvertObjectToJson $res;
 $kvdbConnectionUrl = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "dbConnectionKey" --value $dbConnectionKey);
+$res = SetKeyVaultValue $keyvault.Name "dbConnectionKey" $dbConnectionKey;
 $json = ConvertObjectToJson $res;
 $kvdbConnectionKey = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "eventHubConnection" --value $eventHubConnection);
+$res = SetKeyVaultValue $keyvault.Name "eventHubConnection" $eventHubConnection;
 $json = ConvertObjectToJson $res;
 $kveventHubConnection = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "eventHub" --value "store");
+$res = SetKeyVaultValue $keyvault.Name "eventHub" "store";
 $json = ConvertObjectToJson $res;
 $kveventHub = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "movieApiKey" --value $movieApiKey);
+$res = SetKeyVaultValue $keyvault.Name "movieApiKey" $movieApiKey;
 $json = ConvertObjectToJson $res;
 $kvmovieApiKey = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "LogicAppUrl" --value "");
+$res = SetKeyVaultValue $keyvault.Name "LogicAppUrl" "";
 $json = ConvertObjectToJson $res;
 $kvLogicAppUrl = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
-$res = $(az keyvault secret set --vault-name $keyvault.Name --name "RecipientEmail" --value $userEmail);
+$res = SetKeyVaultValue $keyvault.Name "RecipientEmail" $userEmail;
 $json = ConvertObjectToJson $res;
 $kvRecipientEmail = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
@@ -813,8 +912,9 @@ foreach($folder in $folders)
 ########################
 if ($mode -eq "demo")
 { 
-    write-host "Action Required - Opening url: $databricksInstance";
-    start-process $databricksInstance;
+    write-host "Action Required - Opening url: $databricksInstanceUrl";
+
+    start-process $databricksInstanceUrl;
 
     $databrickToken = read-host "Enter your databricks api token";
 
@@ -822,6 +922,20 @@ if ($mode -eq "demo")
     start-sleep 15;
 
     SetupDatabricks
+}
+
+########################
+#
+#compile the project
+#
+########################
+if ($mode -eq "demo")
+{ 
+    write-host "Compiling the projects..."
+
+    BuildVS "C:\github\microsoft\scenario-based-labs\Retail\Solution\Data Import\MovieDataImport.sln" $true $true
+    BuildVS "C:\github\microsoft\scenario-based-labs\Retail\Solution\DataGenerator\DataGenerator.sln" $true $true
+    BuildVS "C:\github\microsoft\scenario-based-labs\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.sln" $true $true
 }
 
 ########################
@@ -834,7 +948,7 @@ if ($mode -eq "demo")
     write-host "Importing all the movie data"
 
     #run the import tool
-    . "$githubpath\Retail\Starter\Data Import\bin\Debug\MovieDataImport.exe"
+    . "$githubpath\Retail\Solution\Data Import\bin\Debug\MovieDataImport.exe"
 }
 
 ########################
