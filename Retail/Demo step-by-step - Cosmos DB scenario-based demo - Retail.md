@@ -53,6 +53,13 @@ Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services i
 
 1.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
 
+> **NOTE** You can run the following commands to install the latest
+
+```PowerShell
+Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; 
+Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
+```
+
 1.  [.Net Framework 4.7.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
 1.  [.Net Core 2.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
