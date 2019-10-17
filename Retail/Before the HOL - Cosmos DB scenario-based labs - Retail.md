@@ -79,6 +79,8 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 1. Browse to the **\$githubdir/Retail/deploy/deploy.ps1** PowerShell script in an PowerShell ISE window
 
+> **NOTE** You can reference the [Frequently Asked Questions/Issues](FAQ.md) if you run into issues with your deployment.
+
 1. Set the following variables:
 
    > NOTE: If you are performing a demo of this solution, select the "demo" setting, otherwise leave as "lab"

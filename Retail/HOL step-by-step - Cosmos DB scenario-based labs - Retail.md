@@ -302,7 +302,11 @@ topItems = GetItemsByImdbIds(itemIds);
 - We are querying an "object" collection for an entity type called 'ItemAggregation' and sorting it by the 'BuyCount'. Essentially these are the top purchased items.
 - We are then querying the object collection for all the top movie items to get their metadata for display on the web front end
 
-> This code is responsible for querying the Cosmos DB `object` table to find the item aggregation information, for example all the `buy` events for a movie. It is important that you utilize aggregations to do this as Cosmos Db will charge you based on RUs. If you were to query the `events` table which is expected to get incredibly large as your user count and activity increaes, you can imagine the costs for making this query can become incredibly expensive.
+> This code is responsible for querying the Cosmos DB `object` collection to find the item aggregation information, for example all the `buy` events for a movie. 
+
+>It is important that you utilize aggregations to do this as each operation in Cosmos DB consumes a certain amount of RUs. For queries, the RU charge is based on the number of documents returned, the complexity of the query, and the number of partitions queried. To continue to have efficient queries as user count and activity increases, we create an aggregated view. 
+
+>Over time the `events` collection expected to get incredibly large as your user count and activity increases.  With respect to RUs, you can imagine the costs for making this query can become costly.
 
 #### About Cosmos DB throughput
 

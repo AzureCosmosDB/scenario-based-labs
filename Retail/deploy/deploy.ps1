@@ -22,9 +22,11 @@ if ($isSpektra)
 
 $databaseId = "movies";
 
-#FYI - not all regions have been tested
-
-$region = "eastus";
+#FYI - not all regions have been tested - 
+#Check your region support here : https://azure.microsoft.com/en-us/global-infrastructure/services/?products=
+#for a list of regions run : az account list-locations -o table
+#OK - westus, eastus, northeurope
+$region = "northeurope";
 
 #register at https://api.themoviedb.org
 $movieApiKey = "YOUR KEY";
@@ -44,10 +46,29 @@ $useKeyVault = $false
 #
 ###################################
 
+function CheckFunctionAppMaster()
+{
+    write-host "Action Required: Search for your function app '$funcAppName', select it, then click 'Function app settings'"
+    write-host "Opening url: $url";
+    Start-Process $url;
+
+    $res = read-host "Did you click to the function application's settings page yet? [y/n]";
+
+    #key is stored in the storage account after the last url loads.
+    $res = $(az storage blob list --connection-string $azurequeueConnString --container-name azure-webjobs-secrets)
+    $json = ConvertObjectToJson $res;
+
+    $blob = $json | where {$_.name -eq "$funcAppName/host.json"};
+    
+    return $blob;
+}
+
 function SetKeyVaultValue($kvName, $name, $value)
 {
     if ($value)
     {
+        write-host "Setting $name to $value";
+
         $res = $(az keyvault secret set --vault-name $kvName --name $name --value $value);    
     }
 
@@ -284,14 +305,20 @@ function SetupDatabricks()
 
             $res = curl -Method Get "$databricksInstance/api/2.0/clusters/get?cluster_id=$clusterId" -H @{'Authorization' = "Bearer $databricktoken"; 'Content-Type' = 'application/json'}
             $json = ConvertFrom-json $res.Content
+
+            if ($json.state -eq "ERROR")
+            {
+                write-host "Error starting the cluster, please attempt to start manually!";
+                $res = read-host "Press enter when complete";
+            }
         }
 
         #extract the files
-        $filePath = "$githubPath\retail\notebooks\02 retail.zip";
-        Expand-Archive -LiteralPath $filePath -DestinationPath "$githubPath/retail/notebooks/export" -force
+        #$filePath = "$githubPath\retail\notebooks\02 retail.zip";
+        #Expand-Archive -LiteralPath $filePath -DestinationPath "$githubPath/retail/notebooks/export" -force
 
         #update the variables
-        $sharedConfigPath = "$githubPath/retail/notebooks/export/02 retail/includes/Shared-Configuration.ipynb"
+        $sharedConfigPath = "$githubPath/retail/notebooks/includes/Shared-Configuration.ipynb"
         $content = get-content $sharedConfigPath
         $content = $content.replace("cosmos_db_endpoint = \`"\`"", "cosmos_db_endpoint = \`"$dbConnectionUrl\`"");
         $content = $content.replace("cosmos_db_master_key = \`"\`"", "cosmos_db_master_key = \`"$dbConnectionKey\`"");
@@ -307,9 +334,9 @@ function SetupDatabricks()
         $res = curl -Method Post "$databricksInstance/api/2.0/workspace/mkdirs" -H @{'Authorization' = "Bearer $databricktoken"} -Body $data;
 
         #upload all the files
-        $di = new-object System.IO.DirectoryInfo ("$githubPath/retail/notebooks/export/02 retail")
+        $di = new-object System.IO.DirectoryInfo ("$githubPath/retail/notebooks")
 
-        $files = $di.GetFiles("*.*", [System.IO.SearchOption]::AllDirectories);
+        $files = $di.GetFiles("*.ipynb", [System.IO.SearchOption]::AllDirectories);
 
         foreach($file in $files)
         {            
@@ -727,21 +754,14 @@ $funcApiUrl = "https://" + $func.defaultHostName;
 
 #open the function app endpoint to create the host.json file:
 $url = "https://portal.azure.com/#blade/WebsitesExtension/FunctionsIFrameBlade/id/$($func.id)"
-write-host "Action Requires: Opening url: $url";
-Start-Process $url;
 
-$res = read-host "Did you click to the function application's settings page yet?";
+$blob = CheckFunctionAppMaster $url;
 
-#key is stored in the storage account after the last url loads.
-$res = $(az storage blob list --connection-string $azurequeueConnString --container-name azure-webjobs-secrets)
-$json = ConvertObjectToJson $res;
-
-$blob = $json | where {$_.name -eq "$funcAppName/host.json"};
-
-if (!$blob)
+while (!$blob)
 {
     write-host "The function app did not load the url, the host.json file is not available";
-    return;
+
+    $blob = CheckFunctionAppMaster $url;
 }
 
 #download it..
@@ -912,7 +932,9 @@ foreach($folder in $folders)
 ########################
 if ($mode -eq "demo")
 { 
-    write-host "Action Required - Opening url: $databricksInstanceUrl";
+    write-host "Action Required: Click 'Launch Workspace', then click your user icon, select 'User Settings'.  Click 'Generate new token'"
+
+    write-host "Opening url: $databricksInstanceUrl";
 
     start-process $databricksInstanceUrl;
 
