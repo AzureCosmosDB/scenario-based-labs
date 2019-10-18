@@ -1384,64 +1384,64 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 1. Azure portal (<https://portal.azure.com>)で、名前が **IoT-CosmosDBProcessing** で始まる Azure Function App を開きます。
 
-2. Expand the **Functions** list in the left-hand menu, then select **TripProcessor**.
+2. 左側のメニューから **Functions** リストを開き、**TripProcessor** を選択します。
 
     ![The TripProcessor function is displayed.](media/portal-tripprocessor-function.png "TripProcessor")
 
-3. View the **function.json** file to the right. This file was generated when you published the Function App in Visual Studio. The bindings are the same as you saw in the project code for the function. When new instances of the Function App are created, the generated `function.json` file and a ZIP file containing the compiled application are copied to these instances, and these instances run in parallel to share the load as data flows through the architecture. The `function.json` file instructs each instance how to bind attributes to the functions, where to find application settings, and information about the compiled application (`scriptFile` and `entryPoint`).
+3. **function.json** ファイルを右側に表示します。このファイルは、Visual Studio で Function App を公開したときに生成されました。バインディングは、関数のプロジェクト コードで見たのと同じです。Function App の新しいインスタンスが作成されると、生成された `function.json` ファイルとコンパイル済みアプリケーションを含む ZIP ファイルがこれらのインスタンスにコピーされ、これらのインスタンスは並列に実行され、アーキテクチャを流れるデータフローとして負荷を共有します。`function.json` ファイルは、各インスタンスに属性を関数にバインドする方法、アプリケーション設定を検索する場所、およびコンパイルされたアプリケーション (`scriptFile` と `entryPoint`) に関する情報を指示します。
 
-4. Select the **HealthCheck** function. This function has an Http trigger that enables users to verify that the Function App is up and running, and that each configuration setting exists and has a value. The data generator calls this function before running.
+4. **HealthCheck** 関数を選択します。この関数には Http トリガーがあり、ユーザーは Function App が起動して実行中であり、各構成設定が存在し、値を持っていることを確認できます。データ ジェネレータは、実行する前にこの関数を呼び出します。
 
-5. Select **Get function URL**.
+5. **Get function URL** を選択します。
 
     ![The HealthCheck function is selected and the Get function URL link is highlighted.](media/portal-cosmos-function-healthcheck.png "HealthCheck function")
 
-6. **Copy the URL** and save it to Notepad or similar text editor for the exercise that follows.
+6. **Copy the URL** して、後の演習用にNotepadか同等のテキストエディタに保存します。
 
     ![The HealthCheck URL is highlighted.](media/portal-cosmos-function-healthcheck-url.png "Get function URL")
 
 ### Task 9: View stream processing Function App in the portal and copy the Health Check URL
 
-1. In the Azure portal (<https://portal.azure.com>), open the Azure Function App whose name begins with **IoT-StreamProcessing**.
+1. Azure portal (<https://portal.azure.com>)で、名前が **IoT-StreamProcessing** で始まる Azure Function App を開きます。
 
-2. Expand the **Functions** list in the left-hand menu, then select the **HealthCheck** function. Next, select **Get function URL**.
+2. 左側のメニューから **Functions** リストを開き、**HealthCheck** 関数を選択します。次に、**Get function URL** を選択します。
 
     ![The HealthCheck function is selected and the Get function URL link is highlighted.](media/portal-stream-function-healthcheck.png "HealthCheck")
 
-3. **Copy the URL** and save it to Notepad or similar text editor for the exercise that follows.
+3. **Copy the URL** して、続く演習用にNotepadか同等のテキストエディタに保存します。
 
     ![The HealthCheck URL is highlighted.](media/portal-stream-function-healthcheck-url.png "Get function URL")
 
-> **Hint**: You can paste the Health Check URLs into a web browser to check the status at any time. The data generator programmatically accesses these URLs each time it runs, then reports whether the Function Apps are in a failed state or missing important application settings.
+> **ヒント**: ヘルスチェック URL を Web ブラウザに貼り付け、いつでも状態を確認できます。データ ジェネレータは、実行するたびにこれらの URL にプログラムでアクセスし、Function App が失敗した状態にあるか、重要なアプリケーション設定が欠落しているかどうかを報告します。
 
 ## Exercise 4: Explore and execute data generator
 
 **Duration**: 10 minutes
 
-In this exercise, we will explore the data generator project, **FleetDataGenerator**, update the application configuration, and run it in order to seed the metadata database with data and simulate a single vehicle.
+この演習では、データ ジェネレータ プロジェクト **FleetDataGenerator** を探索し、アプリケーション構成を更新し、メタデータ データベースをデータでシードし、単一の車両をシミュレートするために実行します。
 
-There are several tasks that the data generator performs, depending on the state of your environment. The first task is that the generator will create the Cosmos DB database and containers with the optimal configuration for this lab if these elements do not exist in your Cosmos DB account. When you run the generator in a few moments, this step will be skipped because you already created them at the beginning of the lab. The second task the generator performs is to seed your Cosmos DB `metadata` container with data if no data exists. This includes vehicle, consignment, package, and trip data. Before seeding the container with data, the generator temporarily increases the requested RU/s for the container to 50,000 for optimal data ingestion speed. After the seeding process completes, the RU/s are scaled back down to 15,000.
+環境の状態に応じて、データ ジェネレータが実行するタスクがいくつかあります。最初のタスクは、これらの要素が Cosmos DB アカウントに存在しない場合、ジェネレータがこの演習に最適な構成の Cosmos DB データベースとコンテナーを作成することです。しばらくすると、演習の開始時にジェネレータを既に作成しているため、この手順はスキップされます。ジェネレータが実行する 2 番目のタスクは、データが存在しない場合に Cosmos DB のメタデータ コンテナーをデータでシードすることです。これには、車両、委託、パッケージ、および出張データが含まれます。データを使用してコンテナーをシードする前に、ジェネレータは、最適なデータ取り込み速度のために、コンテナーに対して要求された RU/s を一時的に 50,000 に増やします。シード処理が完了すると、RU/s は 15,000 にスケールダウンされます。
 
-After the generator ensures the metadata exists, it begins simulating the specified number of vehicles. You are prompted to enter a number between 1 and 5, simulating 1, 10, 50, 100, or the number of vehicles specified in your configuration settings, respectively. For each simulated vehicle, the following tasks take place:
+ジェネレータはメタデータの存在を確認した後、指定された数の車両のシミュレートを開始します。それぞれ、1、10、50、100、または構成設定で指定された車両数をシミュレートして、1 から 5 の間の番号を入力するように求められます。シミュレートされた車両ごとに、次のタスクが実行されます。
 
-1. An IoT device is registered for the vehicle, using the IoT Hub connection string and setting the device ID to the vehicle's VIN. This returns a generated device key.
-2. A new simulated vehicle instance (`SimulatedVehicle`) is added to a collection of simulated vehicles, each acting as an AMQP device and assigned a Trip record to simulate the delivery of packages for a consignment. These vehicles are randomly selected to have their refrigeration units fail and, out of those, some will randomly fail immediately while the others fail gradually.
-3. The simulated vehicle creates its own AMQP device instance, connecting to IoT Hub with its unique device ID (VIN) and generated device key.
-4. The simulated vehicle asynchronously sends vehicle telemetry information through its connection to IoT Hub continuously until it either completes the trip by reaching the distance in miles established by the Trip record, or receiving a cancellation token.
+1. IoT デバイスは、IoT Hub 接続文字列を使用して車両に登録され、デバイス ID を車両の VIN に設定します。これにより、生成されたデバイス キーが返されます。
+2. 新しいシミュレートされた車両インスタンス(`SimulatedVehicle`)がシミュレートされた車両のコレクションに追加され、それぞれが AMQP デバイスとして機能し、委託の荷物の配送をシミュレートするトリップ レコードが割り当てられます。これらの車両は、冷凍ユニットが故障するようにランダムに選択され、そのうちのいくつかは、他の車両が徐々に失敗しながら、ランダムにすぐに失敗します。
+3. シミュレートされた車両は、独自の AMQP デバイス インスタンスを作成し、独自のデバイス ID (VIN) と生成されたデバイス キーを使用して IoT Hub に接続します。
+4. シミュレートされた車両は、トリップレコードによって確立されたマイル数に達するか、キャンセルトークンを受け取ることによって旅行を完了するまで、IoT Hubへの接続を介して車両テレメトリ情報を継続的に送信します。
 
 ### Task 1: Open the data generator project
 
-1. If the Visual Studio solution is not already open, navigate to `C:\cosmos-db-scenario-based-labs-master\IoT\Starter` and open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
+1. Visual Studio ソリューションが開いていなければ、`C:\cosmos-db-scenario-based-labs-master\IoT\Starter` に移動し、Visual Studio ソリューションファイルを開きます: **CosmosDbIoTScenario.sln**
 
-2. Expand the **FleetDataGenerator** project and open **Program.cs** in the Solution Explorer.
+2. **FleetDataGenerator** プロジェクトを開き、Solution Expolorer で **Program.cs** を開きます。
 
     ![The Program.cs file is highlighted in the Solution Explorer.](media/vs-data-generator-program.png "Solution Explorer")
 
 ### Task 2: Code walk-through
 
-There is a lot of code within the data generator project, so we'll just touch on the highlights. The code we do not cover is commented and should be easy to follow if you so desire.
+データ ジェネレータ プロジェクトには多くのコードがあるので、ハイライトについて触れます。私たちがカバーしていないコードはコメントされており、あなたがそう望むなら追うのは簡単なはずです。
 
-1. Within the **Main** method of **Program.cs**, the core workflow of the data generator is executed by the following code block:
+1. **Program.cs** の **Main** メソッド内で、データ ジェネレータの中心であるワークフローは以下のコードブロックによって実行されます:
 
     ```csharp
     // Instantiate Cosmos DB client and start sending messages:
@@ -1496,11 +1496,11 @@ There is a lot of code within the data generator project, so we'll just touch on
     }
     ```
 
-    The top section of the code instantiates a new `CosmosClient`, using the connection string defined in either `appsettings.json` or the environment variables. The first call within the block is to `InitializeCosmosDb()`. We'll dig into this method in a moment, but it is responsible for creating the Cosmos DB database and containers if they do not exist in the Cosmos DB account. Next, we create a new `Container` instance, which the v3 version of the .NET Cosmos DB SDK uses for operations against a container, such as CRUD and maintenance information. For example, we call `ReadThroughputAsync` on the container to retrieve the current throughput (RU/s), and we pass it to `GetTripsFromDatabase` to read Trip documents from the container, based on the number of vehicles we are simulating. In this method, we also call the `SeedDatabase` method, which checks whether data currently exists and, if not, calls methods in the `DataGenerator` class (`DataGenerator.cs` file) to generate vehicles, consignments, packages, and trips, then writes the data in bulk using the `BulkImporter` class (`BulkImporter.cs` file). This `SeedDatabase` method executes the following on the `Container` instance to adjust the throughput (RU/s) to 50,000 before the bulk import, and back to 15,000 after the data seeding is complete: `await container.ReplaceThroughputAsync(desiredThroughput);`.
+    コードの上部セクションでは、`appsettings.json` または環境変数で定義されている接続文字列を使用して、新しい `CosmosClient` をインスタンス化します。ブロック内の最初の呼び出しは `InitializeCosmosDb()` です。この方法については後で説明しますが、Cosmos DB アカウントに存在しない場合は、Cosmos DB データベースとコンテナーを作成する必要があります。次に、.NET Cosmos DB SDK の v3 バージョンが、CRUD やメンテナンス情報などのコンテナーに対する操作に使用する新しい `Container` インスタンスを作成します。たとえば、コンテナーで `ReadThroughputAsync` を呼び出して現在のスループット (RU/s) を取得し、シミュレートしている車両の数に基づいて、コンテナーからトリップ ドキュメントを読み取るために `GetTripsFromDatabase` に渡します。このメソッドでは、データが現在存在するかどうかをチェックする `SeedDatabase` メソッドを呼び出し、そうでない場合は `DataGenerator` クラス (`DataGenerator.cs` ファイル) のメソッドを呼び出して、車両、委託、パッケージ、およびトリップを生成し、`BulkImporter` クラス (`BulkImporter.cs` ファイル) を使用して一括使用します。この `SeedDatabase` メソッドは、一括インポートの前にスループット (RU/s) を 50,000 に調整し、データ シードが完了した後に 15,000 に戻す `Container` インスタンスで次を実行します: `await container.ReplaceThroughputAsync(desiredThroughput);`
 
-    The `try/catch` block calls `SetupVehicleTelemetryRunTasks` to register IoT device instances for each simulated vehicle and load up the tasks from each `SimulatedVehicle` instance it creates. It uses `Task.WhenAll` to ensure all pending tasks (simulated vehicle trips) are complete, removing completed tasks from the `_runningvehicleTasks` list as they finish. The cancellation token is used to cancel all running tasks if you issue the cancel command (`Ctrl+C` or `Ctrl+Break`) in the console.
+    `try/catch` ブロックは `SetupVehicleTelemetryRunTasks` を呼び出し、シミュレートされた車両ごとにIoTデバイスインスタンスを登録し、作成した各 `SimulateVehicle` インスタンスからタスクをロードします。`Task.WhenAll` を使用して、保留中のすべてのタスク(シミュレートされた車両トリップ)が完了していることを確認し、完了したタスクを `_runningvehiclevehicleTasks` リストから削除します。取り消しトークンは、コンソールでキャンセル コマンド (`Ctrl+C` または `Ctrl キー+Break`) を発行した場合に、実行中のすべてのタスクを取り消すために使用されます。
 
-2. Scroll down the `Program.cs` file until you find the `InitializeCosmosDb()` method. Here is the code for your reference:
+2. `InitializeCosmosDb()` メソッドが見つかるまで `Program.cs` ファイルを下にスクロールします。ここで以下のコードを参照します:
 
     ```csharp
     private static async Task InitializeCosmosDb()
@@ -1557,11 +1557,11 @@ There is a lot of code within the data generator project, so we'll just touch on
     }
     ```
 
-    This method creates a Cosmos DB database if it does not already exist, otherwise it retrieves a reference to it (`await _cosmosDbClient.CreateDatabaseIfNotExistsAsync(DatabaseName);`). Then it creates `ContainerProperties` for the `telemetry`, `metadata`, and `maintenance` containers. The `ContainerProperties` object lets us specify the container's indexing policy. We use the default indexing policy for `metadata` and `maintenance` since they are read-heavy and benefit from a greater number of paths, but we exclude all paths in the `telemetry` index policy, and add paths only to those properties we need to query, due to the container's write-heavy workload. The `telemetry` container is assigned a throughput of 15,000 RU/s, 50,000 for `metadata` for the initial bulk import, then it is scaled down to 15,000, and 400 for `maintenance`.
+    このメソッドは、まだ存在しない場合は Cosmos DB データベースを作成し、それ以外の場合は、そのデータベースへの参照を取得します (`await _cosmosDbClient.CreateDatabaseIfNotExistAsync(DatabaseName);`)。次に、`telemetry`、`metadata`、および `maintenance` コンテナーの `ContainerProperty` を作成します。`ContainerProperties` オブジェクトでは、コンテナーのインデックス作成ポリシーを指定できます。コンテナーの読み出し負荷の高いワークロードであり、より大きな数のパスによる恩恵があるので `metadata` と `maintenance` にはデフォルトのインデックスポリシーが使用されますが、`telemetry` のインデックスポリシーでは全てのパスが除外され、クエリーするのに必要なだけのパスが追加されます。これはコンテナーの書き込み負荷が高いワークロードだからです。`telemetry` コンテナーには15,000 RU/sが割り当てられ、`metadata` には50,000 RU/sが最初の一括インポート用に割り当てられた後 15,000 にスケールダウンされ、`maintenance` は 400 にスケールダウンされます。
 
 ### Task 3: Update application configuration
 
-The data generator needs two connection strings before it can successfully run; the IoT Hub connection string, and the Cosmos DB connection string. The IoT Hub connection string can be found by selecting **Shared access policies** in IoT Hub, selecting the **iothubowner** policy, then copying the **Connection string--primary key** value. This is different from the Event Hub-compatible endpoint connection string you copied earlier.
+データ ジェネレータを正常に実行する前に、2 つの接続文字列が必要です; IoT Hub 接続文字列と Cosmos DB 接続文字列。IoT Hub 接続文字列は、IoT Hub で **Shared access policies** を選択し、**iothubowner** ポリシーを選択し、**Connection string--primary key** 値をコピーすることで見つけることができます。これは、前にコピーしたEvent Hub互換のエンドポイント接続文字列とは異なります。
 
 ![The iothubowner shared access policy is displayed.](media/iot-hub-connection-string.png "IoT Hub shared access policy")
 
