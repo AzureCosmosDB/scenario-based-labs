@@ -1140,11 +1140,11 @@ Function App と Web App プロジェクトには、デプロイする前に完�
             var consignment = document.Resource;
     ```
 
-    Here we are using the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) by retrieving a Cosmos DB container reference with the CosmosClient (`_cosmosClient`) that was injected into the class. We use the container's `GetItemLinqQueryable` with the `Trip` class type to query the container using LINQ syntax and binding the results to a new collection of type `Trip`. Note how we are passing the **partition key**, in this case the VIN, to prevent executing a cross-partion, fan-out query, saving RU/s. We also define the type of document we want to retrieve by setting the `entityType` document property in the query to Trip, since other entity types can also have the same partition key, such as the Vehicle type.
+    ここでは、クラスに追加された CosmosClient (`_cosmosClient`) を使用して Cosmos DB コンテナー参照を取得することにより、[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) を使用しています。LINQ 構文を使用してコンテナーをクエリし、結果を `Trip` クラス型の新しいコレクションにバインドするには、コンテナーの `GetItemLinqQueryable` を使用します。**パーティションキー**(この場合はVIN)を渡して、クロス・パーティションやファンアウトするクエリーを実行しないでRU/sを節約する方法に注意してください。また、他のエンティティタイプは車両タイプなど、同じパーティションキーを持つことができるため、クエリで `entityType` ドキュメント プロパティをトリップに設定して取得するドキュメントの種類も定義します。
 
-    Since we have the Consignment ID, we can use the `ReadItemAsync` method to retrieve a single Consignment record. Here we also pass the partition key to minimize fan-out. Within a Cosmos DB container, a document's unique ID is a combination of the `id` field and the partition key value.
+    委託 ID を持っているので、`ReadItemAsync` メソッドを使用して単一の委託レコードを取得できます。ここでは、ファンアウトを最小限に抑えるためにパーティションキーを渡します。Cosmos DB コンテナー内では、ドキュメントの一意の ID は `id` フィールドとパーティション キー値の組み合わせです。
 
-8. Scroll down a little further in the function and complete the code beneath **TODO 4** by pasting the following:
+8. 関数内を少しだけ下にスクロールして、**TODO 4** 内に以下をペーストしてコードを完了します:
 
     ```csharp
     if (updateTrip)
@@ -1158,17 +1158,17 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     }
     ```
 
-    The `ReplaceItemAsync` method updates the Cosmos DB document with the passed in object with the associated `id` and partition key value.
+    `ReplaceItemAsync` メソッドは `id` とパーティションキーの値によって関連付けられたオブジェクト内に渡されたCosmos DBのドキュメントを更新します。
 
-9. Scroll down and complete the code beneath **TODO 5** by pasting the following:
+9. 関数内を少しだけ下にスクロールして、**TODO 5** 内に以下をペーストしてコードを完了します:
 
     ```csharp
     await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
     ```
 
-    Here we are using the `HttpClient` created by the injected `HttpClientFactory` to post the serialized `LogicAppAlert` object to the Logic App. The `Environment.GetEnvironmentVariable("LogicAppUrl")` method extracts the Logic App URL from the Function App's application settings and, using the special Key Vault access string you added to the app setting, extracts the encrypted value from the Key Vault secret.
+    ここでは、挿入された `HttpClientFactory` によって作成された `HttpClient` を使用して、シリアル化された `LogicAppAlert` オブジェクトを Logic App に投稿します。`Environment.GetEnvironmentVariable("LogicAppUrl")`メソッドは、Function App のアプリケーション設定からLogic AppのURLを抽出し、アプリ設定に追加した特別なKey Vaultアクセス文字列を使用して、Key Vaultシークレットから暗号化された値を抽出します。
 
-10. Scroll to the bottom of the file to find and complete **TODO 6** with the following code:
+10. 関数内を少しだけ下にスクロールして、**TODO 6** 内に以下をペーストしてコードを完了します:
 
     ```csharp
     // Convert to a VehicleEvent class.
@@ -1178,13 +1178,13 @@ Function App と Web App プロジェクトには、デプロイする前に完�
         Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleEventOut))));
     ```
 
-    The `ReadAsAsync` method is an extension method located in `CosmosDbIoTScenario.Common.ExtensionMethods` that converts a Cosmos DB Document to a class; in this case, a `VehicleEvent` class. Currently, the `CosmosDBTrigger` on a function only supports returning an `IReadOnlyList` of `Documents`, requiring a conversion to another class if you want to work with your customer classes instead of a Document for now. This extension method automates the process.
+    `ReadAsAsync` メソッドは、Cosmos DB ドキュメントをクラスに変換する `CosmosDbIoTScenario.Common.ExtensionMethods` にある拡張メソッドです。この場合は、`VehicleEvent` クラスです。現在、関数の `CosmosDBTrigger` は `Document` の `IReadOnlyList` の返却しかサポートしていません。この拡張メソッドは、プロセスを自動化します。
 
-    The `AddAsync` method asynchronously adds to the `IAsyncCollector<EventData>` collection defined in the function attributes, which takes care of sending the collection items to the defined Event Hub endpoint.
+    `AddAsync` メソッドは、関数属性で定義された `IAsyncCollector<EventData>` コレクションに非同期的に追加され、定義された Event Hub エンドポイントへのコレクション項目の送信を処理します。
 
-11. **Save** the **Functions.cs** file.
+11. **Save** で **Functions.cs** ファイルを保存します。
 
-12. Open **Functions.cs** within the **Functions.StreamProcessing** project. Let us first review the function parameters:
+12. **Functions.StreamProcessing** プロジェクトで **Functions.cs** を開きます。まず関数のパラメータを見てみましょう:
 
     ```csharp
     [FunctionName("IoTHubTrigger")]
