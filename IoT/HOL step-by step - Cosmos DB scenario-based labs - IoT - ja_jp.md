@@ -284,25 +284,25 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
    ![The Indexing Policy section is highlighted, as well as the Save button.](media/cosmos-indexing-policy.png 'Scale & Settings')
 
-5. Select **Save** to apply your changes.
+5. **Save** を選択し変更を適用します。
 
 #### About the Cosmos DB indexing policies
 
-In this task, we updated the indexing policy for the `telemetry` container, but left the other two containers with the default policy. The default indexing policy for newly created containers indexes every property of every item, enforcing range indexes for any string or number, and spatial indexes for any GeoJSON object of type Point. This allows you to get high query performance without having to think about indexing and index management upfront. Since the `metadata` and `maintenance` containers have more read-heavy workloads than `telemetry`, it makes sense to use the default indexing policy where query performance is optimized. Since we need faster writes for `telemetry`, we exclude unused paths. The use of indexing paths can offer improved write performance and lower index storage for scenarios in which the query patterns are known beforehand, as indexing costs are directly correlated to the number of unique paths indexed.
+このタスクでは、`telemetry` コンテナーのインデックス作成ポリシーを更新しましたが、他の 2 つのコンテナーは既定のポリシーのままにしておきました。新しく作成されたコンテナーの既定のインデックス 作成ポリシーは、すべての項目のすべてのプロパティにインデックスを付け、任意の文字列または数値の範囲インデックスを適用し、Point 型の GeoJSON オブジェクトに空間インデックスを適用します。これにより、インデックス作成とインデックス管理を事前に考えることなく、高いクエリ パフォーマンスを得ることができます。`metadata` コンテナーと `maintenance` コンテナーは `telemetry` よりも読み取り負荷の高いワークロードを持つため、クエリのパフォーマンスが最適化される既定のインデックス 作成ポリシーを使用するのが理にかなっています。`telemetry` の高速な書き込みが必要なため、未使用のパスは除外します。インデックス作成パスを使用すると、インデックス作成コストがインデックス付けされた一意のパスの数と直接相関するため、クエリ パターンが事前にわかっているシナリオでは、書き込みパフォーマンスが向上し、インデックスストレージが低下する可能性があります。
 
-The indexing mode for all three containers is set to **Consistent**. This means the index is updated synchronously as items are added, updated, or deleted, enforcing the consistency level configured for the account for read queries. The other indexing mode one could choose is None, which disables indexing on the container. Usually this mode is used when your container acts as a pure key-value store, and you do not need indexes for any of the other properties. It is possible to dynamically change the consistency mode prior to executing bulk operations, then changing the mode back to Consistent afterwards, if the potential performance increase warrants the temporary change.
+3 つのコンテナーすべてに対するインデックス作成モードは **Consistent** に設定されます。つまり、アイテムの追加、更新、または削除に伴ってインデックスが同期的に更新され、読み取りクエリ用にアカウントに構成された整合性レベルが適用されます。もう 1 つのインデックス作成モードは None で、コンテナーのインデックス作成を無効にします。通常、このモードは、コンテナーが純粋なキー値ストアとして機能し、他のプロパティのインデックスを必要としない場合に使用されます。一括操作を実行する前に整合性モードを動的に変更し、その後モードを Consistent に戻すことができます。
 
 ### Task 3: Create a Logic App workflow for email alerts
 
-In this task, you will create a new Logic App workflow and configure it to send email alerts through its HTTP trigger. This trigger will be called by one of your Azure functions that gets triggered by the Cosmos DB change feed, any time a notification event occurs, such as completing a trip. You will need to have an Office 365 or Outlook.com account to send the emails.
+このタスクでは、新しいLogic App ワークフローを作成し、HTTP トリガーを介して電子メール アラートを送信するように構成します。このトリガーは、Cosmos DB change feed によってトリガーされる Azure Functions の 1 つ (トリップの完了などの通知イベントが発生するたびに呼び出されます) によって呼び出されます。電子メールを送信するには、Office 365 またはOutlook.com アカウントが必要です。
 
-1. In the [Azure portal](https://portal.azure.com), select **+ Create a resource**, then enter **logic app** into the search box on top. Select **Logic App** from the results.
+1. [Azure portal](https://portal.azure.com)で, **+ Create a resource** を選択し、上部にある検索ボックスに **logic app** と入力します。結果から **Logic App** を選択します。
 
    ![The Create a resource button and search box are highlighted in the Azure portal.](media/portal-new-logic-app.png 'Azure portal')
 
-2. Select the **Create** button on the **Logic App overview** blade.
+2. **Logic App overview** ブレード上で、**Create** ボタンを選択します。
 
-3. On the **Create Logic App** blade, specify the following configuration options:
+3. **Create Logic App** ブレードで以下の設定オプションを指定します:
 
    1. **Name**: Unique value for the name, such as `Cosmos-IoT-Logic` (ensure the green check mark appears).
    2. **Subscription**: Select the Azure subscription you are using for this lab.
@@ -312,15 +312,15 @@ In this task, you will create a new Logic App workflow and configure it to send 
 
    ![The form is displayed with the previously described values.](media/portal-new-logic-app-form.png 'New Logic App')
 
-4. Select **Create**.
+4. **Create** を選択します。
 
-5. After the Logic App is created, navigate to it by opening your resource group and selecting the new Logic App.
+5. Logic App が作成されたら、リソースグループを開いて新しいLogic Appを選択して Logic Appに行きます。
 
-6. In the Logic App Designer, scroll through the page until you locate the Start with a common trigger section. Select the **When a HTTP request is received** trigger.
+6. Logic App デザイナーで、Start with a common triggerセクションまでページをスクロールし、 **When a HTTP request is received** トリガーを選択します。
 
    ![The HTTP common trigger option is highlighted.](media/logic-app-http-trigger.png 'Logic App Designer')
 
-7. Paste the following JSON into the **Request Body JSON Schema** field. This defines the shape of the data the Azure function will send in the body of the HTTP request when an alert needs to be sent:
+7. **Request Body JSON Schema** フィールドに以下のJSONをペーストします。アラートが送信される必要がある時に、Azure Functionが送信するHTTPリクエストのボディのデータの形式を定義します:
 
    ```json
    {
@@ -386,31 +386,31 @@ In this task, you will create a new Logic App workflow and configure it to send 
 
    ![The Request Body JSON Schema is displayed.](media/logic-app-schema.png 'Request Body JSON Schema')
 
-8. Select **+ New step** underneath the HTTP trigger.
+8. HTTPトリガーの付近にある **+ New step** を選択します。
 
    ![The new step button is highlighted.](media/logic-app-new-step.png 'New step')
 
-9. Within the new action box, type `send email` in the search box, then select **Send an email - Office 365 Outlook** from the list of actions below. **Note**: If you do not have an Office 365 Outlook account, you may try one of the other email service options.
+9. 新しいアクションの中の検索ボックスに、`send email` をタイプして、下にあるアクションのリストの中から **Send an email - Office 365 Outlook** を選択します。**注**: Office 365 Outlook アカウントが無い場合、他のメールサービスのオプションを試してください。
 
    ![Send email is typed in the search box and Send an email - Office 365 Outlook is highlighted below.](media/logic-app-send-email.png 'Choose an action')
 
-10. Select the **Sign in** button. Sign in to your account in the window that appears.
+10. **Sign in** ボタンを選択します。表示されたウインドウで、アカウントにサインインします。
 
     ![The Sign in button is highlighted.](media/logic-app-sign-in-button.png 'Office 365 Outlook')
 
-11. After signing in, the action box will display as the **Send an email** action form. Select the **To** field. The **Dynamic content** box will display after selecting To. To see the full list of dynamic values from the HTTP request trigger, select **See more** next to "When a HTTP request is received".
+11. サインインしたら、アクションボックスが **Send an email** アクションフォームとして表示されます。**To** フィールドを選択します。Toを選択すると、**Dynamic content** ボックスが表示されます。HTTPリクエストトリガーからの動的な値の完全なリストを見るには、"When a HTTP request is received"の次の **See more** を選択します。
 
     ![The To field is selected, and the See more link is highlighted in the Dynamic content window.](media/logic-app-dynamic-content-see-more.png 'Dynamic content')
 
-12. In the list of dynamic content, select **recipientEmail**. This will add the dynamic value to the **To** field.
+12. 動的なコンテンツのリストから **recipientEmail** を選択します。**To** フィールドに動的な値が追加されるでしょう。
 
     ![The recipientEmail dynamic value is added to the To field.](media/logic-app-recipientemail.png 'Dynamic content - recipientEmail')
 
-13. In the **Subject** field, enter the following: `Contoso Auto trip status update:`, making sure you add a space at the end. Select the **status** dynamic content to append the trip status to the end of the subject.
+13. **Subject** フィールドに以下を入力します: `Contoso Auto trip status update:`。最後にスペースが入力されていることを確認してください。 **status** 動的コンテンツが件名の最後にトリップのステータスを追加することを確認してください。
 
     ![The Subject field is filled in with the status dynamic content appended to the end.](media/logic-app-status.png 'Dynamic content - status')
 
-14. Paste the following into the **Body** field. The dynamic content will automatically be added:
+14. **Body** フィールドに以下をペーストします。動的なコンテンツが自動的に追加されます:
 
     ```text
     Here are the details of the trip and consignment:
