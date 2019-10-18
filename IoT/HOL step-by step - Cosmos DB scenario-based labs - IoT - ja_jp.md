@@ -449,147 +449,147 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
     Contoso Auto Bot
     ```
 
-15. Your Logic App workflow should now look like the following:
+15. ここまででLogic Appのワークフローは以下のようになっているはずです:
 
     ![The Logic App workflow is complete.](media/logic-app-completed-workflow.png 'Logic App')
 
-16. Select **Save** at the top of the designer to save your workflow.
+16. デザイナーの上部にある **Save** を選択してワークフローを保存します。
 
-17. After saving, the URL for the HTTP trigger will generate. Expand the HTTP trigger in the workflow, then copy the **HTTP POST URL** value and save it to Notepad or similar text application for a later step.
+17. 保存後、HTTPトリガーのURLが生成されます。ワークフローのHTTPトリガーを展開し、**HTTP POST URL** の値をコピーしNotepadか同様のテキストアプリケーションに、あとの手順で使うためにペーストしておきます。
 
     ![The http post URL is highlighted.](media/logic-app-url.png 'Logic App')
 
 ### Task 4: Create system-assigned managed identities for your Function Apps and Web App to connect to Key Vault
 
-In order for your Function Apps and Web App to be able to access Key Vault to read the secrets, you must [create a system-assigned managed identity](https://docs.microsoft.com/azure/app-service/overview-managed-identity#adding-a-system-assigned-identity) for each, and [create an access policy in Key Vault](https://docs.microsoft.com/azure/key-vault/key-vault-secure-your-key-vault#key-vault-access-policies) for the application identities.
+Function Appと Web Appsが Key Vault にアクセスしてシークレットを読み取ることができるようにするには、[システムで割り当てられたマネージドの認証を作成](https://docs.microsoft.com/azure/app-service/overview-managed-identity#adding-a-system-assigned-identity)する必要があり、および [Key Vault でアクセス ポリシーを作成](https://docs.microsoft.com/azure/key-vault/key-vault/key-vault/key-vault-key-vault)する必要があります。
 
-1. Open the Azure Function App whose name begins with **IoT-CosmosDBProcessing** and navigate to **Platform features**.
+1. 名前が **IoT-CosmosDBProcessing** で始まるAzure Function Appを開いて、 **Platform features** を表示します。
 
-2. Select **Identity**.
-
-   ![Identity is highlighted in the platform features tab.](media/function-app-platform-features-identity.png 'Platform features')
-
-3. Within the **System assigned** tab, switch **Status** to **On**. Select **Save**.
-
-   ![The Function App Identity value is set to On.](media/function-app-identity.png 'Identity')
-
-4. Open the Azure Function App whose name begins with **IoT-StreamProcessing** and navigate to **Platform features**.
-
-5. Select **Identity**.
+2. **Identity** を選択します。
 
    ![Identity is highlighted in the platform features tab.](media/function-app-platform-features-identity.png 'Platform features')
 
-6. Within the **System assigned** tab, switch **Status** to **On**. Select **Save**.
+3. **System assigned** タブで、**Status** を **On** に変更し、 **Save** を選択します。
 
    ![The Function App Identity value is set to On.](media/function-app-identity.png 'Identity')
 
-7. Open the Web App (App Service) whose name begins with **IoTWebApp**.
+4. 名前が **IoT-StreamProcessing** で始まるAzure Function Appを開いて、 **Platform features** を表示します。
 
-8. Select **Identity** in the left-hand menu.
+5. **Identity** を選択します。
 
-9. Within the **System assigned** tab, switch **Status** to **On**. Select **Save**.
+   ![Identity is highlighted in the platform features tab.](media/function-app-platform-features-identity.png 'Platform features')
+
+6. **System assigned** タブで、**Status** を **On** に変更し、 **Save** を選択します。
+
+   ![The Function App Identity value is set to On.](media/function-app-identity.png 'Identity')
+
+7. **IoTWebApp** という名前のWeb App (App Service) を開きます。
+
+8. 左のメニューの **Identity** を選択します。
+
+9. **System assigned** タブで、**Status** を **On** に変更し、 **Save** を選択します。
 
    ![The Web App Identity value is set to On.](media/web-app-identity.png 'Identity')
 
 ### Task 5: Add Function Apps and Web App to Key Vault access policy
 
-> We recommend that you open two browser tabs for this and the following Key Vault tasks. One tab will be used to copy secrets from each Azure service, and the other to add the secrets to Key Vault.
+> この手順と次の Key Vault タスク用に、ブラウザのタブを2つ開いたままにしておくことをお勧めします。1 つのタブを使用して各 Azure サービスのシークレットをコピーし、もう 1 つで Key Vault にシークレットを追加します。
 
-Perform these steps to create an access policy that enables the "Get" secret permission:
+次の手順を実行して、"Get" シークレットアクセス許可を有効にするアクセス ポリシーを作成します:
 
-1. Using a new tab or instance of your browser, navigate to the Azure portal, <https://portal.azure.com>.
+1. ブラウザの新しいタブまたはインスタンスを使用して、Azure ポータル <https://portal.azure.com>に移動します。
 
-2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
+2. 左側のメニューから **リソースグループ** を選択し、`cosmos-db-iot`と入力してリソースグループを検索します。この演習で使用しているリソース グループを選択します。
 
-3. Open the your **Key Vault**. The name should begin with `iot-vault`.
+3. **Key Vault** を開きます。名前は`iot-vault`で始まるはずです。
 
    ![The Key Vault is highlighted in the resource group.](media/resource-group-keyvault.png 'Resource group')
 
-4. Select **Access policies** in the left-hand menu.
+4. 左側の **Access policies** を選択します。
 
-5. Select **+ Add Access Policy**.
+5. **+ Add Access Policy** を選択します。
 
    ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png 'Access policies')
 
-6. Select the **Select principal** section on the Add access policy form.
+6. Addアクセスポリシーフォームの **Select principal** セクションを選択します。
 
    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-7. In the Principal blade, search for your `IoT-CosmosDBProcessing` Function App's service principal, select it, then select the **Select** button.
+7. Principalブレードで、`IoT-CosmosDBProcessing` Function App のサービスプリンシパルを検索し、それを選択後、 **Select** ボタンを押します。
 
    ![The Function App's principal is selected.](media/key-vault-principal-function1.png 'Principal')
 
-   > **Note**: It may take a while before your managed identities appear after adding them in the previous step. If you cannot find this or the other identities, try refreshing the page or wait a minute or two.
+   > **注**: 前の手順でマネージ ID を追加した後、マネージ ID が表示されるまでにしばらく時間がかかる場合があります。この ID やその他の ID が見つからない場合は、ページを更新するか、1 ~ 2 分待ちます。
 
-8. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
+8. **Secret permissions** を開き、Secret Management Operationsにある **Get** をチェックします。
 
    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
-9. Select **Add** to add the new access policy.
+9. **Add** を選択して、新しいアクセスポリシーを追加します。
 
-10. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
+10. 完了すると、Function App'のマネージ ID用のアクセスポリシーがあるはずです。**+ Add Access Policy** を選択肢、別のアクセスポリシーを追加します。
 
     ![Key Vault access policies.](media/key-vault-access-policies-function1.png 'Access policies')
 
-11. Select the **Select principal** section on the Add access policy form.
+11. Addアクセスポリシーフォームの **Select principal** セクションを選択します。
 
     ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-12. In the Principal blade, search for your `IoT-StreamProcessing` Function App's service principal, select it, then select the **Select** button.
+12. Principalブレードで、`IoT-StreamProcessing` Function App のサービスプリンシパルを検索し、それを選択後、 **Select** ボタンを押します。
 
     ![The Function App's principal is selected.](media/key-vault-principal-function2.png 'Principal')
 
-13. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
+13. **Secret permissions** を開き、Secret Management Operationsにある **Get** をチェックします。
 
     ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
-14. Select **Add** to add the new access policy.
+14. **Add** を選択して、新しいアクセスポリシーを追加します。
 
-15. When you are done, you should have an access policy for the Function App's managed identity. Select **+ Add Access Policy** to add another access policy.
+15. 完了すると、Function App'のマネージ ID用のアクセスポリシーがあるはずです。**+ Add Access Policy** を選択肢、別のアクセスポリシーを追加します。
 
     ![Key Vault access policies.](media/key-vault-access-policies-function2.png 'Access policies')
 
-16. Select the **Select principal** section on the Add access policy form.
+16. Addアクセスポリシーフォームの **Select principal** セクションを選択します。
 
     ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-17. In the Principal blade, search for your `IoTWebApp` Web App's service principal, select it, then select the **Select** button.
+17. Principalブレードで、`IoTWebApp` Web App のサービスプリンシパルを検索し、それを選択後、 **Select** ボタンを押します。
 
     ![The Web App's principal is selected.](media/key-vault-principal-webapp.png 'Principal')
 
-18. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
+18. **Secret permissions** を開き、Secret Management Operationsにある **Get** をチェックします。
 
     ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
-19. Select **Add** to add the new access policy.
+19. **Add** を選択して、新しいアクセスポリシーを追加します。
 
-20. When you are done, you should have an access policy for the Web App's managed identity. Select **Save** to save your new access policies.
+20. 完了すると、Web App'のマネージ ID用のアクセスポリシーがあるはずです。**Save** を選択し、新しいアクセスポリシーを保存します。
 
     ![Key Vault access policies.](media/key-vault-access-policies-webapp.png 'Access policies')
 
 ### Task 6: Add your user account to Key Vault access policy
 
-Perform these steps to create an access policy for your user account so you can manage secrets. Since we created Key Vault with a template, your account was not automatically added to the access policies.
+次の手順を実行して、シークレットを管理できるように、ユーザー アカウントのアクセス ポリシーを作成します。テンプレートを使用して Key Vault を作成したので、アカウントがアクセス ポリシーに自動的に追加されるわけではありません。
 
-1. Within Key Vault, select **Access policies** in the left-hand menu.
+1. Key Vaultで、左側のメニューから **Access policies** を選択します。
 
-2. Select **+ Add Access Policy**.
+2. **+ Add Access Policy** を選択します。
 
    ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png 'Access policies')
 
-3. Select the **Select principal** section on the Add access policy form.
+3. Addアクセスポリシーフォームの **Select principal** セクションを選択します。
 
    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-4. In the Principal blade, search for your Azure account you are using for this lab, select it, then select the **Select** button.
+4. Principalブレードで、この演習で利用しているAzureアカウントを検索し、それを選択後、 **Select** ボタンを押します。
 
    ![The user principal is selected.](media/key-vault-principal-user.png 'Principal')
 
-5. Expand the **Secret permissions** and check **Select all** under Secret Management Operations. All 8 should be selected.
+5. **Secret permissions** を開き、Secret Management Operationsにある **Select all** をチェックします。全てで8つが選択されるはずです。
 
    ![The Select all checkbox is checked under the Secret permissions dropdown.](media/key-vault-all-secret-policy.png 'Add access policy')
 
-6. Select **Add** to add the new access policy.. When you are done, you should have an access policy for your user account. Select **Save** to save your new access policy.
+6. **Add** を選択して新しいアクセスポリシーを追加します。完了後、ユーザアカウント用のアクセスポリシーがあるはずです。**Save** を選択して新しいアクセスポリシーを保存します。
 
     ![Key Vault access policies.](media/key-vault-access-policies-user.png 'Access policies')
 
@@ -597,15 +597,17 @@ Perform these steps to create an access policy for your user account so you can 
 
 Azure Key Vault is used to Securely store and tightly control access to tokens, passwords, certificates, API keys, and other secrets. In addition, secrets that are stored in Azure Key Vault are centralized, giving the added benefits of only needing to update secrets in one place, such as an application key value after recycling the key for security purposes. In this task, we will store application secrets in Azure Key Vault, then configure the Function Apps and Web App to securely connect to Azure Key Vault by performing the following steps:
 
-- Add secrets to the provisioned Key Vault.
-- Create a system-assigned managed identity for each Azure Function App and the Web App to read from the vault.
-- Create an access policy in Key Vault with the "Get" secret permission, assigned to each of these application identities.
+Azure Key Vault は、トークン、パスワード、証明書、API キー、およびその他のシークレットへのアクセスを安全に保存し、厳密に制御するために使用されます。さらに、Azure Key Vault に格納されているシークレットは一元化されるため、セキュリティ目的でキーをリサイクルした後のアプリケーション キー値など、シークレットを 1 か所で更新するだけで済むという利点が追加されます。このタスクでは、アプリケーション シークレットを Azure Key Vault に格納し、次の手順を実行して Azure Key Vault に安全に接続するようにFunction Appと Web Appを構成します。
 
-1. Within Key Vault, select **Secrets** in the left-hand menu, then select **+ Generate/Import** to create a new secret.
+- プロビジョニング済みのKey Vaultにシークレットを追加する。
+- Azure Function AppとWeb Appがvaultから読み出せるようにシステム割り当て済みのマネージIDを作成する。
+- これらのアプリケーションのIDに割り当てられる、"Get" シークレットパーミッション付きでKey Vaultでアクセスポリシーを作成する。
+
+1. Key Vaultで、左側のメニューから **Secrets** を選択し、**+ Generate/Import** を選択して新しいシークレットを作成します。
 
    ![The Secrets menu item is highlighted, and the Generate/Import button is selected.](media/key-vault-secrets-generate.png 'Key Vault Secrets')
 
-2. Use the table below for the Name / Value pairs to use when creating the secrets. You only need to populate the **Name** and **Value** fields for each secret, and can leave the other fields at their default values.
+2. 以下の表を使って、Name / Valueのペアでシークレットを作成します。各シークレットで必要なのは **Name** と **Value** フィールのみで、他のフィールドは規定値のままにしておきます。
 
    | **Name**            |                                                                          **Value**                                                                          |
    | ------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -617,39 +619,39 @@ Azure Key Vault is used to Securely store and tightly control access to tokens, 
    | EventHubsConnection | Your Event Hubs connection string found here: **Event Hubs namespace > Shared access policies > RootManageSharedAccessKey > Connection string-primary key** |
    | LogicAppUrl         |                         Your Logic App's HTTP Post URL found here: **Logic App Designer > Select the HTTP trigger > HTTP POST URL**                         |
 
-3. You can locate most of your secrets by viewing the outputs of your deployment. To do this, open your resource group then select **Deployments** in the left-hand menu. Select the **Microsoft.Template** deployment.
+3. デプロイメントの出力を表示することで、ほとんどのシークレットを見つけることができます。これを行うには、リソース グループを開き、左側のメニューで **デプロイメント** を選択します。**Microsoft.Template** デプロイメントを選択します。
 
     ![The resource group deployments blade is shown.](media/resource-group-deployments.png "Deployments")
 
-4. Select **Outputs** in the left-hand menu. You can find most of the values above and simply copy them.
+4. 左側のメニューから **Outputs** を選択します。上の値がほとんど全て見つけられるので、単にそれらをコピーします。
 
     ![The outputs are displayed.](media/resource-group-deployment-outputs.png "Outputs")
 
-5. When you are finished creating the secrets, your list should look similar to the following:
+5. シークレットの作成が完了したら、リストは以下のようになるはずです:
 
    ![The list of secrets is displayed.](media/key-vault-keys.png 'Key Vault Secrets')
 
 ### Task 8: Create Azure Databricks cluster
 
-Contoso Auto wants to use the valuable data they are collecting from their vehicles to make predictions about the health of their fleet to reduce downtime due to maintenance-related issues. One of the predictions they would like to make is whether a vehicle's battery is likely to fail within the next 30 days, based on historical data. They would like to run a nightly batch process to identify vehicles that should be serviced, based on these predictions. They also want to have a way to make a prediction in real time when viewing a vehicle on their fleet management website.
+Contoso Auto は、車両から収集した貴重なデータを使用して、メンテナンス関連の問題によるダウンタイムを短縮するために、車両の正常性を予測したいと考えています。彼らが行いたい予測の1つは、過去のデータに基づいて、車両のバッテリーが今後30日以内に故障する可能性があるかどうかです。彼らは、これらの予測に基づいて、サービスを提供する必要がある車両を識別するために、毎晩バッチプロセスを実行したいと考えています。また、車両をフリート管理 Web サイトで表示する際に、リアルタイムで予測を行う方法も望んでいます。
 
-To support this requirement, you will use Apache Spark on Azure Databricks, a fully managed Apache Spark platform optimized to run on Azure. Spark is a unified big data and advanced analytics platform that enables data scientists and data engineers to explore and prepare large amounts of structured and unstructured data, then use that data to train, use, and deploy machine learning models at scale. We will read and write to Cosmos DB, using the `azure-cosmosdb-spark` connector (<https://github.com/Azure/azure-cosmosdb-spark>).
+この要件をサポートするには、Azure 上で実行するように最適化された完全に管理された Apache Spark プラットフォームである Azure Databricks で Apache Spark を使用します。Spark は、データ サイエンティストとデータ エンジニアが大量の構造化データと非構造化データを探索して準備し、そのデータを使用して機械学習モデルを大規模にトレーニング、使用、および展開できるようにする、統合されたビッグ データと高度な分析プラットフォームです。`azure-cosmosdb-spark` コネクタ (<https://github.com/Azure/azure-cosmosdb-spark>)を使用して、Cosmos DB に読み書きをします。
 
-In this task, you will create a new cluster on which data exploration and model deployment tasks will be executed in later exercises.
+このタスクでは、後の演習でデータ探索タスクとモデル展開タスクを実行する新しいクラスターを作成します。
 
-1. In the [Azure portal](https://portal.azure.com), open your lab resource group, then open your **Azure Databricks Service**. The name should start with `iot-databricks`.
+1. [Azure portal](https://portal.azure.com)で、この演習のリソースグループを開き、**Azure Databricks Service** を開きます。名前は `iot-databricks` で始まるはずです。
 
    ![The Azure Databricks Service is highlighted in the resource group.](media/resource-group-databricks.png 'Resource Group')
 
-2. Select **Launch Workspace**. Azure Databricks will automatically sign you in through its Azure Active Directory integration.
+2. **Launch Workspace** を選択します。Azure Databricks はAzure Active Directoryが統合されているので、自動的にサインインできます。
 
    ![Launch Workspace](media/databricks-launch-workspace.png 'Launch Workspace')
 
-3. Once in the workspace, select **Clusters** in the left-hand menu, then select **+ Create Cluster**.
+3. ワークスペースで、左側のメニューから **Clusters** を選択し、**+ Create Cluster** を選択します。
 
    ![Create Cluster is highlighted.](media/databricks-clusters.png 'Clusters')
 
-4. In the **New Cluster** form, specify the following configuration options:
+4. **New Cluster** フォームで以下の設定オプションを指定します:
 
    1. **Cluster Name**: Enter **lab**.
    2. **Cluster Mode**: Select **Standard**.
@@ -663,29 +665,29 @@ In this task, you will create a new cluster on which data exploration and model 
 
    ![The New Cluster form is displayed with the previously described values.](media/databricks-new-cluster.png 'New Cluster')
 
-5. Select **Create Cluster**.
+5. **Create Cluster** を選択します。
 
-6. Before continuing to the next step, verify that your new cluster is running. Wait for the state to change from **Pending** to **Running**
+6. 次の手順に進む前に、クラスターが動作していることを確認します。ステータスが **Pending** から **Running** に変わるのを待ちます。
 
-7. Select the **lab** cluster, then select **Libraries**.
+7. **lab** クラスターを選択し、**Libraries** を選択します。
 
-8. Select **Install New**.
+8. **Install New** を選択します。
 
     ![Navigate to the libraries tab and select `Install New`.](media/databricks-new-library.png 'Adding a new library')
 
-9. In the Install Library dialog, select **Maven** for the Library Source.
+9. Install LibraryダイアログでLibrary Sourceとして **Maven** を選択します。
 
-10. In the Coordinates field type:
+10. Coordinates フィールドで以下を入力します:
 
     ```text
     com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
     ```
 
-11. Select **Install**
+11. **Install** を選択します。
 
     ![Populated library dialog for Maven.](media/databricks-install-library-cosmos.png 'Add the Maven library')
 
-12. **Wait** until the library's status shows as **Installed** before continuing.
+12. ライブラリのステータスが **Installed** になるまで **待ってから** 次の手順に進みます。
 
 ### Task 9: Configure Key Vault-backed Databricks secret store
 
