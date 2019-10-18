@@ -1198,9 +1198,9 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     {
     ```
 
-    This function is defined with the `IoTHubTrigger`. Each time the IoT devices send data to IoT Hub, this function gets triggered and sent the event data in batches (`EventData[] vehicleEventData`). The `CosmosDB` attribute is an output attribute, simplifying writing Cosmos DB documents to the defined database and container; in our case, the `ContosoAuto` database and `telemetry` container, respectively.
+    この関数は `IoTHubTrigger` で定義されます。IoT デバイスが IoT Hub にデータを送信するたびに、この関数がトリガーされ、イベント データがバッチで送信されます (`EventData[] vehicleEventData`)。`CosmosDB` 属性は出力属性であり、定義されたデータベースとコンテナーへの Cosmos DB ドキュメントの書き込みを簡略化します。この場合、それぞれ `ContosoAuto` データベースと `telemetry` コンテナーがあります。
 
-13. Scroll down in the function code to find and complete **TODO 7** with the following code:
+13. 関数のコード内を下にスクロールして、**TODO 7** を見つけて以下のコードで完成させます:
 
     ```csharp
     vehicleEvent.partitionKey = $"{vehicleEvent.vin}-{DateTime.UtcNow:yyyy-MM}";
@@ -1211,19 +1211,19 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     await vehicleTelemetryOut.AddAsync(vehicleEvent);
     ```
 
-    The `partitionKey` property represents a synthetic composite partition key for the Cosmos DB container, consisting of the VIN + current year/month. Using a composite key instead of simply the VIN provides us with the following benefits:
-    
-    1. Distributing the write workload at any given point in time over a high cardinality of partition keys.
-    2. Ensuring efficient routing on queries on a given VIN - you can spread these across time, e.g. `SELECT * FROM c WHERE c.partitionKey IN ("VIN123-2019-01", "VIN123-2019-02", …)`
-    3. Scale beyond the 10GB quota for a single partition key value.
+    `partitionKey` プロパティは、VIN + 現在の年/月で構成される Cosmos DB コンテナーの合成複合パーティション キーを表します。単に VIN の代わりに複合キーを使用すると、次の利点が得られます。
 
-    The `ttl` property sets the time-to-live for the document to 60 days, after which Cosmos DB will delete the document, since the `telemetry` container is our hot path storage.
+    1. パーティション キーのカーディナリティが高い上に、任意の時点での書き込みワークロードを分散します。
+    2. 特定の VIN 上のクエリに対する効率的なルーティングを確保する - これらを時間で分散することができます。例 `SELECT * FROM c WHERE c.partitionKey IN ("VIN123-2019-01", "VIN123-2019-02", …)`
+    3. 単一のパーティション キー値の 10 GB クォータを超えてスケーリングします。
 
-    When we asynchronously add the class to the `vehicleTelemetryOut` collection, the Cosmos DB output binding on the function automatically handles writing the data to the defined Cosmos DB database and container, managing the implementation details for us.
+    `ttl` プロパティはドキュメントの存続時間を 60 日に設定し、その後 Cosmos DB はドキュメントを削除します。
 
-14. **Save** the **Functions.cs** file.
+    クラスを `vehicleTelemetryOut` コレクションに非同期的に追加すると、関数の Cosmos DB 出力バインディングは、定義された Cosmos DB データベースとコンテナへのデータの書き込みを自動的に処理し、実装の詳細を管理します。
 
-15. Open **Startup.cs** within the **FleetManagementWebApp** project. Scroll down to the bottom of the file to find and complete **TODO 8** with the following code:
+14. **Functions.cs** ファイルを **Save** します。
+
+15. **FleetManagementWebApp** プロジェクトの **Startup.cs** を開きます。ファイルの一番下までスクロールして、**TODO 8** を見つけ、以下のコードで完成させます:
 
     ```csharp
     CosmosClientBuilder clientBuilder = new CosmosClientBuilder(cosmosDbConnectionString.ServiceEndpoint.OriginalString, cosmosDbConnectionString.AuthKey);
@@ -1233,30 +1233,30 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
     ```
 
-    This code uses the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) to initialize the `CosmosClient` instance that is added to the `IServiceCollection` as a singleton for dependency injection and object lifetime management.
+    このコードでは、[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用して、依存関係のインジェクションとオブジェクトの有効期間管理のためのシングルトンとして `IServiceCollection` に追加される `CosmosClient` インスタンスを初期化します。
 
-16. **Save** the **Startup.cs** file.
+16. **Startup.cs** ファイルを **Save** します。
 
-17. Open **CosmosDBService.cs** under the **Services** folder of the **FleetManagementWebApp** project to find and complete **TODO 9** with the following code:
+17. **FleetManagementWebApp** プロジェクトの **Services** フォルダにある **CosmosDBService.cs** を開いて、**TODO 9** を見つけ、以下のコードで完成させます:
 
     ```csharp
     var setIterator = query.Where(predicate).Skip(itemIndex).Take(pageSize).ToFeedIterator();
     ```
 
-    Here we are using the newly added `Skip` and `Take` methods on the `IOrderedQueryable` object (`query`) to retrieve just the records for the requested page. The `predicate` represents the LINQ expression passed in to the `GetItemsWithPagingAsync` method to apply filtering.
+    ここでは、要求されたページのレコードだけを取得するために、`IOrderedQueryable` オブジェクト (`query`) に新しく追加された `Skip` メソッドと `Take` メソッドを使用しています。`predicate` は、フィルタリングを適用する `GetItemsWithPagingAsync` メソッドに渡される LINQ 式を表します。
 
-18. Scroll down a little further to find and complete **TODO 10** with the following code:
+18. 少し多めに下にスクロールして、**TODO 10** を見つけ、以下のコードで完成させます:
 
     ```csharp
     var count = this._container.GetItemLinqQueryable<T>(allowSynchronousQueryExecution: true, requestOptions: !string.IsNullOrWhiteSpace(partitionKey) ? new QueryRequestOptions { PartitionKey = new PartitionKey(partitionKey) } : null)
         .Where(predicate).Count();
     ```
 
-    In order to know how many pages we need to navigate, we must know the total item count with the current filter applied. To do this, we retrieve a new `IOrderedQueryable` results from the `Container`, pass the filter predicate to the `Where` method, and return the `Count` to the `count` variable. For this to work, you must set `allowSynchronousQueryExecution` to true, which we do with our first parameter to the `GetItemLinqQueryable` method.
+    ナビゲートする必要があるページ数を知るには、現在のフィルタを適用したアイテムの合計数を知る必要があります。これを行うには、`Container`から新しい `IOrderedQueryable` 結果を取得し、フィルタ述語を `Where` メソッドに渡し、`count` 変数に `Count` を返します。これを機能させるには、`allowSynchronousQueryExecution` を true に設定する必要があります。
 
-19. **Save** the **CosmosDBService.cs** file.
+19. **CosmosDBService.cs** ファイルを **Save** します。
 
-20. Open **VehiclesController.cs** under the **Controllers** folder of the **FleetManagementWebApp** project to review the following code:
+20. **FleetManagementWebApp** プロジェクトの **Controllers** フォルダにある **VehiclesController.cs** を開き、以下のコードを確認します:
 
     ```csharp
     private readonly ICosmosDbService _cosmosDbService;
@@ -1292,97 +1292,97 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     }
     ```
 
-    We are using dependency injection with this controller, just as we did with one of our Function Apps earlier. The `ICosmosDbService`, `IHttpClientFactory`, and `IConfiguration` services are injected into the controller through the controller's constructor. The `CosmosDbService` is the class whose code you updated in the previous step. The `CosmosClient` is injected into it through its constructor.
+    以前のFunction Appと同様に、このコントローラーで依存関係の注入を使用しています。`ICosmosDbService`、`IHttpClientFactory`、および `IConfiguration` サービスは、コントローラのコンストラクターを介してコントローラに注入されます。`CosmosDbService` は、前の手順でコードを更新したクラスです。`CosmosClient` はコンストラクターを介して注入されます。
 
-    The `Index` controller action method uses paging, which it implements by calling the `ICosmosDbService.GetItemsWithPagingAsync` method you updated in the previous step. Using this service in the controller helps abstract the Cosmos DB query implementation details and business rules from the code in the action methods, keeping the controller lightweight and the code in the service reusable across all the controllers.
+    `Index` コントローラーアクションメソッドは、前の手順で更新した `ICosmosDbService.GetItemsWithPagingAsync` メソッドを呼び出すことによって実装されるページングを使用します。コントローラーでこのサービスを使用すると、アクション メソッドのコードから Cosmos DB クエリの実装の詳細とビジネス ルールを抽象化し、コントローラを軽量に保ち、サービス内のコードをすべてのコントローラ間で再利用可能にすることができます。
 
-    Notice that the paging query does not include a partition key, making the Cosmos DB query cross-partition, which is needed to be able to query across all the documents. If this query ends up being used a lot with the passed in `search` value, causing a higher than desired RU usage on the container per execution, then you might want to consider alternate strategies for the partition key, such as a combination of `vin` and `stateVehicleRegistered`. However, since most of our access patterns for vehicles in this container use the VIN, we are using it as the partition key right now. You will see code further down in the method that explicitly pass the partition key value.
+    ページング クエリにはパーティション キーが含まれていないため、Cosmos DB クエリはパーティション間でクエリを実行できる必要があります。このクエリが `search` 値で渡され、実行あたりのコンテナーでの RU 使用量が必要以上に高くなる場合は、`vin` と `stateVehicleRegistered ` の組み合わせなど、パーティション キーの代替戦略を検討する必要があります。ただし、このコンテナー内の車両のアクセス パターンのほとんどは VIN を使用するため、現在はパーティション キーとして使用しています。パーティション キー値を明示的に渡すメソッドには、さらに下にコードが表示されます。
 
-21. Scroll down in the `VehiclesController.cs` file to find and complete **TODO 11** with the following code:
+21. **VehiclesController.cs** を下にスクロールして、**TODO 11** を見つけ、以下のコードで完成させます:
 
     ```csharp
     await _cosmosDbService.DeleteItemAsync<Vehicle>(item.id, item.partitionKey);
     ```
 
-    Here we are doing a hard delete by completely removing the item. In a real-world scenario, we would most likely perform a soft delete, which means updating the document with a `deleted` property and ensuring all filters exclude items with this property. Plus, we'd soft delete related records, such as trips. Soft deletions make it much easier to recover a deleted item if needed in the future.
+    ここでは、項目を完全に削除してハード削除を行っています。実際のシナリオでは、ほとんどの場合、ソフト削除を実行します。さらに、出張などの関連レコードをソフト削除します。ソフト削除を使用すると、将来必要に応じて削除されたアイテムを簡単に回復できます。
 
-22. **Save** the **VehiclesController.cs** file.
+22. **VehiclesController.cs** ファイルを **Save** します。
 
 ### Task 5: Deploy Cosmos DB Processing Function App
 
-1. In the Visual Studio Solution Explorer, right-click on the **Functions.CosmosDB** project, then select **Publish...**.
+1. Visual Studio Solution Explorerで、**Functions.CosmosDB** プロジェクトを右クリックし、**Publish...** を選択します。
 
     ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
 
-2. In the publish dialog, select the **Azure Functions Consumption Plan** publish target. Next, select the **Select Existing** radio and make sure **Run from package file (recommended)** is checked. Select **Publish** on the bottom of the form.
+2. 公開ダイアログで、**Azure Functions Consumption Plan** 公開ターゲットを選択します。次に、**Select Existing** ラジオボタンを選択し、**Run from package file (recommended)** がチェックされていることを確認します。フォームの一番下の **Publish** を選択します。
 
     ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
 
-3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-CosmosDBProcessing**, then select **OK**.
+3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて展開します。名前は **cosmos-db-iot** で始まるはずです。名前が **IoT-CosmosDBProcessing** で始まるFunction Appを選択し、**OK** を選択します。
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-cosmos.png "App Service")
 
-4. Click **Publish** to begin.
+4. **Publish** をクリックして開始します。
 
-    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
+    公開が完了した後、出力ウインドウに以下が表示されるはずです: 公開が成功したことを表示する `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========`
 
-    > If you do not see the Output window, select **View** in Visual Studio, then **Output**.
+    > もし出力ウインドウが表示されない場合、Visual Studioで **View** を選択し、それから **Output** を選択します。
 
 ### Task 6: Deploy Stream Processing Function App
 
-1. In the Visual Studio Solution Explorer, right-click on the **Functions.StreamProcessing** project, then select **Publish...**.
+1. Visual Studio Solution Explorerで、**Functions.StreamProcessing** プロジェクトを右クリックし、**Publish...** を選択します。
 
     ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
 
-2. In the publish dialog, select the **Azure Functions Consumption Plan** publish target. Next, select the **Select Existing** radio and make sure **Run from package file (recommended)** is checked. Select **Publish** on the bottom of the form.
+2. 公開ダイアログで、**Azure Functions Consumption Plan** 公開ターゲットを選択します。次に、**Select Existing** ラジオボタンを選択し、**Run from package file (recommended)** がチェックされていることを確認します。フォームの一番下の **Publish** を選択します。
 
     ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
 
-3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Function App whose name starts with **IoT-StreamProcessing**, then select **OK**.
+3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて展開します。名前は **cosmos-db-iot** で始まるはずです。名前が **IoT-StreamProcessing** で始まるFunction Appを選択し、**OK** を選択します。
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-stream.png "App Service")
 
-4. Click **Publish** to begin.
+4. **Publish** をクリックして開始します。
 
-    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish.
+    公開が完了した後、出力ウインドウに以下が表示されるはずです: 公開が成功したことを表示する `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========`
 
 ### Task 7: Deploy Web App
 
-1. In the Visual Studio Solution Explorer, right-click on the **FleetManagementWebApp** project, then select **Publish...**.
+1. Visual Studio Solution Explorerで、**FleetManagementWebApp** プロジェクトを右クリックし、**Publish...** を選択します。
 
     ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
 
-2. In the publish dialog, select the **App Service** publish target. Next, select the **Select Existing** radio, then select **Publish** on the bottom of the form.
+2. 公開ダイアログで、**App Service** 公開ターゲットを選択します。次に、**Select Existing** ラジオボタンを選択し、フォームの一番下の **Publish** を選択します。
 
     ![The publish dialog is displayed.](media/vs-publish-target-webapp.png "Pick a publish target")
 
-3. In the App Service pane, select your Azure Subscription you are using for this lab, and make sure View is set to **Resource group**. Find and expand your Resource Group in the results below. The name should start with **cosmos-db-iot**. Select the Web App whose name starts with **IoTWebApp**, then select **OK**.
+3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて展開します。名前は **cosmos-db-iot** で始まるはずです。名前が **IoTWebApp** で始まるWeb Appを選択し、**OK** を選択します。
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-webapp.png "App Service")
 
-4. Click **Publish** to begin.
+4. **Publish** をクリックして開始します。
 
-    After the publish completes, you should see the following in the Output window: `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========` to indicate a successful publish. Also, the web app should open in a new browser window. If you try to navigate through the site, you will notice there is no data. We will seed the Cosmos DB `metadata` container with data in the next exercise.
+    公開が完了した後、出力ウインドウに以下が表示されるはずです: 公開が成功したことを表示する `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========`。さらに、Web Appは新しいブラウザ ウィンドウで開く必要があります。サイト内を移動しようとすると、データがないことがわかります。次の演習では、データを含む Cosmos DB の `metadata` コンテナーをシードします。
 
     ![The Fleet Management web app home page is displayed.](media/webapp-home-page.png "Fleet Management home page")
 
-    If the web app does not automatically open, you can copy its URL on the publish dialog:
+    Web Appが自動で開かない場合は、公開ダイアログでURLをコピーします:
 
     ![The site URL value is highlighted on the publish dialog.](media/vs-publish-site-url.png "Publish dialog")
 
-> **NOTE:** If the web application displays an error, then go into the Azure Portal for the **IoTWebApp** and click **Restart**. When the Azure Web App is created from the ARM Template and configured for .NET Core, it may need to be restarted for the .NET Core configuration to be fully installed and ready for the application to run. Once restarted, the web application will run as expected.
+> **注:** Web アプリケーションにエラーが表示された場合は、**IoTWebApp** の Azure ポータルに移動し、**Restart** をクリックします。ARM テンプレートから Azure Web Appを作成し、.NET Core 用に構成する場合、.NET Core 構成を完全にインストールしてアプリケーションを実行する準備が整うために、Azure Web App を再起動する必要がある場合があります。再起動すると、Web アプリケーションは期待どおりに実行されます。
 
 > ![App Service blade with Restart button highlighted](media/IoTWebApp-App-Service-Restart-Button.png "App Service blade with Restart button highlighted")
 
-> **Further troubleshooting:** If, after restarting the web application more than once, you still encounter a _500_ error, there may be a problem with the system identity for the web app. To check if this is the issue, open the web application's Configuration and view its Application Settings. Open the **CosmosDBConnection** setting and look at the **Key Vault Reference Details** underneath the setting. You should see an output similar to the following, which displays the secret details and indicates that it is using the _System assigned managed identity_:
+> **追加のトラブルシューティング:** Web アプリケーションを複数回再起動しても _500_ エラーが発生した場合は、Web App のシステム ID に問題がある可能性があります。これが問題であるかどうかを確認するには、Web アプリケーションの構成を開き、そのアプリケーション設定を表示します。**CosmosDBConnection** 設定を開き、設定の下にある **Key Vault Reference Details** を見てください。次のような出力が表示され、シークレットの詳細が表示され、_System が割り当てられたマネージ ID_を使用していることを示します:
 
 ![The application setting shows the Key Vault reference details underneath.](media/webapp-app-setting-key-vault-reference.png "Key Vault reference details")
 
-> If you see an error in the Key Vault Reference Details, go to Key Vault and delete the access policy for the web app's system identity. Then go back to the web app, turn off the System Identity, turn it back on (which creates a new one), then re-add it to Key Vault's access policies.
+> Key Vault Reference Detailsにエラーが表示された場合は、Key Vault に移動し、Web Appのシステム ID のアクセス ポリシーを削除します。次に、Web App に戻り、システム ID をオフにし、再びオンにして (新しいアプリを作成する)、Key Vault のアクセス ポリシーに再度追加します。
 
 ### Task 8: View Cosmos DB processing Function App in the portal and copy the Health Check URL
 
-1. In the Azure portal (<https://portal.azure.com>), open the Azure Function App whose name begins with **IoT-CosmosDBProcessing**.
+1. Azure portal (<https://portal.azure.com>)で、名前が **IoT-CosmosDBProcessing** で始まる Azure Function App を開きます。
 
 2. Expand the **Functions** list in the left-hand menu, then select **TripProcessor**.
 
