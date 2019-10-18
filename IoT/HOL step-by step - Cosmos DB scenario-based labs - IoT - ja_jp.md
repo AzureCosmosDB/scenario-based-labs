@@ -806,11 +806,11 @@ Event Hubsの入力がリストされているのが見えるはずです。
 
 ### Task 3: Create Stream Analytics query
 
-The Query is Stream Analytics' work horse. This is where we process streaming inputs and write data to our outputs. The Stream Analytics query language is SQL-like, allowing you to use familiar syntax to explore and transform the streaming data, create aggregates, and create materialized views that can be used to help shape your data structure before writing to the output sinks. Stream Analytics jobs can only have one Query, but you can write to multiple outputs in a single Query, as you will do in the steps that follow.
+クエリはStream Analyticsの馬車馬です。ここでストリーミング入力を処理し、出力にデータを書き込みます。Stream Analytics クエリ言語は SQL に似ており、使い慣れた構文を使用して、ストリーミング データの探索と変換、集計の作成、および出力シンクに書き込む前にデータ構造を形成するために使用できる具体化されたビューを作成できます。Stream Analytics ジョブは 1 つのクエリしか持ち込めませんが、次の手順で行うように、1 つのクエリで複数の出力に書き込むことができます。
 
-Please take a moment to analyze the query below. Notice how we are using the `events` input name for the Event Hubs input you created, and the `powerbi` and `cosmosDB` outputs, respectively. Also see where we use the `TumblingWindow` in durations of 30 seconds for `VehicleData`, and 10 seconds for `VehicleDataAll`. The `TumblingWindow` helps us evaluate events that occurred during the past X seconds and, in our case, create averages over those time periods for reporting.
+以下のクエリを分析してください。作成した Event Hubs 入力に対して `events` 入力名と `powerbi` と `cosmosDB` 出力をそれぞれ使用していることに注目してください。また、`VehicleData` では30秒、`VehicleDataAll` では10秒の持続時間で `TumblingWindow` を使用する場所も確認できます。`TumblingWindow` は、過去X秒中に発生したイベントを評価し、この場合、レポートの期間にわたって平均を作成するのに役立ちます。
 
-1. Select **Query** in the left-hand menu. Replace the contents of the query window with the script below:
+1. 左側のメニューから **Query** を選択します。以下のスクリプトでクエリーウインドウの中身を置き換えます:
 
    ```sql
    WITH
@@ -871,17 +871,17 @@ Please take a moment to analyze the query below. Notice how we are using the `ev
 
    ![The Stream Analytics job Query is displayed.](media/stream-analytics-query.png 'Query')
 
-2. Select **Save query**.
+2. **Save query** を選択します。
 
 ### Task 4: Run Stream Analytics job
 
-Next, we will start the Stream Analytics job so we can begin processing event data once it starts to flow through the services.
+次に、サービスのフローを開始したイベント データの処理を開始できるように、Stream Analytics ジョブを開始します。
 
-1. Select **Overview**.
+1. **Overview** を選択します。
 
-2. In the Overview blade, select **Start** and select **Now** for the job output start time.
+2. Overview ブレードで、**Start** を選択し、ジョブの出力開始時刻として **Now** を選択します。
 
-3. Select **Start** to beginning running the Stream Analytics job.
+3. **Start** を選択し、Stream Analytics ジョブの実行を開始します。
 
    ![The steps to start the job as described are displayed.](media/stream-analytics-start-job.png 'Start job')
 
@@ -889,81 +889,81 @@ Next, we will start the Stream Analytics job so we can begin processing event da
 
 **Duration**: 30 minutes
 
-In the architecture for this scenario, Azure functions play a major role in event processing. These functions execute within an Azure Function App, Microsoft's serverless solution for easily running small pieces of code, or "functions," in the cloud. You can write just the code you need for the problem at hand, without worrying about a whole application or the infrastructure to run it. Functions can make development even more productive, and you can use your development language of choice, such as C#, F#, Node.js, Java, or PHP.
+このシナリオのアーキテクチャでは、Azure Functions がイベント処理で大きな役割を果たします。これらのFunctionは、クラウド内の小さなコード(関数)を簡単に実行するためのMicrosoftのサーバーレス ソリューションである Azure Function App 内で実行されます。アプリケーション全体やインフラストラクチャを実行する必要なく、問題に必要なコードだけを記述できます。Functions は開発の生産性をさらに高め、C#、F#、Node.js、Java、PHP などの開発言語を使用できます。
 
-Before we dive into this exercise, let's go over how the functions and Web App fit into our architecture.
+この演習に進む前に、Functions と Web App がアーキテクチャにどのように適合するかを見ていきましょう。
 
-There are three Function Apps and one Web App in the solution. The Function Apps handle event processing within two stages of the data pipeline, and the Web App is used to perform CRUD operations against data stored in Cosmos DB.
+ソリューションには 3 つの Function App と 1 つの Web App があります。Function Apps は、データ パイプラインの 2 段階以内でイベント処理を処理し、Web App を使用して Cosmos DB に格納されているデータに対して CRUD 操作を実行します。
 
 ![The two Function Apps and Web App are highlighted.](media/solution-diagram-function-apps-web-app.png 'Solution diagram')
 
-You may wonder, if a Function App contains several functions within, _why do we need two Function Apps instead of one_? The primary reason for using two Function Apps is due to how functions scale to meet demand. When you use the Azure Functions consumption plan, you only pay for the time your code runs. More importantly, Azure automatically handles scaling your functions to meet demand. It scales using an internal scale controller that evaluates the type of trigger the functions are using, and applies heuristics to determine when to scale out to multiple instances. The important thing to know is that functions scale at the Function App level. Meaning, if you have one very busy function and the rest are mostly idle, that one busy function causes the entire Function App to scale. Think about this when designing your solution. It is a good idea to **divide extremely high-load functions into separate Function Apps**.
+Function App に複数の関数が含まれている場合、_なぜ1つではなく2つの Function App が必要なのか?_ と疑問に思うかもしれません。2 つのFunction App を使用する主な理由は、関数が需要を満たすためにどのように拡張されるかによるものです。Azure Functions の消費プランを使用する場合は、コードの実行時間に対してのみ支払います。さらに重要なのは、Azure は需要に応える機能のスケーリングを自動的に処理することです。関数が使用しているトリガーの種類を評価する内部スケール コントローラを使用してスケールし、ヒューリスティックを適用して複数のインスタンスにスケール アウトするタイミングを決定します。知っておくべき重要なことは、Function App レベルで関数がスケーリングすることです。つまり、1 つの非常にビジーな関数があり、残りがほとんどアイドル状態の場合、1 つのビジー関数によって Function App 全体がスケーリングされます。ソリューションを設計する際には、このことを考えてください。**非常に高負荷の関数を別々の Function App** に分割することは良い考えです。
 
-Now let's introduce the Function Apps and Web App and how they contribute to the architecture.
+次に、Function App と Web App とそのアーキテクチャへの貢献方法を紹介します。
 
-- **IoT-StreamProcessing Function App**: This is the Stream Processing Function App, and it contains a two functions:
+- **IoT-StreamProcessing Function App**: これはストリーム処理の Function App であり、2つの関数が含まれています。
 
-  - **IoTHubTrigger**: This function is automatically triggered by the IoT Hub's Event Hub endpoint as vehicle telemetry is sent by the data generator. The function performs some light processing to the data by defining the partition key value, the document's TTL, adds a timestamp value, then saves the information to Cosmos DB.
-  - **HealthCheck**: This function has an Http trigger that enables users to verify that the Function App is up and running, and that each configuration setting exists and has a value. More thorough checks would validate each value against an expected format or by connecting to each service as required. The function will return an HTTP status of `200` (OK) if all values contain non-zero strings. If any are null or empty, the function will return an error (`400`), indicating which values are missing. The data generator calls this function before running.
+- **IoTHubTrigger**: この関数は、車両テレメトリがデータ ジェネレータによって送信されるにつれて、IoT Hub の Event Hub エンドポイントによって自動的にトリガーされます。この関数は、パーティションキー値、ドキュメントの TTL、を定義してデータに対して軽い処理を実行し、タイムスタンプ値を追加し、情報を Cosmos DB に保存します。
+  - **HealthCheck**: この関数には HTTP トリガーがあり、ユーザーは Function App が起動して実行中であり、各構成設定が存在し、値を持っていることを確認できます。より徹底的なチェックでは、各値が予期される形式に対して、または必要に応じて各サービスに接続することによって検証されます。すべての値にゼロ以外の文字列が含まれている場合、関数は HTTP ステータス `200` (OK) を返します。null または空の値がある場合、関数はエラー (`200`) を返し、どの値が欠落していることを示します。データ ジェネレータは、実行する前にこの関数を呼び出します。
 
   ![The Event Processing function is shown.](media/solution-architecture-function1.png 'Solution architecture')
 
-- **IoT-CosmosDBProcessing Function App**: This is the Trip Processing Function App. It contains three functions that are triggered by the Cosmos DB Change Feed on the `telemetry` container. Because the Cosmos DB Change Feed supports multiple consumers, these three functions can run in parallel, processing the same information simultaneously without conflicting with one another. When we define the `CosmosDBTrigger` for each of these functions, we configure the trigger settings to connect to a Cosmos DB collection named `leases` to keep track of which change feed events they have processed. We also set the `LeaseCollectionPrefix` value for each function with a unique prefix so one function does not attempt to retrieve or update the lease information for another. The following functions are in this Function App:
+- **IoT-CosmosDBProcessing Function App** :これはトリップ処理のFunction App です。これは、`telemetry` コンテナ上のCosmos DB変更フィードによってトリガされる3つの関数が含まれています。Cosmos DB Change Feed は複数のコンシューマーをサポートしているため、これら 3 つの機能を並行して実行し、互いに競合することなく同じ情報を同時に処理できます。これらの各関数に対して `CosmosDBTrigger` を定義する際に、処理した変更フィードイベントを追跡するために、 `leases` という名前のCosmos DBコレクションに接続するトリガ設定を設定します。また、一つの関数が別の関数のリース情報を取得または更新しようとしないように、一意のプレフィックスを持つ各関数の `LeaseCollectionPrefix` 値も設定します。このFunction App には、次の関数があります。
 
-  - **TripProcessor**: This function groups vehicle telemetry data by VIN, retrieves the associated Trip record from the `metadata` container, updates the Trip record with a trip start timestamp, an end timestamp if completed, and a status showing whether the trip has started, is delayed, or has completed. It also updates the associated Consignment record with the status, and triggers the Logic App with the trip information if an alert needs to be emailed to the recipient defined in the Function App's app settings (`RecipientEmail`).
-  - **ColdStorage**: This function connects to the Azure Storage account (`ColdStorageAccount`) and writes the raw vehicle telemetry data for cold storage in the following time-sliced path format: `telemetry/custom/scenario1/yyyy/MM/dd/HH/mm/ss-fffffff.json`.
-  - **SendToEventHubsForReporting**: This function simply sends the vehicle telemetry data straight to Event Hubs, allowing Stream Analytics to apply windowed aggregates and save those aggregates in batches to Power BI and to the Cosmos DB `metadata` container.
-  - **HealthCheck**: As with the function of the same name within the Stream Processing Function App, this function has an Http trigger that enables users to verify that the Function App is up and running, and that each configuration setting exists and has a value. The data generator calls this function before running.
+- **TripProcessor**: この関数は、VINによって車両テレメトリデータをグループ化し、 `metadata` コンテナから関連するトリップレコードを取得し、トリップ開始タイムスタンプ、完了した場合は終了タイムスタンプ、およびトリップの有無を示すステータス、トリップが開始された、遅れている、または完了したのいずれか、を更新します。また、関連する委託レコードをステータスで更新し、Function App のアプリ設定で定義された受信者にアラートを電子メールで送信する必要がある場合は、出張情報を含む Logic App をトリガーします (`RecipientEmail`)。
+  - **ColdStorage**: この関数は Azure Storage アカウント (`ColdStorageAccount`) に接続し、次のタイム スライスパス形式でコールド ストレージ用の生の車両テレメトリ データを書き込みます: `telemetry/custom/scenario1/yyyy/MM/dd/HH/mm/ss-fffffff.json`。
+  - ** SendToEventHubsForReporting** : この関数は、車両テレメトリ データを Event Hubs に直接送信するだけで、Stream Analytics はウィンドウ化された集計を適用し、それらの集計を Power BI および Cosmos DB のメタデータ コンテナーにバッチで保存できます。
+  - **HealthCheck**: ストリーム処理 Function App 内の同じ名前の関数と同様に、この関数には HTTP トリガーがあり、Function Appが稼働中であり、各構成設定が存在し、値を持っていることをユーザーが確認できます。データ ジェネレータは、実行する前にこの関数を呼び出します。
 
   ![The Trip Processing function is shown.](media/solution-architecture-function2.png 'Solution architecture')
 
-- **IoTWebApp**: The Web App provides a Fleet Management portal, allowing users to perform CRUD operations on vehicle data, make real-time battery failure predictions for a vehicle against the deployed machine learning model, and view consignments, packages, and trips. It connects to the Cosmos DB `metadata` container, using the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/).
+- **IoTWebApp**: Web App はフリート管理ポータルを提供し、ユーザーが車両データに対して CRUD 操作を実行し、展開された機械学習モデルに対して車両のリアルタイムバッテリ故障予測を行い、委託、パッケージ、および出張を表示できるようにします。[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用して、Cosmos DBの `metadata` コンテナに接続します。
 
   ![The Web App is shown.](media/solution-architecture-webapp.png 'Solution architecture')
 
 ### Task 1: Retrieve the URI for each Key Vault secret
 
-When you set the App Settings for the Function Apps and Web App in the next task, you will need to reference the URI of a secret in Key Vault, including the version number. To do this, perform the following steps for each secret and **copy the values** to Notepad or similar text application.
+次のタスクで Function App と Web App のアプリ設定を設定する場合は、バージョン番号を含む Key Vault のシークレットの URI を参照する必要があります。これを行うには、シークレットごとに次の手順を実行し、**値** をNotepadまたは同様のテキスト アプリケーションにコピーします。
 
-1. Open your Key Vault instance in the portal.
+1. ポータルでKey Vaultのインスタンスを開きます。
 
-2. Select **Secrets** under Settings in the left-hand menu.
+2. 左側のメニューの Settings 以下にある **Secrets** を選択します。
 
-3. Select the secret whose URI value you wish to obtain.
+3. 取得したいURI値のシークレットを選択します。
 
-4. Select the **Current Version** of the secret.
+4. **Current Version** のシークレットを選択します。
 
    ![The secret's current version is displayed.](media/key-vault-secret-current-version.png 'Current Version')
 
-5. Copy the **Secret Identifier**.
+5. **Secret Identifier** をコピーします。
 
    ![The Secret Identifier is highlighted.](media/key-vault-secret-identifier.png 'Secret Identifier')
 
-   When you add the Key Vault reference to this secret within a Function App's App Settings, you will use the following format: `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is replaced by the Secret Identifier (URI) value above. **Make sure you remove the curly braces (`{}`)**.
+   Function Appのアプリ設定でこのシークレットへの Key Vault 参照を追加すると、`@Microsoft.KeyVault(SecretUri={referenceString})` という形式を利用することになり、`{referenceString}` は上記のシークレット識別子(URI)の値によって置き換えられます。**中かっこ(`{}`)** を削除してください。
 
-   For example, a complete reference would look like the following:
+   例えば、完全な参照は以下のようになります:
 
    `@Microsoft.KeyVault(SecretUri=https://iot-vault-501993860.vault.azure.net/secrets/CosmosDBConnection/794f93084861483d823d37233569561d)`
 
 ### Task 2: Configure application settings in Azure
 
-> We recommend that you open two browser tabs for these steps. One to copy secrets from each Azure service, and the other to add the secrets to Key Vault.
+> これらの手順では、2 つのブラウザ タブを開いたままにすることをお勧めします。1 つは各 Azure サービスからシークレットをコピーし、もう 1 つは Key Vault にシークレットを追加します。
 
-1. Using a new tab or instance of your browser, navigate to the Azure portal, <https://portal.azure.com>.
+1. ブラウザの新しいタブか画面で、Azure portal, <https://portal.azure.com> に移動します。
 
-2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
+2. 左側のメニューから **Resource groups** を選択し、`cosmos-db-iot` を入力してリソースグループを探します。この演習で利用しているリソースグループを選択します。
 
-3. Open the your **Key Vault**. The name should begin with `iot-vault`.
+3. **Key Vault** を開きます。名前は `iot-vault` で始まるはずです。
 
    ![The Key Vault is highlighted in the resource group.](media/resource-group-keyvault.png 'Resource group')
 
-4. In another browser tab, open the Azure Function App whose name begins with **IoT-CosmosDBProcessing**.
+4. 別のブラウザのタブで、名前が **IoT-CosmosDBProcessing** で始まる Azure Function App を選択します。
 
-5. Select **Configuration** on the Overview pane.
+5. Overviewペインで **Configuration** を選択します。
 
     ![The Configuration link is highlighted in the Overview blade.](media/cosmosdb-function-overview.png "Overview")
 
-6. Scroll to the **Application settings** section. Use the **+ New application setting** link to create the following additional Key/Value pairs (the key names must exactly match those found in the table below):
+6. **Application settings** セクションへスクロールします。**+ New application setting** リンクを使って、以下の追加の Key/Value ペアを作成します (キーの名前は以下の表にあるものと完全に一致していなければいけません):
 
     | **Application Key**      |                                                                          **Value**                                                                          |
     | ------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -975,13 +975,13 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
     ![In the Application Settings section, the previously mentioned key / value pairs are displayed.](media/application-settings-cosmosdb-function.png 'Application Settings section')
 
-7. Select **Save** to apply your changes.
+7. **Save** を選択し、変更を適用します。
 
-8. Open the Azure Function App whose name begins with **IoT-StreamProcessing**.
+8. 名前が **IoT-StreamProcessing** で始まる Azure Function App を開きます。
 
-9. Select **Configuration** on the Overview pane.
+9. Overviewペインで **Configuration** を選択します。
 
-10. Scroll to the **Application settings** section. Use the **+ New application setting** link to create the following additional Key/Value pairs (the key names must exactly match those found in the table below):
+10. **Application settings** セクションへスクロールします。**+ New application setting** リンクを使って、以下の追加の Key/Value ペアを作成します (キーの名前は以下の表にあるものと完全に一致していなければいけません):
 
     | **Application Key**      |                                                                          **Value**                                                                          |
     | ------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -990,13 +990,13 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
     ![In the Application Settings section, the previously mentioned key / value pairs are displayed.](media/application-settings-stream-function.png 'Application Settings section')
 
-11. Select **Save** to apply your changes.
+11. **Save** を選択し、変更を適用します。
 
-12. Open the Web App (App Service) whose name begins with **IoTWebApp**.
+12. 名前が **IoTWebApp** で始まる Web App (App Service) を開きます。
 
-13. Select **Configuration** in the left-hand menu.
+13. 左側のメニューから **Configuration** を選択します。
 
-14. Scroll to the **Application settings** section. Use the **+ New application setting** link to create the following additional Key/Value pairs (the key names must exactly match those found in the table below):
+14. **Application settings** セクションへスクロールします。**+ New application setting** リンクを使って、以下の追加の Key/Value ペアを作成します (キーの名前は以下の表にあるものと完全に一致していなければいけません):
 
     | **Application Key**      |                                                                          **Value**                                                                          |
     | ------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -1006,23 +1006,23 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
     ![In the Application Settings section, the previously mentioned key / value pairs are displayed.](media/application-settings-web-app.png 'Application Settings section')
 
-15. Select **Save** to apply your changes.
+15. **Save** を選択し、変更を適用します。
 
-> Verify that the system-managed identities for both Function Apps and Web App are working properly and able to access Key Vault. To do this, within each Function App and the Web App, open the **CosmosDBConnection** setting and look at the **Key Vault Reference Details** underneath the setting. You should see an output similar to the following, which displays the secret details and indicates that it is using the _System assigned managed identity_:
+> Function Appと Web App の両方のシステム管理 ID が正しく動作し、Key Vault にアクセスできることを確認します。これを行うには、各 Function App と Web App 内で**CosmosDBConnection**設定を開き、設定の下にある **Key Vault Reference Details** を見てください。次のような出力が表示され、シークレットの詳細が表示され、_システムで割り当てられたマネージ ID_ を使用していることを示します:
 
 ![The application setting shows the Key Vault reference details underneath.](media/webapp-app-setting-key-vault-reference.png "Key Vault reference details")
 
-> If you see an error in the Key Vault Reference Details, go to Key Vault and delete the access policy for the related system identity. Then go back to the Function App or web app, turn off the System Identity, turn it back on (which creates a new one), then re-add it to Key Vault's access policies.
+> Key Vault Reference Detailsにエラーが表示された場合は、Key Vault に移動し、関連するシステム ID のアクセス ポリシーを削除します。次に、Function App または  Web App に戻り、システム ID をオフにし、再びオンにして (新しいアプリを作成する)、Key Vault のアクセス ポリシーに再度追加します。
 
 ### Task 3: Open solution
 
-In this task, you will open the Visual Studio solution for this lab. It contains projects for both Function Apps, the Web App, and the data generator.
+このタスクでは、この演習の Visual Studio ソリューションを開きます。これには、Function App、Web App、およびデータ ジェネレータの両方のプロジェクトが含まれています。
 
-1. Open Windows Explorer and navigate to the location you extracted the solution ZIP file in the _Before the HOL_ guide. If you extracted the ZIP file directly to `C:\`, you need to open the following folder: `C:\cosmos-db-scenario-based-labs-master\IoT\Starter`. Open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
+1. Windowsエクスプローラーを開いて _Before the HOL_ガイド内でソリューションのZIPファイルが展開された場所に移動します。もし`C:\`に直接ZIPファイルを展開した場合、以下のフォルダを開く必要があります:`C:\cosmos-db-scenario-based-labs-master\IoT\Starter` Visual Studioのソリューションファイルを開きます:**CosmosDbIoTScenario.sln**
 
-    > If Visual Studio prompts you to sign in when it first launches, use the account provided to you for this lab (if applicable), or an existing Microsoft account.
+    > Visual Studio が最初の起動時にサインインを求めるメッセージが表示された場合は、この演習 (該当する場合) または既存の Microsoft アカウントに提供されたアカウントを使用します。
 
-2. After opening the solution, observe the included projects in the **Solution Explorer**:
+2. ソリューションを開いた後、**Solution Explorer** で含まれるプロジェクトを見てみます:
 
     1. **Functions.CosmosDB**: Project for the **IoT-CosmosDBProcessing** Function App.
     2. **Functions.StreamProcessing**: Project for the **IoT-StreamProcessing** Function App.
@@ -1032,21 +1032,21 @@ In this task, you will open the Visual Studio solution for this lab. It contains
 
     ![The Visual Studio Solution Explorer is displayed.](media/vs-solution-explorer.png "Solution Explorer")
 
-3. Right-click on the `CosmosDbIoTScenario` solution in Solution Explorer, then select **Restore NuGet Packages**. The packages may have already been restored upon opening the solution.
+3. Solution Explorerで `CosmosDbIoTScenario` ソリューションを右クリックし、**Restore NuGet Packages** を選択します。パッケージはソリューションを開いた時に既にリストアされているかもしれません。
 
 ### Task 4: Code completion and walk-through
 
-The Function App and Web App projects contain blocks of code that need to be completed before you can deploy them. The reason for this is to help guide you through the solution, and to better understand the code by completing small fragments.
+Function App と Web App プロジェクトには、デプロイする前に完了する必要があるコード ブロックが含まれています。この理由は、ソリューションをガイドし、小さなフラグメントを完了してコードをより深く理解するのに役立ちます。
 
-1. In Visual Studio, select **View**, then select **Task List**. This will display the list of **TODO** items, helping you navigate to each one.
+1. Visual Studioで **View** を選択し、**Task List** を選択します。**TODO** 項目のリストを表示し、それらのいずれかに移動しやすいようになっています。
 
     ![The View menu in Visual Studio is displayed, and the Task List item is highlighted.](media/vs-view-tasklist.png "View Task List")
 
-    The Task List appears at the bottom of the window:
+    タスクリストはウインドウの一番下に表示されます:
 
     ![The Task List is displayed.](media/vs-tasklist.png "Task List")
 
-2. Open **Startup.cs** within the **Functions.CosmosDB** project and complete the code beneath **TODO 1** by pasting the following:
+2. **Functions.CosmosDB** プロジェクトの中の **Startup.cs** を開き、**TODO 1** 内に以下をペーストしてコードを完了します:
 
     ```csharp
     builder.Services.AddSingleton((s) => {
@@ -1064,15 +1064,15 @@ The Function App and Web App projects contain blocks of code that need to be com
     });
     ```
 
-    Your completed code should look as follows:
+    完全なコードは以下のようになります:
 
     ![The TODO 1 code is completed.](media/vs-todo1.png "TODO 1")
 
-    Since we are using the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/), and dependency injection is supported starting with Function Apps v2, we are using a [singleton Azure Cosmos DB client for the lifetime of the application](https://docs.microsoft.com/azure/cosmos-db/performance-tips#sdk-usage). This is injected into the `Functions` class through its constructor, as you will see in the next TODO block.
+    [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用しており、Function Apps v2 以降で依存関係の注入がサポートされているので、[singleton Azure Cosmos DB client for the lifetime of the application](https://docs.microsoft.com/azure/cosmos-db/performance-tips#sdk-usage) を利用します。これは、次の TODO ブロックで見るように、コンストラクタを通じて `Functions` クラスに挿入されます。
 
-3. **Save** the **Startup.cs** file.
+3. **Save** で **Startup.cs** ファイルを保存します。
 
-4. Open **Functions.cs** within the **Functions.CosmosDB** project and complete the code beneath **TODO 2** by pasting the following:
+4. **Functions.CosmosDB** プロジェクトの中の **Functions.cs** を開き、**TODO 2** 内に以下をペーストしてコードを完了します:
 
     ```csharp
     public Functions(IHttpClientFactory httpClientFactory, CosmosClient cosmosClient)
@@ -1082,9 +1082,9 @@ The Function App and Web App projects contain blocks of code that need to be com
     }
     ```
 
-    Adding the code above allows the `HttpClientFactory` and the `CosmosClient` to be injected into the function code, which allows these services to manage their own connections and lifecycle to improve performance and prevent thread starvation and other issues caused by incorrectly creating too many instances of expensive objects. The `HttpClientFactory` was already configured in `Startup.cs` where you made your previous code change. It is used to send alerts to the Logic App endpoint, and uses [Polly](https://github.com/App-vNext/Polly) to employ a gradual back-off wait and retry policy in case the Logic App is overloaded or has other issues causing calls to the HTTP endpoint to fail.
+    上記のコードを追加すると、関数コードに `HttpClientFactory` と `CosmosClient` を挿入できるため、これらのサービスは独自の接続とライフサイクルを管理してパフォーマンスを向上させ、スレッドの枯渇やその他の問題、高価なオブジェクトのインスタンスが誤って作成され過ぎて起こされる、を防ぐことができます。`HttpClientFactory` は、以前のコード変更を行った `Startup.cs` で既に構成されています。Logic App エンドポイントにアラートを送信するために使用され、[Polly](https://github.com/App-vNext/Polly) を使用して、Logic Appが過負荷になっている場合や、HTTP エンドポイントへの呼び出しが失敗する原因となるその他の問題がある場合に備えて、段階的なバックオフ待機ポリシーと再試行ポリシーを使用します。
 
-5. Look at the first function code below the constructor code you just completed:
+5. 今完了したばかりのコンストラクタコードの下にある最初の関数コードを見てみます:
 
     ```csharp
     [FunctionName("TripProcessor")]
@@ -1100,9 +1100,9 @@ The Function App and Web App projects contain blocks of code that need to be com
     {
     ```
 
-    The `FunctionName` attribute defines how the function name appears within the Function App, and can be different from the C# method name. This `TripProcessor` function uses the `CosmosDBTrigger` to fire on every Cosmos DB change feed event. The events arrive in batches, whose size depends on factors such as how many Insert, Update, or Delete events there are for the container. The `databaseName` and `collectionName` properties define which container's change feed triggers the function. The `ConnectionStringSetting` indicates the name of the Function App's application setting from which to pull the Cosmos DB connection string. In our case, the connection string value will draw from the Key Vault secret you created. The `LeaseCollection` properties define the name of the lease container and the prefix applied to lease data for this function, and whether to create the lease container if it does not exist. `StartFromBeginning` is set to `true`, ensuring that all events since the function last run are processed. The function outputs the change feed documents into an `IReadOnlyList` collection.
+    `FunctionName` 属性は、Function App 内での関数名の表示方法を定義し、C# メソッド名とは異なる場合があります。この `TripProcessor` 関数は、`CosmosDBTrigger` を使用して、すべてのCosmos DB change feed イベントに起動します。イベントはバッチで到着し、そのサイズは、コンテナーの Insert、Update、または Delete イベントの数などの要因によって異なります。`databaseName` と `collectionName` プロパティは、どのコンテナーのchange feedが関数をトリガーするかを定義します。`ConnectionStringSetting` は、Cosmos DB 接続文字列をプルするFunction App のアプリケーション設定の名前を示します。この例では、作成した Key Vault シークレットから接続文字列の値が描画されます。`LeaseCollection` プロパティは、リース コンテナーの名前と、この関数のリース データに適用されるプレフィックス、およびリース コンテナーが存在しない場合にリース コンテナーを作成するかどうかを定義します。`StartFromBeginning` は `true` に設定され、関数の最後の実行以降のすべてのイベントが処理されるようにします。この関数は、change feedドキュメントを `IReadOnlyList` コレクションに出力します。
 
-6. Scroll down a little further in the function and complete the code beneath **TODO 3** by pasting the following:
+6. 関数内を少しだけ下にスクロールして、**TODO 3** 内に以下をペーストしてコードを完了します:
 
     ```csharp
     var vin = group.Key;
@@ -1111,9 +1111,9 @@ The Function App and Web App projects contain blocks of code that need to be com
         group.Average(item => item.GetPropertyValue<double>("refrigerationUnitTemp"));
     ```
 
-    We have grouped the events by vehicle VIN, so we assign a local `vin` variable to hold the group key (VIN). Next, we use the `group.Max` aggregate function to calculate the max odometer value, and use the `group.Average` function to calculate the average refrigeration unit temperature. We will use the `odometerHigh` value to calculate the trip distance and determine whether the trip is completed, based on the planned trip distance from the `Trip` record in the Cosmos DB `metadata` container. The `averageRefrigerationUnitTemp` is added in the alert that gets sent to the Logic App, if needed.
+    車両 VIN でイベントをグループ化したので、グループ キー (VIN) を保持するローカル `vin` 変数を割り当てます。次に、`group.Max` 集計関数を使用して最大走行距離計の値を計算し、平均冷凍ユニット温度を計算する関数である `group.Average` を使用します。`odometerHigh` の値を使用して、旅行距離を計算し、Cosmos DB `metadata` コンテナの `Trip` レコードからの計画された移動距離に基づいて、トリップが完了したかどうかを判断します。必要に応じて、ロジックアプリに送信されるアラートに `averageRefrigerationUnitTemp` が追加されます。
 
-7. Review the code that is just below the new code you added:
+7. 新たに追加したコードで以下のようになっていることを確認します:
 
     ```csharp
     // First, retrieve the metadata Cosmos DB container reference:
