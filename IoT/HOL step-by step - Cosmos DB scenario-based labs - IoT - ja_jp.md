@@ -595,8 +595,6 @@ Function Appと Web Appsが Key Vault にアクセスしてシークレットを
 
 ### Task 7: Add Key Vault secrets
 
-Azure Key Vault is used to Securely store and tightly control access to tokens, passwords, certificates, API keys, and other secrets. In addition, secrets that are stored in Azure Key Vault are centralized, giving the added benefits of only needing to update secrets in one place, such as an application key value after recycling the key for security purposes. In this task, we will store application secrets in Azure Key Vault, then configure the Function Apps and Web App to securely connect to Azure Key Vault by performing the following steps:
-
 Azure Key Vault は、トークン、パスワード、証明書、API キー、およびその他のシークレットへのアクセスを安全に保存し、厳密に制御するために使用されます。さらに、Azure Key Vault に格納されているシークレットは一元化されるため、セキュリティ目的でキーをリサイクルした後のアプリケーション キー値など、シークレットを 1 か所で更新するだけで済むという利点が追加されます。このタスクでは、アプリケーション シークレットを Azure Key Vault に格納し、次の手順を実行して Azure Key Vault に安全に接続するようにFunction Appと Web Appを構成します。
 
 - プロビジョニング済みのKey Vaultにシークレットを追加する。
@@ -691,60 +689,61 @@ Contoso Auto は、車両から収集した貴重なデータを使用して、�
 
 ### Task 9: Configure Key Vault-backed Databricks secret store
 
-In an earlier task, you added application secrets to Key Vault, such as the Cosmos DB connection string. In this task, you will configure the Key Vault-backed Databricks secret store to securely access these secrets.
+以前のタスクでは、Cosmos DB 接続文字列など、Key Vault にアプリケーション シークレットを追加しました。このタスクでは、これらのシークレットに安全にアクセスするように、Key Vault がバックアップした Databricks シークレット ストアを構成します。
 
-Azure Databricks has two types of secret scopes: Key Vault-backed and Databricks-backed. These secret scopes allow you to store secrets, such as database connection strings, securely. If someone tries to output a secret to a notebook, it is replaced by `[REDACTED]`. This helps prevent someone from viewing the secret or accidentally leaking it when displaying or sharing the notebook.
+Azure Databricks には、Key Vault バックアップとDatabricks バックアップの 2 種類のシークレット スコープがあります。これらのシークレット スコープを使用すると、データベース接続文字列などのシークレットを安全に格納できます。誰かがノートブックにシークレットを出力しようとすると、それは `[REDACTED]` に置き換えられます。これにより、ノートブックの表示や共有時に、シークレットを表示したり、誤って漏洩したりするのを防ぐことができます。
 
-1. Return to the [Azure portal](https://portal.azure.com), which should still be open in another browser tab, then navigate to your Key Vault account and select **Properties** on the left-hand menu.
+1. 別のブラウザタブに表示されたままになっているはずの、[Azure portal](https://portal.azure.com)に戻り、Key Vaultのアカウントに移動し、左側のメニューから **Properties** を選択します。
 
-2. Copy the **DNS Name** and **Resource ID** property values and paste them to Notepad or some other text application that you can reference in a moment.
+2. **DNS Name** と **Resource ID** プロパティの値をコピーし、Notepadや他のテキストアプリケーションに、すぐあとで参照するためにペーストしておきます。
 
    ![Properties is selected on the left-hand menu, and DNS Name and Resource ID are highlighted to show where to copy the values from.](media/key-vault-properties.png 'Key Vault properties')
 
-3. Navigate back to the Azure Databricks workspace.
+3. Azure Databricksのワークスペースに戻ります。
 
-4. In your browser's URL bar, append **#secrets/createScope** to your Azure Databricks base URL (for example, <https://eastus.azuredatabricks.net#secrets/createScope>).
+4. ブラウザのURLバーで、Azure Databricksのベース URL (例、<https://eastus.azuredatabricks.net#secrets/createScope>)に **#secrets/createScope** を追加します。
 
-5. Enter `key-vault-secrets` for the name of the secret scope.
+5. シークレットスコープの名前に `key-vault-secrets` を入力します。
 
-6. Select **Creator** within the Manage Principal drop-down to specify only the creator (which is you) of the secret scope has the MANAGE permission.
+6. 6. Manage Principal ドロップダウンにある **Creator** を選択し、MANAGEパーミッションを持つシークレットスコープの作成者（あなた）のみを指定します。
 
-   > MANAGE permission allows users to read and write to this secret scope, and, in the case of accounts on the Azure Databricks Premium Plan, to change permissions for the scope.
+   > MANAGE パーミッションがあると、このシークレットスコープを読み書きでき、Azure Databricks Premium Planの場合、スコープのパーミッションを変更することが出来ます。
 
-   > Your account must have the Azure Databricks Premium Plan for you to be able to select Creator. This is the recommended approach: grant MANAGE permission to the Creator when you create the secret scope, and then assign more granular access permissions after you have tested the scope.
+   > 作成者を選択できるようにするには、アカウントが Azure Databricks Premium Plan に紐付けされている必要があります。
+   これは推奨される方法です: シークレットスコープの作成時に作成者に MANAGE パーミッションを付与し、スコープをテストした後、より細かなアクセスパーミッションを割り当てます。
 
-7. Enter the **DNS Name** (for example, <https://iot-vault.vault.azure.net/>) and **Resource ID** you copied earlier during the Key Vault creation step, for example: `/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/cosmos-db-iot/providers/Microsoft.KeyVault/vaults/iot-vault`.
+7. Key Vaultの作成手順で以前にコピーした **DNS Name** (例、<https://iot-vault.vault.azure.net/>) と **Resource ID** 例:`/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/cosmos-db-iot/providers/Microsoft.KeyVault/vaults/iot-vault` を入力します。
 
    ![Create Secret Scope form](media/create-secret-scope.png 'Create Secret Scope')
 
-8. Select **Create**.
+8. **Create** を選択します。
 
-After a moment, you will see a dialog verifying that the secret scope has been created.
+しばらくすると、シークレットスコープが変更されたことを確認するダイアログが表示されます。
 
 ## Exercise 2: Configure windowed queries in Stream Analytics
 
 **Duration**: 15 minutes
 
-If you examine the right-hand side of the solution architecture diagram, you will see a flow of event data that feeds into Event Hubs from a Cosmos DB change feed-triggered function. Stream Analytics uses the event hub as an input source for a set of time window queries that create aggregates for individual vehicle telemetry, and overall vehicle telemetry that flows through the architecture from the vehicle IoT devices. Stream Analytics has two output data sinks:
+ソリューション アーキテクチャ図の右側を調べると、Cosmos DB のフィードトリガー関数から Event Hubs にフィードされるイベント データのフローが表示されます。Stream Analytics は、個々の車両テレメトリの集計を作成する一連のタイム ウィンドウ クエリの入力ソースとして Event Hubs を使用し、車両 IoT デバイスからアーキテクチャを通過する車両テレメトリ全体を作成します。Stream Analytics には、次の 2 つの出力データ シンクがあります:
 
-1. Cosmos DB: Individual vehicle telemetry (grouped by VIN) is aggregated over a 30-second `TumblingWindow` and saved to the `metadata` container. This information is used in a Power BI report you will create in Power BI Desktop in a later task to display individual vehicle and multiple vehicle statistics.
-2. Power BI: All vehicle telemetry is aggregated over a 10-second `TumblingWindow` and output to a Power BI data set. This near real-time data is displayed in a live Power BI dashboard to show in 10 second snapshots how many events were processed, whether there are engine temperature, oil, or refrigeration unit warnings, whether aggressive driving was detected during the period, and the average speed, engine temperature, and refrigeration unit readings.
+1. Cosmos DB: 個々の車両テレメトリ (VIN でグループ化) は、30 秒間の `TumblingWindow` で集計され、`metadata` コンテナに保存されます。この情報は、後のタスクで Power BI Desktop で作成する Power BI レポートで使用され、個々の車両と複数の車両統計情報が表示されます。
+2. Power BI: すべての車両テレメトリは、10 秒間の `TumblingWindow` で集計され、Power BI データ・セットに出力されます。このほぼリアルタイムなデータは、ライブPower BIダッシュボードに表示され、10秒間に処理されたイベントの数、エンジン温度、オイル、または冷凍ユニットの警告があるかどうか、期間中に乱暴な運転が検出されたかどうか、平均速度、エンジン温度、冷凍ユニットの測定値、が表示されます。。
 
 ![The stream processing components of the solution architecture are displayed.](media/solution-architecture-stream-processing.png 'Solution Architecture - Stream Processing')
 
-In this exercise, you will configure Stream Analytics for stream processing as described above.
+この演習では、Stream Analyticsを設定して、上述したようなストリーム処理を行います。
 
 ### Task 1: Add Stream Analytics Event Hubs input
 
-1. In the [Azure portal](https://portal.azure.com), open your lab resource group, then open your **Stream Analytics job**.
+1. [Azure portal](https://portal.azure.com)で演習のリソースグループを開き、**Stream Analytics job** を開きます。
 
    ![The Stream Analytics job is highlighted in the resource group.](media/resource-group-stream-analytics.png 'Resource Group')
 
-2. Select **Inputs** in the left-hand menu. In the Inputs blade, select **+ Add stream input**, then select **Event Hub** from the list.
+2. 左側のメニューから **Inputs** を選択します。Inputs ブレードで、**+ Add stream input** を選択し、リストから **Event Hub** を選択します。
 
    ![The Event Hub input is selected in the Add Stream Input menu.](media/stream-analytics-inputs-add-event-hub.png 'Inputs')
 
-3. In the **New input** form, specify the following configuration options:
+3. **New input** フォームで、以下の設定オプションを指定します:
 
    1. **Input alias**: Enter **events**.
    2. Select the **Select Event Hub from your subscriptions** option beneath.
@@ -755,19 +754,19 @@ In this exercise, you will configure Stream Analytics for stream processing as d
 
    ![The New Input form is displayed with the previously described values.](media/stream-analytics-new-input.png 'New input')
 
-4. Select **Save**.
+4. **Save** を選択します。
 
-You should now see your Event Hubs input listed.
+Event Hubsの入力がリストされているのが見えるはずです。
 
 ![The Event Hubs input is listed.](media/stream-analytics-inputs.png 'Inputs')
 
 ### Task 2: Add Stream Analytics outputs
 
-1. Select **Outputs** in the left-hand menu. In the Outputs blade, select **+ Add**, then select **Cosmos DB** from the list.
+1. 左側のメニューから **Outputs** を選択します。Outputs ブレードで、 **+ Add** を選択し、リストから **Cosmos DB** を選択します。
 
    ![The Cosmos DB output is selected in the Add menu.](media/stream-analytics-outputs-add-cosmos-db.png 'Outputs')
 
-2. In the **New output** form, specify the following configuration options:
+2. **New output** フォームで、以下の設定オプションを指定します:
 
    1. **Output alias**: Enter **cosmosdb**.
    2. Select the **Select Cosmos DB from your subscriptions** option beneath.
@@ -778,19 +777,19 @@ You should now see your Event Hubs input listed.
 
    ![The New Output form is displayed with the previously described values.](media/stream-analytics-new-output-cosmos.png 'New output')
 
-3. Select **Save**.
+3. **Save** を選択します。
 
-4. **If you have never signed in to Power BI with this account**, open a new browser tab and navigate to <https://powerbi.com> and sign in. Confirm any messages if they appear and continue to the next step after the home page appears. This will help the connection authorization step from Stream Analytics succeed and find the group workspace.
+4. **このアカウントでまだPower BIにサインインしたことが無い場合**、新しいブラウザのタブを開き、<https://powerbi.com> に移動しサインインします。表示されるメッセージを確認し、ホームページが表示された後、次の手順に進みます。Stream Analyticsからの接続認証手順が成功するのに役立ち、グループワークスペースを探します。
 
-5. While remaining in the Outputs blade, select **+ Add** once again, then select **Power BI** from the list.
+5. Outputs ブレードがまだ表示されているので、**+ Add** を再度選択し、リストから **Power BI** を選択します。
 
    ![The Power BI output is selected in the Add menu.](media/stream-analytics-outputs-add-power-bi.png 'Outputs')
 
-6. In the **New output** form, look toward the bottom to find the **Authorize connection** section, then select **Authorize** to sign in to your Power BI account. If you do not have a Power BI account, select the _Sign up_ option first.
+6. **New output** フォームで下の方を探して、**Authorize connection** セクションを見つけ、**Authorize** を選択してPower BIアカウントにサインインします。もしPower BI アカウントが無い場合、まず _Sign up_ オプションを選択します。
 
    ![The Authorize connection section is displayed.](media/stream-analytics-authorize-power-bi.png 'Authorize connection')
 
-7. After authorizing the connection to Power BI, specify the following configuration options in the form:
+7. Power BIへの接続が認証されたら、以下の設定オプションを指定します:
 
    1. **Output alias**: Enter **powerbi**.
    2. **Group workspace**: Select **My workspace**.
@@ -799,9 +798,9 @@ You should now see your Event Hubs input listed.
 
    ![The New Output form is displayed with the previously described values.](media/stream-analytics-new-output-power-bi.png 'New output')
 
-8. Select **Save**.
+8. **Save** を選択します。
 
-You should now have two outputs listed.
+これで2つのoutputがリストされているはずです。
 
 ![The two added outputs are listed.](media/stream-analytics-outputs.png 'Outputs')
 
