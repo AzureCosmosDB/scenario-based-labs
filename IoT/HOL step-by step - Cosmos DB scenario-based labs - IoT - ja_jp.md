@@ -72,43 +72,43 @@
 
 ## Overview
 
-Contoso Auto is a high value cargo logistics organization that is collecting vehicle and package telemetry data and wants to use Azure Cosmos DB to rapidly ingest and store this data in its raw form, do some processing in near real-time to generate insights to support several business objectives and surface these to the most appropriate user communities within the organization. It is a fast growing organization and wants to be able to scale and manage the associated cost of its chosen technology to enable it to cope with its explosive growth and the inherent seasonality of the logistics business. This scenario includes applicability to both the vehicle telemetry and logistics use cases by focusing on trucking and inclusion of cargo sensing data. This additionally allows for many representative customer analytics scenarios.
+Contoso Auto は、車両とパッケージのテレメトリ データを収集し、Azure Cosmos DB を使用してこのデータを迅速に取り込んで未加工の形式で保存し、ほぼリアルタイムで処理を行い、サポートする洞察を生成する価値の高い貨物ロジスティクス組織です。いくつかのビジネス目標を達成し、組織内で最も適切なユーザー コミュニティに表示します。急成長を遂げている組織であり、選択したテクノロジーの関連コストを拡張および管理し、その爆発的な成長と物流ビジネスの固有の季節性に対応できるようにしたいと考えています。このシナリオには、トラック輸送と貨物センシング データの包含に重点を置いて、車両テレメトリとロジスティクスのユース ケースの両方に適用可能が含まれます。これにより、多くの代表的な顧客分析シナリオが可能になります。
 
-From a technology perspective Contoso would like to leverage Azure Cosmos DB as the core repository for its hot data path and leverage the Azure Cosmos DB Change Feed as a means to drive a solid and robust event sourcing architecture that would allowing Contoso developers to quickly enhance the solution. This achieved using a robust and agile serverless approach by leveraging events published by the Change Feed that reflect the state changes within the application (database).
+技術の観点から、Contoso は、ホット データ パスのコア リポジトリとして Azure Cosmos DB を活用し、Azure Cosmos DB 変更フィードを活用して、Contoso を可能にする堅牢で堅牢なイベント ソーシング アーキテクチャを推進したいと考えています。開発者は、ソリューションを迅速に強化します。これは、アプリケーション (データベース) 内の状態の変更を反映する変更フィードによって公開されたイベントを活用することで、堅牢でアジャイルなサーバーレスアプローチを使用して実現しました。
 
-Ultimately Contoso would surface the raw and derived insights data to its users in one of three roles:
+最終的に Contoso は、3 つのロールのいずれかで、生のインサイト データと派生したインサイト データをユーザーに表示します。:
 
-- **Logistic Operations personnel** who are interested in the current state of the vehicles and cargo logistics and who would use a web app to quickly understand the status of any single vehicle or piece of cargo, be notified of alerts as well as load vehicle and cargo meta data into the system. What they would like to see on the dashboard are various visualizations of detected anomalies, like engines overheating, abnormal oil pressure, and aggressive driving.
+- **物流業務担当者** 車両や貨物ロジスティクスの現状に興味があり、Webアプリを使用して単一の車両や貨物の状態を迅速に把握する人は、アラートの通知だけでなく、車両や貨物のメタデータをシステムにロードします。ダッシュボードで見たいのは、エンジンの過熱、異常な油圧、アグレッシブな運転など、検出された異常のさまざまな視覚化です。
 
-- **Management and Customer Reporting personnel** who would like to be in a position to see the current state of the vehicle fleet and customer consignment level information presented in on a Power BI report that automatically updates with new data as it flows in after being processed. What they would like to see are reports on bad driving behavior by driver and using visual components such as a map to show anomalies related to cities or areas, as well as various charts and graphs depicting aggregate fleet and consignment information in a clear way.
+- **管理および顧客報告担当者** 処理後に流れ込む新しいデータで自動的に更新される Power BI レポートに表示される車両の車両の現在の状態と顧客の委託レベル情報を確認する立場に配置する必要があるユーザー。彼らが見たいのは、ドライバーによる悪い運転行動に関するレポートと、都市や地域に関連する異常を表示するマップなどの視覚コンポーネントを使用するほか、総艦隊と委託情報を明確に示すさまざまなチャートやグラフです。
 
-In this experience, you will use Azure Cosmos DB to ingest streaming vehicle telemetry data as the entry point to a near real-time analytics pipeline built on Cosmos DB, Azure Functions, Event Hubs, Azure Databricks, Azure Storage, Azure Stream Analytics, Power BI, Azure Web Apps, and Logic Apps.
+このエクスペリエンスでは、Cosmos DB、Azure Functions、Event Hub、Azure Data Bricks、Azure Storage、Azure Stream Analytics、Power BI、Azure Web Apps、Logic Apps上に構築されたほぼリアルタイムな分析パイプラインへのエントリーポイントとなる、車両のストリーミングテレメトリーデータを取り込むためにAzure Cosmos DBを利用します。
 
 ## Solution architecture
 
-Below is a diagram of the solution architecture you will build in this lab. Please study this carefully, so you understand the whole of the solution as you are working on the various components.
+この実習ラボで構築するソリューション アーキテクチャの図を次に示します。さまざまなコンポーネントに取り組んでいる場合は、ソリューション全体を理解できるように、慎重に検討してください。
 
 ![A diagram showing the components of the solution is displayed.](media/solution-architecture.png 'Solution Architecture')
 
-- Data ingest, event processing, and storage:
+- データの取り込み、イベント処理、およびストレージ::
 
-  The solution for the IoT scenario centers around **Cosmos DB**, which acts as the globally-available, highly scalable data storage for streaming event data, fleet, consignment, package, and trip metadata, and aggregate data for reporting. Vehicle telemetry data flows in from the data generator, through registered IoT devices in **IoT Hub**, where an **Azure function** processes the event data and inserts it into a telemetry container in Cosmos DB.
+  IoT シナリオのソリューションは、イベント データ、フリート、委託、パッケージ、およびトリップ メタデータ、およびレポート用の集計データをストリーミングするための、グローバルに利用可能でスケーラブルなデータ ストレージとして機能する **Cosmos DB** を中心に展開します。車両テレメトリ データは、**IoT Hub** に登録された IoT デバイスを介してデータ ジェネレータから流れ込み、**Azure Functions** がイベント データを処理し、Cosmos DB のテレメトリ コンテナーに挿入します。
 
-- Trip processing with Azure Functions:
+- Azure Functionsを使用したトリップ処理:
 
-  The Cosmos DB change feed triggers three separate Azure functions, with each managing their own checkpoints so they can process the same incoming data without conflicting with one another. One function serializes the event data and stores it into time-sliced folders in **Azure Storage** for long-term cold storage of raw data. Another function processes the vehicle telemetry, aggregating the batch data and updating the trip and consignment status in the metadata container, based on odometer readings and whether the trip is running on schedule. This function also triggers a **Logic App** to send email alerts when trip milestones are reached. A third function sends the event data to **Event Hubs**, which in turn triggers **Stream Analytics** to execute time window aggregate queries.
+  Cosmos DB の change feedは、3 つの別々の Azure Functionsをトリガーし、それぞれが独自のチェックポイントを管理し、互いに競合することなく同じ着信データを処理できるようにします。1 つのFunctionは、イベント データをシリアル化し、**Azure Storage** のタイム スライスされたフォルダーに格納して、生データを長期保存します。別のFunctionは、車両テレメトリを処理し、バッチ データを集約し、走行距離計の読み取り値とトリップがスケジュール通りに実行されているかどうかに基づいて、メタデータ コンテナー内のトリップおよび委託ステータスを更新します。この機能は、旅行のマイルストーンに達したときに電子メールアラートを送信する **Logic App** をトリガします。3 番目のFunctionはイベント データを **Event Hubs** に送信し、**Stream Analytics** をトリガーしてタイム ウィンドウの集約クエリを実行します。
 
-- Stream processing, dashboards, and reports:
+- ストリーム処理、ダッシュボード、およびレポート:
 
-  The Stream Analytics queries output vehicle-specific aggregates to the Cosmos DB metadata container, and overall vehicle aggregates to **Power BI** to populate its real-time dashboard of vehicle status information. A Power BI Desktop report is used to display detailed vehicle, trip, and consignment information, pulled directly from the Cosmos DB metadata container. It also displays batch battery failure predictions, pulled from the maintenance container.
+  Stream Analytics は、Cosmos DB メタデータ コンテナーに車両固有の集計を出力し、車両全体の集約を **Power BI** に出力して、車両のステータス情報のリアルタイム ダッシュボードに入力します。Power BI Desktop レポートは、Cosmos DB メタデータ コンテナーから直接プルされた詳細な車両、旅行、および委託情報を表示するために使用されます。また、メンテナンスコンテナから引き出されたバッチバッテリ故障予測も表示されます。
 
-- Advanced analytics and ML model training:
+- 高度な分析と ML モデルのトレーニング:
 
-  **Azure Databricks** is used to train a machine learning model to predict vehicle battery failure, based on historic information. It saves a trained model locally for batch predictions, and deploys a model and scoring web service to **Azure Kubernetes Service (AKS)** or **Azure Container Instances (ACI)** for real-time predictions. Azure Databricks also uses the **Spark Cosmos DB connector** to pull down each day's trip information to make batch predictions on battery failure and store the predictions in the maintenance container.
+  **Azure Databricks** は、過去の情報に基づいて、車両のバッテリの故障を予測する機械学習モデルをトレーニングするために使用されます。バッチ予測用にトレーニングされたモデルをローカルに保存し、リアルタイム予測のために **Azure Kubernetes Service (AKS)** または **Azure Container Instances (ACI)** にモデルとスコアリング Web サービスをデプロイします。また、Azure Databricks は **Spark Cosmos DB connector** を使用して、毎日の出張情報をプルダウンして、バッテリ障害のバッチ予測を行い、予測をメンテナンス コンテナーに格納します。
 
-- Fleet management web app, security, and monitoring:
+- フリート管理 Web App、セキュリティ、および監視:
 
-  A **Web App** allows Contoso Auto to manage vehicles and view consignment, package, and trip information that is stored in Cosmos DB. The Web App is also used to make real-time battery failure predictions while viewing vehicle information. **Azure Key Vault** is used to securely store centralized application secrets, such as connection strings and access keys, and is used by the Function Apps, Web App, and Azure Databricks. Finally, **Application Insights** provides real-time monitoring, metrics, and logging information for the Function Apps and Web App.
+  **Web App** を使用すると、Contoso Auto は車両を管理し、Cosmos DB に保存されている委託、パッケージ、およびトリップ情報を表示できます。Web Appは、車両情報を表示しながら、リアルタイムのバッテリ故障予測を行うためにも使用されます。**Azure Key Vault** は、接続文字列やアクセス キーなどの一元化されたアプリケーション シークレットを安全に格納するために使用され、Function Apps、Web App、Azure Databricksで使用されます。最後に、**Application Insights** は、Function Appsと Web Appのリアルタイムの監視、メトリック、およびログ情報を提供します。
 
 ## Requirements
 
@@ -129,39 +129,39 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 **Duration**: 45 minutes
 
-You must provision a few resources in Azure before you start developing the solution. Ensure all resources use the same resource group for easier cleanup.
+ソリューションの開発を開始する前に、Azure でいくつかのリソースをプロビジョニングする必要があります。クリーンアップを容易にするために、すべてのリソースが同じリソース グループを使用していることを確認します。
 
-In this exercise, you will configure your lab environment so you can start sending and processing generated vehicle, consignment, package, and trip data. You will begin by creating a Cosmos DB database and containers, then you will create a new Logic App and create a workflow for sending email notifications, create an Application Insights service for real-time monitoring of your solution, then retrieve secrets used in the solution's application settings (such as connection strings) and securely store them in Azure Key Vault, and finally configure your Azure Databricks environment.
+この実習では、生成された車両、委託、パッケージ、および出張データの送信と処理を開始できるように、ラボ環境を構成します。まず、Cosmos DB データベースとコンテナーを作成し、新しいLogic Appを作成し、電子メール通知を送信するワークフローを作成し、ソリューションをリアルタイム監視するための Application Insights サービスを作成してから、ソリューションのアプリケーション設定 (接続文字列など)で使用されるシークレットを取得し、それらを Azure Key Vault に安全に保存し、最終的に Azure Databricks 環境を構成します。
 
 ### Task 1: Create Cosmos DB database and container
 
-In this task, you will create a Cosmos DB database and three SQL-based containers:
+このタスクでは、Cosmos DB データベースと 3 つの SQL-ベースのコンテナーを作成します:
 
-- **telemetry**: Used for ingesting hot vehicle telemetry data with a 90-day lifespan (TTL).
-- **metadata**: Stores vehicle, consignment, package, trip, and aggregate event data.
-- **maintenance**: The batch battery failure predictions are stored here for reporting purposes.
+- **telemetry**: 90 日間の寿命 (TTL) を持つホット 車両テレメトリ データの取り入れに使用されます。
+- **metadata**: 車両、委託、パッケージ、出張、および集計イベント データを格納します。
+- **maintenance**: バッチ バッテリ障害予測は、レポートの目的でここに格納されます。
 
-1. Using a new tab or instance of your browser, navigate to the Azure portal, <https://portal.azure.com>.
+1. ブラウザの新しいタブまたはインスタンスを使用して、Azure ポータル <https://portal.azure.com>に移動します。
 
-2. Select **Resource groups** from the left-hand menu, then search for your resource group by typing in `cosmos-db-iot`. Select your resource group that you are using for this lab.
+2. 左側のメニューから**リソースグループ**を選択し、`cosmos-db-iot`と入力してリソースグループを検索します。この演習で使用しているリソース グループを選択します。
 
    ![Resource groups is selected and the cosmos-db-iot resource group is displayed in the search results.](media/resource-group.png 'cosmos-db-iot resource group')
 
-3. Select your Azure Cosmos DB account. The name starts with `cosmos-db-iot`.
+3. Azure Cosmos DB アカウントを選択します。名前は `cosmos-db-iot` で始まります。
 
    ![The Cosmos DB account is highlighted in the resource group.](media/resource-group-cosmos-db.png 'Cosmos DB in the Resource Group')
 
-4. Select **Data Explorer** in the left-hand menu, then select **New Container**.
+4. 左側のメニューで **データ エクスプローラ** を選択し、**新しいコンテナー** を選択します。
 
    ![The Cosmos DB Data Explorer is shown with the New Container button highlighted.](media/cosmos-new-container.png 'Data Explorer - New Container')
 
-5. On the **Add Container** blade, specify the following configuration options:
+5. **コンテナーの追加** ブレードで、次の構成オプションを指定します:
 
-   a. Enter **ContosoAuto** for the **Database id**.
+   a. **Database id** に **ContosoAuto** を入力します。
 
-   b. Leave **Provision database throughput** unchecked.
+   b. **Provision database throughput** はチェックしないままにしておきます。
 
-   c. Enter **metadata** for the **Container id**.
+   c. **Container id** に **metadata** を入力します。
 
    d. Partition key: **/partitionKey**
 
@@ -169,17 +169,17 @@ In this task, you will create a Cosmos DB database and three SQL-based container
 
    ![The New Container form is displayed with the previously described values.](media/cosmos-new-container-metadata.png 'New metadata container')
 
-   > **Note**: We are initially setting the throughput on this container to `50000` RU/s because the data generator will perform a bulk insert of metadata the first time it runs. After inserting the data, it will programmatically reduce the throughput to `15000`.
+   > **注**: データ ジェネレータは最初に実行時にメタデータの一括挿入を実行するため、最初にこのコンテナーのスループットを `50000 RU/s` に設定します。データを挿入した後、プログラム的にスループットを `15000` に減らします。
 
-6. Select **OK** to create the container.
+6. **OK** を選択してコンテナーを作成します。
 
-7. Select **New Container** once again in the Data Explorer.
+7. **New Container** をデータエクスプローラーで再度選択します。
 
-8. On the **Add Container** blade, specify the following configuration options:
+8. **コンテナーの追加** ブレードで、次の構成オプションを指定します:
 
-   a. **Database id**: Select **Use existing**, then select **ContosoAuto** from the list.
+   a. **Database id**: **Use existing** を選択しリストから **ContosoAuto** を選択します。
 
-   c. Enter **telemetry** for the **Container id**.
+   c. **Container id** に **telemetry** を入力します。
 
    d. Partition key: **/partitionKey**
 
@@ -187,15 +187,15 @@ In this task, you will create a Cosmos DB database and three SQL-based container
 
    ![The New Container form is displayed with the previously described values.](media/cosmos-new-container-telemetry.png 'New telemetry container')
 
-9. Select **OK** to create the container.
+9. **OK** を選択してコンテナーを作成します。
 
-10. Select **New Container** once again in the Data Explorer.
+10. **New Container** をデータエクスプローラーで再度選択します。
 
-11. On the **Add Container** blade, specify the following configuration options:
+11. **コンテナーの追加** ブレードで、次の構成オプションを指定します:
 
-    a. **Database id**: Select **Use existing**, then select **ContosoAuto** from the list.
+    a. **Database id**: **Use existing** を選択しリストから **ContosoAuto** を選択します。
 
-    c. Enter **maintenance** for the **Container id**.
+    c. **Container id** に **maintenance** を入力します。
 
     d. Partition key: **/vin**
 
@@ -203,39 +203,39 @@ In this task, you will create a Cosmos DB database and three SQL-based container
 
     ![The New Container form is displayed with the previously described values.](media/cosmos-new-container-maintenance.png 'New maintenance container')
 
-12. Select **OK** to create the container.
+12. **OK** を選択してコンテナーを作成します。
 
-13. You should now have three containers listed in the Data Explorer.
+13. これでデータエクスプローラーで3つのコンテナがリストされているはずです。
 
     ![The three new containers are shown in Data Explorer.](media/cosmos-three-containers.png 'Data Explorer')
 
 #### About Cosmos DB throughput
 
-You will notice that we have intentionally set the **throughput** in RU/s for each container, based on our anticipated event processing and reporting workloads. In Azure Cosmos DB, provisioned throughput is represented as request units/second (RUs). RUs measure the cost of both read and write operations against your Cosmos DB container. Because Cosmos DB is designed with transparent horizontal scaling (e.g., scale out) and multi-master replication, you can very quickly and easily increase or decrease the number of RUs to handle thousands to hundreds of millions of requests per second around the globe with a single API call.
+予想されるイベント処理およびレポートワークロードに基づいて、各コンテナーの RU/s に **throughput** を意図的に設定していることに気付くでしょう。Azure Cosmos DB では、プロビジョニングされたスループットは要求単位/秒 (RUs) として表されます。RUs は、Cosmos DB コンテナーに対する読み取り操作と書き込み操作の両方のコストを測定します。Cosmos DB は透過的な水平方向のスケーリング (スケール アウトなど) とマルチマスター レプリケーションを使用して設計されているため、単一の API 呼び出しを使用して取得できる、1 秒あたり数千から数億の要求を処理するRUsの数を非常に迅速かつ簡単に増減できます。
 
-Cosmos DB allows you to increment/decrement the RUs in small increments of 100 at the database level, or at the container level. It is recommended that you configure throughput at the container granularity for guaranteed performance for the container all the time, backed by SLAs. Other guarantees that Cosmos DB delivers are 99.999% read and write availability all around the world, with those reads and writes being served in less than 10 milliseconds at the 99th percentile.
+Cosmos DB を使用すると、データベース レベルまたはコンテナー レベルで 100 の小さな単位で RUs を増分/減衰できます。スループットは、SLA に裏付けされたコンテナーのパフォーマンスを常に保証するために、コンテナーの粒度で構成することをお勧めします。Cosmos DB が提供するその他の保証は、世界中で 99.999% の読み取りと書き込みの可用性であり、読み取りと書き込みは 99 パーセンタイルで 10 ミリ秒未満で提供されます。
 
-When you set a number of RUs for a container, Cosmos DB ensures that those RUs are available in all regions associated with your Cosmos DB account. When you scale out the number of regions by adding a new one, Cosmos will automatically provision the same quantity of RUs in the newly added region. You cannot selectively assign different RUs to a specific region. These RUs are provisioned for a container (or database) for all associated regions.
+コンテナーに多数の RUs を設定すると、Cosmos DB は、それらの RUs が Cosmos DB アカウントに関連付けられているすべてのリージョンで使用できることを確認します。新しいリージョンを追加してリージョンの数をスケールアウトすると、Cosmosは新しく追加されたリージョンに同じ量の RUs を自動的にプロビジョニングします。特定のリージョンに異なる RUs を選択的に割り当てることはできません。これらの RUs は、関連するすべてのリージョンのコンテナー (またはデータベース) 用にプロビジョニングされます。
 
 #### About Cosmos DB partitioning
 
-When you created each container, you were required to define a **partition key**. As you will see later in the lab when you review the solution source code, each document stored within a collection contains a `partitionKey` property. One of the most important decisions one must make when creating a new container is to select an appropriate partition key for the data. A partition key should provide even distribution of storage and throughput (measured in requests per second) at any given time to avoid storage and performance bottlenecks. For instance, vehicle metadata stores the VIN, which is a unique value for each vehicle, in the `partitionKey` field. Trip metadata also uses the VIN for the `partitionKey` field, since trips are most often queried by VIN, and trip documents are stored in the same logical partition as vehicle metadata since they are likely to be queried together, preventing fan-out, or cross-partition queries. Package metadata, on the other hand, use the Consignment ID value for the `partitionKey` field for the same purposes. The partition key should be present in the bulk of queries for read-heavy scenarios to avoid excessive fan-out across numerous partitions. This is because each document with a specific partition key value belongs to the same logical partition, and is also stored in and served from the same physical partition. Each physical partition is replicated across geographical regions, resulting in global distribution.
+各コンテナーを作成するときは、**パーティションキー** を定義する必要がありました。ソリューション ソース コードを確認するときに、後で説明するように、コレクション内に格納されている各ドキュメントには `partitionKey` プロパティが含まれています。新しいコンテナーを作成する際に行う必要がある最も重要な決定の 1 つは、データに適したパーティション キーを選択することです。パーティション キーは、ストレージとパフォーマンスのボトルネックを回避するために、任意の時点でストレージとスループットの均等な分散 (1 秒あたりの要求で測定) を提供する必要があります。たとえば、車両メタデータは、各車両の一意の値である VIN を `partitionKey` フィールドに格納します。トリップ メタデータは、ほとんどの場合 VIN によって照会され、トリップ ドキュメントは車両メタデータと同じ論理区画に格納されるため、トリップ メタデータは一緒にクエリされ、ファンアウトならびにパーティション間クエリを防ぐため、`partitionKey` フィールドにも VIN を使用します。一方、パッケージ メタデータは、同じ目的で `partitionKey` フィールドにConsignment ID 値を使用します。パーティション キーは、多数のパーティション間で過剰なファンアウトを避けるために、読み取りが多いシナリオのクエリの大部分に存在する必要があります。これは、特定のパーティション キー値を持つ各ドキュメントが同じ論理区画に属し、同じ物理パーティションに格納され、同じ物理パーティションからも処理されるためです。各物理パーティションは地理的リージョン間でレプリケートされるため、グローバルな分散が実現します。
 
-Choosing an appropriate partition key for Cosmos DB is a critical step for ensuring balanced reads and writes, scaling, and, in the case of this solution, in-order change feed processing per partition. While there are no limits, per se, on the number of logical partitions, a single logical partition is allowed an upper limit of 10 GB of storage. Logical partitions cannot be split across physical partitions. For the same reason, if the partition key chosen is of bad cardinality, you could potentially have skewed storage distribution. For instance, if one logical partition becomes larger faster than the others and hits the maximum limit of 10 GB, while the others are nearly empty, the physical partition housing the maxed out logical partition cannot split and could cause an application downtime.
+Cosmos DB に適切なパーティション キーを選択することは、バランスの取れた読み取りと書き込み、スケーリング、およびこのソリューションの場合は、パーティションごとの順序によるchange feed処理を確実に行うための重要な手順です。論理区画の数に制限はありませんが、1 つの論理区画に対して 10 GB のストレージの上限が許可されます。論理区画を物理パーティション間で分割することはできません。同じ理由で、選択したパーティション キーのカーディナリティ（基数）が悪い場合は、ストレージの分散が歪んでいる可能性があります。たとえば、1 つの論理区画が他のパーティションよりも高速になり、最大 10 GB の上限に達した場合、他の論理パーティションがほぼ空になる場合、最大論理区画を収容する物理パーティションは分割できず、アプリケーションのダウンタイムが発生する可能性があります。
 
 ### Task 2: Configure Cosmos DB container indexing and TTL
 
-In this task, you will review the default indexing set on your new containers, and configure the indexing for your `telemetry` container so it is optimized for write-heavy workloads. Next, you will enable time-to-live (TTL) on the `telemetry` container, allowing you to set the TTL value, in seconds, on individual documents stored in the container. This value tells Cosmos DB when to expire, or delete, the document(s) automatically. This setting can help save in storage costs by removing what you no longer need. Typically, this is used on hot data, or data that must be expired after a period of time due to regulatory requirements.
+このタスクでは、新しいコンテナーの既定のインデックス セットを確認し、書き込み負荷の高いワークロードに最適化するように `telemetry` コンテナーのインデックス作成を構成します。次に、`telemetry` コンテナーで存続時間 (TTL) を有効にし、コンテナーに格納されている個々のドキュメントに TTL 値を秒単位で設定できるようにします。この値は、ドキュメントの有効期限が切れるか、削除するか、または自動的に削除するタイミングを Cosmos DB に指示します。この設定は、不要になったものを削除することで、ストレージコストを節約するのに役立ちます。通常、これはホット データ、または規制要件により一定期間後に期限切れにする必要があるデータで使用されます。
 
-1. Expand the **telemetry** container in the Cosmos DB Data Explorer, then select **Scale & Settings**.
+1. Cosmos DBのデータエクスプローラーで **telemetry** コンテナを開き、**Scale & Settings** を選択します。
 
-2. Within the Scale & Settings blade, expand the Settings section and select **On (no default)** under **Time to Live**.
+2. Scale & Settings ブレードで、Settings を開き、**Time to Live** にある **On (no default)** を選択します。
 
    ![The Time to Live settings are set to On with no default.](media/cosmos-ttl-on.png 'Scale & Settings')
 
-   Turning the Time to Live setting on with no default allows us to define the TTL individually for each document, giving us more flexibilty in deciding which documents should expire after a set period of time. To do this, we have a `ttl` field on the document that is saved to this container that specifies the TTL in seconds.
+   存続時間設定を既定値以外でオンにすると、ドキュメントごとに個別に TTL を定義できるため、一定期間後に期限切れになるドキュメントをより柔軟に決定できます。これを行うには、このコンテナーに保存される `ttl` フィールドがあり、TTL を秒単位で指定します。
 
-3. Scroll down in the Scale & Settings blade to view the **Indexing Policy**. The default policy is to automatically index all fields for each document stored in the collection. This is because all paths are included (remember, since we are storing JSON documents, we use paths to identify the property since they can exist within child collections in the document) by setting the value of `includedPaths` to `"path": "/*"`, and the only excluded path is the internal `_etag` property, which is used for versioning the documents. Here is what the default Indexing Policy looks like:
+3. Scale & Settings ブレードを下にスクロールして、**インデックス作成ポリシー** を表示します。既定のポリシーでは、コレクションに格納されている各ドキュメントのすべてのフィールドに自動的にインデックスを作成します。これは、すべてのパスが含まれている (JSON ドキュメントを格納しているため、ドキュメント内の子コレクション内に存在できるため、パスを使用してプロパティを識別します)、つまり `includedPaths` の値が `"path": "/*"` に設定されており、除外される唯一のパスはドキュメントのバージョン管理に使用される内部的な `_etag` プロパティであるからです。既定のインデックス ポリシーは次のようになります:
 
    ```json
    {
@@ -254,7 +254,7 @@ In this task, you will review the default indexing set on your new containers, a
    }
    ```
 
-4. Replace the **Indexing Policy** with the following, which excludes all paths, and only includes the paths used when we query the container (`vin`, `state`, and `partitionKey`):
+4. **Indexing Policy** を次のように置き換えると、すべてのパスを除外し、コンテナーを照会するときに使用されるパスのみが含まれます (`vin`, `state`, および `partitionKey`):
 
    ```json
    {
