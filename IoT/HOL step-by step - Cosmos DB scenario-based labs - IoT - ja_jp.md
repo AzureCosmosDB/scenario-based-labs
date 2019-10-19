@@ -80,7 +80,7 @@ Contoso Auto は、車両とパッケージのテレメトリ データを収集
 
 - **物流業務担当者** 車両や貨物ロジスティクスの現状に興味があり、Webアプリを使用して単一の車両や貨物の状態を迅速に把握する人は、アラートの通知だけでなく、車両や貨物のメタデータをシステムにロードします。ダッシュボードで見たいのは、エンジンの過熱、異常な油圧、アグレッシブな運転など、検出された異常のさまざまな視覚化です。
 
-- **管理および顧客報告担当者** 処理後に流れ込む新しいデータで自動的に更新される Power BI レポートに表示される車両の車両の現在の状態と顧客の委託レベル情報を確認する立場に配置する必要があるユーザー。彼らが見たいのは、ドライバーによる悪い運転行動に関するレポートと、都市や地域に関連する異常を表示するマップなどの視覚コンポーネントを使用するほか、総艦隊と委託情報を明確に示すさまざまなチャートやグラフです。
+- **管理および顧客報告担当者** 処理後に流れ込む新しいデータで自動的に更新される Power BI レポートに表示される車両の車両の現在の状態と顧客の委託レベル情報を確認する立場に配置する必要があるユーザー。彼らが見たいのは、ドライバーによる悪い運転行動に関するレポートと、都市や地域に関連する異常を表示するマップなどの視覚コンポーネントを使用するほか、総フリートと委託情報を明確に示すさまざまなチャートやグラフです。
 
 このエクスペリエンスでは、Cosmos DB、Azure Functions、Event Hub、Azure Data Bricks、Azure Storage、Azure Stream Analytics、Power BI、Azure Web Apps、Logic Apps上に構築されたほぼリアルタイムな分析パイプラインへのエントリーポイントとなる、車両のストリーミングテレメトリーデータを取り込むためにAzure Cosmos DBを利用します。
 
@@ -92,19 +92,19 @@ Contoso Auto は、車両とパッケージのテレメトリ データを収集
 
 - データの取り込み、イベント処理、およびストレージ::
 
-  IoT シナリオのソリューションは、イベント データ、フリート、委託、パッケージ、およびトリップ メタデータ、およびレポート用の集計データをストリーミングするための、グローバルに利用可能でスケーラブルなデータ ストレージとして機能する **Cosmos DB** を中心に展開します。車両テレメトリ データは、**IoT Hub** に登録された IoT デバイスを介してデータ ジェネレータから流れ込み、**Azure Functions** がイベント データを処理し、Cosmos DB のテレメトリ コンテナーに挿入します。
+  IoT シナリオのソリューションは、イベント データ、フリート、委託、パッケージ、およびトリップ メタデータ、およびレポート用の集計データをストリーミングするための、グローバルに利用可能でスケーラブルなデータ ストレージとして機能する **Cosmos DB** を中心にデプロイします。車両テレメトリ データは、**IoT Hub** に登録された IoT デバイスを介してデータ ジェネレータから流れ込み、**Azure Functions** がイベント データを処理し、Cosmos DB のテレメトリ コンテナーに挿入します。
 
 - Azure Functionsを使用したトリップ処理:
 
-  Cosmos DB の change feedは、3 つの別々の Azure Functionsをトリガーし、それぞれが独自のチェックポイントを管理し、互いに競合することなく同じ着信データを処理できるようにします。1 つのFunctionは、イベント データをシリアル化し、**Azure Storage** のタイム スライスされたフォルダーに格納して、生データを長期保存します。別のFunctionは、車両テレメトリを処理し、バッチ データを集約し、走行距離計の読み取り値とトリップがスケジュール通りに実行されているかどうかに基づいて、メタデータ コンテナー内のトリップおよび委託ステータスを更新します。この機能は、旅行のマイルストーンに達したときに電子メールアラートを送信する **Logic App** をトリガします。3 番目のFunctionはイベント データを **Event Hubs** に送信し、**Stream Analytics** をトリガーしてタイム ウィンドウの集約クエリを実行します。
+  Cosmos DB の change feedは、3 つの別々の Azure Functionsをトリガーし、それぞれが独自のチェックポイントを管理し、互いに競合することなく同じ着信データを処理できるようにします。1 つのFunctionは、イベント データをシリアル化し、**Azure Storage** のタイム スライスされたフォルダーに格納して、生データを長期保存します。別のFunctionは、車両テレメトリを処理し、バッチ データを集約し、走行距離計の読み取り値とトリップがスケジュール通りに実行されているかどうかに基づいて、メタデータ コンテナー内のトリップおよび委託ステータスを更新します。この機能は、トリップのマイルストーンに達したときに電子メールアラートを送信する **Logic App** をトリガします。3 番目のFunctionはイベント データを **Event Hubs** に送信し、**Stream Analytics** をトリガーしてタイム ウィンドウの集約クエリを実行します。
 
 - ストリーム処理、ダッシュボード、およびレポート:
 
-  Stream Analytics は、Cosmos DB メタデータ コンテナーに車両固有の集計を出力し、車両全体の集約を **Power BI** に出力して、車両のステータス情報のリアルタイム ダッシュボードに入力します。Power BI Desktop レポートは、Cosmos DB メタデータ コンテナーから直接プルされた詳細な車両、旅行、および委託情報を表示するために使用されます。また、メンテナンスコンテナから引き出されたバッチバッテリ故障予測も表示されます。
+  Stream Analytics は、Cosmos DB メタデータ コンテナーに車両固有の集計を出力し、車両全体の集約を **Power BI** に出力して、車両のステータス情報のリアルタイム ダッシュボードに入力します。Power BI Desktop レポートは、Cosmos DB メタデータ コンテナーから直接プルされた詳細な車両、トリップ、および委託情報を表示するために使用されます。また、メンテナンスコンテナから引き出されたバッチバッテリ故障予測も表示されます。
 
 - 高度な分析と ML モデルのトレーニング:
 
-  **Azure Databricks** は、過去の情報に基づいて、車両のバッテリの故障を予測する機械学習モデルをトレーニングするために使用されます。バッチ予測用にトレーニングされたモデルをローカルに保存し、リアルタイム予測のために **Azure Kubernetes Service (AKS)** または **Azure Container Instances (ACI)** にモデルとスコアリング Web サービスをデプロイします。また、Azure Databricks は **Spark Cosmos DB connector** を使用して、毎日の出張情報をプルダウンして、バッテリ障害のバッチ予測を行い、予測をメンテナンス コンテナーに格納します。
+  **Azure Databricks** は、過去の情報に基づいて、車両のバッテリの故障を予測する機械学習モデルをトレーニングするために使用されます。バッチ予測用にトレーニングされたモデルをローカルに保存し、リアルタイム予測のために **Azure Kubernetes Service (AKS)** または **Azure Container Instances (ACI)** にモデルとスコアリング Web サービスをデプロイします。また、Azure Databricks は **Spark Cosmos DB connector** を使用して、毎日のトリップ情報をプルダウンして、バッテリ障害のバッチ予測を行い、予測をメンテナンス コンテナーに格納します。
 
 - フリート管理 Web App、セキュリティ、および監視:
 
@@ -131,14 +131,14 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 ソリューションの開発を開始する前に、Azure でいくつかのリソースをプロビジョニングする必要があります。クリーンアップを容易にするために、すべてのリソースが同じリソース グループを使用していることを確認します。
 
-この実習では、生成された車両、委託、パッケージ、および出張データの送信と処理を開始できるように、ラボ環境を構成します。まず、Cosmos DB データベースとコンテナーを作成し、新しいLogic Appを作成し、電子メール通知を送信するワークフローを作成し、ソリューションをリアルタイム監視するための Application Insights サービスを作成してから、ソリューションのアプリケーション設定 (接続文字列など)で使用されるシークレットを取得し、それらを Azure Key Vault に安全に保存し、最終的に Azure Databricks 環境を構成します。
+この実習では、生成された車両、委託、パッケージ、およびトリップデータの送信と処理を開始できるように、ラボ環境を構成します。まず、Cosmos DB データベースとコンテナーを作成し、新しいLogic Appを作成し、電子メール通知を送信するワークフローを作成し、ソリューションをリアルタイム監視するための Application Insights サービスを作成してから、ソリューションのアプリケーション設定 (接続文字列など)で使用されるシークレットを取得し、それらを Azure Key Vault に安全に保存し、最終的に Azure Databricks 環境を構成します。
 
 ### Task 1: Create Cosmos DB database and container
 
 このタスクでは、Cosmos DB データベースと 3 つの SQL-ベースのコンテナーを作成します:
 
 - **telemetry**: 90 日間の寿命 (TTL) を持つホット 車両テレメトリ データの取り入れに使用されます。
-- **metadata**: 車両、委託、パッケージ、出張、および集計イベント データを格納します。
+- **metadata**: 車両、委託、パッケージ、トリップ、および集計イベント データを格納します。
 - **maintenance**: バッチ バッテリ障害予測は、レポートの目的でここに格納されます。
 
 1. ブラウザの新しいタブまたはインスタンスを使用して、Azure ポータル <https://portal.azure.com>に移動します。
@@ -455,7 +455,7 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
 16. デザイナーの上部にある **Save** を選択してワークフローを保存します。
 
-17. 保存後、HTTPトリガーのURLが生成されます。ワークフローのHTTPトリガーを展開し、**HTTP POST URL** の値をコピーしNotepadか同様のテキストアプリケーションに、あとの手順で使うためにペーストしておきます。
+17. 保存後、HTTPトリガーのURLが生成されます。ワークフローのHTTPトリガーを開き、**HTTP POST URL** の値をコピーしNotepadか同様のテキストアプリケーションに、あとの手順で使うためにペーストしておきます。
 
     ![The http post URL is highlighted.](media/logic-app-url.png 'Logic App')
 
@@ -633,9 +633,9 @@ Azure Key Vault は、トークン、パスワード、証明書、API キー、
 
 Contoso Auto は、車両から収集した貴重なデータを使用して、メンテナンス関連の問題によるダウンタイムを短縮するために、車両の正常性を予測したいと考えています。彼らが行いたい予測の1つは、過去のデータに基づいて、車両のバッテリーが今後30日以内に故障する可能性があるかどうかです。彼らは、これらの予測に基づいて、サービスを提供する必要がある車両を識別するために、毎晩バッチプロセスを実行したいと考えています。また、車両をフリート管理 Web サイトで表示する際に、リアルタイムで予測を行う方法も望んでいます。
 
-この要件をサポートするには、Azure 上で実行するように最適化された完全に管理された Apache Spark プラットフォームである Azure Databricks で Apache Spark を使用します。Spark は、データ サイエンティストとデータ エンジニアが大量の構造化データと非構造化データを探索して準備し、そのデータを使用して機械学習モデルを大規模にトレーニング、使用、および展開できるようにする、統合されたビッグ データと高度な分析プラットフォームです。`azure-cosmosdb-spark` コネクタ (<https://github.com/Azure/azure-cosmosdb-spark>)を使用して、Cosmos DB に読み書きをします。
+この要件をサポートするには、Azure 上で実行するように最適化された完全に管理された Apache Spark プラットフォームである Azure Databricks で Apache Spark を使用します。Spark は、データ サイエンティストとデータ エンジニアが大量の構造化データと非構造化データを探索して準備し、そのデータを使用して機械学習モデルを大規模にトレーニング、使用、およびデプロイできるようにする、統合されたビッグ データと高度な分析プラットフォームです。`azure-cosmosdb-spark` コネクタ (<https://github.com/Azure/azure-cosmosdb-spark>)を使用して、Cosmos DB に読み書きをします。
 
-このタスクでは、後の演習でデータ探索タスクとモデル展開タスクを実行する新しいクラスターを作成します。
+このタスクでは、後の演習でデータ探索タスクとモデルデプロイタスクを実行する新しいクラスターを作成します。
 
 1. [Azure portal](https://portal.azure.com)で、この演習のリソースグループを開き、**Azure Databricks Service** を開きます。名前は `iot-databricks` で始まるはずです。
 
@@ -910,14 +910,14 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
 - **IoT-CosmosDBProcessing Function App** :これはトリップ処理のFunction App です。これは、`telemetry` コンテナ上のCosmos DB変更フィードによってトリガされる3つの関数が含まれています。Cosmos DB Change Feed は複数のコンシューマーをサポートしているため、これら 3 つの機能を並行して実行し、互いに競合することなく同じ情報を同時に処理できます。これらの各関数に対して `CosmosDBTrigger` を定義する際に、処理した変更フィードイベントを追跡するために、 `leases` という名前のCosmos DBコレクションに接続するトリガ設定を設定します。また、一つの関数が別の関数のリース情報を取得または更新しようとしないように、一意のプレフィックスを持つ各関数の `LeaseCollectionPrefix` 値も設定します。このFunction App には、次の関数があります。
 
-- **TripProcessor**: この関数は、VINによって車両テレメトリデータをグループ化し、 `metadata` コンテナから関連するトリップレコードを取得し、トリップ開始タイムスタンプ、完了した場合は終了タイムスタンプ、およびトリップの有無を示すステータス、トリップが開始された、遅れている、または完了したのいずれか、を更新します。また、関連する委託レコードをステータスで更新し、Function App のアプリ設定で定義された受信者にアラートを電子メールで送信する必要がある場合は、出張情報を含む Logic App をトリガーします (`RecipientEmail`)。
+- **TripProcessor**: この関数は、VINによって車両テレメトリデータをグループ化し、 `metadata` コンテナから関連するトリップレコードを取得し、トリップ開始タイムスタンプ、完了した場合は終了タイムスタンプ、およびトリップの有無を示すステータス、トリップが開始された、遅れている、または完了したのいずれか、を更新します。また、関連する委託レコードをステータスで更新し、Function App のアプリ設定で定義された受信者にアラートを電子メールで送信する必要がある場合は、トリップ情報を含む Logic App をトリガーします (`RecipientEmail`)。
   - **ColdStorage**: この関数は Azure Storage アカウント (`ColdStorageAccount`) に接続し、次のタイム スライスパス形式でコールド ストレージ用の生の車両テレメトリ データを書き込みます: `telemetry/custom/scenario1/yyyy/MM/dd/HH/mm/ss-fffffff.json`。
   - ** SendToEventHubsForReporting** : この関数は、車両テレメトリ データを Event Hubs に直接送信するだけで、Stream Analytics はウィンドウ化された集計を適用し、それらの集計を Power BI および Cosmos DB のメタデータ コンテナーにバッチで保存できます。
   - **HealthCheck**: ストリーム処理 Function App 内の同じ名前の関数と同様に、この関数には HTTP トリガーがあり、Function Appが稼働中であり、各構成設定が存在し、値を持っていることをユーザーが確認できます。データ ジェネレータは、実行する前にこの関数を呼び出します。
 
   ![The Trip Processing function is shown.](media/solution-architecture-function2.png 'Solution architecture')
 
-- **IoTWebApp**: Web App はフリート管理ポータルを提供し、ユーザーが車両データに対して CRUD 操作を実行し、展開された機械学習モデルに対して車両のリアルタイムバッテリ故障予測を行い、委託、パッケージ、および出張を表示できるようにします。[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用して、Cosmos DBの `metadata` コンテナに接続します。
+- **IoTWebApp**: Web App はフリート管理ポータルを提供し、ユーザーが車両データに対して CRUD 操作を実行し、デプロイされた機械学習モデルに対して車両のリアルタイムバッテリ故障予測を行い、委託、パッケージ、およびトリップを表示できるようにします。[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用して、Cosmos DBの `metadata` コンテナに接続します。
 
   ![The Web App is shown.](media/solution-architecture-webapp.png 'Solution architecture')
 
@@ -1111,7 +1111,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
         group.Average(item => item.GetPropertyValue<double>("refrigerationUnitTemp"));
     ```
 
-    車両 VIN でイベントをグループ化したので、グループ キー (VIN) を保持するローカル `vin` 変数を割り当てます。次に、`group.Max` 集計関数を使用して最大走行距離計の値を計算し、平均冷凍ユニット温度を計算する関数である `group.Average` を使用します。`odometerHigh` の値を使用して、旅行距離を計算し、Cosmos DB `metadata` コンテナの `Trip` レコードからの計画された移動距離に基づいて、トリップが完了したかどうかを判断します。必要に応じて、ロジックアプリに送信されるアラートに `averageRefrigerationUnitTemp` が追加されます。
+    車両 VIN でイベントをグループ化したので、グループ キー (VIN) を保持するローカル `vin` 変数を割り当てます。次に、`group.Max` 集計関数を使用して最大走行距離計の値を計算し、平均冷凍ユニット温度を計算する関数である `group.Average` を使用します。`odometerHigh` の値を使用して、トリップ距離を計算し、Cosmos DB `metadata` コンテナの `Trip` レコードからの計画された移動距離に基づいて、トリップが完了したかどうかを判断します。必要に応じて、ロジックアプリに送信されるアラートに `averageRefrigerationUnitTemp` が追加されます。
 
 7. 新たに追加したコードで以下のようになっていることを確認します:
 
@@ -1304,7 +1304,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     await _cosmosDbService.DeleteItemAsync<Vehicle>(item.id, item.partitionKey);
     ```
 
-    ここでは、項目を完全に削除してハード削除を行っています。実際のシナリオでは、ほとんどの場合、ソフト削除を実行します。さらに、出張などの関連レコードをソフト削除します。ソフト削除を使用すると、将来必要に応じて削除されたアイテムを簡単に回復できます。
+    ここでは、項目を完全に削除してハード削除を行っています。実際のシナリオでは、ほとんどの場合、ソフト削除を実行します。さらに、トリップなどの関連レコードをソフト削除します。ソフト削除を使用すると、将来必要に応じて削除されたアイテムを簡単に回復できます。
 
 22. **VehiclesController.cs** ファイルを **Save** します。
 
@@ -1318,7 +1318,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
 
-3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて展開します。名前は **cosmos-db-iot** で始まるはずです。名前が **IoT-CosmosDBProcessing** で始まるFunction Appを選択し、**OK** を選択します。
+3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて開きます。名前は **cosmos-db-iot** で始まるはずです。名前が **IoT-CosmosDBProcessing** で始まるFunction Appを選択し、**OK** を選択します。
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-cosmos.png "App Service")
 
@@ -1338,7 +1338,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
 
-3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて展開します。名前は **cosmos-db-iot** で始まるはずです。名前が **IoT-StreamProcessing** で始まるFunction Appを選択し、**OK** を選択します。
+3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて開きます。名前は **cosmos-db-iot** で始まるはずです。名前が **IoT-StreamProcessing** で始まるFunction Appを選択し、**OK** を選択します。
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-stream.png "App Service")
 
@@ -1356,7 +1356,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![The publish dialog is displayed.](media/vs-publish-target-webapp.png "Pick a publish target")
 
-3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて展開します。名前は **cosmos-db-iot** で始まるはずです。名前が **IoTWebApp** で始まるWeb Appを選択し、**OK** を選択します。
+3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて開きます。名前は **cosmos-db-iot** で始まるはずです。名前が **IoTWebApp** で始まるWeb Appを選択し、**OK** を選択します。
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-webapp.png "App Service")
 
@@ -1420,14 +1420,14 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 この演習では、データ ジェネレータ プロジェクト **FleetDataGenerator** を探索し、アプリケーション構成を更新し、メタデータ データベースをデータでシードし、単一の車両をシミュレートするために実行します。
 
-環境の状態に応じて、データ ジェネレータが実行するタスクがいくつかあります。最初のタスクは、これらの要素が Cosmos DB アカウントに存在しない場合、ジェネレータがこの演習に最適な構成の Cosmos DB データベースとコンテナーを作成することです。しばらくすると、演習の開始時にジェネレータを既に作成しているため、この手順はスキップされます。ジェネレータが実行する 2 番目のタスクは、データが存在しない場合に Cosmos DB のメタデータ コンテナーをデータでシードすることです。これには、車両、委託、パッケージ、および出張データが含まれます。データを使用してコンテナーをシードする前に、ジェネレータは、最適なデータ取り込み速度のために、コンテナーに対して要求された RU/s を一時的に 50,000 に増やします。シード処理が完了すると、RU/s は 15,000 にスケールダウンされます。
+環境の状態に応じて、データ ジェネレータが実行するタスクがいくつかあります。最初のタスクは、これらの要素が Cosmos DB アカウントに存在しない場合、ジェネレータがこの演習に最適な構成の Cosmos DB データベースとコンテナーを作成することです。しばらくすると、演習の開始時にジェネレータを既に作成しているため、この手順はスキップされます。ジェネレータが実行する 2 番目のタスクは、データが存在しない場合に Cosmos DB のメタデータ コンテナーをデータでシードすることです。これには、車両、委託、パッケージ、およびトリップデータが含まれます。データを使用してコンテナーをシードする前に、ジェネレータは、最適なデータ取り込み速度のために、コンテナーに対して要求された RU/s を一時的に 50,000 に増やします。シード処理が完了すると、RU/s は 15,000 にスケールダウンされます。
 
 ジェネレータはメタデータの存在を確認した後、指定された数の車両のシミュレートを開始します。それぞれ、1、10、50、100、または構成設定で指定された車両数をシミュレートして、1 から 5 の間の番号を入力するように求められます。シミュレートされた車両ごとに、次のタスクが実行されます。
 
 1. IoT デバイスは、IoT Hub 接続文字列を使用して車両に登録され、デバイス ID を車両の VIN に設定します。これにより、生成されたデバイス キーが返されます。
 2. 新しいシミュレートされた車両インスタンス(`SimulatedVehicle`)がシミュレートされた車両のコレクションに追加され、それぞれが AMQP デバイスとして機能し、委託の荷物の配送をシミュレートするトリップ レコードが割り当てられます。これらの車両は、冷凍ユニットが故障するようにランダムに選択され、そのうちのいくつかは、他の車両が徐々に失敗しながら、ランダムにすぐに失敗します。
 3. シミュレートされた車両は、独自の AMQP デバイス インスタンスを作成し、独自のデバイス ID (VIN) と生成されたデバイス キーを使用して IoT Hub に接続します。
-4. シミュレートされた車両は、トリップレコードによって確立されたマイル数に達するか、キャンセルトークンを受け取ることによって旅行を完了するまで、IoT Hubへの接続を介して車両テレメトリ情報を継続的に送信します。
+4. シミュレートされた車両は、トリップレコードによって確立されたマイル数に達するか、キャンセルトークンを受け取ることによってトリップを完了するまで、IoT Hubへの接続を介して車両テレメトリ情報を継続的に送信します。
 
 ### Task 1: Open the data generator project
 
@@ -1565,66 +1565,66 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 ![The iothubowner shared access policy is displayed.](media/iot-hub-connection-string.png "IoT Hub shared access policy")
 
-1. Open **appsettings.json** within the **FleetDataGenerator** project.
+1. **FleetDataGenerator** プロジェクトの **appsettings.json** を開きます。
 
-2. Paste the IoT Hub connection string value in quotes next to the **IOT_HUB_CONNECTION_STRING** key. Paste the Cosmos DB connection string value in quotes next to the **COSMOS_DB_CONNECTION_STRING** key.
+2. **IOT_HUB_CONNECTION_STRING** キーの次に、引用符で囲まれた IoT Hub 接続文字列をペーストします。**COSMOS_DB_CONNECTION_STRING** キーの次に、引用符で囲まれた CosmosDB 接続文字列をペーストします。
 
-3. The data generator also requires the Health Check URLs you copied in the previous exercise for the `HealthCheck` functions located in both Function Apps. Paste the Cosmos DB Processing Function App's `HealthCheck` function's URL in quotes next to the **COSMOS_PROCESSING_FUNCTION_HEALTHCHECK_URL** key. Paste the Stream Processing Function App's `HealthCheck` function's URL in quotes next to the **STREAM_PROCESSING_FUNCTION_HEALTHCHECK_URL** key.
+3. データ ジェネレータには、両方の Function App にある `HealthCheck` 関数の前の演習でコピーしたヘルスチェック URL も必要です。**COSMOS_PROCESSING_FUNCTION_HEALTHCHECK_URL** キーの次に、引用符で囲まれた CosmosDB 処理 Function Appの `HealthCheck` 関数のURLをペーストします。**STREAM_PROCESSING_FUNCTION_HEALTHCHECK_URL** キーの次に、引用符で囲まれたストリーム処理 Function App の `HealthCheck` 関数のURLをペーストします。
 
     ![The appsettings.json file is highlighted in the Solution Explorer, and the connection strings and health check URLs are highlighted within the file.](media/vs-appsettings.png "appsettings.json")
 
-    The NUMBER_SIMULATED_TRUCKS value is used when you select option 5 when you run the generator. This gives you the flexibility to simulate between 1 and 1,000 trucks at a time. SECONDS_TO_LEAD specifies how many seconds to wait until the generator starts generating simulated data. The default value is 0. SECONDS_TO_RUN forces the simulated trucks to stop sending generated data to IoT Hub. The default value is 14400. Otherwise, the generator stops sending tasks when all the trips complete or you cancel by entering `Ctrl+C` or `Ctrl+Break` in the console window.
+    NUMBER_SIMULATED_TRUCKS 値は、ジェネレータの実行時にオプション 5 を選択するときに使用されます。これにより、一度に 1 ~ 1,000 台のトラックを柔軟にシミュレートできました。SECONDS_TO_LEAD は、ジェネレータがシミュレートされたデータの生成を開始するまで待機する秒数を指定します。デフォルト値は 0 です。SECONDS_TO_RUN は、シミュレートされたトラックに生成されたデータの送信を強制的に停止します。デフォルト値は 14400 です。それ以外の場合、ジェネレータは、すべてのトリップが完了したときにタスクの送信を停止するか、コンソール ウィンドウに `Ctrl+C` または `Ctrl +Break` と入力してキャンセルします。
 
-3. **Save** the `appsettings.json` file.
+3. **appsettings.json** ファイルを **Save** します。
 
-> As an alternative, you may save these settings as environment variables on your machine, or through the FleetDataGenerator properties. Doing this will remove the risk of accidentally saving your secrets to source control.
+> 別の方法として、これらの設定をマシン上の環境変数として保存するか、FleetDataGenerator プロパティを使用して保存することもできます。これを行うと、誤ってソース管理にシークレットを保存するリスクが取り除かされます。
 
 ### Task 4: Run generator
 
-In this task, you will run the generator and have it generate events for 50 trucks. The reason we are generating events for so many vehicles is two-fold:
+このタスクでは、ジェネレータを実行し、50 台のトラックのイベントを生成します。非常に多くの車両のイベントを生成する理由は、2 つあります:
 
-   - In the next exercise, we will observe the function triggers and event activities with Application Insights.
-   - We need to have completed trips prior to performing batch predictions in a later exercise.
+   - 次の演習で、Application Insights で関数トリガーとイベントアクティビティを観察します。
+   - 後段の演習で、バッチ処理の予測を実行する前に、トリップを完了させておく必要があります。
 
-> **Warning**: You will receive a lot of emails when the generator starts sending vehicle telemetry. If you do not wish to receive emails, simply disable the Logic App you created.
+> **警告**: ジェネレータが車両テレメトリの送信を開始すると、大量の電子メールが送信されます。メールを受信したくない場合は、作成した Logic App を無効にします。
 
-1. Within Visual Studio, right-click on the **FleetDataGenerator** project in the Solution Explorer and select **Set as Startup Project**. This will automatically run the data generator each time you debug.
+1. Visual Studio の Solution Explorerで **FleetDataGenerator** プロジェクトを右クリックし、**Set as Startup Project** を選択します。デバッグを実行するたびにデータジェネレータが自動的に実行されるようになります。
 
     ![Set as Startup Project is highlighted in the Solution Explorer.](media/vs-set-startup-project.png "Solution Explorer")
 
-2. Select the Debug button at the top of the Visual Studio window or hit **F5** to run the data generator.
+2. Visual Studio のウインドウの最上部にあるデバッグ ボタンを選択するか、**F5** を押してデータジェネレータを実行します。
 
     ![The debug button is highlighted.](media/vs-debug.png "Debug")
 
-3. When the console window appears, enter **3** to simulate 50 vehicles. The generator will perform the Function App health checks, resize the requested throughput for the `metadata` container, use the bulk importer to seed the container, and resize the throughput back to 15,000 RU/s.
+3. コンソールウィンドウが表示されたら、**3** と入力して50台の車両をシミュレートします。ジェネレータは、Function App の正常性チェックを実行し、`metadata` コンテナーの要求されたスループットのサイズを変更し、バルク インポーターを使用してコンテナーをシードし、スループットのサイズを 15,000 RU/s に戻します。
 
     ![3 has been entered in the console window.](media/cmd-run.png "Generator")
 
-4. After the seeding is completed the generator will retrieve 50 trips from the database, sorted by shortest trip distance first so we can have completed trip data appear faster. You will see a message output for every 50 events sent, per vehicle with their VIN, the message count, and the number of miles remaining for the trip. For example: `Vehicle 19: C1OVHZ8ILU8TGGPD8 Message count: 3650 -- 3.22 miles remaining`. **Let the generator run in the background and continue to the next exercise**.
+4. シードが完了すると、ジェネレータはデータベースから 50 回のトリップを取得し、最初に最短の移動距離で並べ替えられ、完了したトリップ データがより速く表示されるようにします。VIN、メッセージ数、およびトリップの残りのマイル数を持つ車両ごとに、送信された 50 イベントごとにメッセージ出力が表示されます。例: `Vehicle 19: C1OVHZ8ILU8TGGPD8 Message count: 3650 -- 3.22 miles remaining`。**ジェネレータをバックグラウンドで実行し、次の演習**に進みます。
 
     ![Vehicle simulation begins.](media/cmd-simulated-vehicles.png "Generator")
 
-5. As the vehicles complete their trips, you will see a message such as `Vehicle 37 has completed its trip`.
+5. 車両がトリップを完了するにしたがい、`Vehicle 37 has completed its trip`のようなメッセージが表示されます。
 
     ![A completed messages is displayed in the generator console.](media/cmd-vehicle-completed.png "Generator")
 
-6. When the generator completes, you will see a message to this effect.
+6. ジェネレータが完了すると、この効果へのメッセージが表示されます。
 
     ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png "Generator")
 
-If the health checks fail for the Function Apps, the data generator will display a warning, oftentimes telling you which application settings are missing. The data generator will not run until the health checks pass. Refer to Exercise 3, Task 2 above for tips on troubleshooting the application settings.
+Function Apps のヘルスチェックが失敗した場合、データ ジェネレータには警告が表示され、多くの場合、どのアプリケーション設定が欠落しているかを示します。データ ジェネレータは、ヘルスチェックに合格するまで実行されません。アプリケーション設定のトラブルシューティングに関するヒントについては、上記の演習 3、タスク 2 を参照してください。
 
 ![The failed health checks are highlighted.](media/cmd-healthchecks-failed.png "Generator")
 
 ### Task 5: View devices in IoT Hub
 
-The data generator registered and activated each simulated vehicle in IoT Hub as a device. In this task, you will open IoT Hub and view these registered devices.
+データジェネレータは、IoT Hubに各シミュレート車両をデバイスとして登録し、アクティブ化しました。このタスクでは、IoT Hub を開き、これらの登録済みデバイスを表示します。
 
-1. In the Azure portal (<https://portal.azure.com>), open the IoT Hub instance within your **cosmos-db-iot** resource group.
+1. Azure portal (<https://portal.azure.com>)で、**cosmos-db-iot** リソースグループにある IoT Hub のインスタンスを開きます。
 
     ![The IoT Hub resource is displayed in the resource group.](media/portal-resource-group-iot-hub.png "IoT Hub")
 
-2. Select **IoT devices** in the left-hand menu. You will see all 50 IoT devices listed in the IoT devices pane to the right, with the VIN specified as the device ID. When we simulate more vehicles, we will see additional IoT devices registered here.
+2. 左側のメニューから **IoT devices** を選択します。右側の IoT デバイスのペインに 50 台の IoT デバイスがすべて表示され、VIN がデバイス ID として指定されています。より多くの車両をシミュレートすると、ここに登録された追加のIoTデバイスが表示されます。
 
     ![The IoT devices pane is displayed.](media/iot-hub-iot-devices.png "IoT devices")
 
@@ -1632,25 +1632,25 @@ The data generator registered and activated each simulated vehicle in IoT Hub as
 
 **Duration**: 10 minutes
 
-In this exercise, we use the Live Metrics Stream feature of Application Insights to view the incoming requests, outgoing requests, overall health, allocated server information, and sample telemetry in near-real time. This will help you observe how your functions scale under load and allow you to spot any potential bottlenecks or problematic components, through a single interactive interface.
+この演習では、Application Insights のライブ メトリック ストリーム機能を使用して、受信要求、送信要求、全体的な正常性、割り当てられたサーバー情報、およびサンプルテレメトリをほぼリアルタイムで表示します。これにより、関数が負荷の下でどのように拡張されるかを確認し、単一の対話型インターフェイスを通じて潜在的なボトルネックや問題のあるコンポーネントを特定できます。
 
 ### Task 1: Open App Insights Live Metrics Stream
 
-1. In the Azure portal (<https://portal.azure.com>), open the Application Insights instance within your **cosmos-db-iot** resource group.
+1. Azure portal (<https://portal.azure.com>)で、**cosmos-db-iot** リソースグループにある Application Insights のインスタンスを開きます。
 
     ![The App Insights resource is displayed in the resource group.](media/portal-resource-group-app-insights.png "Application Insights")
 
-2. Select **Live Metrics Stream** in the left-hand menu.
+2. 左側のメニューから **Live Metrics Stream** を開きます。
 
     ![The Live Metrics Stream link is displayed in the left-hand menu.](media/app-insights-live-metrics-stream-link.png "Application Insights")
 
-3. Observe the metrics within the Live Metrics Stream as data flows through the system.
+3. データがシステムを流れる際に、ライブメトリックストリーム内のメトリックを観察します。
 
     ![The Live Metrics Stream page is displayed.](media/app-insights-live-metrics-stream.png "Live Metrics Stream")
 
-    At the top of the page, you will see a server count. This shows how many instances of the Function Apps there are, and one server is allocated to the Web App. As the Function App server instances exceed computational, memory, or request duration thresholds, and as the IoT Hub and Change Feed queues grow and age, new instances are automatically allocated to scale out the Function Apps. You can view the server list at the bottom of the page. On the right-hand side you will see sample telemetry, including messages sent to the logger within the functions. Here we highlighted a message stating that the Cosmos DB Processing function is sending 100 Cosmos DB records to Event Hubs.
+    ページの上部にサーバー数が表示されます。これは、Function App のインスタンス数を示し、1 台のサーバーが Web App に割り当てられます。Function App サーバー インスタンスが計算、メモリ、または要求期間のしきい値を超え、IoT Hub キューと Change Feed キューが増え、経過時間が伸びるにつれて、Function App をスケール アウトするために新しいインスタンスが自動的に割り当てられます。ページの下部にサーバー リストを表示できます。右側には、関数内のロガーに送信されるメッセージを含むサンプルテレメトリが表示されます。ここでは、Cosmos DB 処理関数が 100 件の Cosmos DB レコードを Event Hub に送信していることを示すメッセージを強調しました。
 
-    You will notice many dependency call failures (404). These can be safely ignored. They are caused by the Azure Storage binding for the **ColdStorage** function within the Cosmos DB Processing Function App. This binding checks if the file exists before writing to the specified container. Since we are writing new files, you will see a `404` message for every file that is written since it does not exist. Currently, the binding engine does not know the difference between "good" 404 messages such as these, and "bad" ones.
+    多くの依存関係の呼び出しエラー (404) に気付くでしょう。これらは無視しても問題ありません。これらは、Cosmos DB 処理 Function App 内の **ColdStorage** 関数の Azure ストレージ バインディングによって引き起こされます。このバインディングは、指定されたコンテナーに書き込む前にファイルが存在するかどうかをチェックします。新しいファイルを書き込んでいるため、書き込み中のすべてのファイルに対して `404` メッセージが表示されます。現在、バインディング エンジンは、このような "良い" 404 メッセージと "bad" メッセージの違いが判断出来ません。
 
 ## Exercise 6: Observe data using Cosmos DB Data Explorer and Web App
 
@@ -1658,29 +1658,29 @@ In this exercise, we use the Live Metrics Stream feature of Application Insights
 
 ### Task 1: View data in Cosmos DB Data Explorer
 
-1. In the Azure portal (<https://portal.azure.com>), open the Cosmos DB instance within your **cosmos-db-iot** resource group.
+1. Azure portal (<https://portal.azure.com>)で、**cosmos-db-iot** リソースグループにある CosmosDB のインスタンスを開きます。
 
-2. Select **Data Explorer** in the left-hand menu.
+2. 左側のメニューから **Data Explorer** を選択します。
 
-3. Expand the **ContosoAuto** database, then expand the **metadata** container. Select **Items** to view a list of documents stored in the container. Select one of the items to view the data.
+3. **ContosoAuto** データベースを開き、**metadata** を開きます。**Items** を選択して、コンテナーに保存されたドキュメントを表示します。そのうちのいずれかを開いて、データを表示します。
 
     ![The data explorer is displayed with a selected item in the metadata container's items list.](media/cosmos-data-explorer-metadata-items.png "Data Explorer")
 
-4. Select the ellipses (...) to the right of the **metadata** container name, then select **New SQL Query**.
+4. **metadata** コンテナー名の右にある省略記号 (...)を選択し、**New SQL Query** を選択します。
 
     ![The New SQL Query menu item is highlighted.](media/cosmos-data-explorer-metadata-new-sql-query.png "New SQL Query")
 
-5. Replace the query with the following:
+5. クエリーを以下で置換します:
 
     ```sql
     SELECT * FROM c WHERE c.entityType = 'Vehicle'
     ```
 
-6. Execute the query to view the first 100 vehicle records.
+6. 最初の 100 台の車両の記録を表示するクエリーを実行します。
 
     ![The query editor is displayed with the vehicle results.](media/cosmos-vehicle-query.png "Vehicle query")
 
-7. Update the query to find trip records where the trip is completed.
+7. クエリを更新して、トリップが完了した場所のトリップレコードを検索します。
 
     ```sql
     SELECT * FROM c WHERE c.entityType = 'Trip' AND c.status = 'Completed'
@@ -1688,9 +1688,9 @@ In this exercise, we use the Live Metrics Stream feature of Application Insights
 
     ![The qwuery editor is displayed with the trip results.](media/cosmos-trip-completed-query.png "Trip query")
 
-    Please note, you may not have any trips that have completed yet. Try querying where the `status` = **Active** instead. Active trips are those that are currently running.
+    まだ完了したトリップがない場合がありますのでご注意ください。代わりに `status` = **Active** の場所を照会してみてください。アクティブなトリップは、現在実行中のトリップです。
 
-    Here is an example completed trip record (several packages removed for brevity):
+    完了したトリップ レコードの例を次に示します (簡潔にするためにいくつかのパッケージが削除されました):
 
     ```json
     {
@@ -1738,11 +1738,11 @@ In this exercise, we use the Live Metrics Stream feature of Application Insights
     }
     ```
 
-    Portions of the package and consignment records are included since they are often used in trip queries and reports.
+    パッケージおよび委託レコードの一部は、トリップクエリやレポートでよく使用されるので、ここに含まれます。
 
 ### Task 2: Search and view data in Web App
 
-1. Navigate to your deployed Fleet Management web app. If you closed it earlier, you can find the deployment URL in the Overview blade of your Web App (**IoTWebApp**) in the portal.
+1. デプロイされたフリート管理 Web App に移動します。以前に閉じた場合は、ポータルの Web App の概要ブレード (**IoTWebApp**) でデプロイ URL を確認できます。
 
     ![The web app's URL is highlighted.](media/webapp-url.png "Web App overview")
 
