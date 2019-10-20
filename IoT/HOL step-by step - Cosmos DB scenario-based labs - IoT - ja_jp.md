@@ -1746,27 +1746,27 @@ Function Apps のヘルスチェックが失敗した場合、データ ジェ�
 
     ![The web app's URL is highlighted.](media/webapp-url.png "Web App overview")
 
-2. Select **Vehicles**. Here you will see the paging capabilities at work.
+2. **Vehicles** を選択します。これで動作中のページング機能が見られます。
 
     ![The vehicles page is displayed.](media/webapp-vehicles.png "Vehicles")
 
-3. Select one of the vehicles to view the details. On the right-hand side of the details page are the trips assigned to the vehicle. This view provides the customer name from the associated consignment record, aggregate information for the packages, and the trip details.
+3. 詳細を表示するには、車両の 1 つを選択します。詳細ページの右側には、車両に割り当てられたトリップがあります。このビューには、関連付けられた委託レコードの顧客名、パッケージの集計情報、およびトリップの詳細が表示されます。
 
     ![The vehicle details are displayed.](media/webapp-vehicle-details.png "Vehicle details")
 
-4. Go back to the vehicles list and enter a search term, such as **MT**. This will search both the state registered, and the VIN, including partial matches. Feel free to search for both states and VINs. In the screenshot below, we searched for `MT` and received results for Montana state registrations, and had a record where `MT` was included in the VIN.
+4. 車両リストに戻り、**MT** などの検索語句を入力します。これにより、登録された状態と、部分的な一致を含む VIN の両方が検索されます。州と VIN の両方を自由に検索できます。下のスクリーンショットでは、`MT`を検索し、モンタナ州の登録結果を受け取り、VINに`MT`が含まれている記録がありました。
 
     ![The search results are displayed.](media/webapp-vehicle-search.png "Vehicle search")
 
-5. Select **Consignments** in the left-hand menu, then enter **alpine ski** in the search box and execute. You should see several consignments for the `Alpine Ski House` customer. You can also search by Consignment ID. In our results, one of the consignments has a status of Completed.
+5. 左側のメニューで **Consignments** を選択し、検索ボックスに **alpine ski** を入力して実行します。`Alpine Ski House` の顧客のためのいくつかの委託が表示されます。委託IDで検索することもできます。結果では、委託品の 1 つに [完了] のステータスがあります。
 
     ![The search results are displayed.](media/webapp-consignments-search.png "Consignments")
 
-6. Select a consignment to view the details. The record shows the customer, delivery due date, status, and package details. The package statistics contains aggregates to calculate the total number of packages, the required storage temperature, based on the package with the lowest storage temperature setting, the total cubic feet and combined gross weight of the packages, and whether any of the packages are considered high value.
+6. 詳細を表示するには、委託を選択します。レコードには、顧客、出荷期日、ステータス、およびパッケージの詳細が表示されます。パッケージ統計には、パッケージの総数、必要な保管温度、最小の保管温度設定のパッケージ、パッケージの合計立方フィートとパッケージの合計総重量、およびパッケージの合計総重量を計算する集計が含まれています。パッケージのいずれも高い値と見なされます。
 
     ![The consignment details page is displayed.](media/webapp-consignment-details.png "Consignment details")
 
-7. Select **Trips** in the left-hand menu. Use the filter at the top of the page to filter trips by status, such as Pending, Active, Delayed, and Completed. Trips are delayed if the status is not Completed prior to the delivery due date. You may not see any delayed at this point, but you may have some that become delayed when you re-run the data generator later. You can view the Vehicle or related Consignment record from this page.
+7. 左側のメニューで **トリップ** を選択します。ページ上部のフィルタを使用して、[保留中]、[アクティブ]、[遅延]、[完了済み] などのステータスでトリップをフィルター処理します。納期より前にステータスが完了していない場合、トリップは遅れます。この時点では遅延は発生しない場合がありますが、後でデータ ジェネレータを再実行すると遅延する場合があります。このページから車両または関連する委託レコードを表示できます。
 
     ![The search results are displayed.](media/webapp-trips-search.png "Trips")
 
@@ -1774,47 +1774,47 @@ Function Apps のヘルスチェックが失敗した場合、データ ジェ�
 
 **Duration**: 10 minutes
 
-In this exercise, you will insert, update, and delete a vehicle record.
+この演習では、車両レコードに挿入、更新、削除を行います。
 
 ### Task 1: Create a new vehicle
 
-1. In the web app, navigate to the **Vehicles** page, then select **Create New Vehicle**.
+1. Web Appで **Vehicles** ページに移動し、**Create New Vehicle** を選択します。
 
     ![The Create New Vehicle button is highlighted on the vehicles page.](media/webapp-vehicles-new-button.png "Vehicles")
 
-2. Complete the Create Vehicle form with the following VIN: **ISO4MF7SLBXYY9OZ3**. When finished filling out the form, select **Create**.
+2. 車両の作成を完了するためにフォームに以下のVINを入力します: **ISO4MF7SLBXYY9OZ3** 。フォームの入力が終わったら、**Create** を選択します。
 
     ![The Create Vehicle form is displayed.](media/webapp-create-vehicle.png "Create Vehicle")
 
 ### Task 2: View and edit the vehicle
 
-1. Search for your new vehicle in the Vehicles page by pasting the VIN in the search box: **ISO4MF7SLBXYY9OZ3**.
+1. 新しい車両を検索するために、車両のページの検索ボックスに以下のVINをペーストします: **ISO4MF7SLBXYY9OZ3**
 
     ![The VIN is pasted in the search box and the vehicle result is displayed.](media/webapp-vehicles-search-vin.png "Vehicles")
 
-2. Select the vehicle in the search results. Select **Edit Vehicle** in the vehicle details page.
+2. 検索結果から車両を選択します。車両の詳細ページで **Edit Vehicle** を選択します。
 
     ![Details for the new vehicle are displayed and the edit vehicle button is highlighted.](media/webapp-vehicles-details-new.png "Vehicle details")
 
-3. Update the record by changing the state registered and any other field, then select **Update**.
+3. 登録された状態や他のフィールドを変更してレコードを更新し、**Update** を選択します。
 
     ![The Edit Vehicle form is displayed.](media/webapp-vehicles-edit.png "Edit Vehicle")
 
 ### Task 3: Delete the vehicle
 
-1. Search for your new vehicle in the Vehicles page by pasting the VIN in the search box: **ISO4MF7SLBXYY9OZ3**. You should see the registered state any any other fields you updated have changed.
+1. 新しい車両を検索するために、車両のページの検索ボックスに以下のVINをペーストします: **ISO4MF7SLBXYY9OZ3**。登録された状態や他のフィールドを変更が反映された状態が表示されるはずです。
 
     ![The VIN is pasted in the search box and the vehicle result is displayed.](media/webapp-vehicles-search-vin-updated.png "Vehicles")
 
-2. Select the vehicle in the search results. Select **Delete** in the vehicle details page.
+2. 検索結果から車両を選択します。車両の詳細ページで **Delete** を選択します。
 
     ![Details for the new vehicle are displayed and the delete button is highlighted.](media/webapp-vehiclde-details-updated.png "Vehicle details")
 
-3. In the Delete Vehicle confirmation page, select **Delete** to confirm.
+3. 車両の削除の確認ページで、**Delete** を選択します。
 
     ![The Delete Vehicle confirmation page is displayed.](media/webapp-vehicles-delete-confirmation.png "Delete Vehicle")
 
-4. Search for your new vehicle in the Vehicles page by pasting the VIN in the search box: **ISO4MF7SLBXYY9OZ3**. You should see that no vehicles are found.
+4. 新しい車両を検索するために、車両のページの検索ボックスに以下のVINをペーストします: **ISO4MF7SLBXYY9OZ3**。車両は表示されないはずです。
 
     ![The vehicle was not found.](media/webapp-vehicles-search-deleted.png "Vehicles")
 
@@ -1824,17 +1824,17 @@ In this exercise, you will insert, update, and delete a vehicle record.
 
 ### Task 1: Log in to Power BI online and create real-time dashboard
 
-1. Browse to <https://powerbi.microsoft.com> and sign in with the same account you used when you created the Power BI output in Stream Analytics.
+1. <https://powerbi.microsoft.com> を表示し、Stream Analytics で Power BI 出力を作成した時に使ったアカウントでサインインします。
 
-2. Select **My workspace**, then select the **Datasets** tab. You should see the **Contoso Auto IoT Events** dataset. This is the dataset you defined in the Stream Analytics Power BI output.
+2. **My workspace** を選択し、**Datasets** タブを選択します。**Contoso Auto IoT Events** データセットが表示されるはずです。これは、Stream Analytics の Power BI 出力で定義したものです。
 
     ![The Contoso Auto IoT dataset is displayed.](media/powerbi-datasets.png "Power BI Datasets")
 
-3. Select **+ Create** at the top of the page, then select **Dashboard**.
+3. ページの最上部で **+ Create** を選択し、**Dashboard** を選択します。
 
     ![The Create button is highlighted at the top of the page, and the Dashboard menu item is highlighted underneath.](media/powerbi-create-dashboard.png "Create Dashboard")
 
-4. Provide a name for the dashboard, such as `Contoso Auto IoT Live Dashboard`, then select **Create**.
+4. `Contoso Auto IoT Live Dashboard` のようなダッシュボードの名前を入力し、**Create** を選択します。
 
     ![The create dashboard dialog is displayed.](media/powerbi-create-dashboard-dialog.png "Create dashboard dialog")
 
