@@ -1838,204 +1838,204 @@ Function Apps のヘルスチェックが失敗した場合、データ ジェ�
 
     ![The create dashboard dialog is displayed.](media/powerbi-create-dashboard-dialog.png "Create dashboard dialog")
 
-5. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
+5. 新しいダッシュボードの上部で、**+ Add tile** を選択し、ダイアログで **Custom Streaming Data** を選択した後、**Next** を選択します。
 
     ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
 
-6. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
+6. **Contoso Auto IoT Events** データセットを選択し、**Next** を選択します。
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-7. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **oilAnomaly** from the dropdown. Select **Next**.
+7. **Card** ビジュアル化タイプを選択します。フィールドの下で **+ Add value** を選択後、ドロップダウンから**oilAnomaly** を選択します。**Next** を選択します。
 
     ![The oilAnomaly field is added.](media/power-bi-dashboard-add-tile-oilanomaly.png "Add a custom streaming data tile")
 
-8. Leave the values at their defaults for the tile details form, then select **Apply**.
+8. タイルの詳細フォームは規定値のままにして、**Apply** を選択します。
 
     ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
-9. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
+9. 新しいダッシュボードの上部で、**+ Add tile** を選択し、ダイアログで **Custom Streaming Data** を選択した後、**Next** を選択します。
 
     ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
 
-10. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
+10. **Contoso Auto IoT Events** データセットを選択し、**Next** を選択します。
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-11. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **engineTempAnomaly** from the dropdown. Select **Next**.
+11. **Card** ビジュアル化タイプを選択します。フィールドの下で **+ Add value** を選択後、ドロップダウンから**engineTempAnomaly** を選択します。**Next** を選択します。
 
     ![The engineTempAnomaly field is added.](media/power-bi-dashboard-add-tile-enginetempanomaly.png "Add a custom streaming data tile")
 
-12. Leave the values at their defaults for the tile details form, then select **Apply**.
+12. タイルの詳細フォームは規定値のままにして、**Apply** を選択します。
 
     ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
-13. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
+13. 新しいダッシュボードの上部で、**+ Add tile** を選択し、ダイアログで **Custom Streaming Data** を選択した後、**Next** を選択します。
 
     ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
 
-14. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
+14. **Contoso Auto IoT Events** データセットを選択し、**Next** を選択します。
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-15. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **aggressiveDriving** from the dropdown. Select **Next**.
+15. **Card** ビジュアル化タイプを選択します。フィールドの下で **+ Add value** を選択後、ドロップダウンから**aggressiveDriving** を選択します。**Next** を選択します。
 
     ![The aggressiveDriving field is added.](media/power-bi-dashboard-add-tile-aggressivedriving.png "Add a custom streaming data tile")
 
-16. Leave the values at their defaults for the tile details form, then select **Apply**.
+16. タイルの詳細フォームは規定値のままにして、**Apply** を選択します。
 
     ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
-17. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
+17. 新しいダッシュボードの上部で、**+ Add tile** を選択し、ダイアログで **Custom Streaming Data** を選択した後、**Next** を選択します。
 
     ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
 
-18. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
+18. **Contoso Auto IoT Events** データセットを選択し、**Next** を選択します。
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-19. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **refrigerationTempAnomaly** from the dropdown. Select **Next**.
+19. **Card** ビジュアル化タイプを選択します。フィールドの下で **+ Add value** を選択後、ドロップダウンから**refrigerationTempAnomaly** を選択します。**Next** を選択します。
 
     ![The refrigerationTempAnomaly field is added.](media/power-bi-dashboard-add-tile-refrigerationtempanomaly.png "Add a custom streaming data tile")
 
-20. Leave the values at their defaults for the tile details form, then select **Apply**.
+20. タイルの詳細フォームは規定値のままにして、**Apply** を選択します。
 
     ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
-21. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
+21. 新しいダッシュボードの上部で、**+ Add tile** を選択し、ダイアログで **Custom Streaming Data** を選択した後、**Next** を選択します。
 
     ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
 
-22. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
+22. **Contoso Auto IoT Events** データセットを選択し、**Next** を選択します。
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-23. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **eventCount** from the dropdown. Select **Next**.
+23. **Card** ビジュアル化タイプを選択します。フィールドの下で **+ Add value** を選択後、ドロップダウンから**eventCount** を選択します。**Next** を選択します。
 
     ![The eventCount field is added.](media/power-bi-dashboard-add-tile-eventcount.png "Add a custom streaming data tile")
 
-24. Leave the values at their defaults for the tile details form, then select **Apply**.
+24. タイルの詳細フォームは規定値のままにして、**Apply** を選択します。
 
     ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
-25. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
+25. 新しいダッシュボードの上部で、**+ Add tile** を選択し、ダイアログで **Custom Streaming Data** を選択した後、**Next** を選択します。
 
     ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
 
-26. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
+26. **Contoso Auto IoT Events** データセットを選択し、**Next** を選択します。
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-27. Select the **Line chart** Visualization Type. Under Axis, select **+ Add value**, then select **snapshot** from the dropdown. Under Values, select **+Add value**, then select **engineTemperature**. Leave the time window to display at 1 minute. Select **Next**.
+27. **Line chart** ビジュアル化タイプを選択します。軸の下で **+ Add value** を選択後、ドロップダウンから**snapshot** を選択します。値の下で **+ Add value** を選択後、**engineTemperature** を選択します。表示する時間枠は1分のままにします。**Next** を選択します。
 
     ![The engineTemperature field is added.](media/power-bi-dashboard-add-tile-enginetemperature.png "Add a custom streaming data tile")
 
-28. Leave the values at their defaults for the tile details form, then select **Apply**.
+28. タイルの詳細フォームは規定値のままにして、**Apply** を選択します。
 
     ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
-29. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
+29. 新しいダッシュボードの上部で、**+ Add tile** を選択し、ダイアログで **Custom Streaming Data** を選択した後、**Next** を選択します。
 
     ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
 
-30. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
+30. **Contoso Auto IoT Events** データセットを選択し、**Next** を選択します。
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-31. Select the **Line chart** Visualization Type. Under Axis, select **+ Add value**, then select **snapshot** from the dropdown. Under Values, select **+Add value**, then select **refrigerationUnitTemp**. Leave the time window to display at 1 minute. Select **Next**.
+31. **Line chart** ビジュアル化タイプを選択します。軸の下で **+ Add value** を選択後、ドロップダウンから**snapshot** を選択します。値の下で **+ Add value** を選択後、**refrigerationUnitTemp** を選択します。表示する時間枠は1分のままにします。**Next** を選択します。
 
     ![The refrigerationUnitTemp field is added.](media/power-bi-dashboard-add-tile-refrigerationunittemp.png "Add a custom streaming data tile")
 
-32. Leave the values at their defaults for the tile details form, then select **Apply**.
+32. タイルの詳細フォームは規定値のままにして、**Apply** を選択します。
 
     ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
-33. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
+33. 新しいダッシュボードの上部で、**+ Add tile** を選択し、ダイアログで **Custom Streaming Data** を選択した後、**Next** を選択します。
 
     ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
 
-34. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
+34. **Contoso Auto IoT Events** データセットを選択し、**Next** を選択します。
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-35. Select the **Line chart** Visualization Type. Under Axis, select **+ Add value**, then select **snapshot** from the dropdown. Under Values, select **+Add value**, then select **speed**. Leave the time window to display at 1 minute. Select **Next**.
+35. **Line chart** ビジュアル化タイプを選択します。軸の下で **+ Add value** を選択後、ドロップダウンから**snapshot** を選択します。値の下で **+ Add value** を選択後、**speed** を選択します。表示する時間枠は1分のままにします。**Next** を選択します。
 
     ![The speed field is added.](media/power-bi-dashboard-add-tile-speed.png "Add a custom streaming data tile")
 
-36. Leave the values at their defaults for the tile details form, then select **Apply**.
+36. タイルの詳細フォームは規定値のままにして、**Apply** を選択します。
 
     ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
-37. When you are done, rearrange the tiles as shown:
+37. 完了したら、タイルを以下のように置き直します:
 
     ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png "Power BI dashboard")
 
-38. If the data generator is finished sending events, you may notice that tiles on the dashboard are empty. If so, start the data generator again, this time selecting **option 1** for one vehicle. If you do this, the refrigeration temperature anomaly is guaranteed, and you will see the refrigeration unit temperature gradually climb above the 22.5 degree Fahrenheit alert threshold. Alternatively, you may opt to simulate more vehicles and observe the high event count numbers.
+38. データ ジェネレータがイベントの送信を完了すると、ダッシュボード上のタイルが空であることがわかります。その場合は、データジェネレータをもう一度起動し、今回は 1 台の車両に対して **option 1** を選択します。これを行う場合、冷凍温度異常が必ず発生し、冷凍ユニットの温度が華氏22.5度の警報閾値を徐々に上回ることがわかります。または、より多くの車両をシミュレートし、高いイベント数を観察することもできます。
 
     ![The live dashboard is shown with events.](media/power-bi-dashboard-live-results.png "Power BI dashboard")
 
-    After the generator starts sending vehicle telemetry, the dashboard should start working after a few seconds. In this screenshot, we are simulating 50 vehicles with 2,486 events in the last 10 seconds. You may see a higher or lower value for the `eventCount`, depending on the speed of your computer on which you are running the generator, your network speed and latency, and other factors.
+    ジェネレータが車両テレメトリの送信を開始すると、ダッシュボードは数秒後に動作を開始します。このスクリーンショットでは、過去 10 秒間に 2,486 件のイベントを含む 50 台の車両をシミュレートしています。ジェネレータを実行しているコンピュータの速度、ネットワークの速度と待機時間、およびその他の要因によっては、`eventCount` の値が高くなったり低くなったりすることがあります。
 
 ## Exercise 9: Run the predictive maintenance batch scoring
 
 **Duration**: 20 minutes
 
-In this exercise, you will import Databricks notebooks into your Azure Databricks workspace. A notebook is interactive and runs in any web browser, mixing markup (formatted text with instructions), executable code, and outputs from running the code.
+この演習では、Databricks ノートブックを Azure Databricks ワークスペースにインポートします。ノートブックは対話型で、任意の Web ブラウザで実行され、マークアップ (書式設定されたテキストと命令)、実行可能なコード、およびコードの実行による出力が混在します。
 
-Next, you will run the Batch Scoring notebook to make battery failure predictions on vehicles, using vehicle and trip data stored in Cosmos DB.
+次に、バッチ スコアリング ノートブックを実行して、Cosmos DB に格納されている車両とトリップ データを使用して、車両のバッテリ故障予測を行います。
 
 ### Task 1: Import lab notebooks into Azure Databricks
 
-In this task, you will import the Databricks notebooks into your workspace.
+このタスクでは、Databricks ノートブックをワークスペースにインポートします。
 
-1. In the [Azure portal](https://portal.azure.com), open your lab resource group, then open your **Azure Databricks Service**. The name should start with `iot-databricks`.
+1. [Azure portal](https://portal.azure.com) で、演習のリソースグループを開き、**Azure Databricks Service** を開きます。名前は `iot-databricks` で始まるはずです。
 
    ![The Azure Databricks Service is highlighted in the resource group.](media/resource-group-databricks.png 'Resource Group')
 
-2. Select **Launch Workspace**. Azure Databricks will automatically sign you in through its Azure Active Directory integration.
+2. **Launch Workspace** を選択します。Azure Databricks は Azure Active Directory が統合されているので自動的にサインインします。
 
    ![Launch Workspace](media/databricks-launch-workspace.png 'Launch Workspace')
 
-3. Select **Workspace**, select **Users**, select the dropdown to the right of your username, then select **Import**.
+3. **Workspace** を選択し **Users** を選択し、正しいユーザ名をドロップダウンから選択後、**Import** を選択します。
 
    ![The Import link is highlighted in the Workspace.](media/databricks-import-link.png 'Workspace')
 
-4. Select **URL** next to **Import from**, paste the following into the text box: `https://github.com/AzureCosmosDB/scenario-based-labs/blob/master/IoT/Notebooks/01%20IoT.dbc`, then select **Import**.
+4. **Import from** の隣にある **URL** を選択し、テキストボックスに以下をペーストします: `https://github.com/AzureCosmosDB/scenario-based-labs/blob/master/IoT/Notebooks/01%20IoT.dbc` 。その後、**Import** を選択します。
 
    ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
 
-5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks.
+5. インポート後、ユーザ名を選択します。`01 IoT` という名前の新しいフォルダが表示され、2つのノートブックが含まれています。
 
    ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
 
 ### Task 2: Run batch scoring notebook
 
-In this task, you will run the `Batch Scoring` notebook, using a pre-trained machine learning (ML) model to determine if the battery needs to be replaced on several vehicles within the next 30 days. The notebook performs the following actions:
+このタスクでは、事前にトレーニングされた機械学習 (ML) モデルを使用して、次の 30 日以内に複数の車両でバッテリを交換する必要があるかどうかを判断する `Batch Scoring` ノートブックを実行します。ノートブックは、次のアクションを実行します。
 
-1. Installs required Python libraries.
-2. Connects to Azure Machine Learning service (Azure ML).
-3. Downloads a pre-trained ML model, saves it to Azure ML, then uses that model for batch scoring.
-4. Uses the Cosmos DB Spark connector to retrieve completed Trips and Vehicle metadata from the `metadata` Cosmos DB container, prepares the data using SQL queries, then surfaces the data as temporary views.
-5. Applies predictions against the data, using the pre-trained model.
-6. Saves the prediction results in the Cosmos DB `maintenance` container for reporting purposes.
+1. 必要な Python ライブラリをインストールします。
+2. Azure Machine Learning service (Azure ML) に接続します。
+3. 事前にトレーニングされた ML モデルをダウンロードし、Azure ML に保存後、バッチ スコアリングにそのモデルを利用します。
+4. Cosmos DB Spark コネクタを使用して、完了したトリップと車両のメタデータを `metadata` Cosmos DB コンテナーから取得し、SQL クエリを使用してデータを準備し、データを一時ビューとして表示します。
+5. 事前にトレーニングされたモデルを使って、データに対する予測を適用します。
+6. レポートのために、Cosmos DB の `maintenance` コンテナーに予測結果を保存します。
 
-To run this notebook, perform the following steps:
+このノートブックを実行するには、以下の手順を実行します:
 
-1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
+1. Azure Databricks で **Workspace** を選択し、**Users** を選択後、ユーザ名を選択します。
 
-2. Select the `01 IoT` folder, then select the **Batch Scoring** notebook to open it.
+2. `01 IoT` フォルダを選択し、**Batch Scoring** ノートブックを選択し開きます。
 
    ![The Batch Scoring notebook is highlighted.](media/databricks-batch-scoring-notebook.png 'Workspace')
 
-3. Before you can execute the cells in this or the other notebooks for this lab, you must first attach your Databricks cluster. Expand the dropdown at the top of the notebook where you see **Detached**. Select your lab cluster to attach it to the notebook. If it is not currently running, you will see an option to start the cluster.
+3. この演習のこのノートブックまたはその他のノートブックでセルを実行する前に、まず Databricks クラスターをアタッチする必要があります。**Detached** が表示されるノートブックの上部にあるドロップダウンを展開します。ラボ クラスタを選択してノートブックにアタッチします。現在実行中でない場合は、クラスターを開始するオプションが表示されます。
 
    ![The screenshot displays the lab cluster selected for attaching to the notebook.](media/databricks-notebook-attach-cluster.png 'Attach cluster')
 
-4. You may use keyboard shortcuts to execute the cells, such as **Ctrl+Enter** to execute a single cell, or **Shift+Enter** to execute a cell and move to the next one below.
+4. キーボード ショートカットを使用して、**Ctrl+Enter** で単一のセルを実行したり、**Shift+ Enter** を使用してセルを実行して次のセルに移動したりできます。
 
-In both notebooks, you will be required to provide values for your Machine Learning service workspace. You can find these values within the Overview blade of your Machine Learning service workspace that is located in your lab resource group.
+どちらのノートブックでも、Machine Learning サービスワークスペースの値を提供する必要があります。これらの値は、ラボ リソース グループにある Machine Learning サービス ワークスペースの概要ブレードに表示されます。
 
-The values highlighted in the screenshot below are for the following variables in the notebooks:
+次のスクリーンショットで強調表示されている値は、ノートブック内の次の変数に対するものです。
 
 1. `subscription_id`
 2. `resource_group`
@@ -2044,73 +2044,73 @@ The values highlighted in the screenshot below are for the following variables i
 
 ![The required values are highlighted.](media/machine-learning-workspace-values.png "Machine Learning service workspace values")
 
-> If you wish to execute this notebook on a scheduled basis, such as every evening, you can use the Jobs feature in Azure Databricks to accomplish this.
+> このノートブックを「毎晩」のように定期的に実行する場合は、Azure Databricks のジョブ機能を使用してこれを実現できます。
 
 ## Exercise 10: Deploy the predictive maintenance web service
 
 **Duration**: 20 minutes
 
-In addition to batch scoring, Contoso Auto would like to predict battery failures on-demand in real time for any given vehicle. They want to be able to call the model from their Fleet Management website when looking at a vehicle to predict whether that vehicle's battery may fail in the next 30 days.
+バッチスコアリングに加えて、Contoso Autoは特定の車両のバッテリ故障をリアルタイムで予測したいと考えています。車両を見て、その車両のバッテリーが今後30日以内に故障するかどうかを予測する際に、フリート管理のウェブサイトからモデルを呼び出すことができるようにしたいと考えています。
 
-In the previous task, you executed a notebook that used a pre-trained ML model to predict battery failures for all vehicles with trip data in a batch process. But how do you take that same model and deploy it (in data science terms, this is called "operationalization") to a web service for this purpose?
+前のタスクでは、事前にトレーニングされた ML モデルを使用して、バッチ プロセスでトリップ データを持つすべての車両のバッテリ障害を予測するノートブックを実行しました。しかし、同じモデルを使用して、この目的のために(データ サイエンス用語では "operationalization" と呼ばれます) を Web サービスに展開するにはどうすればよいでしょうか。
 
-In this task, you will run the `Model Deployment` notebook to deploy the pre-trained model to a web service hosted by Azure Container Instances (ACI), using your Azure ML workspace. While it is possible to deploy the model to a web service running in Azure Kubernetes Service (AKS), we are deploying to ACI instead since doing so saves 10-20 minutes. However, once deployed, the process used to call the web service is the same, as are most of the steps to do the deployment.
+このタスクでは、Azure ML ワークスペースを使用して、事前トレーニング済みのモデルを Azure Container Instances (ACI) がホストする Web サービスにデプロイする `Model Deployment` ノートブックを実行します。Azure Kubernetes Service (AKS) で実行されている Web サービスにモデルをデプロイすることは可能ですが、10 ~ 20 分を節約できるため、代わりに ACI にデプロイしています。ただし、展開後は、Web サービスの呼び出しに使用されるプロセスは同じであり、展開を実行する手順のほとんどと同じです。
 
 ### Task 1: Run deployment notebook
 
-To run this notebook, perform the following steps:
+このノートブックを実行するには、以下の手順を実行します:
 
-1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
+1. Azure Databricks で **Workspace** を選択し、**Users** を選択後、ユーザ名を選択します。
 
-2. Select the `01 IoT` folder, then select the **Model Deployment** notebook to open it.
+2. `01 IoT` フォルダを選択し、**Model Deployment** ノートブックを選択し開きます。
 
    ![The Model Deployment notebook is highlighted.](media/databricks-model-deployment-notebook.png 'Workspace')
 
-3. As with the Batch Scoring notebook, be sure to attach your lab cluster before executing cells.
+3. Batch Scoring ノートブックと同様に、セルを実行する前にラボのクラスターがアタッチされていることを確認してください。
 
-4. **After you are finished running the notebook**, open the Azure Machine Learning service workspace in the portal, then select **Models** in the left-hand menu to view the pre-trained model.
+4. **ノートブックの実行が完了したら**、ポータルで Azure Machine Learning service のワークスペースを開き、左側のメニューから **Models** を選択し、事前にトレーニングされたモデルを表示します。
 
    ![The models blade is displayed in the AML service workspace.](media/aml-models.png 'Models')
 
-5. Select **Deployments** in the left-hand menu, then select the Azure Container Instances deployment that was created when you ran the notebook.
+5. 左側のメニューから **Deployments** を選択し、ノートブックを実行した時に作成された Azure Container Instances のデプロイを選択します。
 
     ![The deployments blade is displayed in the AML service workspace.](media/aml-deployments.png "Deployments")
 
-6. Copy the **Scoring URI** value. This will be used by the deployed web app to request predictions in real time.
+6. **Scoring URI** の値をコピーします。これはデプロイされたWeb Appが利用し、リアルタイムの予測をリクエストするのに使います。
 
     ![The deployment's scoring URI is highlighted.](media/aml-deployment-scoring-uri.png "Scoring URI")
 
 ### Task 2: Call the deployed scoring web service from the Web App
 
-Now that the web service is deployed to ACI, we can call it to make predictions from the Fleet Management Web App. To enable this capability, we first need to update the Web App's application configuration settings with the scoring URI.
+Web サービスが ACI にデプロイされたため、フリート管理 Web App から予測を行うために Web サービスを呼び出すことができます。この機能を有効にするには、まずスコア付け URI を使用して Web App のアプリケーション構成設定を更新する必要があります。
 
-1. Make sure you have copied the Scoring URI of your deployed service, as instructed in the previous task.
+1. 前のタスクで指示のあったら、デプロイされたサービスからスコア付け URI をコピーしたことを確認します。
 
-2. Open the Web App (App Service) whose name begins with **IoTWebApp**.
+2. 名前が **IoTWebApp** で始まる Web App (App Service) を開きます。
 
-3. Select **Configuration** in the left-hand menu.
+3. 左側のメニューから **Configuration** を選択します。
 
-4. Scroll to the **Application settings** section then select **+ New application setting**.
+4. **Application settings** セクションをスクロールして、**+ New application setting** を選択します。
 
-5. In the Add/Edit application setting form, enter `ScoringUrl` for the **Name**, and paste the web service URI you copied and paste it in the **Value** field. Select **OK** to add the setting.
+5. アプリケーションの Add/Edit フォームで、**Name** に `ScoringUrl` と入力し、コピーした Web サービス URI を貼り付けて **Value** フィールドに貼り付けます。設定を追加するには、**OK** を選択します。
 
     ![The form is filled in with the previously described values.](media/app-setting-scoringurl.png "Add/Edit application setting")
 
-6. Select **Save** to save your new application setting.
+6. **Save** を選択し、新しいアプリケーション設定を保存します。
 
-7. Go back to the **Overview** blade for the Web App, then select **Restart**.
+7. Web App の **Overview** ブレードに戻り、**Restart** を選択します。
 
-8. Navigate to the deployed Fleet Management web app and open a random Vehicle record. Select **Predict battery failure**, which calls your deployed scoring web service and makes a prediction for the vehicle.
+8. デプロイされたフリート管理 Web App に移動し、適当な車両レコードを開きます。**Predict battery failure** を選択すると、展開されたスコアリング Web サービスを呼び出し、車両の予測を行います。
 
     ![The prediction results show that the battery is not predicted to fail in the next 30 days.](media/web-prediction-no.png "Vehicle details with prediction")
 
-    This vehicle has a low number of **Lifetime cycles used**, compared to the battery's rated 200 cycle lifespan. The model predicted that the battery will not fail within the next 30 days.
+    この車両は、バッテリーの定格200サイクルの寿命と比較して、**Lifetime cycles used** の数が低いです。モデルは、バッテリーが次の30日以内に故障しないと予測しました。
 
-9. Look through the list of vehicles to find one whose **Lifetime cycles used** value is closer to 200, then make the prediction for the vehicle.
+9. 車両のリストを調べ、**Lifetime cycles used** 値が200に近い車両を見つけ、車両の予測を行います。
 
     ![The prediction results show that the battery is is predicted to fail in the next 30 days.](media/web-prediction-yes.png "Vehicle details with prediction")
 
-    This vehicle has a high number of **Lifetime cycles used**, which is closer to the battery's rated 200 cycle lifespan. The model predicted that the battery will fail within the next 30 days.
+    この車両は、**Lifetime cycles used** の数が大きく、バッテリの定格200サイクル寿命に近いです。モデルは、バッテリーが次の30日以内に故障すると予測しました。
 
 ## Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI
 
