@@ -86,7 +86,7 @@ Contoso Auto は、車両とパッケージのテレメトリ データを収集
 
 ## Solution architecture
 
-この実習ラボで構築するソリューション アーキテクチャの図を次に示します。さまざまなコンポーネントに取り組んでいる場合は、ソリューション全体を理解できるように、慎重に検討してください。
+この演習で構築するソリューション アーキテクチャの図を次に示します。さまざまなコンポーネントに取り組んでいる場合は、ソリューション全体を理解できるように、慎重に検討してください。
 
 ![A diagram showing the components of the solution is displayed.](media/solution-architecture.png 'Solution Architecture')
 
@@ -131,7 +131,7 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 ソリューションの開発を開始する前に、Azure でいくつかのリソースをプロビジョニングする必要があります。クリーンアップを容易にするために、すべてのリソースが同じリソース グループを使用していることを確認します。
 
-この実習では、生成された車両、委託、パッケージ、およびトリップデータの送信と処理を開始できるように、ラボ環境を構成します。まず、Cosmos DB データベースとコンテナーを作成し、新しいLogic Appを作成し、電子メール通知を送信するワークフローを作成し、ソリューションをリアルタイム監視するための Application Insights サービスを作成してから、ソリューションのアプリケーション設定 (接続文字列など)で使用されるシークレットを取得し、それらを Azure Key Vault に安全に保存し、最終的に Azure Databricks 環境を構成します。
+この実習では、生成された車両、委託、パッケージ、およびトリップデータの送信と処理を開始できるように、演習環境を構成します。まず、Cosmos DB データベースとコンテナーを作成し、新しいLogic Appを作成し、電子メール通知を送信するワークフローを作成し、ソリューションをリアルタイム監視するための Application Insights サービスを作成してから、ソリューションのアプリケーション設定 (接続文字列など)で使用されるシークレットを取得し、それらを Azure Key Vault に安全に保存し、最終的に Azure Databricks 環境を構成します。
 
 ### Task 1: Create Cosmos DB database and container
 
@@ -2027,13 +2027,13 @@ Function Apps のヘルスチェックが失敗した場合、データ ジェ�
 
    ![The Batch Scoring notebook is highlighted.](media/databricks-batch-scoring-notebook.png 'Workspace')
 
-3. この演習のこのノートブックまたはその他のノートブックでセルを実行する前に、まず Databricks クラスターをアタッチする必要があります。**Detached** が表示されるノートブックの上部にあるドロップダウンを展開します。ラボ クラスタを選択してノートブックにアタッチします。現在実行中でない場合は、クラスターを開始するオプションが表示されます。
+3. この演習のこのノートブックまたはその他のノートブックでセルを実行する前に、まず Databricks クラスターをアタッチする必要があります。**Detached** が表示されるノートブックの上部にあるドロップダウンを展開します。演習 クラスターを選択してノートブックにアタッチします。現在実行中でない場合は、クラスターを開始するオプションが表示されます。
 
    ![The screenshot displays the lab cluster selected for attaching to the notebook.](media/databricks-notebook-attach-cluster.png 'Attach cluster')
 
 4. キーボード ショートカットを使用して、**Ctrl+Enter** で単一のセルを実行したり、**Shift+ Enter** を使用してセルを実行して次のセルに移動したりできます。
 
-どちらのノートブックでも、Machine Learning サービスワークスペースの値を提供する必要があります。これらの値は、ラボ リソース グループにある Machine Learning サービス ワークスペースの概要ブレードに表示されます。
+どちらのノートブックでも、Machine Learning サービスワークスペースの値を提供する必要があります。これらの値は、演習のリソース グループにある Machine Learning サービス ワークスペースの概要ブレードに表示されます。
 
 次のスクリーンショットで強調表示されている値は、ノートブック内の次の変数に対するものです。
 
@@ -2066,7 +2066,7 @@ Function Apps のヘルスチェックが失敗した場合、データ ジェ�
 
    ![The Model Deployment notebook is highlighted.](media/databricks-model-deployment-notebook.png 'Workspace')
 
-3. Batch Scoring ノートブックと同様に、セルを実行する前にラボのクラスターがアタッチされていることを確認してください。
+3. Batch Scoring ノートブックと同様に、セルを実行する前に演習のクラスターがアタッチされていることを確認してください。
 
 4. **ノートブックの実行が完了したら**、ポータルで Azure Machine Learning service のワークスペースを開き、左側のメニューから **Models** を選択し、事前にトレーニングされたモデルを表示します。
 
@@ -2116,25 +2116,25 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
 **Duration**: 15 minutes
 
-In this lab, you will import a Power BI report that has been created for you. After opening it, you will update the data source to point to your Power BI instance.
+この演習では、作成済みの Power BI レポートをインポートします。それを開いた後、Power BI インスタンスを指すデータ ソースを更新します。
 
 ### Task 1: Import report in Power BI Desktop
 
-1. Open **Power BI Desktop**, then select **Open other reports**.
+1. **Power BI Desktop** を開き、**Open other reports** を選択します。
 
     ![The Open other reports link is highlighted.](media/pbi-splash-screen.png "Power BI Desktop")
 
-2. In the Open report dialog, browse to `C:\cosmos-db-scenario-based-labs-master\IoT\Reports`, then select **FleetReport.pbix**. Click **Open**.
+2. レポートを開くダイアログで、`C:\cosmos-db-scenario-based-labs-master\IoT\Reports` を表示し、**FleetReport.pbix** を選択します。**Open** をクリックします。
 
     ![The FleetReport.pbix file is selected in the dialog.](media/pbi-open-report.png "Open report dialog")
 
 ### Task 2: Update report data sources
 
-1. After the report opens, click on **Edit Queries** in the ribbon bar within the Home tab.
+1. レポートを開いたら、ホームタブのリボンバーにある **Edit Queries** をクリックします。
 
     ![The Edit Queries button is highlighted.](media/pbi-edit-queries-button.png "Edit Queries")
 
-2. Select **Trips** in the Queries list on the left, then select **Source** under Applied Steps. Click the gear icon next to Source.
+2. 左にあるクエリーのリストから **Trips** を選択し、Applied Stepsの下にある **Source** を選択します。Sourceの隣にある歯車のアイコンをクリックします。
 
     ![The Trip query is selected and the source configuration icon is highlighted.](media/pbi-queries-trips-source.png "Edit Queries")
 
