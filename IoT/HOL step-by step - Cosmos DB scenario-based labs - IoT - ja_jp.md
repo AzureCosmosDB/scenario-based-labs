@@ -2245,11 +2245,11 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
     ![The maintenance page is displayed.](media/pbi-maintenance-tab.png "Maintenance")
 
-6. If at any time you have a number of filters set and you cannot see records, **Ctrl+Click** the **Clear Filters** button on the main report page (Trip/Consignments).
+6. フィルタがいくつも設定されており、レコードが表示できない場合は、メインレポートページ(Trip/Consignments)の **Clear Filters** ボタンを **Ctrl+Click** してください。
 
     ![The Clear Filters button is highlighted.](media/pbi-clear-filters.png "Clear Filters")
 
-7. If your data generator is running while viewing the report, you can update the report with new data by clicking the **Refresh** button at any time.
+7. レポートの表示中にデータ ジェネレータが実行されている場合は、**Refresh** ボタンをクリックして、いつでも新しいデータでレポートを更新できます。
 
     ![The refresh button is highlighted.](media/pbi-refresh.png "Refresh")
 
@@ -2257,14 +2257,14 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
 **Duration**: 10 mins
 
-In this exercise, you will delete any Azure resources that were created in support of the lab. You should follow all steps provided after attending the Hands-on lab to ensure your account does not continue to be charged for lab resources.
+この演習では、演習のサポートとして作成された Azure リソースを削除します。ハンズオン ラボに参加した後に提供されるすべての手順に従って、アカウントが演習リソースに対して引き続き課金されないようにする必要があります。
 
 ### Task 1: Delete the resource group
 
-1. Using the [Azure portal](https://portal.azure.com), navigate to the Resource group you used throughout this hands-on lab by selecting Resource groups in the left menu.
+1. [Azure portal](https://portal.azure.com) を使い、左側のメニューからリソースグループを選択して、このハンズオンで使ったリソースグループに移動します。
 
-2. Search for the name of your resource group, and select it from the list.
+2. リソースグループの名前を検索し、一覧から選択します。
 
-3. Select Delete in the command bar, and confirm the deletion by re-typing the Resource group name, and selecting Delete.
+3. コマンド バーで Delete を選択し、リソース グループ名を再入力して削除を確認し、Delete を選択します。
 
-You should follow all steps provided _after_ attending the Hands-on lab.
+_after_ attending the Hands-on lab で提供される全ての手順に従ってください。
