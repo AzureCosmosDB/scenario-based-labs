@@ -2027,7 +2027,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
    ![The Batch Scoring notebook is highlighted.](media/databricks-batch-scoring-notebook.png 'Workspace')
 
-3. この演習のこのノートブックまたはその他のノートブックでセルを実行する前に、まず Databricks クラスターをアタッチする必要があります。**Detached** が表示されるノートブックの上部にあるドロップダウンを展開します。演習 クラスターを選択してノートブックにアタッチします。現在実行中でない場合は、クラスターを開始するオプションが表示されます。
+3. この演習のこのノートブックまたはその他のノートブックでセルを実行する前に、まず Databricks クラスターをアタッチする必要があります。**Detached** が表示されるノートブックの上部にあるドロップダウンを展開します。lab クラスターを選択してノートブックにアタッチします。現在実行中でない場合は、クラスターを開始するオプションが表示されます。
 
    ![The screenshot displays the lab cluster selected for attaching to the notebook.](media/databricks-notebook-attach-cluster.png 'Attach cluster')
 
@@ -2050,7 +2050,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
 **Duration**: 20 minutes
 
-バッチスコアリングに加えて、Contoso Autoは特定の車両のバッテリー故障をリアルタイムで予測したいと考えています。車両を見て、その車両のバッテリーが今後30日以内に故障するかどうかを予測する際に、フリート管理のウェブサイトからモデルを呼び出すことができるようにしたいと考えています。
+バッチスコアリングに加えて、Contoso Auto は特定の車両のバッテリー故障をリアルタイムで予測したいと考えています。車両を見て、その車両のバッテリーが今後 30 日以内に故障するかどうかを予測する際に、フリート管理のウェブサイトからモデルを呼び出すことができるようにしたいと考えています。
 
 前のタスクでは、事前にトレーニングされた ML モデルを使用して、バッチ プロセスでトリップ データを持つすべての車両のバッテリー障害を予測するノートブックを実行しました。しかし、同じモデルを使用して、この目的のために(データ サイエンス用語では "operationalization" と呼ばれます) を Web サービスに展開するにはどうすればよいでしょうか。
 
@@ -2066,7 +2066,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
    ![The Model Deployment notebook is highlighted.](media/databricks-model-deployment-notebook.png 'Workspace')
 
-3. Batch Scoring ノートブックと同様に、セルを実行する前に演習のクラスターがアタッチされていることを確認してください。
+3. Batch Scoring ノートブックと同様に、セルを実行する前に lab クラスターがアタッチされていることを確認してください。
 
 4. **ノートブックの実行が完了したら**、ポータルで Azure Machine Learning service のワークスペースを開き、左側のメニューから **Models** を選択し、事前にトレーニングされたモデルを表示します。
 
@@ -2076,13 +2076,13 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ![The deployments blade is displayed in the AML service workspace.](media/aml-deployments.png "Deployments")
 
-6. **Scoring URI** の値をコピーします。これはデプロイされたWeb Appが利用し、リアルタイムの予測をリクエストするのに使います。
+6. **Scoring URI** の値をコピーします。これはデプロイされた Web App が利用し、リアルタイムの予測をリクエストするのに使います。
 
     ![The deployment's scoring URI is highlighted.](media/aml-deployment-scoring-uri.png "Scoring URI")
 
 ### Task 2: Call the deployed scoring web service from the Web App
 
-Web サービスが ACI にデプロイされたため、フリート管理 Web App から予測を行うために Web サービスを呼び出すことができます。この機能を有効にするには、まずスコア付け URI を使用して Web App のアプリケーション構成設定を更新する必要があります。
+Web サービスが ACI にデプロイされたので、フリート管理 Web App から予測を行うために Web サービスを呼び出すことができます。この機能を有効にするには、まずスコア付け URI を使用して Web App のアプリケーション構成設定を更新する必要があります。
 
 1. 前のタスクで指示のあったら、デプロイされたサービスからスコア付け URI をコピーしたことを確認します。
 
@@ -2092,7 +2092,7 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
 4. **Application settings** セクションをスクロールして、**+ New application setting** を選択します。
 
-5. アプリケーションの Add/Edit フォームで、**Name** に `ScoringUrl` と入力し、コピーした Web サービス URI を貼り付けて **Value** フィールドに貼り付けます。設定を追加するには、**OK** を選択します。
+5. Add/Edit application setting フォームで、**Name** に `ScoringUrl` と入力し、コピーした Web サービス URI を貼り付けて **Value** フィールドに貼り付けます。設定を追加するには、**OK** を選択します。
 
     ![The form is filled in with the previously described values.](media/app-setting-scoringurl.png "Add/Edit application setting")
 
@@ -2104,13 +2104,13 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
     ![The prediction results show that the battery is not predicted to fail in the next 30 days.](media/web-prediction-no.png "Vehicle details with prediction")
 
-    この車両は、バッテリーの定格200サイクルの寿命と比較して、**Lifetime cycles used** の数が低いです。モデルは、バッテリーが次の30日以内に故障しないと予測しました。
+    この車両は、バッテリーの定格 200 サイクルの寿命と比較して、**Lifetime cycles used** の値が低いです。モデルは、バッテリーが次の 30 日以内に故障しないと予測しました。
 
-9. 車両のリストを調べ、**Lifetime cycles used** 値が200に近い車両を見つけ、車両の予測を行います。
+9. 車両のリストを調べ、**Lifetime cycles used** 値が 200 に近い車両を見つけ、車両の予測を行います。
 
     ![The prediction results show that the battery is is predicted to fail in the next 30 days.](media/web-prediction-yes.png "Vehicle details with prediction")
 
-    この車両は、**Lifetime cycles used** の数が大きく、バッテリーの定格200サイクル寿命に近いです。モデルは、バッテリーが次の30日以内に故障すると予測しました。
+    この車両は、**Lifetime cycles used** の値が大きく、バッテリーの定格 200 サイクル寿命に近いです。モデルは、バッテリーが次の 30 日以内に故障すると予測しました。
 
 ## Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI
 
@@ -2134,7 +2134,7 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
     ![The Edit Queries button is highlighted.](media/pbi-edit-queries-button.png "Edit Queries")
 
-2. 左にあるクエリーのリストから **Trips** を選択し、Applied Stepsの下にある **Source** を選択します。Sourceの隣にある歯車のアイコンをクリックします。
+2. 左にあるクエリーのリストから **Trips** を選択し、Applied Stepsの下にある **Source** を選択します。Source の隣にある歯車のアイコンをクリックします。
 
     ![The Trip query is selected and the source configuration icon is highlighted.](media/pbi-queries-trips-source.png "Edit Queries")
 
@@ -2171,7 +2171,7 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
     ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
 
-5. しばらくすると、**Document** という名前のテーブルが表示され、その値がレコードである複数の行があります。これは、Power BI が JSON ドキュメントの表示方法を知らないためです。ドキュメントを展開する必要があります。ドキュメントを展開した後、数値フィールドと日付フィールドのデータ型を既定の文字列型から変更して、レポートで集計関数を実行できるようにします。これらの手順は既に適用されています。Applied Steps の下にある **Changed Type** ステップを選択して、列と変更されたデータ型を表示します。
+5. しばらくすると、**Document** という名前のテーブルが表示され、その値が Record である複数の行が表示されます。これは、Power BI が JSON ドキュメントの表示方法を知らないためです。ドキュメントを展開する必要があります。ドキュメントを展開した後、数値フィールドと日付フィールドのデータ型を既定の文字列型から変更して、レポートで集計関数を実行できるようにします。これらの手順は既に適用されています。Applied Steps の下にある **Changed Type** ステップを選択して、列と変更されたデータ型を表示します。
 
     ![The Trips table shows Record in each row.](media/pbi-queries-trips-updated.png "Queries")
 
@@ -2245,7 +2245,7 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
     ![The maintenance page is displayed.](media/pbi-maintenance-tab.png "Maintenance")
 
-6. フィルタがいくつも設定されており、レコードが表示できない場合は、メインレポートページ(Trip/Consignments)の **Clear Filters** ボタンを **Ctrl+Click** してください。
+6. フィルタがいくつも設定されており、レコードが表示できない場合は、メインレポートページ (Trip / Consignments) の **Clear Filters** ボタンを **Ctrl+Click** してください。
 
     ![The Clear Filters button is highlighted.](media/pbi-clear-filters.png "Clear Filters")
 
