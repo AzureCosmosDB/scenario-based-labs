@@ -601,11 +601,11 @@ Azure Key Vault は、トークン、パスワード、証明書、API キー、
 - Azure Functions アプリケーションと Web App が vault から読み出せるようにシステム割り当て済みのマネージIDを作成する。
 - これらのアプリケーションの ID に割り当てられる、"Get" シークレットパーミッション付きで Key Vault でアクセスポリシーを作成する。
 
-1. Key Vaultで、左側のメニューから **Secrets** を選択し、**+ Generate/Import** を選択して新しいシークレットを作成します。
+1. Key Vault で、左側のメニューから **Secrets** を選択し、**+ Generate/Import** を選択して新しいシークレットを作成します。
 
    ![The Secrets menu item is highlighted, and the Generate/Import button is selected.](media/key-vault-secrets-generate.png 'Key Vault Secrets')
 
-2. 以下の表を使って、Name / Valueのペアでシークレットを作成します。各シークレットで必要なのは **Name** と **Value** フィールのみで、他のフィールドは規定値のままにしておきます。
+2. 以下の表を使って、Name / Value のペアでシークレットを作成します。各シークレットで必要なのは **Name** と **Value** フィールドのみで、他のフィールドは規定値のままにしておきます。
 
    | **Name**            |                                                                          **Value**                                                                          |
    | ------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -1396,7 +1396,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![The HealthCheck function is selected and the Get function URL link is highlighted.](media/portal-cosmos-function-healthcheck.png "HealthCheck function")
 
-6. **Copy the URL** して、後の演習用に Notepad か同等のテキストエディタに保存します。
+6. **URL をコピーして**、後の演習用に Notepad か同等のテキストエディタに保存します。
 
     ![The HealthCheck URL is highlighted.](media/portal-cosmos-function-healthcheck-url.png "Get function URL")
 
@@ -1408,7 +1408,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![The HealthCheck function is selected and the Get function URL link is highlighted.](media/portal-stream-function-healthcheck.png "HealthCheck")
 
-3. **Copy the URL** して、続く演習用に Notepad か同等のテキストエディタに保存します。
+3. **URL をコピーして**、続く演習用に Notepad か同等のテキストエディタに保存します。
 
     ![The HealthCheck URL is highlighted.](media/portal-stream-function-healthcheck-url.png "Get function URL")
 
@@ -1427,7 +1427,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 1. IoT デバイスは、IoT Hub 接続文字列を使用して車両に登録され、デバイス ID を車両の VIN に設定します。これにより、生成されたデバイス キーが返されます。
 2. 新しいシミュレートされた車両インスタンス(`SimulatedVehicle`)がシミュレートされた車両のコレクションに追加され、それぞれが AMQP デバイスとして機能し、委託の荷物の配送をシミュレートするトリップ レコードが割り当てられます。これらの車両は、冷凍ユニットが故障するようにランダムに選択され、そのうちのいくつかは、他の車両が徐々に失敗しながら、ランダムにすぐに失敗します。
 3. シミュレートされた車両は、独自の AMQP デバイス インスタンスを作成し、独自のデバイス ID (VIN) と生成されたデバイス キーを使用して IoT Hub に接続します。
-4. シミュレートされた車両は、トリップレコードによって確立されたマイル数に達するか、キャンセルトークンを受け取ることによってトリップを完了するまで、IoT Hubへの接続を介して車両テレメトリ情報を継続的に送信します。
+4. シミュレートされた車両は、トリップレコードによって確立されたマイル数に達するか、キャンセルトークンを受け取ることによってトリップを完了するまで、IoT Hub への接続を介して車両テレメトリ情報を継続的に送信します。
 
 ### Task 1: Open the data generator project
 
@@ -1498,7 +1498,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     コードの上部セクションでは、`appsettings.json` または環境変数で定義されている接続文字列を使用して、新しい `CosmosClient` をインスタンス化します。ブロック内の最初の呼び出しは `InitializeCosmosDb()` です。この方法については後で説明しますが、Cosmos DB アカウントに存在しない場合は、Cosmos DB データベースとコンテナーを作成する必要があります。次に、.NET Cosmos DB SDK の v3 バージョンが、CRUD やメンテナンス情報などのコンテナーに対する操作に使用する新しい `Container` インスタンスを作成します。たとえば、コンテナーで `ReadThroughputAsync` を呼び出して現在のスループット (RU/s) を取得し、シミュレートしている車両の数に基づいて、コンテナーからトリップ ドキュメントを読み取るために `GetTripsFromDatabase` に渡します。このメソッドでは、データが現在存在するかどうかをチェックする `SeedDatabase` メソッドを呼び出し、そうでない場合は `DataGenerator` クラス (`DataGenerator.cs` ファイル) のメソッドを呼び出して、車両、委託、小包、およびトリップを生成し、`BulkImporter` クラス (`BulkImporter.cs` ファイル) を使用して一括使用します。この `SeedDatabase` メソッドは、一括インポートの前にスループット (RU/s) を 50,000 に調整し、データ シードが完了した後に 15,000 に戻す `Container` インスタンスで次を実行します: `await container.ReplaceThroughputAsync(desiredThroughput);`
 
-    `try/catch` ブロックは `SetupVehicleTelemetryRunTasks` を呼び出し、シミュレートされた車両ごとにIoTデバイスインスタンスを登録し、作成した各 `SimulateVehicle` インスタンスからタスクをロードします。`Task.WhenAll` を使用して、保留中のすべてのタスク(シミュレートされた車両トリップ)が完了していることを確認し、完了したタスクを `_runningvehiclevehicleTasks` リストから削除します。取り消しトークンは、コンソールでキャンセル コマンド (`Ctrl+C` または `Ctrl キー+Break`) を発行した場合に、実行中のすべてのタスクを取り消すために使用されます。
+    `try/catch` ブロックは `SetupVehicleTelemetryRunTasks` を呼び出し、シミュレートされた車両ごとに IoT デバイスインスタンスを登録し、作成した各 `SimulateVehicle` インスタンスからタスクをロードします。`Task.WhenAll` を使用して、保留中のすべてのタスク(シミュレートされた車両トリップ)が完了していることを確認し、完了したタスクを `_runningvehiclevehicleTasks` リストから削除します。取り消しトークンは、コンソールでキャンセル コマンド (`Ctrl+C` または `Ctrl キー+Break`) を発行した場合に、実行中のすべてのタスクを取り消すために使用されます。
 
 2. `InitializeCosmosDb()` メソッドが見つかるまで `Program.cs` ファイルを下にスクロールします。ここで以下のコードを参照します:
 
@@ -1557,11 +1557,11 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     }
     ```
 
-    このメソッドは、まだ存在しない場合は Cosmos DB データベースを作成し、それ以外の場合は、そのデータベースへの参照を取得します (`await _cosmosDbClient.CreateDatabaseIfNotExistAsync(DatabaseName);`)。次に、`telemetry`、`metadata`、および `maintenance` コンテナーの `ContainerProperty` を作成します。`ContainerProperties` オブジェクトでは、コンテナーのインデックス作成ポリシーを指定できます。コンテナーの読み出し負荷の高いワークロードであり、より大きな数のパスによる恩恵があるので `metadata` と `maintenance` にはデフォルトのインデックスポリシーが使用されますが、`telemetry` のインデックスポリシーでは全てのパスが除外され、クエリーするのに必要なだけのパスが追加されます。これはコンテナーの書き込み負荷が高いワークロードだからです。`telemetry` コンテナーには15,000 RU/sが割り当てられ、`metadata` には50,000 RU/sが最初の一括インポート用に割り当てられた後 15,000 にスケールダウンされ、`maintenance` は 400 にスケールダウンされます。
+    このメソッドは、まだ存在しない場合は Cosmos DB データベースを作成し、それ以外の場合は、そのデータベースへの参照を取得します (`await _cosmosDbClient.CreateDatabaseIfNotExistAsync(DatabaseName);`)。次に、`telemetry`、`metadata`、および `maintenance` コンテナーの `ContainerProperty` を作成します。`ContainerProperties` オブジェクトでは、コンテナーのインデックス作成ポリシーを指定できます。コンテナーの読み出し負荷の高いワークロードであり、より大きな数のパスによる恩恵があるので `metadata` と `maintenance` にはデフォルトのインデックスポリシーが使用されますが、`telemetry` のインデックスポリシーでは全てのパスが除外され、クエリーするのに必要なだけのパスが追加されます。これはコンテナーの書き込み負荷が高いワークロードだからです。`telemetry` コンテナーには 15,000 RU/s が割り当てられ、`metadata` には 50,000 RU/s が最初の一括インポート用に割り当てられた後 15,000 にスケールダウンされ、`maintenance` は 400 にスケールダウンされます。
 
 ### Task 3: Update application configuration
 
-データ ジェネレーターを正常に実行する前に、2 つの接続文字列が必要です; IoT Hub 接続文字列と Cosmos DB 接続文字列。IoT Hub 接続文字列は、IoT Hub で **Shared access policies** を選択し、**iothubowner** ポリシーを選択し、**Connection string--primary key** 値をコピーすることで見つけることができます。これは、前にコピーしたEvent Hub互換のエンドポイント接続文字列とは異なります。
+データ ジェネレーターを正常に実行する前に、2 つの接続文字列が必要です; IoT Hub 接続文字列と Cosmos DB 接続文字列。IoT Hub 接続文字列は、IoT Hub で **Shared access policies** を選択し、**iothubowner** ポリシーを選択し、**Connection string--primary key** 値をコピーすることで見つけることができます。これは、前にコピーした Event Hub 互換のエンドポイント接続文字列とは異なります。
 
 ![The iothubowner shared access policy is displayed.](media/iot-hub-connection-string.png "IoT Hub shared access policy")
 
@@ -1569,7 +1569,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 2. **IOT_HUB_CONNECTION_STRING** キーの次に、引用符で囲まれた IoT Hub 接続文字列をペーストします。**COSMOS_DB_CONNECTION_STRING** キーの次に、引用符で囲まれた CosmosDB 接続文字列をペーストします。
 
-3. データ ジェネレーターには、両方の Function App にある `HealthCheck` 関数の前の演習でコピーしたヘルスチェック URL も必要です。**COSMOS_PROCESSING_FUNCTION_HEALTHCHECK_URL** キーの次に、引用符で囲まれた CosmosDB 処理 Function Appの `HealthCheck` 関数のURLをペーストします。**STREAM_PROCESSING_FUNCTION_HEALTHCHECK_URL** キーの次に、引用符で囲まれたストリーム処理 Function App の `HealthCheck` 関数のURLをペーストします。
+3. データ ジェネレーターには、両方の Function App にある `HealthCheck` 関数の前の演習でコピーしたヘルスチェック URL も必要です。**COSMOS_PROCESSING_FUNCTION_HEALTHCHECK_URL** キーの次に、引用符で囲まれた CosmosDB 処理 Function App の `HealthCheck` 関数の URL をペーストします。**STREAM_PROCESSING_FUNCTION_HEALTHCHECK_URL** キーの次に、引用符で囲まれたストリーム処理 Function App の `HealthCheck` 関数の URL をペーストします。
 
     ![The appsettings.json file is highlighted in the Solution Explorer, and the connection strings and health check URLs are highlighted within the file.](media/vs-appsettings.png "appsettings.json")
 
@@ -1588,7 +1588,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 > **警告**: ジェネレーターが車両テレメトリの送信を開始すると、大量の電子メールが送信されます。メールを受信したくない場合は、作成した Logic App を無効にします。
 
-1. Visual Studio の Solution Explorerで **FleetDataGenerator** プロジェクトを右クリックし、**Set as Startup Project** を選択します。デバッグを実行するたびにデータジェネレーターが自動的に実行されるようになります。
+1. Visual Studio の Solution Explorer で **FleetDataGenerator** プロジェクトを右クリックし、**Set as Startup Project** を選択します。デバッグを実行するたびにデータジェネレーターが自動的に実行されるようになります。
 
     ![Set as Startup Project is highlighted in the Solution Explorer.](media/vs-set-startup-project.png "Solution Explorer")
 
@@ -1596,7 +1596,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![The debug button is highlighted.](media/vs-debug.png "Debug")
 
-3. コンソールウィンドウが表示されたら、**3** と入力して50台の車両をシミュレートします。ジェネレーターは、Function App の正常性チェックを実行し、`metadata` コンテナーの要求されたスループットのサイズを変更し、バルク インポーターを使用してコンテナーをシードし、スループットのサイズを 15,000 RU/s に戻します。
+3. コンソールウィンドウが表示されたら、**3** と入力して 50 台の車両をシミュレートします。ジェネレーターは、Function App の正常性チェックを実行し、`metadata` コンテナーの要求されたスループットのサイズを変更し、バルク インポーターを使用してコンテナーをシードし、スループットのサイズを 15,000 RU/s に戻します。
 
     ![3 has been entered in the console window.](media/cmd-run.png "Generator")
 
@@ -1604,7 +1604,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![Vehicle simulation begins.](media/cmd-simulated-vehicles.png "Generator")
 
-5. 車両がトリップを完了するにしたがい、`Vehicle 37 has completed its trip`のようなメッセージが表示されます。
+5. 車両がトリップを完了するにしたがい、`Vehicle 37 has completed its trip` のようなメッセージが表示されます。
 
     ![A completed messages is displayed in the generator console.](media/cmd-vehicle-completed.png "Generator")
 
@@ -1618,13 +1618,13 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
 ### Task 5: View devices in IoT Hub
 
-データジェネレーターは、IoT Hubに各シミュレート車両をデバイスとして登録し、アクティブ化しました。このタスクでは、IoT Hub を開き、これらの登録済みデバイスを表示します。
+データジェネレーターは、IoT Hub に各シミュレート車両をデバイスとして登録し、アクティブ化しました。このタスクでは、IoT Hub を開き、これらの登録済みデバイスを表示します。
 
-1. Azure portal (<https://portal.azure.com>)で、**cosmos-db-iot** リソースグループにある IoT Hub のインスタンスを開きます。
+1. Azure portal (<https://portal.azure.com>) で、**cosmos-db-iot** リソースグループにある IoT Hub のインスタンスを開きます。
 
     ![The IoT Hub resource is displayed in the resource group.](media/portal-resource-group-iot-hub.png "IoT Hub")
 
-2. 左側のメニューから **IoT devices** を選択します。右側の IoT デバイスのペインに 50 台の IoT デバイスがすべて表示され、VIN がデバイス ID として指定されています。より多くの車両をシミュレートすると、ここに登録された追加のIoTデバイスが表示されます。
+2. 左側のメニューから **IoT devices** を選択します。右側の IoT デバイスのペインに 50 台の IoT デバイスがすべて表示され、VIN がデバイス ID として指定されています。より多くの車両をシミュレートすると、ここに登録された追加の IoT デバイスが表示されます。
 
     ![The IoT devices pane is displayed.](media/iot-hub-iot-devices.png "IoT devices")
 
@@ -1636,7 +1636,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
 ### Task 1: Open App Insights Live Metrics Stream
 
-1. Azure portal (<https://portal.azure.com>)で、**cosmos-db-iot** リソースグループにある Application Insights のインスタンスを開きます。
+1. Azure portal (<https://portal.azure.com>) で、**cosmos-db-iot** リソースグループにある Application Insights のインスタンスを開きます。
 
     ![The App Insights resource is displayed in the resource group.](media/portal-resource-group-app-insights.png "Application Insights")
 
@@ -1650,7 +1650,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ページの上部にサーバー数が表示されます。これは、Function App のインスタンス数を示し、1 台のサーバーが Web App に割り当てられます。Function App サーバー インスタンスが計算、メモリ、または要求期間のしきい値を超え、IoT Hub キューと Change Feed キューが増え、経過時間が伸びるにつれて、Function App をスケール アウトするために新しいインスタンスが自動的に割り当てられます。ページの下部にサーバー リストを表示できます。右側には、関数内のロガーに送信されるメッセージを含むサンプルテレメトリが表示されます。ここでは、Cosmos DB 処理関数が 100 件の Cosmos DB レコードを Event Hub に送信していることを示すメッセージを強調しました。
 
-    多くの依存関係の呼び出しエラー (404) に気付くでしょう。これらは無視しても問題ありません。これらは、Cosmos DB 処理 Function App 内の **ColdStorage** 関数の Azure ストレージ バインディングによって引き起こされます。このバインディングは、指定されたコンテナーに書き込む前にファイルが存在するかどうかをチェックします。新しいファイルを書き込んでいるため、書き込み中のすべてのファイルに対して `404` メッセージが表示されます。現在、バインディング エンジンは、このような "良い" 404 メッセージと "bad" メッセージの違いが判断出来ません。
+    多くの依存関係の呼び出しエラー (404) に気付くでしょう。これらは無視しても問題ありません。これらは、Cosmos DB 処理 Function App 内の **ColdStorage** 関数の Azure ストレージ バインディングによって引き起こされます。このバインディングは、指定されたコンテナーに書き込む前にファイルが存在するかどうかをチェックします。新しいファイルを書き込んでいるため、書き込み中のすべてのファイルに対して `404` メッセージが表示されます。現在、バインディング エンジンは、このような "良い" 404 メッセージと "悪い" メッセージの違いが判断出来ません。
 
 ## Exercise 6: Observe data using Cosmos DB Data Explorer and Web App
 
@@ -1658,7 +1658,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
 ### Task 1: View data in Cosmos DB Data Explorer
 
-1. Azure portal (<https://portal.azure.com>)で、**cosmos-db-iot** リソースグループにある CosmosDB のインスタンスを開きます。
+1. Azure portal (<https://portal.azure.com>) で、**cosmos-db-iot** リソースグループにある CosmosDB のインスタンスを開きます。
 
 2. 左側のメニューから **Data Explorer** を選択します。
 
@@ -1754,11 +1754,11 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ![The vehicle details are displayed.](media/webapp-vehicle-details.png "Vehicle details")
 
-4. 車両リストに戻り、**MT** などの検索語句を入力します。これにより、登録された状態と、部分的な一致を含む VIN の両方が検索されます。州と VIN の両方を自由に検索できます。下のスクリーンショットでは、`MT`を検索し、モンタナ州の登録結果を受け取り、VINに`MT`が含まれている記録がありました。
+4. 車両リストに戻り、**MT** などの検索語句を入力します。これにより、登録された状態と、部分的な一致を含む VIN の両方が検索されます。州と VIN の両方を自由に検索できます。下のスクリーンショットでは、`MT` を検索し、モンタナ州の登録結果を受け取り、VIN に `MT` が含まれている記録がありました。
 
     ![The search results are displayed.](media/webapp-vehicle-search.png "Vehicle search")
 
-5. 左側のメニューで **Consignments** を選択し、検索ボックスに **alpine ski** を入力して実行します。`Alpine Ski House` の顧客のためのいくつかの委託が表示されます。委託IDで検索することもできます。結果では、委託品の 1 つに [完了] のステータスがあります。
+5. 左側のメニューで **Consignments** を選択し、検索ボックスに **alpine ski** を入力して実行します。`Alpine Ski House` の顧客のためのいくつかの委託が表示されます。委託 ID で検索することもできます。結果では、委託品の 1 つに Completed のステータスがあります。
 
     ![The search results are displayed.](media/webapp-consignments-search.png "Consignments")
 
@@ -1766,7 +1766,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ![The consignment details page is displayed.](media/webapp-consignment-details.png "Consignment details")
 
-7. 左側のメニューで **トリップ** を選択します。ページ上部のフィルタを使用して、[保留中]、[アクティブ]、[遅延]、[完了済み] などのステータスでトリップをフィルター処理します。納期より前にステータスが完了していない場合、トリップは遅れます。この時点では遅延は発生しない場合がありますが、後でデータ ジェネレーターを再実行すると遅延する場合があります。このページから車両または関連する委託レコードを表示できます。
+7. 左側のメニューで **トリップ** を選択します。ページ上部のフィルタを使用して、Pending、Active、Delayed、Completed などのステータスでトリップをフィルター処理します。納期より前にステータスが完了していない場合、トリップは遅れます。この時点では遅延は発生しない場合がありますが、後でデータ ジェネレーターを再実行すると遅延する場合があります。このページから車両または関連する委託レコードを表示できます。
 
     ![The search results are displayed.](media/webapp-trips-search.png "Trips")
 
@@ -1778,17 +1778,17 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
 ### Task 1: Create a new vehicle
 
-1. Web Appで **Vehicles** ページに移動し、**Create New Vehicle** を選択します。
+1. Web App で **Vehicles** ページに移動し、**Create New Vehicle** を選択します。
 
     ![The Create New Vehicle button is highlighted on the vehicles page.](media/webapp-vehicles-new-button.png "Vehicles")
 
-2. 車両の作成を完了するためにフォームに以下のVINを入力します: **ISO4MF7SLBXYY9OZ3** 。フォームの入力が終わったら、**Create** を選択します。
+2. 車両の作成を完了するためにフォームに以下の VIN を入力します: **ISO4MF7SLBXYY9OZ3** 。フォームの入力が終わったら、**Create** を選択します。
 
     ![The Create Vehicle form is displayed.](media/webapp-create-vehicle.png "Create Vehicle")
 
 ### Task 2: View and edit the vehicle
 
-1. 新しい車両を検索するために、車両のページの検索ボックスに以下のVINをペーストします: **ISO4MF7SLBXYY9OZ3**
+1. 新しい車両を検索するために、車両のページの検索ボックスに以下の VIN をペーストします: **ISO4MF7SLBXYY9OZ3**
 
     ![The VIN is pasted in the search box and the vehicle result is displayed.](media/webapp-vehicles-search-vin.png "Vehicles")
 
@@ -1802,7 +1802,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
 ### Task 3: Delete the vehicle
 
-1. 新しい車両を検索するために、車両のページの検索ボックスに以下のVINをペーストします: **ISO4MF7SLBXYY9OZ3**。登録された状態や他のフィールドを変更が反映された状態が表示されるはずです。
+1. 新しい車両を検索するために、車両のページの検索ボックスに以下の VIN をペーストします: **ISO4MF7SLBXYY9OZ3**。登録された状態や他のフィールドを変更が反映された状態が表示されるはずです。
 
     ![The VIN is pasted in the search box and the vehicle result is displayed.](media/webapp-vehicles-search-vin-updated.png "Vehicles")
 
@@ -1814,7 +1814,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ![The Delete Vehicle confirmation page is displayed.](media/webapp-vehicles-delete-confirmation.png "Delete Vehicle")
 
-4. 新しい車両を検索するために、車両のページの検索ボックスに以下のVINをペーストします: **ISO4MF7SLBXYY9OZ3**。車両は表示されないはずです。
+4. 新しい車両を検索するために、車両のページの検索ボックスに以下の VIN をペーストします: **ISO4MF7SLBXYY9OZ3**。車両は表示されないはずです。
 
     ![The vehicle was not found.](media/webapp-vehicles-search-deleted.png "Vehicles")
 
@@ -1926,7 +1926,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-27. **Line chart** ビジュアル化タイプを選択します。軸の下で **+ Add value** を選択後、ドロップダウンから**snapshot** を選択します。値の下で **+ Add value** を選択後、**engineTemperature** を選択します。表示する時間枠は1分のままにします。**Next** を選択します。
+27. **Line chart** ビジュアル化タイプを選択します。Axis の下で **+ Add value** を選択後、ドロップダウンから**snapshot** を選択します。Values の下で **+ Add value** を選択後、**engineTemperature** を選択します。Time window to display は 1 分のままにします。**Next** を選択します。
 
     ![The engineTemperature field is added.](media/power-bi-dashboard-add-tile-enginetemperature.png "Add a custom streaming data tile")
 
@@ -1942,7 +1942,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-31. **Line chart** ビジュアル化タイプを選択します。軸の下で **+ Add value** を選択後、ドロップダウンから**snapshot** を選択します。値の下で **+ Add value** を選択後、**refrigerationUnitTemp** を選択します。表示する時間枠は1分のままにします。**Next** を選択します。
+31. **Line chart** ビジュアル化タイプを選択します。Axis の下で **+ Add value** を選択後、ドロップダウンから**snapshot** を選択します。Values の下で **+ Add value** を選択後、**refrigerationUnitTemp** を選択します。Time window to display は 1 分のままにします。**Next** を選択します。
 
     ![The refrigerationUnitTemp field is added.](media/power-bi-dashboard-add-tile-refrigerationunittemp.png "Add a custom streaming data tile")
 
@@ -1958,7 +1958,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
-35. **Line chart** ビジュアル化タイプを選択します。軸の下で **+ Add value** を選択後、ドロップダウンから**snapshot** を選択します。値の下で **+ Add value** を選択後、**speed** を選択します。表示する時間枠は1分のままにします。**Next** を選択します。
+35. **Line chart** ビジュアル化タイプを選択します。Axis の下で **+ Add value** を選択後、ドロップダウンから**snapshot** を選択します。Values の下で **+ Add value** を選択後、**speed** を選択します。Time window to display は 1 分のままにします。**Next** を選択します。
 
     ![The speed field is added.](media/power-bi-dashboard-add-tile-speed.png "Add a custom streaming data tile")
 
