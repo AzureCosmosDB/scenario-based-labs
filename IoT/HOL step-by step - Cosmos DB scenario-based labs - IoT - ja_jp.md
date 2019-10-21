@@ -82,7 +82,7 @@ Contoso Auto は、車両と小包のテレメトリ データを収集し、Azu
 
 - **管理および顧客報告担当者** 処理後に流れ込む新しいデータで自動的に更新される Power BI レポートに表示される車両の現在の状態と顧客の委託レベル情報を確認する立場に配置する必要があるユーザー。彼らが見たいのは、ドライバーによる悪い運転行動に関するレポートと、都市や地域に関連する異常を表示するマップなどの視覚コンポーネントを使用するほか、総フリートと委託情報を明確に示すさまざまなチャートやグラフです。
 
-このエクスペリエンスでは、Cosmos DB、Azure Functions、Event Hub、Azure Data Bricks、Azure Storage、Azure Stream Analytics、Power BI、Azure Web App、Logic Apps上に構築されたほぼリアルタイムな分析パイプラインへのエントリーポイントとなる、車両のストリーミングテレメトリーデータを取り込むためにAzure Cosmos DBを利用します。
+このエクスペリエンスでは、Cosmos DB、Azure Functions、Event Hub、Azure Databricks、Azure Storage、Azure Stream Analytics、Power BI、Azure Web App、Logic Apps 上に構築されたほぼリアルタイムな分析パイプラインへのエントリーポイントとなる、車両のストリーミングテレメトリーデータを取り込むために Azure Cosmos DB を利用します。
 
 ## Solution architecture
 
@@ -92,23 +92,23 @@ Contoso Auto は、車両と小包のテレメトリ データを収集し、Azu
 
 - データの取り込み、イベント処理、およびストレージ::
 
-  IoT シナリオのソリューションは、イベントデータ、フリート、委託、小包、およびトリップ メタデータ、およびレポート用の集計データをストリーミングするための、グローバルに利用可能でスケーラブルなデータ ストレージとして機能する **Cosmos DB** を中心にデプロイします。車両テレメトリ データは、**IoT Hub** に登録された IoT デバイスを介してデータ ジェネレータから流れ込み、**Azure Functions** がイベント データを処理し、Cosmos DB のテレメトリ コンテナーに挿入します。
+  IoT シナリオのソリューションは、イベントデータ、フリート、委託、小包、およびトリップ メタデータ、およびレポート用の集計データをストリーミングするための、グローバルに利用可能でスケーラブルなデータ ストレージとして機能する **Cosmos DB** を中心にデプロイします。車両テレメトリ データは、**IoT Hub** に登録された IoT デバイスを介してデータ ジェネレーターから流れ込み、**Azure Functions** がイベント データを処理し、Cosmos DB のテレメトリ コンテナーに挿入します。
 
-- Azure Functionsを使用したトリップ処理:
+- Azure Functions を使用したトリップ処理:
 
-  Cosmos DB の Change Feedは、3 つの別々の Azure Functionsをトリガーし、それぞれが独自のチェックポイントを管理し、互いに競合することなく同じ着信データを処理できるようにします。1 つのFunctionは、イベント データをシリアル化し、**Azure Storage** のタイム スライスされたフォルダーに格納して、生データを長期保存します。別のFunctionは、車両テレメトリを処理し、バッチ データを集約し、走行距離計の読み取り値とトリップがスケジュール通りに実行されているかどうかに基づいて、メタデータ コンテナー内のトリップおよび委託ステータスを更新します。この機能は、トリップのマイルストーンに達したときに電子メールアラートを送信する **Logic App** をトリガします。3 番目のFunctionはイベント データを **Event Hubs** に送信し、**Stream Analytics** をトリガーしてタイム ウィンドウの集約クエリを実行します。
+  Cosmos DB の Change Feedは、3 つの別々の Azure Functions をトリガーし、それぞれが独自のチェックポイントを管理し、互いに競合することなく同じ着信データを処理できるようにします。1 つのFunctionは、イベント データをシリアル化し、**Azure Storage** のタイム スライスされたフォルダーに格納して、生データを長期保存します。別のFunctionは、車両テレメトリを処理し、バッチ データを集約し、走行距離計の読み取り値とトリップがスケジュール通りに実行されているかどうかに基づいて、メタデータ コンテナー内のトリップおよび委託ステータスを更新します。この機能は、トリップのマイルストーンに達したときに電子メールアラートを送信する **Logic App** をトリガします。3 番目のFunctionはイベント データを **Event Hubs** に送信し、**Stream Analytics** をトリガーしてタイム ウィンドウの集約クエリーを実行します。
 
 - ストリーム処理、ダッシュボード、およびレポート:
 
-  Stream Analytics は、Cosmos DB メタデータ コンテナーに車両固有の集計を出力し、車両全体の集約を **Power BI** に出力して、車両のステータス情報のリアルタイム ダッシュボードに入力します。Power BI Desktop レポートは、Cosmos DB メタデータ コンテナーから直接プルされた詳細な車両、トリップ、および委託情報を表示するために使用されます。また、メンテナンスコンテナから引き出されたバッチバッテリ故障予測も表示されます。
+  Stream Analytics は、Cosmos DB メタデータ コンテナーに車両固有の集計を出力し、車両全体の集約を **Power BI** に出力して、車両のステータス情報のリアルタイム ダッシュボードに入力します。Power BI Desktop レポートは、Cosmos DB メタデータ コンテナーから直接プルされた詳細な車両、トリップ、および委託情報を表示するために使用されます。また、メンテナンスコンテナから引き出されたバッチバッテリー故障予測も表示されます。
 
 - 高度な分析と ML モデルのトレーニング:
 
-  **Azure Databricks** は、過去の情報に基づいて、車両のバッテリの故障を予測する機械学習モデルをトレーニングするために使用されます。バッチ予測用にトレーニングされたモデルをローカルに保存し、リアルタイム予測のために **Azure Kubernetes Service (AKS)** または **Azure Container Instances (ACI)** にモデルとスコアリング Web サービスをデプロイします。また、Azure Databricks は **Spark Cosmos DB connector** を使用して、毎日のトリップ情報をプルダウンして、バッテリ障害のバッチ予測を行い、予測をメンテナンス コンテナーに格納します。
+  **Azure Databricks** は、過去の情報に基づいて、車両のバッテリーの故障を予測する機械学習モデルをトレーニングするために使用されます。バッチ予測用にトレーニングされたモデルをローカルに保存し、リアルタイム予測のために **Azure Kubernetes Service (AKS)** または **Azure Container Instances (ACI)** にモデルとスコアリング Web サービスをデプロイします。また、Azure Databricks は **Spark Cosmos DB connector** を使用して、毎日のトリップ情報をプルダウンして、バッテリー障害のバッチ予測を行い、予測をメンテナンス コンテナーに格納します。
 
 - フリート管理 Web App、セキュリティ、および監視:
 
-  **Web App** を使用すると、Contoso Auto は車両を管理し、Cosmos DB に保存されている委託、小包、およびトリップ情報を表示できます。Web Appは、車両情報を表示しながら、リアルタイムのバッテリ故障予測を行うためにも使用されます。**Azure Key Vault** は、接続文字列やアクセス キーなどの一元化されたアプリケーション シークレットを安全に格納するために使用され、Function App、Web App、Azure Databricksで使用されます。最後に、**Application Insights** は、Function Appと Web Appのリアルタイムの監視、メトリック、およびログ情報を提供します。
+  **Web App** を使用すると、Contoso Auto は車両を管理し、Cosmos DB に保存されている委託、小包、およびトリップ情報を表示できます。Web Appは、車両情報を表示しながら、リアルタイムのバッテリー故障予測を行うためにも使用されます。**Azure Key Vault** は、接続文字列やアクセス キーなどの一元化されたアプリケーション シークレットを安全に格納するために使用され、Function App、Web App、Azure Databricksで使用されます。最後に、**Application Insights** は、Function Appと Web Appのリアルタイムの監視、メトリック、およびログ情報を提供します。
 
 ## Requirements
 
@@ -131,19 +131,19 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 ソリューションの開発を始める前に、Azure でいくつかのリソースをプロビジョニングする必要があります。クリーンアップを容易にするために、すべてのリソースが同じリソース グループを使用していることを確認します。
 
-この演習では、生成された車両、委託、小包、およびトリップデータの送信と処理を開始できるように、演習環境を構成します。まず、Cosmos DB データベースとコンテナーを作成し、新しいLogic Appを作成し、電子メール通知を送信するワークフローを作成し、ソリューションをリアルタイム監視するための Application Insights サービスを作成してから、ソリューションのアプリケーション設定 (接続文字列など)で使用されるシークレットを取得し、それらを Azure Key Vault に安全に保存し、最終的に Azure Databricks 環境を構成します。
+この演習では、生成された車両、委託、小包、およびトリップデータの送信と処理を開始できるように、演習環境を構成します。まず、Cosmos DB データベースとコンテナーを作成し、新しい Logic App を作成し、電子メール通知を送信するワークフローを作成し、ソリューションをリアルタイム監視するための Application Insights サービスを作成してから、ソリューションのアプリケーション設定 (接続文字列など)で使用されるシークレットを取得し、それらを Azure Key Vault に安全に保存し、最終的に Azure Databricks 環境を構成します。
 
 ### Task 1: Create Cosmos DB database and container
 
-このタスクでは、Cosmos DB データベースと 3 つの SQL-ベースのコンテナーを作成します:
+このタスクでは、Cosmos DB データベースと 3 つの SQL ベースのコンテナーを作成します:
 
-- **telemetry**: 90 日間の寿命 (TTL) を持つホット 車両テレメトリ データの取り入れに使用されます。
+- **telemetry**: 90 日間の存続時間 (TTL) を持つホット 車両テレメトリ データの取り込みに使用されます。
 - **metadata**: 車両、委託、小包、トリップ、および集計イベント データを格納します。
-- **maintenance**: バッチ バッテリ障害予測は、レポートの目的でここに格納されます。
+- **maintenance**: バッチ バッテリー障害予測は、レポートの目的でここに格納されます。
 
 1. ブラウザの新しいタブまたはインスタンスを使用して、Azure ポータル <https://portal.azure.com>に移動します。
 
-2. 左側のメニューから **Resource Group** を選択し、`cosmos-db-iot`と入力してリソースグループを検索します。この演習で使用しているリソース グループを選択します。
+2. 左側のメニューから **Resource Groups** を選択し、`cosmos-db-iot`と入力してリソースグループを検索します。この演習で使用しているリソース グループを選択します。
 
    ![Resource groups is selected and the cosmos-db-iot resource group is displayed in the search results.](media/resource-group.png 'cosmos-db-iot resource group')
 
@@ -169,7 +169,7 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
    ![The New Container form is displayed with the previously described values.](media/cosmos-new-container-metadata.png 'New metadata container')
 
-   > **注**: データ ジェネレータは最初に実行時にメタデータの一括挿入を実行するため、最初にこのコンテナーのスループットを `50000 RU/s` に設定します。データを挿入した後、プログラム的にスループットを `15000` に減らします。
+   > **注**: データ ジェネレーターは初回実行時にメタデータの一括挿入を実行するため、最初にこのコンテナーのスループットを `50000 RU/s` に設定します。データを挿入した後、プログラム的にスループットを `15000` に減らします。
 
 6. **OK** を選択してコンテナーを作成します。
 
@@ -213,15 +213,15 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 予想されるイベント処理およびレポートワークロードに基づいて、各コンテナーの RU/s に **throughput** を意図的に設定していることに気付くでしょう。Azure Cosmos DB では、プロビジョニングされたスループットは要求単位/秒 (RUs) として表されます。RUs は、Cosmos DB コンテナーに対する読み取り操作と書き込み操作の両方のコストを測定します。Cosmos DB は透過的な水平方向のスケーリング (スケール アウトなど) とマルチマスター レプリケーションを使用して設計されているため、単一の API 呼び出しを使用して取得できる、1 秒あたり数千から数億の要求を処理するRUsの数を非常に迅速かつ簡単に増減できます。
 
-Cosmos DB を使用すると、データベース レベルまたはコンテナー レベルで 100 の小さな単位で RUs を増分/減衰できます。スループットは、SLA に裏付けされたコンテナーのパフォーマンスを常に保証するために、コンテナーの粒度で構成することをお勧めします。Cosmos DB が提供するその他の保証は、世界中で 99.999% の読み取りと書き込みの可用性であり、読み取りと書き込みは 99 パーセンタイルで 10 ミリ秒未満で提供されます。
+Cosmos DB を使用すると、データベース レベルまたはコンテナー レベルで 100 ずつの小さな単位で RUs を増分/減衰できます。スループットは、SLA に裏付けされたコンテナーのパフォーマンスを常に保証するために、コンテナーの粒度で構成することをお勧めします。Cosmos DB が提供するその他の保証は、世界中で 99.999% の読み取りと書き込みの可用性であり、読み取りと書き込みは 99 パーセンタイルで 10 ミリ秒未満で提供されます。
 
 コンテナーに多数の RUs を設定すると、Cosmos DB は、それらの RUs が Cosmos DB アカウントに関連付けられているすべてのリージョンで使用できることを確認します。新しいリージョンを追加してリージョンの数をスケールアウトすると、Cosmosは新しく追加されたリージョンに同じ量の RUs を自動的にプロビジョニングします。特定のリージョンに異なる RUs を選択的に割り当てることはできません。これらの RUs は、関連するすべてのリージョンのコンテナー (またはデータベース) 用にプロビジョニングされます。
 
 #### About Cosmos DB partitioning
 
-各コンテナーを作成するときは、**パーティションキー** を定義する必要がありました。ソリューション ソース コードを確認するときに、後で説明するように、コレクション内に格納されている各ドキュメントには `partitionKey` プロパティが含まれています。新しいコンテナーを作成する際に行う必要がある最も重要な決定の 1 つは、データに適したパーティション キーを選択することです。パーティション キーは、ストレージとパフォーマンスのボトルネックを回避するために、任意の時点でストレージとスループットの均等な分散 (1 秒あたりの要求で測定) を提供する必要があります。たとえば、車両メタデータは、各車両の一意の値である VIN を `partitionKey` フィールドに格納します。トリップ メタデータは、ほとんどの場合 VIN によって照会され、トリップ ドキュメントは車両メタデータと同じ論理区画に格納されるため、トリップ メタデータは一緒にクエリされ、ファンアウトならびにパーティション間クエリを防ぐため、`partitionKey` フィールドにも VIN を使用します。一方、小包 メタデータは、同じ目的で `partitionKey` フィールドにConsignment ID 値を使用します。パーティション キーは、多数のパーティション間で過剰なファンアウトを避けるために、読み取りが多いシナリオのクエリの大部分に存在する必要があります。これは、特定のパーティション キー値を持つ各ドキュメントが同じ論理区画に属し、同じ物理パーティションに格納され、同じ物理パーティションからも処理されるためです。各物理パーティションは地理的リージョン間でレプリケートされるため、グローバルな分散が実現します。
+各コンテナーを作成するときは、**パーティションキー** を定義する必要がありました。ソリューションのソースコードを確認するときに、後で説明するように、コレクション内に格納されている各ドキュメントには `partitionKey` プロパティが含まれています。新しいコンテナーを作成する際に行う必要がある最も重要な決定の 1 つは、データに適したパーティション キーを選択することです。パーティション キーは、ストレージとパフォーマンスのボトルネックを回避するために、任意の時点でストレージとスループットの均等な分散 (1 秒あたりの要求で測定) を提供する必要があります。たとえば、車両メタデータは、各車両の一意の値である VIN を `partitionKey` フィールドに格納します。トリップ メタデータは、ほとんどの場合 VIN によって照会され、トリップ ドキュメントは車両メタデータと同じ論理区画に格納されるため、トリップ メタデータは一緒にクエリーされ、ファンアウトならびにパーティション間クエリーを防ぐため、`partitionKey` フィールドにも VIN を使用します。一方、小包 メタデータは、同じ目的で `partitionKey` フィールドに Consignment ID 値を使用します。パーティション キーは、多数のパーティション間で過剰なファンアウトを避けるために、読み取りが多いシナリオのクエリーの大部分に存在する必要があります。これは、特定のパーティション キー値を持つ各ドキュメントが同じ論理区画に属し、同じ物理パーティションに格納され、同じ物理パーティションからの処理も行われるためです。各物理パーティションは地理的リージョン間でレプリケートされるため、グローバルな分散が実現します。
 
-Cosmos DB に適切なパーティション キーを選択することは、バランスの取れた読み取りと書き込み、スケーリング、およびこのソリューションの場合は、パーティションごとの順序によるchange feed処理を確実に行うための重要な手順です。論理区画の数に制限はありませんが、1 つの論理区画に対して 10 GB のストレージの上限が許可されます。論理区画を物理パーティション間で分割することはできません。同じ理由で、選択したパーティション キーのカーディナリティ（基数）が悪い場合は、ストレージの分散が歪んでいる可能性があります。たとえば、1 つの論理区画が他のパーティションよりも高速になり、最大 10 GB の上限に達した場合、他の論理パーティションがほぼ空になる場合、最大論理区画を収容する物理パーティションは分割できず、アプリケーションのダウンタイムが発生する可能性があります。
+Cosmos DB に適切なパーティション キーを選択することは、バランスの取れた読み取りと書き込み、スケーリング、およびこのソリューションの場合は、パーティションごとの順序による Change Feed 処理を確実に行うための重要な手順です。論理区画の数に制限はありませんが、1 つの論理区画に対して 10 GB のストレージの上限が許可されます。論理区画を物理パーティション間で分割することはできません。同じ理由で、選択したパーティション キーのカーディナリティ（基数）が悪い場合は、ストレージの分散が歪んでいる可能性があります。たとえば、1 つの論理区画が他のパーティションよりも高速になり、最大 10 GB の上限に達した場合、他の論理パーティションがほぼ空になる場合、最大論理区画を収容する物理パーティションは分割できず、アプリケーションのダウンタイムが発生する可能性があります。
 
 ### Task 2: Configure Cosmos DB container indexing and TTL
 
@@ -233,9 +233,9 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
    ![The Time to Live settings are set to On with no default.](media/cosmos-ttl-on.png 'Scale & Settings')
 
-   存続時間設定を既定値以外でオンにすると、ドキュメントごとに個別に TTL を定義できるため、一定期間後に期限切れになるドキュメントをより柔軟に決定できます。これを行うには、このコンテナーに保存される `ttl` フィールドがあり、TTL を秒単位で指定します。
+   存続時間設定を既定値以外でオンにすると、ドキュメントごとに個別に TTL を定義できるため、一定期間後に期限切れになるドキュメントをより柔軟に決定できます。これを行うには、このコンテナーに保存される `ttl` フィールドがあるので、TTL を秒単位で指定します。
 
-3. Scale & Settings ブレードを下にスクロールして、**インデックス作成ポリシー** を表示します。既定のポリシーでは、コレクションに格納されている各ドキュメントのすべてのフィールドに自動的にインデックスを作成します。これは、すべてのパスが含まれている (JSON ドキュメントを格納しているため、ドキュメント内の子コレクション内に存在できるため、パスを使用してプロパティを識別します)、つまり `includedPaths` の値が `"path": "/*"` に設定されており、除外される唯一のパスはドキュメントのバージョン管理に使用される内部的な `_etag` プロパティであるからです。既定のインデックス ポリシーは次のようになります:
+3. Scale & Settings ブレードを下にスクロールして、**Indexing Policy** を表示します。既定のポリシーでは、コレクションに格納されている各ドキュメントのすべてのフィールドに自動的にインデックスを作成します。これは、すべてのパスが含まれている (JSON ドキュメントを格納しているので、ドキュメント内の子コレクション内にプロパティが存在できるため、パスを使用してプロパティを識別していることを思い出してください)、つまり `includedPaths` の値が `"path": "/*"` に設定されており、除外される唯一のパスはドキュメントのバージョン管理に使用される内部的な `_etag` プロパティであるからです。既定のインデックス ポリシーは次のようになります:
 
    ```json
    {
@@ -288,13 +288,13 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
 #### About the Cosmos DB indexing policies
 
-このタスクでは、`telemetry` コンテナーのインデックス作成ポリシーを更新しましたが、他の 2 つのコンテナーは既定のポリシーのままにしておきました。新しく作成されたコンテナーの既定のインデックス 作成ポリシーは、すべての項目のすべてのプロパティにインデックスを付け、任意の文字列または数値の範囲インデックスを適用し、Point 型の GeoJSON オブジェクトに空間インデックスを適用します。これにより、インデックス作成とインデックス管理を事前に考えることなく、高いクエリ パフォーマンスを得ることができます。`metadata` コンテナーと `maintenance` コンテナーは `telemetry` よりも読み取り負荷の高いワークロードを持つため、クエリのパフォーマンスが最適化される既定のインデックス 作成ポリシーを使用するのが理にかなっています。`telemetry` の高速な書き込みが必要なため、未使用のパスは除外します。インデックス作成パスを使用すると、インデックス作成コストがインデックス付けされた一意のパスの数と直接相関するため、クエリ パターンが事前にわかっているシナリオでは、書き込みパフォーマンスが向上し、インデックスストレージが低下する可能性があります。
+このタスクでは、`telemetry` コンテナーのインデックス作成ポリシーを更新しましたが、他の 2 つのコンテナーは既定のポリシーのままにしておきました。新しく作成されたコンテナーの既定のインデックス 作成ポリシーは、すべての項目のすべてのプロパティにインデックスを付け、任意の文字列または数値の範囲インデックスを適用し、Point 型の GeoJSON オブジェクトに空間インデックスを適用します。これにより、インデックス作成とインデックス管理を事前に考えることなく、高いクエリー パフォーマンスを得ることができます。`metadata` コンテナーと `maintenance` コンテナーには `telemetry` よりも読み取り負荷の高いワークロードがあるため、クエリーのパフォーマンスが最適化される既定のインデックス 作成ポリシーを使用するのが理にかなっています。`telemetry` の高速な書き込みが必要なため、未使用のパスは除外します。インデックス作成パスを使用すると、インデックス作成コストはインデックス付けされた一意のパスの数と直接相関するため、クエリーパターンが事前にわかっているシナリオでは、書き込みパフォーマンスが向上し、インデックスのストレージ容量が低下する可能性があります。
 
-3 つのコンテナーすべてに対するインデックス作成モードは **Consistent** に設定されます。つまり、アイテムの追加、更新、または削除に伴ってインデックスが同期的に更新され、読み取りクエリ用にアカウントに構成された整合性レベルが適用されます。もう 1 つのインデックス作成モードは None で、コンテナーのインデックス作成を無効にします。通常、このモードは、コンテナーが純粋なキー値ストアとして機能し、他のプロパティのインデックスを必要としない場合に使用されます。一括操作を実行する前に整合性モードを動的に変更し、その後モードを Consistent に戻すことができます。
+3 つのコンテナーすべてに対するインデックス作成モードは **Consistent** に設定されます。つまり、アイテムの追加、更新、または削除に伴ってインデックスが同期的に更新され、読み取りクエリー用にアカウントに構成された整合性レベルが適用されます。もう 1 つのインデックス作成モードは None で、コンテナーのインデックス作成を無効にします。通常、このモードは、コンテナーが純粋なキー バリュー ストアとして機能し、他のプロパティのインデックスを必要としない場合に使用されます。一括操作を実行する前に整合性モードを動的に変更し、その後モードを Consistent に戻すことができます。
 
 ### Task 3: Create a Logic App workflow for email alerts
 
-このタスクでは、新しいLogic App ワークフローを作成し、HTTP トリガーを介して電子メール アラートを送信するように構成します。このトリガーは、Cosmos DB change feed によってトリガーされる Azure Functions の 1 つ (トリップの完了などの通知イベントが発生するたびに呼び出されます) によって呼び出されます。電子メールを送信するには、Office 365 またはOutlook.com アカウントが必要です。
+このタスクでは、新しい Logic App ワークフローを作成し、HTTP トリガーを介して電子メール アラートを送信するように構成します。このトリガーは、Cosmos DB Change Feed によってトリガーされる Azure Functions の 1 つ (トリップの完了などの通知イベントが発生するたびに呼び出されます) によって呼び出されます。電子メールを送信するには、Office 365 またはOutlook.com アカウントが必要です。
 
 1. [Azure portal](https://portal.azure.com)で, **+ Create a resource** を選択し、上部にある検索ボックスに **logic app** と入力します。結果から **Logic App** を選択します。
 
@@ -314,13 +314,13 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
 4. **Create** を選択します。
 
-5. Logic App が作成されたら、リソースグループを開いて新しいLogic Appを選択して Logic Appに行きます。
+5. Logic App が作成されたら、リソースグループを開いて新しい Logic App を選択して Logic App に移動します。
 
 6. Logic App デザイナーで、Start with a common triggerセクションまでページをスクロールし、 **When a HTTP request is received** トリガーを選択します。
 
    ![The HTTP common trigger option is highlighted.](media/logic-app-http-trigger.png 'Logic App Designer')
 
-7. **Request Body JSON Schema** フィールドに以下のJSONをペーストします。アラートが送信される必要がある時に、Azure Functionが送信するHTTPリクエストのボディのデータの形式を定義します:
+7. **Request Body JSON Schema** フィールドに以下のJSONをペーストします。アラートが送信される必要がある時に、Azure Functions が送信するHTTPリクエストのボディのデータの形式を定義します:
 
    ```json
    {
@@ -449,7 +449,7 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
     Contoso Auto Bot
     ```
 
-15. ここまででLogic Appのワークフローは以下のようになっているはずです:
+15. ここまでで Logic App のワークフローは以下のようになっているはずです:
 
     ![The Logic App workflow is complete.](media/logic-app-completed-workflow.png 'Logic App')
 
@@ -463,7 +463,7 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
 Function Appと Web Appが Key Vault にアクセスしてシークレットを読み取ることができるようにするには、[システムで割り当てられたマネージドの認証を作成](https://docs.microsoft.com/azure/app-service/overview-managed-identity#adding-a-system-assigned-identity)する必要があり、および [Key Vault でアクセス ポリシーを作成](https://docs.microsoft.com/azure/key-vault/key-vault/key-vault/key-vault-key-vault)する必要があります。
 
-1. 名前が **IoT-CosmosDBProcessing** で始まるAzure Function Appを開いて、 **Platform features** を表示します。
+1. 名前が **IoT-CosmosDBProcessing** で始まる Azure Functions アプリケーションを開いて、 **Platform features** を表示します。
 
 2. **Identity** を選択します。
 
@@ -473,7 +473,7 @@ Function Appと Web Appが Key Vault にアクセスしてシークレットを�
 
    ![The Function App Identity value is set to On.](media/function-app-identity.png 'Identity')
 
-4. 名前が **IoT-StreamProcessing** で始まるAzure Function Appを開いて、 **Platform features** を表示します。
+4. 名前が **IoT-StreamProcessing** で始まる Azure Functions アプリケーションを開いて、 **Platform features** を表示します。
 
 5. **Identity** を選択します。
 
@@ -598,7 +598,7 @@ Function Appと Web Appが Key Vault にアクセスしてシークレットを�
 Azure Key Vault は、トークン、パスワード、証明書、API キー、およびその他のシークレットへのアクセスを安全に保存し、厳密に制御するために使用されます。さらに、Azure Key Vault に格納されているシークレットは一元化されるため、セキュリティ目的でキーをリサイクルした後のアプリケーション キー値など、シークレットを 1 か所で更新するだけで済むという利点が追加されます。このタスクでは、アプリケーション シークレットを Azure Key Vault に格納し、次の手順を実行して Azure Key Vault に安全に接続するようにFunction Appと Web Appを構成します。
 
 - プロビジョニング済みのKey Vaultにシークレットを追加する。
-- Azure Function AppとWeb Appがvaultから読み出せるようにシステム割り当て済みのマネージIDを作成する。
+- Azure Functions アプリケーションとWeb Appがvaultから読み出せるようにシステム割り当て済みのマネージIDを作成する。
 - これらのアプリケーションのIDに割り当てられる、"Get" シークレットパーミッション付きでKey Vaultでアクセスポリシーを作成する。
 
 1. Key Vaultで、左側のメニューから **Secrets** を選択し、**+ Generate/Import** を選択して新しいシークレットを作成します。
@@ -724,7 +724,7 @@ Azure Databricks には、Key Vault バックアップとDatabricks バックア
 
 **Duration**: 15 minutes
 
-ソリューション アーキテクチャ図の右側を調べると、Cosmos DB のフィードトリガー関数から Event Hubs にフィードされるイベント データのフローが表示されます。Stream Analytics は、個々の車両テレメトリの集計を作成する一連のタイム ウィンドウ クエリの入力ソースとして Event Hubs を使用し、車両 IoT デバイスからアーキテクチャを通過する車両テレメトリ全体を作成します。Stream Analytics には、次の 2 つの出力データ シンクがあります:
+ソリューション アーキテクチャ図の右側を調べると、Cosmos DB のフィードトリガー関数から Event Hubs にフィードされるイベント データのフローが表示されます。Stream Analytics は、個々の車両テレメトリの集計を作成する一連のタイム ウィンドウ クエリーの入力ソースとして Event Hubs を使用し、車両 IoT デバイスからアーキテクチャを通過する車両テレメトリ全体を作成します。Stream Analytics には、次の 2 つの出力データ シンクがあります:
 
 1. Cosmos DB: 個々の車両テレメトリ (VIN でグループ化) は、30 秒間の `TumblingWindow` で集計され、`metadata` コンテナーに保存されます。この情報は、後のタスクで Power BI Desktop で作成する Power BI レポートで使用され、個々の車両と複数の車両統計情報が表示されます。
 2. Power BI: すべての車両テレメトリは、10 秒間の `TumblingWindow` で集計され、Power BI データ・セットに出力されます。このほぼリアルタイムなデータは、ライブPower BIダッシュボードに表示され、10秒間に処理されたイベントの数、エンジン温度、オイル、または冷凍ユニットの警告があるかどうか、期間中に乱暴な運転が検出されたかどうか、平均速度、エンジン温度、冷凍ユニットの測定値、が表示されます。。
@@ -806,9 +806,9 @@ Event Hubsの入力がリストされているのが見えるはずです。
 
 ### Task 3: Create Stream Analytics query
 
-クエリはStream Analyticsの馬車馬です。ここでストリーミング入力を処理し、出力にデータを書き込みます。Stream Analytics クエリ言語は SQL に似ており、使い慣れた構文を使用して、ストリーミング データの探索と変換、集計の作成、および出力シンクに書き込む前にデータ構造を形成するために使用できる具体化されたビューを作成できます。Stream Analytics ジョブは 1 つのクエリしか持ち込めませんが、次の手順で行うように、1 つのクエリで複数の出力に書き込むことができます。
+クエリーはStream Analyticsの馬車馬です。ここでストリーミング入力を処理し、出力にデータを書き込みます。Stream Analytics クエリー言語は SQL に似ており、使い慣れた構文を使用して、ストリーミング データの探索と変換、集計の作成、および出力シンクに書き込む前にデータ構造を形成するために使用できる具体化されたビューを作成できます。Stream Analytics ジョブは 1 つのクエリーしか持ち込めませんが、次の手順で行うように、1 つのクエリーで複数の出力に書き込むことができます。
 
-以下のクエリを分析してください。作成した Event Hubs 入力に対して `events` 入力名と `powerbi` と `cosmosDB` 出力をそれぞれ使用していることに注目してください。また、`VehicleData` では30秒、`VehicleDataAll` では10秒の持続時間で `TumblingWindow` を使用する場所も確認できます。`TumblingWindow` は、過去X秒中に発生したイベントを評価し、この場合、レポートの期間にわたって平均を作成するのに役立ちます。
+以下のクエリーを分析してください。作成した Event Hubs 入力に対して `events` 入力名と `powerbi` と `cosmosDB` 出力をそれぞれ使用していることに注目してください。また、`VehicleData` では30秒、`VehicleDataAll` では10秒の持続時間で `TumblingWindow` を使用する場所も確認できます。`TumblingWindow` は、過去X秒中に発生したイベントを評価し、この場合、レポートの期間にわたって平均を作成するのに役立ちます。
 
 1. 左側のメニューから **Query** を選択します。以下のスクリプトでクエリーウインドウの中身を置き換えます:
 
@@ -889,7 +889,7 @@ Event Hubsの入力がリストされているのが見えるはずです。
 
 **Duration**: 30 minutes
 
-このシナリオのアーキテクチャでは、Azure Functions がイベント処理で大きな役割を果たします。これらのFunctionは、クラウド内の小さなコード(関数)を簡単に実行するためのMicrosoftのサーバーレス ソリューションである Azure Function App 内で実行されます。アプリケーション全体やインフラストラクチャを実行する必要なく、問題に必要なコードだけを記述できます。Functions は開発の生産性をさらに高め、C#、F#、Node.js、Java、PHP などの開発言語を使用できます。
+このシナリオのアーキテクチャでは、Azure Functions がイベント処理で大きな役割を果たします。これらのFunctionは、クラウド内の小さなコード(関数)を簡単に実行するためのMicrosoftのサーバーレス ソリューションである Azure Functions アプリケーション内で実行されます。アプリケーション全体やインフラストラクチャを実行する必要なく、問題に必要なコードだけを記述できます。Functions は開発の生産性をさらに高め、C#、F#、Node.js、Java、PHP などの開発言語を使用できます。
 
 この演習に進む前に、Functions と Web App がアーキテクチャにどのように適合するかを見ていきましょう。
 
@@ -903,8 +903,8 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
 - **IoT-StreamProcessing Function App**: これはストリーム処理の Function App であり、2つの関数が含まれています。
 
-- **IoTHubTrigger**: この関数は、車両テレメトリがデータ ジェネレータによって送信されるにつれて、IoT Hub の Event Hub エンドポイントによって自動的にトリガーされます。この関数は、パーティションキー値、ドキュメントの TTL、を定義してデータに対して軽い処理を実行し、タイムスタンプ値を追加し、情報を Cosmos DB に保存します。
-  - **HealthCheck**: この関数には HTTP トリガーがあり、ユーザーは Function App が起動して実行中であり、各構成設定が存在し、値を持っていることを確認できます。より徹底的なチェックでは、各値が予期される形式に対して、または必要に応じて各サービスに接続することによって検証されます。すべての値にゼロ以外の文字列が含まれている場合、関数は HTTP ステータス `200` (OK) を返します。null または空の値がある場合、関数はエラー (`200`) を返し、どの値が欠落していることを示します。データ ジェネレータは、実行する前にこの関数を呼び出します。
+- **IoTHubTrigger**: この関数は、車両テレメトリがデータ ジェネレーターによって送信されるにつれて、IoT Hub の Event Hub エンドポイントによって自動的にトリガーされます。この関数は、パーティションキー値、ドキュメントの TTL、を定義してデータに対して軽い処理を実行し、タイムスタンプ値を追加し、情報を Cosmos DB に保存します。
+  - **HealthCheck**: この関数には HTTP トリガーがあり、ユーザーは Function App が起動して実行中であり、各構成設定が存在し、値を持っていることを確認できます。より徹底的なチェックでは、各値が予期される形式に対して、または必要に応じて各サービスに接続することによって検証されます。すべての値にゼロ以外の文字列が含まれている場合、関数は HTTP ステータス `200` (OK) を返します。null または空の値がある場合、関数はエラー (`200`) を返し、どの値が欠落していることを示します。データ ジェネレーターは、実行する前にこの関数を呼び出します。
 
   ![The Event Processing function is shown.](media/solution-architecture-function1.png 'Solution architecture')
 
@@ -913,11 +913,11 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 - **TripProcessor**: この関数は、VINによって車両テレメトリデータをグループ化し、 `metadata` コンテナーから関連するトリップレコードを取得し、トリップ開始タイムスタンプ、完了した場合は終了タイムスタンプ、およびトリップの有無を示すステータス、トリップが開始された、遅れている、または完了したのいずれか、を更新します。また、関連する委託レコードをステータスで更新し、Function App のアプリ設定で定義された受信者にアラートを電子メールで送信する必要がある場合は、トリップ情報を含む Logic App をトリガーします (`RecipientEmail`)。
   - **ColdStorage**: この関数は Azure Storage アカウント (`ColdStorageAccount`) に接続し、次のタイム スライスパス形式でコールド ストレージ用の生の車両テレメトリ データを書き込みます: `telemetry/custom/scenario1/yyyy/MM/dd/HH/mm/ss-fffffff.json`。
   - ** SendToEventHubsForReporting** : この関数は、車両テレメトリ データを Event Hubs に直接送信するだけで、Stream Analytics はウィンドウ化された集計を適用し、それらの集計を Power BI および Cosmos DB のメタデータ コンテナーにバッチで保存できます。
-  - **HealthCheck**: ストリーム処理 Function App 内の同じ名前の関数と同様に、この関数には HTTP トリガーがあり、Function Appが稼働中であり、各構成設定が存在し、値を持っていることをユーザーが確認できます。データ ジェネレータは、実行する前にこの関数を呼び出します。
+  - **HealthCheck**: ストリーム処理 Function App 内の同じ名前の関数と同様に、この関数には HTTP トリガーがあり、Function Appが稼働中であり、各構成設定が存在し、値を持っていることをユーザーが確認できます。データ ジェネレーターは、実行する前にこの関数を呼び出します。
 
   ![The Trip Processing function is shown.](media/solution-architecture-function2.png 'Solution architecture')
 
-- **IoTWebApp**: Web App はフリート管理ポータルを提供し、ユーザーが車両データに対して CRUD 操作を実行し、デプロイされた機械学習モデルに対して車両のリアルタイムバッテリ故障予測を行い、委託、小包、およびトリップを表示できるようにします。[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用して、Cosmos DBの `metadata` コンテナーに接続します。
+- **IoTWebApp**: Web App はフリート管理ポータルを提供し、ユーザーが車両データに対して CRUD 操作を実行し、デプロイされた機械学習モデルに対して車両のリアルタイムバッテリー故障予測を行い、委託、小包、およびトリップを表示できるようにします。[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用して、Cosmos DBの `metadata` コンテナーに接続します。
 
   ![The Web App is shown.](media/solution-architecture-webapp.png 'Solution architecture')
 
@@ -957,7 +957,7 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
    ![The Key Vault is highlighted in the resource group.](media/resource-group-keyvault.png 'Resource group')
 
-4. 別のブラウザのタブで、名前が **IoT-CosmosDBProcessing** で始まる Azure Function App を選択します。
+4. 別のブラウザのタブで、名前が **IoT-CosmosDBProcessing** で始まる Azure Functions アプリケーションを選択します。
 
 5. Overviewペインで **Configuration** を選択します。
 
@@ -977,7 +977,7 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
 7. **Save** を選択し、変更を適用します。
 
-8. 名前が **IoT-StreamProcessing** で始まる Azure Function App を開きます。
+8. 名前が **IoT-StreamProcessing** で始まる Azure Functions アプリケーションを開きます。
 
 9. Overviewペインで **Configuration** を選択します。
 
@@ -1016,7 +1016,7 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
 ### Task 3: Open solution
 
-このタスクでは、この演習の Visual Studio ソリューションを開きます。これには、Function App、Web App、およびデータ ジェネレータの両方のプロジェクトが含まれています。
+このタスクでは、この演習の Visual Studio ソリューションを開きます。これには、Function App、Web App、およびデータ ジェネレーターの両方のプロジェクトが含まれています。
 
 1. Windowsエクスプローラーを開いて _Before the HOL_ガイド内でソリューションのZIPファイルが展開された場所に移動します。もし`C:\`に直接ZIPファイルを展開した場合、以下のフォルダを開く必要があります:`C:\cosmos-db-scenario-based-labs-master\IoT\Starter` Visual Studioのソリューションファイルを開きます:**CosmosDbIoTScenario.sln**
 
@@ -1082,7 +1082,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     }
     ```
 
-    上記のコードを追加すると、関数コードに `HttpClientFactory` と `CosmosClient` を挿入できるため、これらのサービスは独自の接続とライフサイクルを管理してパフォーマンスを向上させ、スレッドの枯渇やその他の問題、高価なオブジェクトのインスタンスが誤って作成され過ぎて起こされる、を防ぐことができます。`HttpClientFactory` は、以前のコード変更を行った `Startup.cs` で既に構成されています。Logic App エンドポイントにアラートを送信するために使用され、[Polly](https://github.com/App-vNext/Polly) を使用して、Logic Appが過負荷になっている場合や、HTTP エンドポイントへの呼び出しが失敗する原因となるその他の問題がある場合に備えて、段階的なバックオフ待機ポリシーと再試行ポリシーを使用します。
+    上記のコードを追加すると、関数コードに `HttpClientFactory` と `CosmosClient` を挿入できるため、これらのサービスは独自の接続とライフサイクルを管理してパフォーマンスを向上させ、スレッドの枯渇やその他の問題、高価なオブジェクトのインスタンスが誤って作成され過ぎて起こされる、を防ぐことができます。`HttpClientFactory` は、以前のコード変更を行った `Startup.cs` で既に構成されています。Logic App エンドポイントにアラートを送信するために使用され、[Polly](https://github.com/App-vNext/Polly) を使用して、Logic App が過負荷になっている場合や、HTTP エンドポイントへの呼び出しが失敗する原因となるその他の問題がある場合に備えて、段階的なバックオフ待機ポリシーと再試行ポリシーを使用します。
 
 5. 今完了したばかりのコンストラクタコードの下にある最初の関数コードを見てみます:
 
@@ -1140,7 +1140,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
             var consignment = document.Resource;
     ```
 
-    ここでは、クラスに追加された CosmosClient (`_cosmosClient`) を使用して Cosmos DB コンテナー参照を取得することにより、[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) を使用しています。LINQ 構文を使用してコンテナーをクエリし、結果を `Trip` クラス型の新しいコレクションにバインドするには、コンテナーの `GetItemLinqQueryable` を使用します。**partition key** (この場合はVIN)を渡して、クロス・パーティションやファンアウトするクエリーを実行しないでRU/sを節約する方法に注意してください。また、他のエンティティタイプは車両タイプなど、同じパーティションキーを持つことができるため、クエリで `entityType` ドキュメント プロパティをトリップに設定して取得するドキュメントの種類も定義します。
+    ここでは、クラスに追加された CosmosClient (`_cosmosClient`) を使用して Cosmos DB コンテナー参照を取得することにより、[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) を使用しています。LINQ 構文を使用してコンテナーをクエリーし、結果を `Trip` クラス型の新しいコレクションにバインドするには、コンテナーの `GetItemLinqQueryable` を使用します。**partition key** (この場合はVIN)を渡して、クロス・パーティションやファンアウトするクエリーを実行しないでRU/sを節約する方法に注意してください。また、他のエンティティタイプは車両タイプなど、同じパーティションキーを持つことができるため、クエリーで `entityType` ドキュメント プロパティをトリップに設定して取得するドキュメントの種類も定義します。
 
     委託 ID を持っているので、`ReadItemAsync` メソッドを使用して単一の委託レコードを取得できます。ここでは、ファンアウトを最小限に抑えるためにパーティションキーを渡します。Cosmos DB コンテナー内では、ドキュメントの一意の ID は `id` フィールドとパーティション キー値の組み合わせです。
 
@@ -1166,7 +1166,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
     ```
 
-    ここでは、挿入された `HttpClientFactory` によって作成された `HttpClient` を使用して、シリアル化された `LogicAppAlert` オブジェクトを Logic App に投稿します。`Environment.GetEnvironmentVariable("LogicAppUrl")`メソッドは、Function App のアプリケーション設定からLogic AppのURLを抽出し、アプリ設定に追加した特別なKey Vaultアクセス文字列を使用して、Key Vaultシークレットから暗号化された値を抽出します。
+    ここでは、挿入された `HttpClientFactory` によって作成された `HttpClient` を使用して、シリアル化された `LogicAppAlert` オブジェクトを Logic App に投稿します。`Environment.GetEnvironmentVariable("LogicAppUrl")`メソッドは、Function App のアプリケーション設定からLogic App の URL を抽出し、アプリ設定に追加した特別な Key Vault アクセス文字列を使用して、Key Vault シークレットから暗号化された値を抽出します。
 
 10. 関数内を少しだけ下にスクロールして、**TODO 6** 内に以下をペーストしてコードを完了します:
 
@@ -1214,7 +1214,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     `partitionKey` プロパティは、VIN + 現在の年/月で構成される Cosmos DB コンテナーの合成複合パーティション キーを表します。単に VIN の代わりに複合キーを使用すると、次の利点が得られます。
 
     1. パーティション キーのカーディナリティが高い上に、任意の時点での書き込みワークロードを分散します。
-    2. 特定の VIN 上のクエリに対する効率的なルーティングを確保する - これらを時間で分散することができます。例 `SELECT * FROM c WHERE c.partitionKey IN ("VIN123-2019-01", "VIN123-2019-02", …)`
+    2. 特定の VIN 上のクエリーに対する効率的なルーティングを確保する - これらを時間で分散することができます。例 `SELECT * FROM c WHERE c.partitionKey IN ("VIN123-2019-01", "VIN123-2019-02", …)`
     3. 単一のパーティション キー値の 10 GB クォータを超えてスケーリングします。
 
     `ttl` プロパティはドキュメントの存続時間を 60 日に設定し、その後 Cosmos DB はドキュメントを削除します。
@@ -1294,9 +1294,9 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     以前のFunction Appと同様に、このコントローラーで依存関係の注入を使用しています。`ICosmosDbService`、`IHttpClientFactory`、および `IConfiguration` サービスは、コントローラのコンストラクターを介してコントローラに注入されます。`CosmosDbService` は、前の手順でコードを更新したクラスです。`CosmosClient` はコンストラクターを介して注入されます。
 
-    `Index` コントローラーアクションメソッドは、前の手順で更新した `ICosmosDbService.GetItemsWithPagingAsync` メソッドを呼び出すことによって実装されるページングを使用します。コントローラーでこのサービスを使用すると、アクション メソッドのコードから Cosmos DB クエリの実装の詳細とビジネス ルールを抽象化し、コントローラを軽量に保ち、サービス内のコードをすべてのコントローラ間で再利用可能にすることができます。
+    `Index` コントローラーアクションメソッドは、前の手順で更新した `ICosmosDbService.GetItemsWithPagingAsync` メソッドを呼び出すことによって実装されるページングを使用します。コントローラーでこのサービスを使用すると、アクション メソッドのコードから Cosmos DB クエリーの実装の詳細とビジネス ルールを抽象化し、コントローラを軽量に保ち、サービス内のコードをすべてのコントローラ間で再利用可能にすることができます。
 
-    ページング クエリにはパーティション キーが含まれていないため、Cosmos DB クエリはパーティション間でクエリを実行できる必要があります。このクエリが `search` 値で渡され、実行あたりのコンテナーでの RU 使用量が必要以上に高くなる場合は、`vin` と `stateVehicleRegistered ` の組み合わせなど、パーティション キーの代替戦略を検討する必要があります。ただし、このコンテナー内の車両のアクセス パターンのほとんどは VIN を使用するため、現在はパーティション キーとして使用しています。パーティション キー値を明示的に渡すメソッドには、さらに下にコードが表示されます。
+    ページング クエリーにはパーティション キーが含まれていないため、Cosmos DB クエリーはパーティション間でクエリーを実行できる必要があります。このクエリーが `search` 値で渡され、実行あたりのコンテナーでの RU 使用量が必要以上に高くなる場合は、`vin` と `stateVehicleRegistered ` の組み合わせなど、パーティション キーの代替戦略を検討する必要があります。ただし、このコンテナー内の車両のアクセス パターンのほとんどは VIN を使用するため、現在はパーティション キーとして使用しています。パーティション キー値を明示的に渡すメソッドには、さらに下にコードが表示されます。
 
 21. **VehiclesController.cs** を下にスクロールして、**TODO 11** を見つけ、以下のコードで完成させます:
 
@@ -1382,7 +1382,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 ### Task 8: View Cosmos DB processing Function App in the portal and copy the Health Check URL
 
-1. Azure portal (<https://portal.azure.com>)で、名前が **IoT-CosmosDBProcessing** で始まる Azure Function App を開きます。
+1. Azure portal (<https://portal.azure.com>)で、名前が **IoT-CosmosDBProcessing** で始まる Azure Functions アプリケーションを開きます。
 
 2. 左側のメニューから **Functions** リストを開き、**TripProcessor** を選択します。
 
@@ -1390,7 +1390,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 3. **function.json** ファイルを右側に表示します。このファイルは、Visual Studio で Function App を公開したときに生成されました。バインディングは、関数のプロジェクト コードで見たのと同じです。Function App の新しいインスタンスが作成されると、生成された `function.json` ファイルとコンパイル済みアプリケーションを含む ZIP ファイルがこれらのインスタンスにコピーされ、これらのインスタンスは並列に実行され、アーキテクチャを流れるデータフローとして負荷を共有します。`function.json` ファイルは、各インスタンスに属性を関数にバインドする方法、アプリケーション設定を検索する場所、およびコンパイルされたアプリケーション (`scriptFile` と `entryPoint`) に関する情報を指示します。
 
-4. **HealthCheck** 関数を選択します。この関数には Http トリガーがあり、ユーザーは Function App が起動して実行中であり、各構成設定が存在し、値を持っていることを確認できます。データ ジェネレータは、実行する前にこの関数を呼び出します。
+4. **HealthCheck** 関数を選択します。この関数には Http トリガーがあり、ユーザーは Function App が起動して実行中であり、各構成設定が存在し、値を持っていることを確認できます。データ ジェネレーターは、実行する前にこの関数を呼び出します。
 
 5. **Get function URL** を選択します。
 
@@ -1402,7 +1402,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 ### Task 9: View stream processing Function App in the portal and copy the Health Check URL
 
-1. Azure portal (<https://portal.azure.com>)で、名前が **IoT-StreamProcessing** で始まる Azure Function App を開きます。
+1. Azure portal (<https://portal.azure.com>)で、名前が **IoT-StreamProcessing** で始まる Azure Functions アプリケーションを開きます。
 
 2. 左側のメニューから **Functions** リストを開き、**HealthCheck** 関数を選択します。次に、**Get function URL** を選択します。
 
@@ -1412,17 +1412,17 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![The HealthCheck URL is highlighted.](media/portal-stream-function-healthcheck-url.png "Get function URL")
 
-> **ヒント**: ヘルスチェック URL を Web ブラウザに貼り付け、いつでも状態を確認できます。データ ジェネレータは、実行するたびにこれらの URL にプログラムでアクセスし、Function App が失敗した状態にあるか、重要なアプリケーション設定が欠落しているかどうかを報告します。
+> **ヒント**: ヘルスチェック URL を Web ブラウザに貼り付け、いつでも状態を確認できます。データ ジェネレーターは、実行するたびにこれらの URL にプログラムでアクセスし、Function App が失敗した状態にあるか、重要なアプリケーション設定が欠落しているかどうかを報告します。
 
 ## Exercise 4: Explore and execute data generator
 
 **Duration**: 10 minutes
 
-この演習では、データ ジェネレータ プロジェクト **FleetDataGenerator** を探索し、アプリケーション構成を更新し、メタデータ データベースをデータでシードし、単一の車両をシミュレートするために実行します。
+この演習では、データ ジェネレーター プロジェクト **FleetDataGenerator** を探索し、アプリケーション構成を更新し、メタデータ データベースをデータでシードし、単一の車両をシミュレートするために実行します。
 
-環境の状態に応じて、データ ジェネレータが実行するタスクがいくつかあります。最初のタスクは、これらの要素が Cosmos DB アカウントに存在しない場合、ジェネレータがこの演習に最適な構成の Cosmos DB データベースとコンテナーを作成することです。しばらくすると、演習の開始時にジェネレータを既に作成しているため、この手順はスキップされます。ジェネレータが実行する 2 番目のタスクは、データが存在しない場合に Cosmos DB のメタデータ コンテナーをデータでシードすることです。これには、車両、委託、小包、およびトリップデータが含まれます。データを使用してコンテナーをシードする前に、ジェネレータは、最適なデータ取り込み速度のために、コンテナーに対して要求された RU/s を一時的に 50,000 に増やします。シード処理が完了すると、RU/s は 15,000 にスケールダウンされます。
+環境の状態に応じて、データ ジェネレーターが実行するタスクがいくつかあります。最初のタスクは、これらの要素が Cosmos DB アカウントに存在しない場合、ジェネレーターがこの演習に最適な構成の Cosmos DB データベースとコンテナーを作成することです。しばらくすると、演習の開始時にジェネレーターを既に作成しているため、この手順はスキップされます。ジェネレーターが実行する 2 番目のタスクは、データが存在しない場合に Cosmos DB のメタデータ コンテナーをデータでシードすることです。これには、車両、委託、小包、およびトリップデータが含まれます。データを使用してコンテナーをシードする前に、ジェネレーターは、最適なデータ取り込み速度のために、コンテナーに対して要求された RU/s を一時的に 50,000 に増やします。シード処理が完了すると、RU/s は 15,000 にスケールダウンされます。
 
-ジェネレータはメタデータの存在を確認した後、指定された数の車両のシミュレートを開始します。それぞれ、1、10、50、100、または構成設定で指定された車両数をシミュレートして、1 から 5 の間の番号を入力するように求められます。シミュレートされた車両ごとに、次のタスクが実行されます。
+ジェネレーターはメタデータの存在を確認した後、指定された数の車両のシミュレートを開始します。それぞれ、1、10、50、100、または構成設定で指定された車両数をシミュレートして、1 から 5 の間の番号を入力するように求められます。シミュレートされた車両ごとに、次のタスクが実行されます。
 
 1. IoT デバイスは、IoT Hub 接続文字列を使用して車両に登録され、デバイス ID を車両の VIN に設定します。これにより、生成されたデバイス キーが返されます。
 2. 新しいシミュレートされた車両インスタンス(`SimulatedVehicle`)がシミュレートされた車両のコレクションに追加され、それぞれが AMQP デバイスとして機能し、委託の荷物の配送をシミュレートするトリップ レコードが割り当てられます。これらの車両は、冷凍ユニットが故障するようにランダムに選択され、そのうちのいくつかは、他の車両が徐々に失敗しながら、ランダムにすぐに失敗します。
@@ -1439,9 +1439,9 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 ### Task 2: Code walk-through
 
-データ ジェネレータ プロジェクトには多くのコードがあるので、ハイライトについて触れます。私たちがカバーしていないコードはコメントされており、あなたがそう望むなら追うのは簡単なはずです。
+データ ジェネレーター プロジェクトには多くのコードがあるので、ハイライトについて触れます。私たちがカバーしていないコードはコメントされており、あなたがそう望むなら追うのは簡単なはずです。
 
-1. **Program.cs** の **Main** メソッド内で、データ ジェネレータの中心であるワークフローは以下のコードブロックによって実行されます:
+1. **Program.cs** の **Main** メソッド内で、データ ジェネレーターの中心であるワークフローは以下のコードブロックによって実行されます:
 
     ```csharp
     // Instantiate Cosmos DB client and start sending messages:
@@ -1561,7 +1561,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 ### Task 3: Update application configuration
 
-データ ジェネレータを正常に実行する前に、2 つの接続文字列が必要です; IoT Hub 接続文字列と Cosmos DB 接続文字列。IoT Hub 接続文字列は、IoT Hub で **Shared access policies** を選択し、**iothubowner** ポリシーを選択し、**Connection string--primary key** 値をコピーすることで見つけることができます。これは、前にコピーしたEvent Hub互換のエンドポイント接続文字列とは異なります。
+データ ジェネレーターを正常に実行する前に、2 つの接続文字列が必要です; IoT Hub 接続文字列と Cosmos DB 接続文字列。IoT Hub 接続文字列は、IoT Hub で **Shared access policies** を選択し、**iothubowner** ポリシーを選択し、**Connection string--primary key** 値をコピーすることで見つけることができます。これは、前にコピーしたEvent Hub互換のエンドポイント接続文字列とは異なります。
 
 ![The iothubowner shared access policy is displayed.](media/iot-hub-connection-string.png "IoT Hub shared access policy")
 
@@ -1569,11 +1569,11 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 2. **IOT_HUB_CONNECTION_STRING** キーの次に、引用符で囲まれた IoT Hub 接続文字列をペーストします。**COSMOS_DB_CONNECTION_STRING** キーの次に、引用符で囲まれた CosmosDB 接続文字列をペーストします。
 
-3. データ ジェネレータには、両方の Function App にある `HealthCheck` 関数の前の演習でコピーしたヘルスチェック URL も必要です。**COSMOS_PROCESSING_FUNCTION_HEALTHCHECK_URL** キーの次に、引用符で囲まれた CosmosDB 処理 Function Appの `HealthCheck` 関数のURLをペーストします。**STREAM_PROCESSING_FUNCTION_HEALTHCHECK_URL** キーの次に、引用符で囲まれたストリーム処理 Function App の `HealthCheck` 関数のURLをペーストします。
+3. データ ジェネレーターには、両方の Function App にある `HealthCheck` 関数の前の演習でコピーしたヘルスチェック URL も必要です。**COSMOS_PROCESSING_FUNCTION_HEALTHCHECK_URL** キーの次に、引用符で囲まれた CosmosDB 処理 Function Appの `HealthCheck` 関数のURLをペーストします。**STREAM_PROCESSING_FUNCTION_HEALTHCHECK_URL** キーの次に、引用符で囲まれたストリーム処理 Function App の `HealthCheck` 関数のURLをペーストします。
 
     ![The appsettings.json file is highlighted in the Solution Explorer, and the connection strings and health check URLs are highlighted within the file.](media/vs-appsettings.png "appsettings.json")
 
-    NUMBER_SIMULATED_TRUCKS 値は、ジェネレータの実行時にオプション 5 を選択するときに使用されます。これにより、一度に 1 ~ 1,000 台のトラックを柔軟にシミュレートできました。SECONDS_TO_LEAD は、ジェネレータがシミュレートされたデータの生成を開始するまで待機する秒数を指定します。デフォルト値は 0 です。SECONDS_TO_RUN は、シミュレートされたトラックに生成されたデータの送信を強制的に停止します。デフォルト値は 14400 です。それ以外の場合、ジェネレータは、すべてのトリップが完了したときにタスクの送信を停止するか、コンソール ウィンドウに `Ctrl+C` または `Ctrl +Break` と入力してキャンセルします。
+    NUMBER_SIMULATED_TRUCKS 値は、ジェネレーターの実行時にオプション 5 を選択するときに使用されます。これにより、一度に 1 ~ 1,000 台のトラックを柔軟にシミュレートできました。SECONDS_TO_LEAD は、ジェネレーターがシミュレートされたデータの生成を開始するまで待機する秒数を指定します。デフォルト値は 0 です。SECONDS_TO_RUN は、シミュレートされたトラックに生成されたデータの送信を強制的に停止します。デフォルト値は 14400 です。それ以外の場合、ジェネレーターは、すべてのトリップが完了したときにタスクの送信を停止するか、コンソール ウィンドウに `Ctrl+C` または `Ctrl +Break` と入力してキャンセルします。
 
 3. **appsettings.json** ファイルを **Save** します。
 
@@ -1581,26 +1581,26 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 ### Task 4: Run generator
 
-このタスクでは、ジェネレータを実行し、50 台のトラックのイベントを生成します。非常に多くの車両のイベントを生成する理由は、2 つあります:
+このタスクでは、ジェネレーターを実行し、50 台のトラックのイベントを生成します。非常に多くの車両のイベントを生成する理由は、2 つあります:
 
    - 次の演習で、Application Insights で関数トリガーとイベントアクティビティを観察します。
    - 後段の演習で、バッチ処理の予測を実行する前に、トリップを完了させておく必要があります。
 
-> **警告**: ジェネレータが車両テレメトリの送信を開始すると、大量の電子メールが送信されます。メールを受信したくない場合は、作成した Logic App を無効にします。
+> **警告**: ジェネレーターが車両テレメトリの送信を開始すると、大量の電子メールが送信されます。メールを受信したくない場合は、作成した Logic App を無効にします。
 
-1. Visual Studio の Solution Explorerで **FleetDataGenerator** プロジェクトを右クリックし、**Set as Startup Project** を選択します。デバッグを実行するたびにデータジェネレータが自動的に実行されるようになります。
+1. Visual Studio の Solution Explorerで **FleetDataGenerator** プロジェクトを右クリックし、**Set as Startup Project** を選択します。デバッグを実行するたびにデータジェネレーターが自動的に実行されるようになります。
 
     ![Set as Startup Project is highlighted in the Solution Explorer.](media/vs-set-startup-project.png "Solution Explorer")
 
-2. Visual Studio のウインドウの最上部にあるデバッグ ボタンを選択するか、**F5** を押してデータジェネレータを実行します。
+2. Visual Studio のウインドウの最上部にあるデバッグ ボタンを選択するか、**F5** を押してデータジェネレーターを実行します。
 
     ![The debug button is highlighted.](media/vs-debug.png "Debug")
 
-3. コンソールウィンドウが表示されたら、**3** と入力して50台の車両をシミュレートします。ジェネレータは、Function App の正常性チェックを実行し、`metadata` コンテナーの要求されたスループットのサイズを変更し、バルク インポーターを使用してコンテナーをシードし、スループットのサイズを 15,000 RU/s に戻します。
+3. コンソールウィンドウが表示されたら、**3** と入力して50台の車両をシミュレートします。ジェネレーターは、Function App の正常性チェックを実行し、`metadata` コンテナーの要求されたスループットのサイズを変更し、バルク インポーターを使用してコンテナーをシードし、スループットのサイズを 15,000 RU/s に戻します。
 
     ![3 has been entered in the console window.](media/cmd-run.png "Generator")
 
-4. シードが完了すると、ジェネレータはデータベースから 50 回のトリップを取得し、最初に最短の移動距離で並べ替えられ、完了したトリップ データがより速く表示されるようにします。VIN、メッセージ数、およびトリップの残りのマイル数を持つ車両ごとに、送信された 50 イベントごとにメッセージ出力が表示されます。例: `Vehicle 19: C1OVHZ8ILU8TGGPD8 Message count: 3650 -- 3.22 miles remaining`。**ジェネレータをバックグラウンドで実行し、次の演習**に進みます。
+4. シードが完了すると、ジェネレーターはデータベースから 50 回のトリップを取得し、最初に最短の移動距離で並べ替えられ、完了したトリップ データがより速く表示されるようにします。VIN、メッセージ数、およびトリップの残りのマイル数を持つ車両ごとに、送信された 50 イベントごとにメッセージ出力が表示されます。例: `Vehicle 19: C1OVHZ8ILU8TGGPD8 Message count: 3650 -- 3.22 miles remaining`。**ジェネレーターをバックグラウンドで実行し、次の演習**に進みます。
 
     ![Vehicle simulation begins.](media/cmd-simulated-vehicles.png "Generator")
 
@@ -1608,17 +1608,17 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![A completed messages is displayed in the generator console.](media/cmd-vehicle-completed.png "Generator")
 
-6. ジェネレータが完了すると、この効果へのメッセージが表示されます。
+6. ジェネレーターが完了すると、この効果へのメッセージが表示されます。
 
     ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png "Generator")
 
-Function App のヘルスチェックが失敗した場合、データ ジェネレータには警告が表示され、多くの場合、どのアプリケーション設定が欠落しているかを示します。データ ジェネレータは、ヘルスチェックに合格するまで実行されません。アプリケーション設定のトラブルシューティングに関するヒントについては、上記の演習 3、タスク 2 を参照してください。
+Function App のヘルスチェックが失敗した場合、データ ジェネレーターには警告が表示され、多くの場合、どのアプリケーション設定が欠落しているかを示します。データ ジェネレーターは、ヘルスチェックに合格するまで実行されません。アプリケーション設定のトラブルシューティングに関するヒントについては、上記の演習 3、タスク 2 を参照してください。
 
 ![The failed health checks are highlighted.](media/cmd-healthchecks-failed.png "Generator")
 
 ### Task 5: View devices in IoT Hub
 
-データジェネレータは、IoT Hubに各シミュレート車両をデバイスとして登録し、アクティブ化しました。このタスクでは、IoT Hub を開き、これらの登録済みデバイスを表示します。
+データジェネレーターは、IoT Hubに各シミュレート車両をデバイスとして登録し、アクティブ化しました。このタスクでは、IoT Hub を開き、これらの登録済みデバイスを表示します。
 
 1. Azure portal (<https://portal.azure.com>)で、**cosmos-db-iot** リソースグループにある IoT Hub のインスタンスを開きます。
 
@@ -1680,7 +1680,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ![The query editor is displayed with the vehicle results.](media/cosmos-vehicle-query.png "Vehicle query")
 
-7. クエリを更新して、トリップが完了した場所のトリップレコードを検索します。
+7. クエリーを更新して、トリップが完了した場所のトリップレコードを検索します。
 
     ```sql
     SELECT * FROM c WHERE c.entityType = 'Trip' AND c.status = 'Completed'
@@ -1738,7 +1738,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
     }
     ```
 
-    小包および委託レコードの一部は、トリップクエリやレポートでよく使用されるので、ここに含まれます。
+    小包および委託レコードの一部は、トリップクエリーやレポートでよく使用されるので、ここに含まれます。
 
 ### Task 2: Search and view data in Web App
 
@@ -1766,7 +1766,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ![The consignment details page is displayed.](media/webapp-consignment-details.png "Consignment details")
 
-7. 左側のメニューで **トリップ** を選択します。ページ上部のフィルタを使用して、[保留中]、[アクティブ]、[遅延]、[完了済み] などのステータスでトリップをフィルター処理します。納期より前にステータスが完了していない場合、トリップは遅れます。この時点では遅延は発生しない場合がありますが、後でデータ ジェネレータを再実行すると遅延する場合があります。このページから車両または関連する委託レコードを表示できます。
+7. 左側のメニューで **トリップ** を選択します。ページ上部のフィルタを使用して、[保留中]、[アクティブ]、[遅延]、[完了済み] などのステータスでトリップをフィルター処理します。納期より前にステータスが完了していない場合、トリップは遅れます。この時点では遅延は発生しない場合がありますが、後でデータ ジェネレーターを再実行すると遅延する場合があります。このページから車両または関連する委託レコードを表示できます。
 
     ![The search results are displayed.](media/webapp-trips-search.png "Trips")
 
@@ -1970,11 +1970,11 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
     ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png "Power BI dashboard")
 
-38. データ ジェネレータがイベントの送信を完了すると、ダッシュボード上のタイルが空であることがわかります。その場合は、データジェネレータをもう一度起動し、今回は 1 台の車両に対して **option 1** を選択します。これを行う場合、冷凍温度異常が必ず発生し、冷凍ユニットの温度が華氏22.5度の警報閾値を徐々に上回ることがわかります。または、より多くの車両をシミュレートし、高いイベント数を観察することもできます。
+38. データ ジェネレーターがイベントの送信を完了すると、ダッシュボード上のタイルが空であることがわかります。その場合は、データジェネレーターをもう一度起動し、今回は 1 台の車両に対して **option 1** を選択します。これを行う場合、冷凍温度異常が必ず発生し、冷凍ユニットの温度が華氏22.5度の警報閾値を徐々に上回ることがわかります。または、より多くの車両をシミュレートし、高いイベント数を観察することもできます。
 
     ![The live dashboard is shown with events.](media/power-bi-dashboard-live-results.png "Power BI dashboard")
 
-    ジェネレータが車両テレメトリの送信を開始すると、ダッシュボードは数秒後に動作を開始します。このスクリーンショットでは、過去 10 秒間に 2,486 件のイベントを含む 50 台の車両をシミュレートしています。ジェネレータを実行しているコンピュータの速度、ネットワークの速度と待機時間、およびその他の要因によっては、`eventCount` の値が高くなったり低くなったりすることがあります。
+    ジェネレーターが車両テレメトリの送信を開始すると、ダッシュボードは数秒後に動作を開始します。このスクリーンショットでは、過去 10 秒間に 2,486 件のイベントを含む 50 台の車両をシミュレートしています。ジェネレーターを実行しているコンピュータの速度、ネットワークの速度と待機時間、およびその他の要因によっては、`eventCount` の値が高くなったり低くなったりすることがあります。
 
 ## Exercise 9: Run the predictive maintenance batch scoring
 
@@ -1982,7 +1982,7 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
 この演習では、Databricks ノートブックを Azure Databricks ワークスペースにインポートします。ノートブックは対話型で、任意の Web ブラウザで実行され、マークアップ (書式設定されたテキストと命令)、実行可能なコード、およびコードの実行による出力が混在します。
 
-次に、バッチ スコアリング ノートブックを実行して、Cosmos DB に格納されている車両とトリップ データを使用して、車両のバッテリ故障予測を行います。
+次に、バッチ スコアリング ノートブックを実行して、Cosmos DB に格納されている車両とトリップ データを使用して、車両のバッテリー故障予測を行います。
 
 ### Task 1: Import lab notebooks into Azure Databricks
 
@@ -2010,12 +2010,12 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
 ### Task 2: Run batch scoring notebook
 
-このタスクでは、事前にトレーニングされた機械学習 (ML) モデルを使用して、次の 30 日以内に複数の車両でバッテリを交換する必要があるかどうかを判断する `Batch Scoring` ノートブックを実行します。ノートブックは、次のアクションを実行します。
+このタスクでは、事前にトレーニングされた機械学習 (ML) モデルを使用して、次の 30 日以内に複数の車両でバッテリーを交換する必要があるかどうかを判断する `Batch Scoring` ノートブックを実行します。ノートブックは、次のアクションを実行します。
 
 1. 必要な Python ライブラリをインストールします。
 2. Azure Machine Learning service (Azure ML) に接続します。
 3. 事前にトレーニングされた ML モデルをダウンロードし、Azure ML に保存後、バッチ スコアリングにそのモデルを利用します。
-4. Cosmos DB Spark コネクタを使用して、完了したトリップと車両のメタデータを `metadata` Cosmos DB コンテナーから取得し、SQL クエリを使用してデータを準備し、データを一時ビューとして表示します。
+4. Cosmos DB Spark コネクタを使用して、完了したトリップと車両のメタデータを `metadata` Cosmos DB コンテナーから取得し、SQL クエリーを使用してデータを準備し、データを一時ビューとして表示します。
 5. 事前にトレーニングされたモデルを使って、データに対する予測を適用します。
 6. レポートのために、Cosmos DB の `maintenance` コンテナーに予測結果を保存します。
 
@@ -2050,9 +2050,9 @@ Function App のヘルスチェックが失敗した場合、データ ジェネ
 
 **Duration**: 20 minutes
 
-バッチスコアリングに加えて、Contoso Autoは特定の車両のバッテリ故障をリアルタイムで予測したいと考えています。車両を見て、その車両のバッテリーが今後30日以内に故障するかどうかを予測する際に、フリート管理のウェブサイトからモデルを呼び出すことができるようにしたいと考えています。
+バッチスコアリングに加えて、Contoso Autoは特定の車両のバッテリー故障をリアルタイムで予測したいと考えています。車両を見て、その車両のバッテリーが今後30日以内に故障するかどうかを予測する際に、フリート管理のウェブサイトからモデルを呼び出すことができるようにしたいと考えています。
 
-前のタスクでは、事前にトレーニングされた ML モデルを使用して、バッチ プロセスでトリップ データを持つすべての車両のバッテリ障害を予測するノートブックを実行しました。しかし、同じモデルを使用して、この目的のために(データ サイエンス用語では "operationalization" と呼ばれます) を Web サービスに展開するにはどうすればよいでしょうか。
+前のタスクでは、事前にトレーニングされた ML モデルを使用して、バッチ プロセスでトリップ データを持つすべての車両のバッテリー障害を予測するノートブックを実行しました。しかし、同じモデルを使用して、この目的のために(データ サイエンス用語では "operationalization" と呼ばれます) を Web サービスに展開するにはどうすればよいでしょうか。
 
 このタスクでは、Azure ML ワークスペースを使用して、事前トレーニング済みのモデルを Azure Container Instances (ACI) がホストする Web サービスにデプロイする `Model Deployment` ノートブックを実行します。Azure Kubernetes Service (AKS) で実行されている Web サービスにモデルをデプロイすることは可能ですが、10 ~ 20 分を節約できるため、代わりに ACI にデプロイしています。ただし、展開後は、Web サービスの呼び出しに使用されるプロセスは同じであり、展開を実行する手順のほとんどと同じです。
 
@@ -2110,7 +2110,7 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
     ![The prediction results show that the battery is is predicted to fail in the next 30 days.](media/web-prediction-yes.png "Vehicle details with prediction")
 
-    この車両は、**Lifetime cycles used** の数が大きく、バッテリの定格200サイクル寿命に近いです。モデルは、バッテリーが次の30日以内に故障すると予測しました。
+    この車両は、**Lifetime cycles used** の数が大きく、バッテリーの定格200サイクル寿命に近いです。モデルは、バッテリーが次の30日以内に故障すると予測しました。
 
 ## Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI
 
@@ -2179,7 +2179,7 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
     ![The Trips document columns are displayed with the changed data types.](media/pbi-queries-trips-changed-type.png "Trips with changed types")
 
-6. 左側のクエリリストで **VehicleAverages** を選択し、Applied Steps の下の **Source** を選択します。Source の横にある歯車アイコンをクリックします。
+6. 左側のクエリーリストで **VehicleAverages** を選択し、Applied Steps の下の **Source** を選択します。Source の横にある歯車アイコンをクリックします。
 
     ![The VehicleAverages query is selected and the source configuration icon is highlighted.](media/pbi-queries-vehicleaverages-source.png "Edit Queries")
 
@@ -2201,7 +2201,7 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
     ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
 
-9. 左側のクエリリストで **VehicleMaintenance** を選択し、Applied Steps の下の **Source** を選択します。Source の横にある歯車アイコンをクリックします。
+9. 左側のクエリーリストで **VehicleMaintenance** を選択し、Applied Steps の下の **Source** を選択します。Source の横にある歯車アイコンをクリックします。
 
     ![The VehicleMaintenance query is selected and the source configuration icon is highlighted.](media/pbi-queries-vehiclemaintenance-source.png "Edit Queries")
 
@@ -2249,7 +2249,7 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
     ![The Clear Filters button is highlighted.](media/pbi-clear-filters.png "Clear Filters")
 
-7. レポートの表示中にデータ ジェネレータが実行されている場合は、**Refresh** ボタンをクリックして、いつでも新しいデータでレポートを更新できます。
+7. レポートの表示中にデータ ジェネレーターが実行されている場合は、**Refresh** ボタンをクリックして、いつでも新しいデータでレポートを更新できます。
 
     ![The refresh button is highlighted.](media/pbi-refresh.png "Refresh")
 
