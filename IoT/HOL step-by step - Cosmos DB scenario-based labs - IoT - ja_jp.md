@@ -82,7 +82,7 @@ Contoso Auto は、車両と小包のテレメトリ データを収集し、Azu
 
 - **管理および顧客報告担当者** 処理後に流れ込む新しいデータで自動的に更新される Power BI レポートに表示される車両の現在の状態と顧客の委託レベル情報を確認する立場に配置する必要があるユーザー。彼らが見たいのは、ドライバーによる悪い運転行動に関するレポートと、都市や地域に関連する異常を表示するマップなどの視覚コンポーネントを使用するほか、総フリートと委託情報を明確に示すさまざまなチャートやグラフです。
 
-このエクスペリエンスでは、Cosmos DB、Azure Functions、Event Hub、Azure Data Bricks、Azure Storage、Azure Stream Analytics、Power BI、Azure Web Apps、Logic Apps上に構築されたほぼリアルタイムな分析パイプラインへのエントリーポイントとなる、車両のストリーミングテレメトリーデータを取り込むためにAzure Cosmos DBを利用します。
+このエクスペリエンスでは、Cosmos DB、Azure Functions、Event Hub、Azure Data Bricks、Azure Storage、Azure Stream Analytics、Power BI、Azure Web App、Logic Apps上に構築されたほぼリアルタイムな分析パイプラインへのエントリーポイントとなる、車両のストリーミングテレメトリーデータを取り込むためにAzure Cosmos DBを利用します。
 
 ## Solution architecture
 
@@ -92,11 +92,11 @@ Contoso Auto は、車両と小包のテレメトリ データを収集し、Azu
 
 - データの取り込み、イベント処理、およびストレージ::
 
-  IoT シナリオのソリューションは、イベント データ、フリート、委託、小包、およびトリップ メタデータ、およびレポート用の集計データをストリーミングするための、グローバルに利用可能でスケーラブルなデータ ストレージとして機能する **Cosmos DB** を中心にデプロイします。車両テレメトリ データは、**IoT Hub** に登録された IoT デバイスを介してデータ ジェネレータから流れ込み、**Azure Functions** がイベント データを処理し、Cosmos DB のテレメトリ コンテナーに挿入します。
+  IoT シナリオのソリューションは、イベントデータ、フリート、委託、小包、およびトリップ メタデータ、およびレポート用の集計データをストリーミングするための、グローバルに利用可能でスケーラブルなデータ ストレージとして機能する **Cosmos DB** を中心にデプロイします。車両テレメトリ データは、**IoT Hub** に登録された IoT デバイスを介してデータ ジェネレータから流れ込み、**Azure Functions** がイベント データを処理し、Cosmos DB のテレメトリ コンテナーに挿入します。
 
 - Azure Functionsを使用したトリップ処理:
 
-  Cosmos DB の change feedは、3 つの別々の Azure Functionsをトリガーし、それぞれが独自のチェックポイントを管理し、互いに競合することなく同じ着信データを処理できるようにします。1 つのFunctionは、イベント データをシリアル化し、**Azure Storage** のタイム スライスされたフォルダーに格納して、生データを長期保存します。別のFunctionは、車両テレメトリを処理し、バッチ データを集約し、走行距離計の読み取り値とトリップがスケジュール通りに実行されているかどうかに基づいて、メタデータ コンテナー内のトリップおよび委託ステータスを更新します。この機能は、トリップのマイルストーンに達したときに電子メールアラートを送信する **Logic App** をトリガします。3 番目のFunctionはイベント データを **Event Hubs** に送信し、**Stream Analytics** をトリガーしてタイム ウィンドウの集約クエリを実行します。
+  Cosmos DB の Change Feedは、3 つの別々の Azure Functionsをトリガーし、それぞれが独自のチェックポイントを管理し、互いに競合することなく同じ着信データを処理できるようにします。1 つのFunctionは、イベント データをシリアル化し、**Azure Storage** のタイム スライスされたフォルダーに格納して、生データを長期保存します。別のFunctionは、車両テレメトリを処理し、バッチ データを集約し、走行距離計の読み取り値とトリップがスケジュール通りに実行されているかどうかに基づいて、メタデータ コンテナー内のトリップおよび委託ステータスを更新します。この機能は、トリップのマイルストーンに達したときに電子メールアラートを送信する **Logic App** をトリガします。3 番目のFunctionはイベント データを **Event Hubs** に送信し、**Stream Analytics** をトリガーしてタイム ウィンドウの集約クエリを実行します。
 
 - ストリーム処理、ダッシュボード、およびレポート:
 
@@ -108,7 +108,7 @@ Contoso Auto は、車両と小包のテレメトリ データを収集し、Azu
 
 - フリート管理 Web App、セキュリティ、および監視:
 
-  **Web App** を使用すると、Contoso Auto は車両を管理し、Cosmos DB に保存されている委託、小包、およびトリップ情報を表示できます。Web Appは、車両情報を表示しながら、リアルタイムのバッテリ故障予測を行うためにも使用されます。**Azure Key Vault** は、接続文字列やアクセス キーなどの一元化されたアプリケーション シークレットを安全に格納するために使用され、Function Apps、Web App、Azure Databricksで使用されます。最後に、**Application Insights** は、Function Appsと Web Appのリアルタイムの監視、メトリック、およびログ情報を提供します。
+  **Web App** を使用すると、Contoso Auto は車両を管理し、Cosmos DB に保存されている委託、小包、およびトリップ情報を表示できます。Web Appは、車両情報を表示しながら、リアルタイムのバッテリ故障予測を行うためにも使用されます。**Azure Key Vault** は、接続文字列やアクセス キーなどの一元化されたアプリケーション シークレットを安全に格納するために使用され、Function App、Web App、Azure Databricksで使用されます。最後に、**Application Insights** は、Function Appと Web Appのリアルタイムの監視、メトリック、およびログ情報を提供します。
 
 ## Requirements
 
@@ -129,9 +129,9 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 **Duration**: 45 minutes
 
-ソリューションの開発を開始する前に、Azure でいくつかのリソースをプロビジョニングする必要があります。クリーンアップを容易にするために、すべてのリソースが同じリソース グループを使用していることを確認します。
+ソリューションの開発を始める前に、Azure でいくつかのリソースをプロビジョニングする必要があります。クリーンアップを容易にするために、すべてのリソースが同じリソース グループを使用していることを確認します。
 
-この実習では、生成された車両、委託、小包、およびトリップデータの送信と処理を開始できるように、演習環境を構成します。まず、Cosmos DB データベースとコンテナーを作成し、新しいLogic Appを作成し、電子メール通知を送信するワークフローを作成し、ソリューションをリアルタイム監視するための Application Insights サービスを作成してから、ソリューションのアプリケーション設定 (接続文字列など)で使用されるシークレットを取得し、それらを Azure Key Vault に安全に保存し、最終的に Azure Databricks 環境を構成します。
+この演習では、生成された車両、委託、小包、およびトリップデータの送信と処理を開始できるように、演習環境を構成します。まず、Cosmos DB データベースとコンテナーを作成し、新しいLogic Appを作成し、電子メール通知を送信するワークフローを作成し、ソリューションをリアルタイム監視するための Application Insights サービスを作成してから、ソリューションのアプリケーション設定 (接続文字列など)で使用されるシークレットを取得し、それらを Azure Key Vault に安全に保存し、最終的に Azure Databricks 環境を構成します。
 
 ### Task 1: Create Cosmos DB database and container
 
@@ -143,7 +143,7 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 1. ブラウザの新しいタブまたはインスタンスを使用して、Azure ポータル <https://portal.azure.com>に移動します。
 
-2. 左側のメニューから**リソースグループ**を選択し、`cosmos-db-iot`と入力してリソースグループを検索します。この演習で使用しているリソース グループを選択します。
+2. 左側のメニューから **Resource Group** を選択し、`cosmos-db-iot`と入力してリソースグループを検索します。この演習で使用しているリソース グループを選択します。
 
    ![Resource groups is selected and the cosmos-db-iot resource group is displayed in the search results.](media/resource-group.png 'cosmos-db-iot resource group')
 
@@ -151,11 +151,11 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
    ![The Cosmos DB account is highlighted in the resource group.](media/resource-group-cosmos-db.png 'Cosmos DB in the Resource Group')
 
-4. 左側のメニューで **データ エクスプローラ** を選択し、**新しいコンテナー** を選択します。
+4. 左側のメニューで **Data Explorer** を選択し、**New Container** を選択します。
 
    ![The Cosmos DB Data Explorer is shown with the New Container button highlighted.](media/cosmos-new-container.png 'Data Explorer - New Container')
 
-5. **コンテナーの追加** ブレードで、次の構成オプションを指定します:
+5. **Add Container** ブレードで、次の構成オプションを指定します:
 
    a. **Database id** に **ContosoAuto** を入力します。
 
@@ -175,7 +175,7 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 7. **New Container** をデータエクスプローラーで再度選択します。
 
-8. **コンテナーの追加** ブレードで、次の構成オプションを指定します:
+8. **Add Container** ブレードで、次の構成オプションを指定します:
 
    a. **Database id**: **Use existing** を選択しリストから **ContosoAuto** を選択します。
 
@@ -191,7 +191,7 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 10. **New Container** をデータエクスプローラーで再度選択します。
 
-11. **コンテナーの追加** ブレードで、次の構成オプションを指定します:
+11. **Add Container** ブレードで、次の構成オプションを指定します:
 
     a. **Database id**: **Use existing** を選択しリストから **ContosoAuto** を選択します。
 
@@ -205,7 +205,7 @@ Refer to the [Before the hands-on lab setup guide](./Before%20the%20HOL%20-%20Co
 
 12. **OK** を選択してコンテナーを作成します。
 
-13. これでデータエクスプローラーで3つのコンテナがリストされているはずです。
+13. これでデータエクスプローラーで3つのコンテナーがリストされているはずです。
 
     ![The three new containers are shown in Data Explorer.](media/cosmos-three-containers.png 'Data Explorer')
 
@@ -227,7 +227,7 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
 このタスクでは、新しいコンテナーの既定のインデックス セットを確認し、書き込み負荷の高いワークロードに最適化するように `telemetry` コンテナーのインデックス作成を構成します。次に、`telemetry` コンテナーで存続時間 (TTL) を有効にし、コンテナーに格納されている個々のドキュメントに TTL 値を秒単位で設定できるようにします。この値は、ドキュメントの有効期限が切れるか、削除するか、または自動的に削除するタイミングを Cosmos DB に指示します。この設定は、不要になったものを削除することで、ストレージコストを節約するのに役立ちます。通常、これはホット データ、または規制要件により一定期間後に期限切れにする必要があるデータで使用されます。
 
-1. Cosmos DBのデータエクスプローラーで **telemetry** コンテナを開き、**Scale & Settings** を選択します。
+1. Cosmos DBのデータエクスプローラーで **telemetry** コンテナーを開き、**Scale & Settings** を選択します。
 
 2. Scale & Settings ブレードで、Settings を開き、**Time to Live** にある **On (no default)** を選択します。
 
@@ -461,7 +461,7 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
 ### Task 4: Create system-assigned managed identities for your Function Apps and Web App to connect to Key Vault
 
-Function Appと Web Appsが Key Vault にアクセスしてシークレットを読み取ることができるようにするには、[システムで割り当てられたマネージドの認証を作成](https://docs.microsoft.com/azure/app-service/overview-managed-identity#adding-a-system-assigned-identity)する必要があり、および [Key Vault でアクセス ポリシーを作成](https://docs.microsoft.com/azure/key-vault/key-vault/key-vault/key-vault-key-vault)する必要があります。
+Function Appと Web Appが Key Vault にアクセスしてシークレットを読み取ることができるようにするには、[システムで割り当てられたマネージドの認証を作成](https://docs.microsoft.com/azure/app-service/overview-managed-identity#adding-a-system-assigned-identity)する必要があり、および [Key Vault でアクセス ポリシーを作成](https://docs.microsoft.com/azure/key-vault/key-vault/key-vault/key-vault-key-vault)する必要があります。
 
 1. 名前が **IoT-CosmosDBProcessing** で始まるAzure Function Appを開いて、 **Platform features** を表示します。
 
@@ -499,7 +499,7 @@ Function Appと Web Appsが Key Vault にアクセスしてシークレットを
 
 1. ブラウザの新しいタブまたはインスタンスを使用して、Azure ポータル <https://portal.azure.com>に移動します。
 
-2. 左側のメニューから **リソースグループ** を選択し、`cosmos-db-iot`と入力してリソースグループを検索します。この演習で使用しているリソース グループを選択します。
+2. 左側のメニューから **Resource Group** を選択し、`cosmos-db-iot`と入力してリソースグループを検索します。この演習で使用しているリソース グループを選択します。
 
 3. **Key Vault** を開きます。名前は`iot-vault`で始まるはずです。
 
@@ -726,7 +726,7 @@ Azure Databricks には、Key Vault バックアップとDatabricks バックア
 
 ソリューション アーキテクチャ図の右側を調べると、Cosmos DB のフィードトリガー関数から Event Hubs にフィードされるイベント データのフローが表示されます。Stream Analytics は、個々の車両テレメトリの集計を作成する一連のタイム ウィンドウ クエリの入力ソースとして Event Hubs を使用し、車両 IoT デバイスからアーキテクチャを通過する車両テレメトリ全体を作成します。Stream Analytics には、次の 2 つの出力データ シンクがあります:
 
-1. Cosmos DB: 個々の車両テレメトリ (VIN でグループ化) は、30 秒間の `TumblingWindow` で集計され、`metadata` コンテナに保存されます。この情報は、後のタスクで Power BI Desktop で作成する Power BI レポートで使用され、個々の車両と複数の車両統計情報が表示されます。
+1. Cosmos DB: 個々の車両テレメトリ (VIN でグループ化) は、30 秒間の `TumblingWindow` で集計され、`metadata` コンテナーに保存されます。この情報は、後のタスクで Power BI Desktop で作成する Power BI レポートで使用され、個々の車両と複数の車両統計情報が表示されます。
 2. Power BI: すべての車両テレメトリは、10 秒間の `TumblingWindow` で集計され、Power BI データ・セットに出力されます。このほぼリアルタイムなデータは、ライブPower BIダッシュボードに表示され、10秒間に処理されたイベントの数、エンジン温度、オイル、または冷凍ユニットの警告があるかどうか、期間中に乱暴な運転が検出されたかどうか、平均速度、エンジン温度、冷凍ユニットの測定値、が表示されます。。
 
 ![The stream processing components of the solution architecture are displayed.](media/solution-architecture-stream-processing.png 'Solution Architecture - Stream Processing')
@@ -893,7 +893,7 @@ Event Hubsの入力がリストされているのが見えるはずです。
 
 この演習に進む前に、Functions と Web App がアーキテクチャにどのように適合するかを見ていきましょう。
 
-ソリューションには 3 つの Function App と 1 つの Web App があります。Function Apps は、データ パイプラインの 2 段階以内でイベント処理を処理し、Web App を使用して Cosmos DB に格納されているデータに対して CRUD 操作を実行します。
+ソリューションには 3 つの Function App と 1 つの Web App があります。Function App は、データ パイプラインの 2 段階以内でイベント処理を処理し、Web App を使用して Cosmos DB に格納されているデータに対して CRUD 操作を実行します。
 
 ![The two Function Apps and Web App are highlighted.](media/solution-diagram-function-apps-web-app.png 'Solution diagram')
 
@@ -908,16 +908,16 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
   ![The Event Processing function is shown.](media/solution-architecture-function1.png 'Solution architecture')
 
-- **IoT-CosmosDBProcessing Function App** :これはトリップ処理のFunction App です。これは、`telemetry` コンテナ上のCosmos DB Change Feed によってトリガされる3つの関数が含まれています。Cosmos DB Change Feed は複数のコンシューマーをサポートしているため、これら 3 つの機能を並行して実行し、互いに競合することなく同じ情報を同時に処理できます。これらの各関数に対して `CosmosDBTrigger` を定義する際に、処理した Change Feed イベントを追跡するために、 `leases` という名前のCosmos DBコレクションに接続するトリガ設定を設定します。また、一つの関数が別の関数のリース情報を取得または更新しようとしないように、一意のプレフィックスを持つ各関数の `LeaseCollectionPrefix` 値も設定します。このFunction App には、次の関数があります。
+- **IoT-CosmosDBProcessing Function App** :これはトリップ処理のFunction App です。これは、`telemetry` コンテナー上のCosmos DB Change Feed によってトリガされる3つの関数が含まれています。Cosmos DB Change Feed は複数のコンシューマーをサポートしているため、これら 3 つの機能を並行して実行し、互いに競合することなく同じ情報を同時に処理できます。これらの各関数に対して `CosmosDBTrigger` を定義する際に、処理した Change Feed イベントを追跡するために、 `leases` という名前のCosmos DBコレクションに接続するトリガ設定を設定します。また、一つの関数が別の関数のリース情報を取得または更新しようとしないように、一意のプレフィックスを持つ各関数の `LeaseCollectionPrefix` 値も設定します。このFunction App には、次の関数があります。
 
-- **TripProcessor**: この関数は、VINによって車両テレメトリデータをグループ化し、 `metadata` コンテナから関連するトリップレコードを取得し、トリップ開始タイムスタンプ、完了した場合は終了タイムスタンプ、およびトリップの有無を示すステータス、トリップが開始された、遅れている、または完了したのいずれか、を更新します。また、関連する委託レコードをステータスで更新し、Function App のアプリ設定で定義された受信者にアラートを電子メールで送信する必要がある場合は、トリップ情報を含む Logic App をトリガーします (`RecipientEmail`)。
+- **TripProcessor**: この関数は、VINによって車両テレメトリデータをグループ化し、 `metadata` コンテナーから関連するトリップレコードを取得し、トリップ開始タイムスタンプ、完了した場合は終了タイムスタンプ、およびトリップの有無を示すステータス、トリップが開始された、遅れている、または完了したのいずれか、を更新します。また、関連する委託レコードをステータスで更新し、Function App のアプリ設定で定義された受信者にアラートを電子メールで送信する必要がある場合は、トリップ情報を含む Logic App をトリガーします (`RecipientEmail`)。
   - **ColdStorage**: この関数は Azure Storage アカウント (`ColdStorageAccount`) に接続し、次のタイム スライスパス形式でコールド ストレージ用の生の車両テレメトリ データを書き込みます: `telemetry/custom/scenario1/yyyy/MM/dd/HH/mm/ss-fffffff.json`。
   - ** SendToEventHubsForReporting** : この関数は、車両テレメトリ データを Event Hubs に直接送信するだけで、Stream Analytics はウィンドウ化された集計を適用し、それらの集計を Power BI および Cosmos DB のメタデータ コンテナーにバッチで保存できます。
   - **HealthCheck**: ストリーム処理 Function App 内の同じ名前の関数と同様に、この関数には HTTP トリガーがあり、Function Appが稼働中であり、各構成設定が存在し、値を持っていることをユーザーが確認できます。データ ジェネレータは、実行する前にこの関数を呼び出します。
 
   ![The Trip Processing function is shown.](media/solution-architecture-function2.png 'Solution architecture')
 
-- **IoTWebApp**: Web App はフリート管理ポータルを提供し、ユーザーが車両データに対して CRUD 操作を実行し、デプロイされた機械学習モデルに対して車両のリアルタイムバッテリ故障予測を行い、委託、小包、およびトリップを表示できるようにします。[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用して、Cosmos DBの `metadata` コンテナに接続します。
+- **IoTWebApp**: Web App はフリート管理ポータルを提供し、ユーザーが車両データに対して CRUD 操作を実行し、デプロイされた機械学習モデルに対して車両のリアルタイムバッテリ故障予測を行い、委託、小包、およびトリップを表示できるようにします。[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用して、Cosmos DBの `metadata` コンテナーに接続します。
 
   ![The Web App is shown.](media/solution-architecture-webapp.png 'Solution architecture')
 
@@ -1068,7 +1068,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![The TODO 1 code is completed.](media/vs-todo1.png "TODO 1")
 
-    [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用しており、Function Apps v2 以降で依存関係の注入がサポートされているので、[singleton Azure Cosmos DB client for the lifetime of the application](https://docs.microsoft.com/azure/cosmos-db/performance-tips#sdk-usage) を利用します。これは、次の TODO ブロックで見るように、コンストラクタを通じて `Functions` クラスに挿入されます。
+    [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/)を使用しており、Function App v2 以降で依存関係の注入がサポートされているので、[singleton Azure Cosmos DB client for the lifetime of the application](https://docs.microsoft.com/azure/cosmos-db/performance-tips#sdk-usage) を利用します。これは、次の TODO ブロックで見るように、コンストラクタを通じて `Functions` クラスに挿入されます。
 
 3. **Save** で **Startup.cs** ファイルを保存します。
 
@@ -1111,7 +1111,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
         group.Average(item => item.GetPropertyValue<double>("refrigerationUnitTemp"));
     ```
 
-    車両 VIN でイベントをグループ化したので、グループ キー (VIN) を保持するローカル `vin` 変数を割り当てます。次に、`group.Max` 集計関数を使用して最大走行距離計の値を計算し、平均冷凍ユニット温度を計算する関数である `group.Average` を使用します。`odometerHigh` の値を使用して、トリップ距離を計算し、Cosmos DB `metadata` コンテナの `Trip` レコードからの計画された移動距離に基づいて、トリップが完了したかどうかを判断します。必要に応じて、ロジックアプリに送信されるアラートに `averageRefrigerationUnitTemp` が追加されます。
+    車両 VIN でイベントをグループ化したので、グループ キー (VIN) を保持するローカル `vin` 変数を割り当てます。次に、`group.Max` 集計関数を使用して最大走行距離計の値を計算し、平均冷凍ユニット温度を計算する関数である `group.Average` を使用します。`odometerHigh` の値を使用して、トリップ距離を計算し、Cosmos DB `metadata` コンテナーの `Trip` レコードからの計画された移動距離に基づいて、トリップが完了したかどうかを判断します。必要に応じて、ロジックアプリに送信されるアラートに `averageRefrigerationUnitTemp` が追加されます。
 
 7. 新たに追加したコードで以下のようになっていることを確認します:
 
@@ -1140,7 +1140,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
             var consignment = document.Resource;
     ```
 
-    ここでは、クラスに追加された CosmosClient (`_cosmosClient`) を使用して Cosmos DB コンテナー参照を取得することにより、[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) を使用しています。LINQ 構文を使用してコンテナーをクエリし、結果を `Trip` クラス型の新しいコレクションにバインドするには、コンテナーの `GetItemLinqQueryable` を使用します。**パーティションキー**(この場合はVIN)を渡して、クロス・パーティションやファンアウトするクエリーを実行しないでRU/sを節約する方法に注意してください。また、他のエンティティタイプは車両タイプなど、同じパーティションキーを持つことができるため、クエリで `entityType` ドキュメント プロパティをトリップに設定して取得するドキュメントの種類も定義します。
+    ここでは、クラスに追加された CosmosClient (`_cosmosClient`) を使用して Cosmos DB コンテナー参照を取得することにより、[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) を使用しています。LINQ 構文を使用してコンテナーをクエリし、結果を `Trip` クラス型の新しいコレクションにバインドするには、コンテナーの `GetItemLinqQueryable` を使用します。**partition key** (この場合はVIN)を渡して、クロス・パーティションやファンアウトするクエリーを実行しないでRU/sを節約する方法に注意してください。また、他のエンティティタイプは車両タイプなど、同じパーティションキーを持つことができるため、クエリで `entityType` ドキュメント プロパティをトリップに設定して取得するドキュメントの種類も定義します。
 
     委託 ID を持っているので、`ReadItemAsync` メソッドを使用して単一の委託レコードを取得できます。ここでは、ファンアウトを最小限に抑えるためにパーティションキーを渡します。Cosmos DB コンテナー内では、ドキュメントの一意の ID は `id` フィールドとパーティション キー値の組み合わせです。
 
@@ -1219,7 +1219,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     `ttl` プロパティはドキュメントの存続時間を 60 日に設定し、その後 Cosmos DB はドキュメントを削除します。
 
-    クラスを `vehicleTelemetryOut` コレクションに非同期的に追加すると、関数の Cosmos DB 出力バインディングは、定義された Cosmos DB データベースとコンテナへのデータの書き込みを自動的に処理し、実装の詳細を管理します。
+    クラスを `vehicleTelemetryOut` コレクションに非同期的に追加すると、関数の Cosmos DB 出力バインディングは、定義された Cosmos DB データベースとコンテナーへのデータの書き込みを自動的に処理し、実装の詳細を管理します。
 
 14. **Functions.cs** ファイルを **Save** します。
 
@@ -1612,7 +1612,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![A generation complete message is displayed in the generator console.](media/cmd-generator-completed.png "Generator")
 
-Function Apps のヘルスチェックが失敗した場合、データ ジェネレータには警告が表示され、多くの場合、どのアプリケーション設定が欠落しているかを示します。データ ジェネレータは、ヘルスチェックに合格するまで実行されません。アプリケーション設定のトラブルシューティングに関するヒントについては、上記の演習 3、タスク 2 を参照してください。
+Function App のヘルスチェックが失敗した場合、データ ジェネレータには警告が表示され、多くの場合、どのアプリケーション設定が欠落しているかを示します。データ ジェネレータは、ヘルスチェックに合格するまで実行されません。アプリケーション設定のトラブルシューティングに関するヒントについては、上記の演習 3、タスク 2 を参照してください。
 
 ![The failed health checks are highlighted.](media/cmd-healthchecks-failed.png "Generator")
 
