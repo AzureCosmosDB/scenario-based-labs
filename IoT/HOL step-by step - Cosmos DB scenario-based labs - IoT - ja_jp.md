@@ -2138,11 +2138,11 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
 
     ![The Trip query is selected and the source configuration icon is highlighted.](media/pbi-queries-trips-source.png "Edit Queries")
 
-3. In the source dialog, update the Cosmos DB **URL** value with your Cosmos DB URI you copied earlier in the lab, then click **OK**. If you need to find this value, navigate to your Cosmos DB account in the portal, select Keys in the left-hand menu, then copy the URI value.
+3. ソースダイアログで、演習で先にコピーした Cosmos DB URI で Cosmos DB **URL** 値を更新し、**OK** をクリックします。この値を見つける必要がある場合は、ポータルの Cosmos DB アカウントに移動し、左側のメニューで キー を選択し、URI 値をコピーします。
 
     ![The Trips source dialog is displayed.](media/pbi-queries-trips-source-dialog.png "Trips source dialog")
 
-    The Trips data source has a SQL statement defined that returns only the fields we need, and applies some aggregates:
+    トリップのデータ ソースには、必要なフィールドのみを返す SQL ステートメントが定義されており、一部の集計が適用されます:
 
     ```sql
     SELECT c.id, c.vin, c.consignmentId, c.plannedTripDistance,
@@ -2167,27 +2167,27 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
     and c.status in ('Active', 'Delayed', 'Completed')
     ```
 
-4. When prompted, enter the Cosmos DB **Account key** value, then click **Connect**. If you need to find this value, navigate to your Cosmos DB account in the portal, select Keys in the left-hand menu, then copy the Primary Key value.
+4. プロンプトが表示されたら、Cosmos DB **Account key** 値を入力し、**Connect** をクリックします。この値を見つける必要がある場合は、ポータルの Cosmos DB アカウントに移動し、左側のメニューでキーを選択し、主キー値をコピーします。
 
     ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
 
-5. In a moment, you will see a table named **Document** that has several rows whose value is Record. This is because Power BI doesn't know how to display the JSON document. The document has to be expanded. After expanding the document, you want to change the data type of the numeric and date fields from the default string types, so you can perform aggregate functions in the report. These steps have already been applied for you. Select the **Changed Type** step under Applied Steps to see the columns and changed data types.
+5. しばらくすると、**Document** という名前のテーブルが表示され、その値がレコードである複数の行があります。これは、Power BI が JSON ドキュメントの表示方法を知らないためです。ドキュメントを展開する必要があります。ドキュメントを展開した後、数値フィールドと日付フィールドのデータ型を既定の文字列型から変更して、レポートで集計関数を実行できるようにします。これらの手順は既に適用されています。Applied Steps の下にある **Changed Type** ステップを選択して、列と変更されたデータ型を表示します。
 
     ![The Trips table shows Record in each row.](media/pbi-queries-trips-updated.png "Queries")
 
-    The screenshot below shows the Trips document columns with the data types applied:
+    次のスクリーン ショットは、データ型が適用されたトリップのドキュメント列を示しています:
 
     ![The Trips document columns are displayed with the changed data types.](media/pbi-queries-trips-changed-type.png "Trips with changed types")
 
-6. Select **VehicleAverages** in the Queries list on the left, then select **Source** under Applied Steps. Click the gear icon next to Source.
+6. 左側のクエリリストで **VehicleAverages** を選択し、Applied Steps の下の **Source** を選択します。Source の横にある歯車アイコンをクリックします。
 
     ![The VehicleAverages query is selected and the source configuration icon is highlighted.](media/pbi-queries-vehicleaverages-source.png "Edit Queries")
 
-7. In the source dialog, update the Cosmos DB **URL** value with your Cosmos DB URI, then click **OK**.
+7. ソースダイアログで、Cosmos DB URI でCosmos DB **URL** 値を更新し、**OK** をクリックします。
 
     ![The VehicleAverages source dialog is displayed.](media/pbi-queries-vehicleaverages-source-dialog.png "Trips source dialog")
 
-    The VehicleAverages data source has the following SQL statement defined:
+    VehicleAverages データソースには以下の定義済みSQLステートメントがあります:
 
     ```sql
     SELECT c.vin, c.engineTemperature, c.speed,
@@ -2197,51 +2197,51 @@ Web サービスが ACI にデプロイされたため、フリート管理 Web 
     FROM c WHERE c.entityType = 'VehicleAverage'
     ```
 
-8. If prompted, enter the Cosmos DB **Account key** value, then click **Connect**. You may not be prompted since you entered the key in an earlier step.
+8. プロンプトが表示されたら、Cosmos DB **Account key** 値を入力し、**Connect** をクリックします。前の手順でキーを入力したため、プロンプトが表示されない場合があります。
 
     ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
 
-9. Select **VehicleMaintenance** in the Queries list on the left, then select **Source** under Applied Steps. Click the gear icon next to Source.
+9. 左側のクエリリストで **VehicleMaintenance** を選択し、Applied Steps の下の **Source** を選択します。Source の横にある歯車アイコンをクリックします。
 
     ![The VehicleMaintenance query is selected and the source configuration icon is highlighted.](media/pbi-queries-vehiclemaintenance-source.png "Edit Queries")
 
-10. In the source dialog, update the Cosmos DB **URL** value with your Cosmos DB URI, then click **OK**.
+10. ソースダイアログで、Cosmos DB URI でCosmos DB **URL** 値を更新し、**OK** をクリックします。
 
     ![The VehicleMaintenance source dialog is displayed.](media/pbi-queries-vehiclemaintenance-source-dialog.png "Trips source dialog")
 
-    The VehicleMaintenance data source has the following SQL statement defined, which is simpler than the other two since there are no other entity types in the `maintenance` container, and no aggregates are needed:
+    VehicleMaintenance データ ソースには次の SQL ステートメントが定義されており、`maintenance` コンテナーには他のエンティティ型がなく、集計は必要ないため、他の 2 つよりも単純です:
 
     ```sql
     SELECT c.vin, c.serviceRequired FROM c
     ```
 
-11. If prompted, enter the Cosmos DB **Account key** value, then click **Connect**. You may not be prompted since you entered the key in an earlier step.
+11. プロンプトが表示されたら、Cosmos DB **Account key** 値を入力し、**Connect** をクリックします。前の手順でキーを入力したため、プロンプトが表示されない場合があります。
 
     ![The Cosmos DB account key dialog is displayed.](media/pbi-queries-trips-source-dialog-account-key.png "Cosmos DB account key dialog")
 
-12. If you are prompted, click **Close & Apply**.
+12. プロンプトが表示されたら、**Close & Apply** をクリックします。
 
     ![The Close & Apply button is highlighted.](media/pbi-close-apply.png "Close & Apply")
 
 ### Task 3: Explore report
 
-1. The report will apply changes to the data sources and the cached data set will be updated in a few moments. Explore the report, using the slicers (status filter, customer filter, and VIN list) to filter the data for the visualizations. Also be sure to select the different tabs at the bottom of the report, such as Maintenance for more report pages.
+1. レポートはデータ ソースに変更を適用し、キャッシュされたデータ セットは後で更新されます。スライサー (ステータス フィルター、顧客フィルター、および VIN リスト) を使用して、ビジュアライゼーションのデータをフィルター処理するレポートを探索します。また、レポートの下部にあるさまざまなタブ (Maintenance for more report pages など) も必ず選択してください。
 
     ![The report is displayed.](media/pbi-updated-report.png "Updated report")
 
-2. Select a customer from the Customer Filter, which acts as a slicer. This means when you select an item, it applies a filter to the other items on the page and linked pages. After selecting a customer, you should see the map and graphs change. You will also see a filtered list of VINs and Status. Select the **Details** tab.
+2. スライサーとして機能する顧客フィルタから顧客を選択します。つまり、アイテムを選択すると、ページ上の他のアイテムとリンクされたページにフィルターが適用されます。顧客を選択すると、マップとグラフの変更が表示されます。また、VIN とステータスのフィルター処理された一覧も表示されます。** Details** タブを選択します。
 
     ![A customer record is selected, and an arrow is pointed at the Details tab.](media/pbi-customer-slicer.png "Customer selected")
 
-3. The Details page shows related records, filtered on the selected customer and/or VIN. Now select the **Trips** tab.
+3. 詳細ページには、選択した顧客または VIN でフィルター処理された関連レコードが表示されます。次に、** Trips** タブを選択します。
 
     ![The details page is displayed.](media/pbi-details-tab.png "Details")
 
-4. The Trips page shows related trip information. Select **Maintenance**.
+4. トリップページには、関連するトリップ情報が表示されます。** Maintenance** を選択します。
 
     ![The trips page is displayed.](media/pbi-trips-tab.png "Trips")
 
-5. The Maintenance page shows results from the batch scoring notebook you executed in Databricks. If you do not see records here, then you need to run the entire batch scoring notebook after some trips have completed.
+5. メンテナンスページには、Databricks で実行したバッチ スコアリング ノートブックの結果が表示されます。ここにレコードが表示されない場合は、一部のトリップが完了した後にバッチ スコアリング ノートブック全体を実行する必要があります。
 
     ![The maintenance page is displayed.](media/pbi-maintenance-tab.png "Maintenance")
 
