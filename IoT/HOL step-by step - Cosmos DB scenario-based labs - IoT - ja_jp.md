@@ -96,7 +96,7 @@ Contoso Auto は、車両と小包のテレメトリ データを収集し、Azu
 
 - Azure Functions を使用したトリップ処理:
 
-  Cosmos DB の Change Feedは、3 つの別々の Azure Functions をトリガーし、それぞれが独自のチェックポイントを管理し、互いに競合することなく同じ着信データを処理できるようにします。1 つのFunctionは、イベント データをシリアル化し、**Azure Storage** のタイム スライスされたフォルダーに格納して、生データを長期保存します。別のFunctionは、車両テレメトリを処理し、バッチ データを集約し、走行距離計の読み取り値とトリップがスケジュール通りに実行されているかどうかに基づいて、メタデータ コンテナー内のトリップおよび委託ステータスを更新します。この機能は、トリップのマイルストーンに達したときに電子メールアラートを送信する **Logic App** をトリガします。3 番目のFunctionはイベント データを **Event Hubs** に送信し、**Stream Analytics** をトリガーしてタイム ウィンドウの集約クエリーを実行します。
+  Cosmos DB の Change Feedは、3 つの別々の Azure Functions をトリガーし、それぞれが独自のチェックポイントを管理し、互いに競合することなく同じ着信データを処理できるようにします。1 つのFunctionは、イベント データをシリアル化し、**Azure Storage** のタイム スライスされたフォルダーに格納して、生データを長期保存します。別のFunctionは、車両テレメトリを処理し、バッチ データを集約し、走行距離計の読み取り値とトリップがスケジュール通りに実行されているかどうかに基づいて、メタデータ コンテナー内のトリップおよび委託ステータスを更新します。この機能は、トリップのマイルストーンに達したときに電子メールアラートを送信する **Logic App** をトリガーします。3 番目のFunctionはイベント データを **Event Hubs** に送信し、**Stream Analytics** をトリガーしてタイム ウィンドウの集約クエリーを実行します。
 
 - ストリーム処理、ダッシュボード、およびレポート:
 
@@ -290,11 +290,11 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
 このタスクでは、`telemetry` コンテナーのインデックス作成ポリシーを更新しましたが、他の 2 つのコンテナーは既定のポリシーのままにしておきました。新しく作成されたコンテナーの既定のインデックス 作成ポリシーは、すべての項目のすべてのプロパティにインデックスを付け、任意の文字列または数値の範囲インデックスを適用し、Point 型の GeoJSON オブジェクトに空間インデックスを適用します。これにより、インデックス作成とインデックス管理を事前に考えることなく、高いクエリー パフォーマンスを得ることができます。`metadata` コンテナーと `maintenance` コンテナーには `telemetry` よりも読み取り負荷の高いワークロードがあるため、クエリーのパフォーマンスが最適化される既定のインデックス 作成ポリシーを使用するのが理にかなっています。`telemetry` の高速な書き込みが必要なため、未使用のパスは除外します。インデックス作成パスを使用すると、インデックス作成コストはインデックス付けされた一意のパスの数と直接相関するため、クエリーパターンが事前にわかっているシナリオでは、書き込みパフォーマンスが向上し、インデックスのストレージ容量が低下する可能性があります。
 
-3 つのコンテナーすべてに対するインデックス作成モードは **Consistent** に設定されます。つまり、アイテムの追加、更新、または削除に伴ってインデックスが同期的に更新され、読み取りクエリー用にアカウントに構成された整合性レベルが適用されます。もう 1 つのインデックス作成モードは None で、コンテナーのインデックス作成を無効にします。通常、このモードは、コンテナーが純粋なキー バリュー ストアとして機能し、他のプロパティのインデックスを必要としない場合に使用されます。一括操作を実行する前に整合性モードを動的に変更し、その後モードを Consistent に戻すことができます。
+3 つのコンテナーすべてに対するインデックス作成モードは **Consistent** に設定されます。つまり、アイテムの追加、更新、または削除に伴ってインデックスが同期的に更新され、読み取りクエリー用にアカウントに構成された整合性レベルが適用されます。もう 1 つのインデックス作成モードは None で、コンテナーのインデックス作成を無効にします。通常、このモードは、コンテナーが純粋な Kye / Value ストアとして機能し、他のプロパティのインデックスを必要としない場合に使用されます。一括操作を実行する前に整合性モードを動的に変更し、その後モードを Consistent に戻すことができます。
 
 ### Task 3: Create a Logic App workflow for email alerts
 
-このタスクでは、新しい Logic App ワークフローを作成し、HTTP トリガーを介して電子メール アラートを送信するように構成します。このトリガーは、Cosmos DB Change Feed によってトリガーされる Azure Functions の 1 つ (トリップの完了などの通知イベントが発生するたびに呼び出されます) によって呼び出されます。電子メールを送信するには、Office 365 またはOutlook.com アカウントが必要です。
+このタスクでは、新しい Logic App ワークフローを作成し、HTTP トリガーを介して電子メール アラートを送信するように構成します。このトリガーは、Cosmos DB Change Feed によってトリガーされる Azure Functions の 1 つ (トリップの完了などの通知イベントが発生するたびに呼び出されます) によって呼び出されます。電子メールを送信するには、Office 365 または Outlook.com アカウントが必要です。
 
 1. [Azure portal](https://portal.azure.com)で, **+ Create a resource** を選択し、上部にある検索ボックスに **logic app** と入力します。結果から **Logic App** を選択します。
 
@@ -304,11 +304,11 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
 3. **Create Logic App** ブレードで以下の設定オプションを指定します:
 
-   1. **Name**: Unique value for the name, such as `Cosmos-IoT-Logic` (ensure the green check mark appears).
-   2. **Subscription**: Select the Azure subscription you are using for this lab.
-   3. **Resource group**: Select your lab resource group. The name should start with `cosmos-db-iot`.
-   4. **Location**: Select the same location as your resource group.
-   5. **Log Analytics**: Select **Off**.
+   1. **Name**: `Cosmos-IoT-Logic` のようなユニークな名前 (緑色のチェックマークが表示されていることを確認してください)。
+   2. **Subscription**: この演習で利用しているサブスクリプション
+   3. **Resource group**: 演習のリソースグループを選択します。名前が `cosmos-db-iot` で始まります。
+   4. **Location**: リソースグループと同じロケーション
+   5. **Log Analytics**: **Off** を選択します。
 
    ![The form is displayed with the previously described values.](media/portal-new-logic-app-form.png 'New Logic App')
 
@@ -316,11 +316,11 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
 5. Logic App が作成されたら、リソースグループを開いて新しい Logic App を選択して Logic App に移動します。
 
-6. Logic App デザイナーで、Start with a common triggerセクションまでページをスクロールし、 **When a HTTP request is received** トリガーを選択します。
+6. Logic App デザイナーで、Start with a common trigger セクションまでページをスクロールし、**When a HTTP request is received** トリガーを選択します。
 
    ![The HTTP common trigger option is highlighted.](media/logic-app-http-trigger.png 'Logic App Designer')
 
-7. **Request Body JSON Schema** フィールドに以下のJSONをペーストします。アラートが送信される必要がある時に、Azure Functions が送信するHTTPリクエストのボディのデータの形式を定義します:
+7. **Request Body JSON Schema** フィールドに以下の JSON をペーストします。アラートが送信される必要がある時に、Azure Functions が送信するHTTP リクエストのボディのデータの形式を定義します:
 
    ```json
    {
@@ -386,7 +386,7 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
    ![The Request Body JSON Schema is displayed.](media/logic-app-schema.png 'Request Body JSON Schema')
 
-8. HTTPトリガーの付近にある **+ New step** を選択します。
+8. HTTP トリガーの付近にある **+ New step** を選択します。
 
    ![The new step button is highlighted.](media/logic-app-new-step.png 'New step')
 
@@ -398,11 +398,11 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
     ![The Sign in button is highlighted.](media/logic-app-sign-in-button.png 'Office 365 Outlook')
 
-11. サインインしたら、アクションボックスが **Send an email** アクションフォームとして表示されます。**To** フィールドを選択します。Toを選択すると、**Dynamic content** ボックスが表示されます。HTTPリクエストトリガーからの動的な値の完全なリストを見るには、"When a HTTP request is received"の次の **See more** を選択します。
+11. サインインしたら、アクションボックスが **Send an email** アクションフォームとして表示されます。**To** フィールドを選択します。To を選択すると、**Dynamic content** ボックスが表示されます。HTTP リクエストトリガーからの動的な値の完全なリストを見るには、"When a HTTP request is received" の次の **See more** を選択します。
 
     ![The To field is selected, and the See more link is highlighted in the Dynamic content window.](media/logic-app-dynamic-content-see-more.png 'Dynamic content')
 
-12. 動的なコンテンツのリストから **recipientEmail** を選択します。**To** フィールドに動的な値が追加されるでしょう。
+12. 動的なコンテンツのリストから **recipientEmail** を選択します。**To** フィールドに動的な値が追加されます。
 
     ![The recipientEmail dynamic value is added to the To field.](media/logic-app-recipientemail.png 'Dynamic content - recipientEmail')
 
@@ -455,13 +455,13 @@ Cosmos DB に適切なパーティション キーを選択することは、バ
 
 16. デザイナーの上部にある **Save** を選択してワークフローを保存します。
 
-17. 保存後、HTTPトリガーのURLが生成されます。ワークフローのHTTPトリガーを開き、**HTTP POST URL** の値をコピーしNotepadか同様のテキストアプリケーションに、あとの手順で使うためにペーストしておきます。
+17. 保存後、HTTP トリガーの URL が生成されます。ワークフローの HTTP トリガーを開き、**HTTP POST URL** の値をコピーし Notepad か同様のテキストアプリケーションに、あとの手順で使うためにペーストしておきます。
 
     ![The http post URL is highlighted.](media/logic-app-url.png 'Logic App')
 
 ### Task 4: Create system-assigned managed identities for your Function Apps and Web App to connect to Key Vault
 
-Function Appと Web Appが Key Vault にアクセスしてシークレットを読み取ることができるようにするには、[システムで割り当てられたマネージドの認証を作成](https://docs.microsoft.com/azure/app-service/overview-managed-identity#adding-a-system-assigned-identity)する必要があり、および [Key Vault でアクセス ポリシーを作成](https://docs.microsoft.com/azure/key-vault/key-vault/key-vault/key-vault-key-vault)する必要があります。
+Function App と Web App が Key Vault にアクセスしてシークレットを読み取ることができるようにするには、[システム割り当てIDの追加](https://docs.microsoft.com/azure/app-service/overview-managed-identity#adding-a-system-assigned-identity)する必要があり、および [Key Vault でアクセス ポリシーを作成](https://docs.microsoft.com/ja-jp/azure/key-vault/key-vault-secure-your-key-vault#key-vault-access-policies)する必要があります。
 
 1. 名前が **IoT-CosmosDBProcessing** で始まる Azure Functions アプリケーションを開いて、 **Platform features** を表示します。
 
@@ -511,59 +511,59 @@ Function Appと Web Appが Key Vault にアクセスしてシークレットを�
 
    ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png 'Access policies')
 
-6. Addアクセスポリシーフォームの **Select principal** セクションを選択します。
+6. Add access policy フォームの **Select principal** セクションを選択します。
 
    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-7. Principalブレードで、`IoT-CosmosDBProcessing` Function App のサービスプリンシパルを検索し、それを選択後、 **Select** ボタンを押します。
+7. Principal ブレードで、`IoT-CosmosDBProcessing` Function App のサービスプリンシパルを検索し、それを選択後、 **Select** ボタンを押します。
 
    ![The Function App's principal is selected.](media/key-vault-principal-function1.png 'Principal')
 
    > **注**: 前の手順でマネージ ID を追加した後、マネージ ID が表示されるまでにしばらく時間がかかる場合があります。この ID やその他の ID が見つからない場合は、ページを更新するか、1 ~ 2 分待ちます。
 
-8. **Secret permissions** を開き、Secret Management Operationsにある **Get** をチェックします。
+8. **Secret permissions** を開き、Secret Management Operations にある **Get** をチェックします。
 
    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
 9. **Add** を選択して、新しいアクセスポリシーを追加します。
 
-10. 完了すると、Function App'のマネージ ID用のアクセスポリシーがあるはずです。**+ Add Access Policy** を選択肢、別のアクセスポリシーを追加します。
+10. 完了すると、Function App のマネージド ID 用のアクセスポリシーがあるはずです。**+ Add Access Policy** を選択し、別のアクセスポリシーを追加します。
 
     ![Key Vault access policies.](media/key-vault-access-policies-function1.png 'Access policies')
 
-11. Addアクセスポリシーフォームの **Select principal** セクションを選択します。
+11. Add access policy フォームの **Select principal** セクションを選択します。
 
     ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-12. Principalブレードで、`IoT-StreamProcessing` Function App のサービスプリンシパルを検索し、それを選択後、 **Select** ボタンを押します。
+12. Principal ブレードで、`IoT-StreamProcessing` Function App のサービスプリンシパルを検索し、それを選択後、 **Select** ボタンを押します。
 
     ![The Function App's principal is selected.](media/key-vault-principal-function2.png 'Principal')
 
-13. **Secret permissions** を開き、Secret Management Operationsにある **Get** をチェックします。
+13. **Secret permissions** を開き、Secret Management Operations にある **Get** をチェックします。
 
     ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
 14. **Add** を選択して、新しいアクセスポリシーを追加します。
 
-15. 完了すると、Function App'のマネージ ID用のアクセスポリシーがあるはずです。**+ Add Access Policy** を選択肢、別のアクセスポリシーを追加します。
+15. 完了すると、Function App のマネージド ID 用のアクセスポリシーがあるはずです。**+ Add Access Policy** を選択し、別のアクセスポリシーを追加します。
 
     ![Key Vault access policies.](media/key-vault-access-policies-function2.png 'Access policies')
 
-16. Addアクセスポリシーフォームの **Select principal** セクションを選択します。
+16. Add access policy フォームの **Select principal** セクションを選択します。
 
     ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-17. Principalブレードで、`IoTWebApp` Web App のサービスプリンシパルを検索し、それを選択後、 **Select** ボタンを押します。
+17. Principal ブレードで、`IoTWebApp` Web App のサービスプリンシパルを検索し、それを選択後、 **Select** ボタンを押します。
 
     ![The Web App's principal is selected.](media/key-vault-principal-webapp.png 'Principal')
 
-18. **Secret permissions** を開き、Secret Management Operationsにある **Get** をチェックします。
+18. **Secret permissions** を開き、Secret Management Operations にある **Get** をチェックします。
 
     ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png 'Add access policy')
 
 19. **Add** を選択して、新しいアクセスポリシーを追加します。
 
-20. 完了すると、Web App'のマネージ ID用のアクセスポリシーがあるはずです。**Save** を選択し、新しいアクセスポリシーを保存します。
+20. 完了すると、Web App のマネージド ID 用のアクセスポリシーがあるはずです。**Save** を選択し、新しいアクセスポリシーを保存します。
 
     ![Key Vault access policies.](media/key-vault-access-policies-webapp.png 'Access policies')
 
@@ -571,21 +571,21 @@ Function Appと Web Appが Key Vault にアクセスしてシークレットを�
 
 次の手順を実行して、シークレットを管理できるように、ユーザー アカウントのアクセス ポリシーを作成します。テンプレートを使用して Key Vault を作成したので、アカウントがアクセス ポリシーに自動的に追加されるわけではありません。
 
-1. Key Vaultで、左側のメニューから **Access policies** を選択します。
+1. Key Vault で、左側のメニューから **Access policies** を選択します。
 
 2. **+ Add Access Policy** を選択します。
 
    ![The Add Access Policy link is highlighted.](media/key-vault-add-access-policy.png 'Access policies')
 
-3. Addアクセスポリシーフォームの **Select principal** セクションを選択します。
+3. Add access policy フォームの **Select principal** セクションを選択します。
 
    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png 'Add access policy')
 
-4. Principalブレードで、この演習で利用しているAzureアカウントを検索し、それを選択後、 **Select** ボタンを押します。
+4. Principal ブレードで、この演習で利用しているAzureアカウントを検索し、それを選択後、 **Select** ボタンを押します。
 
    ![The user principal is selected.](media/key-vault-principal-user.png 'Principal')
 
-5. **Secret permissions** を開き、Secret Management Operationsにある **Select all** をチェックします。全てで8つが選択されるはずです。
+5. **Secret permissions** を開き、Secret Management Operations にある **Select all** をチェックします。全てで8つが選択されるはずです。
 
    ![The Select all checkbox is checked under the Secret permissions dropdown.](media/key-vault-all-secret-policy.png 'Add access policy')
 
@@ -595,11 +595,11 @@ Function Appと Web Appが Key Vault にアクセスしてシークレットを�
 
 ### Task 7: Add Key Vault secrets
 
-Azure Key Vault は、トークン、パスワード、証明書、API キー、およびその他のシークレットへのアクセスを安全に保存し、厳密に制御するために使用されます。さらに、Azure Key Vault に格納されているシークレットは一元化されるため、セキュリティ目的でキーをリサイクルした後のアプリケーション キー値など、シークレットを 1 か所で更新するだけで済むという利点が追加されます。このタスクでは、アプリケーション シークレットを Azure Key Vault に格納し、次の手順を実行して Azure Key Vault に安全に接続するようにFunction Appと Web Appを構成します。
+Azure Key Vault は、トークン、パスワード、証明書、API キー、およびその他のシークレットへのアクセスを安全に保存し、厳密に制御するために使用されます。さらに、Azure Key Vault に格納されているシークレットは一元化されるため、セキュリティ目的でキーをリサイクルした後のアプリケーション キー値など、シークレットを 1 か所で更新するだけで済むという利点が追加されます。このタスクでは、アプリケーション シークレットを Azure Key Vault に格納し、次の手順を実行して Azure Key Vault に安全に接続するように Function App と Web App を構成します。
 
-- プロビジョニング済みのKey Vaultにシークレットを追加する。
-- Azure Functions アプリケーションとWeb Appがvaultから読み出せるようにシステム割り当て済みのマネージIDを作成する。
-- これらのアプリケーションのIDに割り当てられる、"Get" シークレットパーミッション付きでKey Vaultでアクセスポリシーを作成する。
+- プロビジョニング済みの Key Vault にシークレットを追加する。
+- Azure Functions アプリケーションと Web App が vault から読み出せるようにシステム割り当て済みのマネージIDを作成する。
+- これらのアプリケーションの ID に割り当てられる、"Get" シークレットパーミッション付きで Key Vault でアクセスポリシーを作成する。
 
 1. Key Vaultで、左側のメニューから **Secrets** を選択し、**+ Generate/Import** を選択して新しいシークレットを作成します。
 
@@ -617,7 +617,7 @@ Azure Key Vault は、トークン、パスワード、証明書、API キー、
    | EventHubsConnection | Your Event Hubs connection string found here: **Event Hubs namespace > Shared access policies > RootManageSharedAccessKey > Connection string-primary key** |
    | LogicAppUrl         |                         Your Logic App's HTTP Post URL found here: **Logic App Designer > Select the HTTP trigger > HTTP POST URL**                         |
 
-3. デプロイメントの出力を表示することで、ほとんどのシークレットを見つけることができます。これを行うには、リソース グループを開き、左側のメニューで **デプロイメント** を選択します。**Microsoft.Template** デプロイメントを選択します。
+3. デプロイメントの出力を表示することで、ほとんどのシークレットを見つけることができます。これを行うには、リソースグループを開き、左側のメニューで **Deployments** を選択します。**Microsoft.Template** デプロイメントを選択します。
 
     ![The resource group deployments blade is shown.](media/resource-group-deployments.png "Deployments")
 
@@ -641,7 +641,7 @@ Contoso Auto は、車両から収集した貴重なデータを使用して、�
 
    ![The Azure Databricks Service is highlighted in the resource group.](media/resource-group-databricks.png 'Resource Group')
 
-2. **Launch Workspace** を選択します。Azure Databricks はAzure Active Directoryが統合されているので、自動的にサインインできます。
+2. **Launch Workspace** を選択します。Azure Databricks には Azure Active Directory が統合されているので、自動的にサインインできます。
 
    ![Launch Workspace](media/databricks-launch-workspace.png 'Launch Workspace')
 
@@ -673,7 +673,7 @@ Contoso Auto は、車両から収集した貴重なデータを使用して、�
 
     ![Navigate to the libraries tab and select `Install New`.](media/databricks-new-library.png 'Adding a new library')
 
-9. Install LibraryダイアログでLibrary Sourceとして **Maven** を選択します。
+9. Install Library ダイアログで Library Source として **Maven** を選択します。
 
 10. Coordinates フィールドで以下を入力します:
 
@@ -691,28 +691,28 @@ Contoso Auto は、車両から収集した貴重なデータを使用して、�
 
 以前のタスクでは、Cosmos DB 接続文字列など、Key Vault にアプリケーション シークレットを追加しました。このタスクでは、これらのシークレットに安全にアクセスするように、Key Vault がバックアップした Databricks シークレット ストアを構成します。
 
-Azure Databricks には、Key Vault バックアップとDatabricks バックアップの 2 種類のシークレット スコープがあります。これらのシークレット スコープを使用すると、データベース接続文字列などのシークレットを安全に格納できます。誰かがノートブックにシークレットを出力しようとすると、それは `[REDACTED]` に置き換えられます。これにより、ノートブックの表示や共有時に、シークレットを表示したり、誤って漏洩したりするのを防ぐことができます。
+Azure Databricks には、Key Vault バックアップと Databricks バックアップの 2 種類のシークレット スコープがあります。これらのシークレット スコープを使用すると、データベース接続文字列などのシークレットを安全に格納できます。誰かがノートブックにシークレットを出力しようとすると、それは `[REDACTED]` に置き換えられます。これにより、ノートブックの表示や共有時に、シークレットを表示したり、誤って漏洩したりするのを防ぐことができます。
 
-1. 別のブラウザタブに表示されたままになっているはずの、[Azure portal](https://portal.azure.com)に戻り、Key Vaultのアカウントに移動し、左側のメニューから **Properties** を選択します。
+1. 別のブラウザタブに表示されたままになっているはずの、[Azure portal](https://portal.azure.com) に戻り、Key Vault のアカウントに移動し、左側のメニューから **Properties** を選択します。
 
-2. **DNS Name** と **Resource ID** プロパティの値をコピーし、Notepadや他のテキストアプリケーションに、すぐあとで参照するためにペーストしておきます。
+2. **DNS Name** と **Resource ID** プロパティの値をコピーし、Notepad や他のテキストアプリケーションに、すぐあとで参照するためにペーストしておきます。
 
    ![Properties is selected on the left-hand menu, and DNS Name and Resource ID are highlighted to show where to copy the values from.](media/key-vault-properties.png 'Key Vault properties')
 
-3. Azure Databricksのワークスペースに戻ります。
+3. Azure Databricks のワークスペースに戻ります。
 
-4. ブラウザのURLバーで、Azure Databricksのベース URL (例、<https://eastus.azuredatabricks.net#secrets/createScope>)に **#secrets/createScope** を追加します。
+4. ブラウザの URL バーで、Azure Databricks のベース URL (例、<https://eastus.azuredatabricks.net#secrets/createScope>)に **#secrets/createScope** を追加します。
 
 5. シークレットスコープの名前に `key-vault-secrets` を入力します。
 
-6. 6. Manage Principal ドロップダウンにある **Creator** を選択し、MANAGEパーミッションを持つシークレットスコープの作成者（あなた）のみを指定します。
+6. Manage Principal ドロップダウンにある **Creator** を選択し、MANAGEパーミッションを持つシークレットスコープの作成者（あなた）のみを指定します。
 
-   > MANAGE パーミッションがあると、このシークレットスコープを読み書きでき、Azure Databricks Premium Planの場合、スコープのパーミッションを変更することが出来ます。
+   > MANAGE パーミッションがあると、このシークレットスコープを読み書きでき、Azure Databricks Premium Plan の場合、スコープのパーミッションを変更することが出来ます。
 
    > 作成者を選択できるようにするには、アカウントが Azure Databricks Premium Plan に紐付けされている必要があります。
    これは推奨される方法です: シークレットスコープの作成時に作成者に MANAGE パーミッションを付与し、スコープをテストした後、より細かなアクセスパーミッションを割り当てます。
 
-7. Key Vaultの作成手順で以前にコピーした **DNS Name** (例、<https://iot-vault.vault.azure.net/>) と **Resource ID** 例:`/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/cosmos-db-iot/providers/Microsoft.KeyVault/vaults/iot-vault` を入力します。
+7. Key Vault の作成手順で以前にコピーした **DNS Name** (例、<https://iot-vault.vault.azure.net/>) と **Resource ID** 例:`/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/cosmos-db-iot/providers/Microsoft.KeyVault/vaults/iot-vault` を入力します。
 
    ![Create Secret Scope form](media/create-secret-scope.png 'Create Secret Scope')
 
@@ -727,15 +727,15 @@ Azure Databricks には、Key Vault バックアップとDatabricks バックア
 ソリューション アーキテクチャ図の右側を調べると、Cosmos DB のフィードトリガー関数から Event Hubs にフィードされるイベント データのフローが表示されます。Stream Analytics は、個々の車両テレメトリの集計を作成する一連のタイム ウィンドウ クエリーの入力ソースとして Event Hubs を使用し、車両 IoT デバイスからアーキテクチャを通過する車両テレメトリ全体を作成します。Stream Analytics には、次の 2 つの出力データ シンクがあります:
 
 1. Cosmos DB: 個々の車両テレメトリ (VIN でグループ化) は、30 秒間の `TumblingWindow` で集計され、`metadata` コンテナーに保存されます。この情報は、後のタスクで Power BI Desktop で作成する Power BI レポートで使用され、個々の車両と複数の車両統計情報が表示されます。
-2. Power BI: すべての車両テレメトリは、10 秒間の `TumblingWindow` で集計され、Power BI データ・セットに出力されます。このほぼリアルタイムなデータは、ライブPower BIダッシュボードに表示され、10秒間に処理されたイベントの数、エンジン温度、オイル、または冷凍ユニットの警告があるかどうか、期間中に乱暴な運転が検出されたかどうか、平均速度、エンジン温度、冷凍ユニットの測定値、が表示されます。。
+2. Power BI: すべての車両テレメトリは、10 秒間の `TumblingWindow` で集計され、Power BI データ・セットに出力されます。このほぼリアルタイムなデータは、ライブ Power BI ダッシュボードに表示され、10 秒間に処理されたイベントの数、エンジン温度、オイル、または冷凍ユニットの警告があるかどうか、期間中に乱暴な運転が検出されたかどうか、平均速度、エンジン温度、冷凍ユニットの測定値、が表示されます。。
 
 ![The stream processing components of the solution architecture are displayed.](media/solution-architecture-stream-processing.png 'Solution Architecture - Stream Processing')
 
-この演習では、Stream Analyticsを設定して、上述したようなストリーム処理を行います。
+この演習では、Stream Analytics を設定して、上述したようなストリーム処理を行います。
 
 ### Task 1: Add Stream Analytics Event Hubs input
 
-1. [Azure portal](https://portal.azure.com)で演習のリソースグループを開き、**Stream Analytics job** を開きます。
+1. [Azure portal](https://portal.azure.com) で演習のリソースグループを開き、**Stream Analytics job** を開きます。
 
    ![The Stream Analytics job is highlighted in the resource group.](media/resource-group-stream-analytics.png 'Resource Group')
 
@@ -756,7 +756,7 @@ Azure Databricks には、Key Vault バックアップとDatabricks バックア
 
 4. **Save** を選択します。
 
-Event Hubsの入力がリストされているのが見えるはずです。
+Event Hubs の入力がリストされているのが見えるはずです。
 
 ![The Event Hubs input is listed.](media/stream-analytics-inputs.png 'Inputs')
 
@@ -779,17 +779,17 @@ Event Hubsの入力がリストされているのが見えるはずです。
 
 3. **Save** を選択します。
 
-4. **このアカウントでまだPower BIにサインインしたことが無い場合**、新しいブラウザのタブを開き、<https://powerbi.com> に移動しサインインします。表示されるメッセージを確認し、ホームページが表示された後、次の手順に進みます。Stream Analyticsからの接続認証手順が成功するのに役立ち、グループワークスペースを探します。
+4. **このアカウントでまだPower BIにサインインしたことが無い場合**、新しいブラウザのタブを開き、<https://powerbi.com> に移動しサインインします。表示されるメッセージを確認し、ホームページが表示された後、次の手順に進みます。Stream Analytics からの接続認証手順が成功することや、グループワークスペースを探すのに役立ちます。
 
 5. Outputs ブレードがまだ表示されているので、**+ Add** を再度選択し、リストから **Power BI** を選択します。
 
    ![The Power BI output is selected in the Add menu.](media/stream-analytics-outputs-add-power-bi.png 'Outputs')
 
-6. **New output** フォームで下の方を探して、**Authorize connection** セクションを見つけ、**Authorize** を選択してPower BIアカウントにサインインします。もしPower BI アカウントが無い場合、まず _Sign up_ オプションを選択します。
+6. **New output** フォームで下の方を探して、**Authorize connection** セクションを見つけ、**Authorize** を選択して Power BI アカウントにサインインします。もし Power BI アカウントが無い場合、まず _Sign up_ オプションを選択します。
 
    ![The Authorize connection section is displayed.](media/stream-analytics-authorize-power-bi.png 'Authorize connection')
 
-7. Power BIへの接続が認証されたら、以下の設定オプションを指定します:
+7. Power BI への接続が認証されたら、以下の設定オプションを指定します:
 
    1. **Output alias**: Enter **powerbi**.
    2. **Group workspace**: Select **My workspace**.
@@ -800,15 +800,15 @@ Event Hubsの入力がリストされているのが見えるはずです。
 
 8. **Save** を選択します。
 
-これで2つのoutputがリストされているはずです。
+これで 2 つの出力がリストされているはずです。
 
 ![The two added outputs are listed.](media/stream-analytics-outputs.png 'Outputs')
 
 ### Task 3: Create Stream Analytics query
 
-クエリーはStream Analyticsの馬車馬です。ここでストリーミング入力を処理し、出力にデータを書き込みます。Stream Analytics クエリー言語は SQL に似ており、使い慣れた構文を使用して、ストリーミング データの探索と変換、集計の作成、および出力シンクに書き込む前にデータ構造を形成するために使用できる具体化されたビューを作成できます。Stream Analytics ジョブは 1 つのクエリーしか持ち込めませんが、次の手順で行うように、1 つのクエリーで複数の出力に書き込むことができます。
+クエリーは Stream Analyticsの主力の機能です。ここでストリーミング入力を処理し、出力にデータを書き込みます。Stream Analytics クエリー言語は SQL に似ており、使い慣れた構文を使用して、ストリーミング データの探索と変換、集計の作成、および出力シンクに書き込む前にデータ構造を形成するために使用できる具体化されたビューを作成できます。Stream Analytics ジョブは 1 つのクエリーしか持ち込めませんが、次の手順で行うように、1 つのクエリーで複数の出力に書き込むことができます。
 
-以下のクエリーを分析してください。作成した Event Hubs 入力に対して `events` 入力名と `powerbi` と `cosmosDB` 出力をそれぞれ使用していることに注目してください。また、`VehicleData` では30秒、`VehicleDataAll` では10秒の持続時間で `TumblingWindow` を使用する場所も確認できます。`TumblingWindow` は、過去X秒中に発生したイベントを評価し、この場合、レポートの期間にわたって平均を作成するのに役立ちます。
+以下のクエリーを分析してください。作成した Event Hubs 入力に対して `events` 入力名と `powerbi` と `cosmosDB` 出力をそれぞれ使用していることに注目してください。また、`VehicleData` では 3 0秒、`VehicleDataAll` では 10 秒の持続時間で `TumblingWindow` を使用する場所も確認できます。`TumblingWindow` は、過去 X 秒中に発生したイベントを評価し、この場合、レポートの期間にわたって平均を作成するのに役立ちます。
 
 1. 左側のメニューから **Query** を選択します。以下のスクリプトでクエリーウインドウの中身を置き換えます:
 
@@ -889,31 +889,31 @@ Event Hubsの入力がリストされているのが見えるはずです。
 
 **Duration**: 30 minutes
 
-このシナリオのアーキテクチャでは、Azure Functions がイベント処理で大きな役割を果たします。これらのFunctionは、クラウド内の小さなコード(関数)を簡単に実行するためのMicrosoftのサーバーレス ソリューションである Azure Functions アプリケーション内で実行されます。アプリケーション全体やインフラストラクチャを実行する必要なく、問題に必要なコードだけを記述できます。Functions は開発の生産性をさらに高め、C#、F#、Node.js、Java、PHP などの開発言語を使用できます。
+このシナリオのアーキテクチャでは、Azure Functions がイベント処理で大きな役割を果たします。これらの関数は、クラウド内の小さなコード(関数)を簡単に実行するための Microsoft のサーバーレス ソリューションである Azure Functions アプリケーション内で実行されます。アプリケーション全体やインフラストラクチャを実行する必要なく、問題に必要なコードだけを記述できます。Functions は開発の生産性をさらに高め、C#、F#、Node.js、Java、PHP などの開発言語を使用できます。
 
 この演習に進む前に、Functions と Web App がアーキテクチャにどのように適合するかを見ていきましょう。
 
-ソリューションには 3 つの Function App と 1 つの Web App があります。Function App は、データ パイプラインの 2 段階以内でイベント処理を処理し、Web App を使用して Cosmos DB に格納されているデータに対して CRUD 操作を実行します。
+ソリューションには 3 つの Function App と 1 つの Web App があります。Function App は、データ パイプラインの 2 段階以内でイベントを処理し、Web App を使用して Cosmos DB に格納されているデータに対して CRUD 操作を実行します。
 
 ![The two Function Apps and Web App are highlighted.](media/solution-diagram-function-apps-web-app.png 'Solution diagram')
 
-Function App に複数の関数が含まれている場合、_なぜ1つではなく2つの Function App が必要なのか?_ と疑問に思うかもしれません。2 つのFunction App を使用する主な理由は、関数が需要を満たすためにどのように拡張されるかによるものです。Azure Functions の消費プランを使用する場合は、コードの実行時間に対してのみ支払います。さらに重要なのは、Azure は需要に応える機能のスケーリングを自動的に処理することです。関数が使用しているトリガーの種類を評価する内部スケール コントローラを使用してスケールし、ヒューリスティックを適用して複数のインスタンスにスケール アウトするタイミングを決定します。知っておくべき重要なことは、Function App レベルで関数がスケーリングすることです。つまり、1 つの非常にビジーな関数があり、残りがほとんどアイドル状態の場合、1 つのビジー関数によって Function App 全体がスケーリングされます。ソリューションを設計する際には、このことを考えてください。**非常に高負荷の関数を別々の Function App** に分割することは良い考えです。
+Function App に複数の関数が含まれている場合、_なぜ 1 つではなく 2 つの Function App が必要なのか?_ と疑問に思うかもしれません。2 つのFunction App を使用する主な理由は、関数が需要を満たすためにどのように拡張されるかによるものです。Azure Functions の消費プランを使用する場合は、コードの実行時間に対してのみ支払います。さらに重要なのは、Azure は需要に応える機能のスケーリングを自動的に処理することです。関数が使用しているトリガーの種類を評価する内部スケール コントローラを使用してスケールし、ヒューリスティックを適用して複数のインスタンスにスケール アウトするタイミングを決定します。知っておくべき重要なことは、Function App レベルで関数がスケーリングすることです。つまり、1 つの非常にビジーな関数があり、残りがほとんどアイドル状態の場合、1 つのビジーな関数によって Function App 全体がスケーリングされます。ソリューションを設計する際には、このことを考えてください。**非常に高負荷の関数を別々の Function App** に分割することは良い考えです。
 
 次に、Function App と Web App とそのアーキテクチャへの貢献方法を紹介します。
 
 - **IoT-StreamProcessing Function App**: これはストリーム処理の Function App であり、2つの関数が含まれています。
 
 - **IoTHubTrigger**: この関数は、車両テレメトリがデータ ジェネレーターによって送信されるにつれて、IoT Hub の Event Hub エンドポイントによって自動的にトリガーされます。この関数は、パーティションキー値、ドキュメントの TTL、を定義してデータに対して軽い処理を実行し、タイムスタンプ値を追加し、情報を Cosmos DB に保存します。
-  - **HealthCheck**: この関数には HTTP トリガーがあり、ユーザーは Function App が起動して実行中であり、各構成設定が存在し、値を持っていることを確認できます。より徹底的なチェックでは、各値が予期される形式に対して、または必要に応じて各サービスに接続することによって検証されます。すべての値にゼロ以外の文字列が含まれている場合、関数は HTTP ステータス `200` (OK) を返します。null または空の値がある場合、関数はエラー (`200`) を返し、どの値が欠落していることを示します。データ ジェネレーターは、実行する前にこの関数を呼び出します。
+  - **HealthCheck**: この関数には HTTP トリガーがあり、ユーザーは Function App が起動して実行中であり、各構成設定が存在し、値を持っていることを確認できます。より徹底的なチェックでは、各値が予期される形式に対して、または必要に応じて各サービスに接続することによって検証されます。すべての値にゼロ以外の文字列が含まれている場合、関数は HTTP ステータス `200` (OK) を返します。null または空の値がある場合、関数はエラー (`400`) を返し、どの値が欠落していることを示します。データ ジェネレーターは、実行する前にこの関数を呼び出します。
 
   ![The Event Processing function is shown.](media/solution-architecture-function1.png 'Solution architecture')
 
-- **IoT-CosmosDBProcessing Function App** :これはトリップ処理のFunction App です。これは、`telemetry` コンテナー上のCosmos DB Change Feed によってトリガされる3つの関数が含まれています。Cosmos DB Change Feed は複数のコンシューマーをサポートしているため、これら 3 つの機能を並行して実行し、互いに競合することなく同じ情報を同時に処理できます。これらの各関数に対して `CosmosDBTrigger` を定義する際に、処理した Change Feed イベントを追跡するために、 `leases` という名前のCosmos DBコレクションに接続するトリガ設定を設定します。また、一つの関数が別の関数のリース情報を取得または更新しようとしないように、一意のプレフィックスを持つ各関数の `LeaseCollectionPrefix` 値も設定します。このFunction App には、次の関数があります。
+- **IoT-CosmosDBProcessing Function App** :これはトリップ処理のFunction App です。これは、`telemetry` コンテナー上の Cosmos DB Change Feed によってトリガーされる 3 つの関数が含まれています。Cosmos DB Change Feed は複数のコンシューマーをサポートしているため、これら 3 つの機能を並行して実行し、互いに競合することなく同じ情報を同時に処理できます。これらの各関数に対して `CosmosDBTrigger` を定義する際に、処理した Change Feed イベントを追跡するために、`leases` という名前の Cosmos DB コレクションに接続するトリガー設定を設定します。また、一つの関数が別の関数のリース情報を取得または更新しようとしないように、一意のプレフィックスを持つ各関数の `LeaseCollectionPrefix` 値も設定します。この Function App には、次の関数があります。
 
-- **TripProcessor**: この関数は、VINによって車両テレメトリデータをグループ化し、 `metadata` コンテナーから関連するトリップレコードを取得し、トリップ開始タイムスタンプ、完了した場合は終了タイムスタンプ、およびトリップの有無を示すステータス、トリップが開始された、遅れている、または完了したのいずれか、を更新します。また、関連する委託レコードをステータスで更新し、Function App のアプリ設定で定義された受信者にアラートを電子メールで送信する必要がある場合は、トリップ情報を含む Logic App をトリガーします (`RecipientEmail`)。
+- **TripProcessor**: この関数は、VIN によって車両テレメトリデータをグループ化し、`metadata` コンテナーから関連するトリップレコードを取得し、トリップ開始タイムスタンプ、完了した場合は終了タイムスタンプ、およびトリップの有無を示すステータス、トリップが開始された、遅れている、または完了したのいずれか、を更新します。また、関連する委託レコードをステータスで更新し、Function App のアプリ設定で定義された受信者にアラートを電子メールで送信する必要がある場合は、トリップ情報を含む Logic App をトリガーします (`RecipientEmail`)。
   - **ColdStorage**: この関数は Azure Storage アカウント (`ColdStorageAccount`) に接続し、次のタイム スライスパス形式でコールド ストレージ用の生の車両テレメトリ データを書き込みます: `telemetry/custom/scenario1/yyyy/MM/dd/HH/mm/ss-fffffff.json`。
   - ** SendToEventHubsForReporting** : この関数は、車両テレメトリ データを Event Hubs に直接送信するだけで、Stream Analytics はウィンドウ化された集計を適用し、それらの集計を Power BI および Cosmos DB のメタデータ コンテナーにバッチで保存できます。
-  - **HealthCheck**: ストリーム処理 Function App 内の同じ名前の関数と同様に、この関数には HTTP トリガーがあり、Function Appが稼働中であり、各構成設定が存在し、値を持っていることをユーザーが確認できます。データ ジェネレーターは、実行する前にこの関数を呼び出します。
+  - **HealthCheck**: ストリーム処理 Function App 内の同じ名前の関数と同様に、この関数には HTTP トリガーがあり、Function App が稼働中であり、各構成設定が存在し、値を持っていることをユーザーが確認できます。データ ジェネレーターは、実行する前にこの関数を呼び出します。
 
   ![The Trip Processing function is shown.](media/solution-architecture-function2.png 'Solution architecture')
 
@@ -923,13 +923,13 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
 ### Task 1: Retrieve the URI for each Key Vault secret
 
-次のタスクで Function App と Web App のアプリ設定を設定する場合は、バージョン番号を含む Key Vault のシークレットの URI を参照する必要があります。これを行うには、シークレットごとに次の手順を実行し、**値** をNotepadまたは同様のテキスト アプリケーションにコピーします。
+次のタスクで Function App と Web App のアプリ設定を設定する場合は、バージョン番号を含む Key Vault のシークレットの URI を参照する必要があります。これを行うには、シークレットごとに次の手順を実行し、**値** を Notepad または同様のテキスト アプリケーションにコピーします。
 
-1. ポータルでKey Vaultのインスタンスを開きます。
+1. ポータルで Key Vault のインスタンスを開きます。
 
 2. 左側のメニューの Settings 以下にある **Secrets** を選択します。
 
-3. 取得したいURI値のシークレットを選択します。
+3. 取得したい URI 値のシークレットを選択します。
 
 4. **Current Version** のシークレットを選択します。
 
@@ -939,7 +939,7 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
    ![The Secret Identifier is highlighted.](media/key-vault-secret-identifier.png 'Secret Identifier')
 
-   Function Appのアプリ設定でこのシークレットへの Key Vault 参照を追加すると、`@Microsoft.KeyVault(SecretUri={referenceString})` という形式を利用することになり、`{referenceString}` は上記のシークレット識別子(URI)の値によって置き換えられます。**中かっこ(`{}`)** を削除してください。
+   Function App のアプリ設定でこのシークレットへの Key Vault 参照を追加すると、`@Microsoft.KeyVault(SecretUri={referenceString})` という形式を利用することになり、`{referenceString}` は上記のシークレット識別子 (URI) の値によって置き換えられます。**中かっこ(`{}`)** を削除してください。
 
    例えば、完全な参照は以下のようになります:
 
@@ -953,13 +953,13 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
 2. 左側のメニューから **Resource groups** を選択し、`cosmos-db-iot` を入力してリソースグループを探します。この演習で利用しているリソースグループを選択します。
 
-3. **Key Vault** を開きます。名前は `iot-vault` で始まるはずです。
+3. **Key Vault** を開きます。名前は `iot-keyvault` で始まるはずです。
 
    ![The Key Vault is highlighted in the resource group.](media/resource-group-keyvault.png 'Resource group')
 
 4. 別のブラウザのタブで、名前が **IoT-CosmosDBProcessing** で始まる Azure Functions アプリケーションを選択します。
 
-5. Overviewペインで **Configuration** を選択します。
+5. Overview ペインで **Configuration** を選択します。
 
     ![The Configuration link is highlighted in the Overview blade.](media/cosmosdb-function-overview.png "Overview")
 
@@ -979,7 +979,7 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
 8. 名前が **IoT-StreamProcessing** で始まる Azure Functions アプリケーションを開きます。
 
-9. Overviewペインで **Configuration** を選択します。
+9. Overview ペインで **Configuration** を選択します。
 
 10. **Application settings** セクションへスクロールします。**+ New application setting** リンクを使って、以下の追加の Key/Value ペアを作成します (キーの名前は以下の表にあるものと完全に一致していなければいけません):
 
@@ -1008,17 +1008,17 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
 15. **Save** を選択し、変更を適用します。
 
-> Function Appと Web App の両方のシステム管理 ID が正しく動作し、Key Vault にアクセスできることを確認します。これを行うには、各 Function App と Web App 内で**CosmosDBConnection**設定を開き、設定の下にある **Key Vault Reference Details** を見てください。次のような出力が表示され、シークレットの詳細が表示され、_システムで割り当てられたマネージ ID_ を使用していることを示します:
+> Function Appと Web App の両方のシステム管理 ID が正しく動作し、Key Vault にアクセスできることを確認します。これを行うには、各 Function App と Web App 内で **CosmosDBConnection** 設定を開き、設定の下にある **Key Vault Reference Details** を見てください。次のような出力が表示され、シークレットの詳細が表示され、_システムで割り当てられたマネージ ID_ を使用していることを示します:
 
 ![The application setting shows the Key Vault reference details underneath.](media/webapp-app-setting-key-vault-reference.png "Key Vault reference details")
 
-> Key Vault Reference Detailsにエラーが表示された場合は、Key Vault に移動し、関連するシステム ID のアクセス ポリシーを削除します。次に、Function App または  Web App に戻り、システム ID をオフにし、再びオンにして (新しいアプリを作成する)、Key Vault のアクセス ポリシーに再度追加します。
+> Key Vault Reference Details にエラーが表示された場合は、Key Vault に移動し、関連するシステム ID のアクセス ポリシーを削除します。次に、Function App または  Web App に戻り、システム ID をオフにし、再びオンにして (新しいアプリを作成する)、Key Vault のアクセス ポリシーに再度追加します。
 
 ### Task 3: Open solution
 
 このタスクでは、この演習の Visual Studio ソリューションを開きます。これには、Function App、Web App、およびデータ ジェネレーターの両方のプロジェクトが含まれています。
 
-1. Windowsエクスプローラーを開いて _Before the HOL_ガイド内でソリューションのZIPファイルが展開された場所に移動します。もし`C:\`に直接ZIPファイルを展開した場合、以下のフォルダを開く必要があります:`C:\cosmos-db-scenario-based-labs-master\IoT\Starter` Visual Studioのソリューションファイルを開きます:**CosmosDbIoTScenario.sln**
+1. Windows エクスプローラーを開いて _Before the HOL_ ガイド内でソリューションの ZIP ファイルが展開された場所に移動します。もし`C:\`に直接 ZIP ファイルを展開した場合、以下のフォルダを開く必要があります:`C:\cosmos-db-scenario-based-labs-master\IoT\Starter` Visual Studio のソリューションファイルを開きます: **CosmosDbIoTScenario.sln**
 
     > Visual Studio が最初の起動時にサインインを求めるメッセージが表示された場合は、この演習 (該当する場合) または既存の Microsoft アカウントに提供されたアカウントを使用します。
 
@@ -1032,7 +1032,7 @@ Function App に複数の関数が含まれている場合、_なぜ1つでは�
 
     ![The Visual Studio Solution Explorer is displayed.](media/vs-solution-explorer.png "Solution Explorer")
 
-3. Solution Explorerで `CosmosDbIoTScenario` ソリューションを右クリックし、**Restore NuGet Packages** を選択します。小包はソリューションを開いた時に既にリストアされているかもしれません。
+3. Solution Explorerで `CosmosDbIoTScenario` ソリューションを右クリックし、**Restore NuGet Packages** を選択します。パッケージはソリューションを開いた時に既にリストアされているかもしれません。
 
 ### Task 4: Code completion and walk-through
 
@@ -1046,7 +1046,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     ![The Task List is displayed.](media/vs-tasklist.png "Task List")
 
-2. **Functions.CosmosDB** プロジェクトの中の **Startup.cs** を開き、**TODO 1** 内に以下をペーストしてコードを完了します:
+2. **Functions.CosmosDB** プロジェクトの中の **Startup.cs** を開き、**TODO 1** 内に以下をペーストしてコードを完成させます:
 
     ```csharp
     builder.Services.AddSingleton((s) => {
@@ -1072,7 +1072,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 3. **Save** で **Startup.cs** ファイルを保存します。
 
-4. **Functions.CosmosDB** プロジェクトの中の **Functions.cs** を開き、**TODO 2** 内に以下をペーストしてコードを完了します:
+4. **Functions.CosmosDB** プロジェクトの中の **Functions.cs** を開き、**TODO 2** 内に以下をペーストしてコードを完成させます:
 
     ```csharp
     public Functions(IHttpClientFactory httpClientFactory, CosmosClient cosmosClient)
@@ -1100,9 +1100,9 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     {
     ```
 
-    `FunctionName` 属性は、Function App 内での関数名の表示方法を定義し、C# メソッド名とは異なる場合があります。この `TripProcessor` 関数は、`CosmosDBTrigger` を使用して、すべてのCosmos DB change feed イベントに起動します。イベントはバッチで到着し、そのサイズは、コンテナーの Insert、Update、または Delete イベントの数などの要因によって異なります。`databaseName` と `collectionName` プロパティは、どのコンテナーのchange feedが関数をトリガーするかを定義します。`ConnectionStringSetting` は、Cosmos DB 接続文字列をプルするFunction App のアプリケーション設定の名前を示します。この例では、作成した Key Vault シークレットから接続文字列の値が描画されます。`LeaseCollection` プロパティは、リース コンテナーの名前と、この関数のリース データに適用されるプレフィックス、およびリース コンテナーが存在しない場合にリース コンテナーを作成するかどうかを定義します。`StartFromBeginning` は `true` に設定され、関数の最後の実行以降のすべてのイベントが処理されるようにします。この関数は、change feedドキュメントを `IReadOnlyList` コレクションに出力します。
+    `FunctionName` 属性は、Function App 内での関数名の表示方法を定義し、C# メソッド名とは異なる場合があります。この `TripProcessor` 関数は、`CosmosDBTrigger` を使用して、すべての Cosmos DB Change Feed イベントで起動します。イベントはバッチで到着し、そのサイズは、コンテナーの Insert、Update、または Delete イベントの数などの要因によって異なります。`databaseName` と `collectionName` プロパティは、どのコンテナーのChange Feed が関数をトリガーするかを定義します。`ConnectionStringSetting` は、Cosmos DB 接続文字列をプルする Function App のアプリケーション設定の名前を示します。この例では、作成した Key Vault シークレットから接続文字列の値が生成されます。`LeaseCollection` プロパティは、リース コンテナーの名前と、この関数のリース データに適用されるプレフィックス、およびリース コンテナーが存在しない場合にリース コンテナーを作成するかどうかを定義します。`StartFromBeginning` は `true` に設定され、関数の最後の実行以降のすべてのイベントが処理されるようにします。この関数は、Change Feed ドキュメントを `IReadOnlyList` コレクションに出力します。
 
-6. 関数内を少しだけ下にスクロールして、**TODO 3** 内に以下をペーストしてコードを完了します:
+6. 関数内を少しだけ下にスクロールして、**TODO 3** 内に以下をペーストしてコードを完成させます:
 
     ```csharp
     var vin = group.Key;
@@ -1111,7 +1111,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
         group.Average(item => item.GetPropertyValue<double>("refrigerationUnitTemp"));
     ```
 
-    車両 VIN でイベントをグループ化したので、グループ キー (VIN) を保持するローカル `vin` 変数を割り当てます。次に、`group.Max` 集計関数を使用して最大走行距離計の値を計算し、平均冷凍ユニット温度を計算する関数である `group.Average` を使用します。`odometerHigh` の値を使用して、トリップ距離を計算し、Cosmos DB `metadata` コンテナーの `Trip` レコードからの計画された移動距離に基づいて、トリップが完了したかどうかを判断します。必要に応じて、ロジックアプリに送信されるアラートに `averageRefrigerationUnitTemp` が追加されます。
+    車両 VIN でイベントをグループ化したので、グループ キー (VIN) を保持するローカル `vin` 変数を割り当てます。次に、`group.Max` 集計関数を使用して最大走行距離計の値を計算し、平均冷凍ユニット温度を計算する関数である `group.Average` を使用します。`odometerHigh` の値を使用して、トリップ距離を計算し、Cosmos DB `metadata` コンテナーの `Trip` レコードからの計画された移動距離に基づいて、トリップが完了したかどうかを判断します。必要に応じて、Logic App に送信されるアラートに `averageRefrigerationUnitTemp` が追加されます。
 
 7. 新たに追加したコードで以下のようになっていることを確認します:
 
@@ -1140,11 +1140,11 @@ Function App と Web App プロジェクトには、デプロイする前に完�
             var consignment = document.Resource;
     ```
 
-    ここでは、クラスに追加された CosmosClient (`_cosmosClient`) を使用して Cosmos DB コンテナー参照を取得することにより、[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) を使用しています。LINQ 構文を使用してコンテナーをクエリーし、結果を `Trip` クラス型の新しいコレクションにバインドするには、コンテナーの `GetItemLinqQueryable` を使用します。**partition key** (この場合はVIN)を渡して、クロス・パーティションやファンアウトするクエリーを実行しないでRU/sを節約する方法に注意してください。また、他のエンティティタイプは車両タイプなど、同じパーティションキーを持つことができるため、クエリーで `entityType` ドキュメント プロパティをトリップに設定して取得するドキュメントの種類も定義します。
+    ここでは、クラスに追加された CosmosClient (`_cosmosClient`) を使用して Cosmos DB コンテナー参照を取得することにより、[.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) を使用しています。LINQ 構文を使用してコンテナーをクエリーし、結果を `Trip` クラス型の新しいコレクションにバインドするには、コンテナーの `GetItemLinqQueryable` を使用します。**partition key** (この場合はVIN)を渡して、クロス・パーティションやファンアウトするクエリーを実行しないで RU/s を節約する方法に注意してください。また、他のエンティティタイプは車両タイプなど、同じパーティションキーを持つことができるため、クエリーで `entityType` ドキュメント プロパティをトリップに設定して取得するドキュメントの種類も定義します。
 
     委託 ID を持っているので、`ReadItemAsync` メソッドを使用して単一の委託レコードを取得できます。ここでは、ファンアウトを最小限に抑えるためにパーティションキーを渡します。Cosmos DB コンテナー内では、ドキュメントの一意の ID は `id` フィールドとパーティション キー値の組み合わせです。
 
-8. 関数内を少しだけ下にスクロールして、**TODO 4** 内に以下をペーストしてコードを完了します:
+8. 関数内を少しだけ下にスクロールして、**TODO 4** 内に以下をペーストしてコードを完成させます:
 
     ```csharp
     if (updateTrip)
@@ -1158,17 +1158,17 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     }
     ```
 
-    `ReplaceItemAsync` メソッドは `id` とパーティションキーの値によって関連付けられたオブジェクト内に渡されたCosmos DBのドキュメントを更新します。
+    `ReplaceItemAsync` メソッドは `id` とパーティションキーの値によって関連付けられたオブジェクト内に渡された Cosmos DB のドキュメントを更新します。
 
-9. 関数内を少しだけ下にスクロールして、**TODO 5** 内に以下をペーストしてコードを完了します:
+9. 関数内を少しだけ下にスクロールして、**TODO 5** 内に以下をペーストしてコードを完成させます:
 
     ```csharp
     await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
     ```
 
-    ここでは、挿入された `HttpClientFactory` によって作成された `HttpClient` を使用して、シリアル化された `LogicAppAlert` オブジェクトを Logic App に投稿します。`Environment.GetEnvironmentVariable("LogicAppUrl")`メソッドは、Function App のアプリケーション設定からLogic App の URL を抽出し、アプリ設定に追加した特別な Key Vault アクセス文字列を使用して、Key Vault シークレットから暗号化された値を抽出します。
+    ここでは、挿入された `HttpClientFactory` によって作成された `HttpClient` を使用して、シリアル化された `LogicAppAlert` オブジェクトを Logic App に投稿します。`Environment.GetEnvironmentVariable("LogicAppUrl")`メソッドは、Function App のアプリケーション設定から Logic App の URL を抽出し、アプリ設定に追加した特別な Key Vault アクセス文字列を使用して、Key Vault シークレットから暗号化された値を抽出します。
 
-10. 関数内を少しだけ下にスクロールして、**TODO 6** 内に以下をペーストしてコードを完了します:
+10. 関数内を少しだけ下にスクロールして、**TODO 6** 内に以下をペーストしてコードを完成させます:
 
     ```csharp
     // Convert to a VehicleEvent class.
@@ -1213,7 +1213,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     `partitionKey` プロパティは、VIN + 現在の年/月で構成される Cosmos DB コンテナーの合成複合パーティション キーを表します。単に VIN の代わりに複合キーを使用すると、次の利点が得られます。
 
-    1. パーティション キーのカーディナリティが高い上に、任意の時点での書き込みワークロードを分散します。
+    1. パーティション キーのカーディナリティ（基数）が高い上に、任意の時点での書き込みワークロードを分散します。
     2. 特定の VIN 上のクエリーに対する効率的なルーティングを確保する - これらを時間で分散することができます。例 `SELECT * FROM c WHERE c.partitionKey IN ("VIN123-2019-01", "VIN123-2019-02", …)`
     3. 単一のパーティション キー値の 10 GB クォータを超えてスケーリングします。
 
@@ -1292,7 +1292,7 @@ Function App と Web App プロジェクトには、デプロイする前に完�
     }
     ```
 
-    以前のFunction Appと同様に、このコントローラーで依存関係の注入を使用しています。`ICosmosDbService`、`IHttpClientFactory`、および `IConfiguration` サービスは、コントローラのコンストラクターを介してコントローラに注入されます。`CosmosDbService` は、前の手順でコードを更新したクラスです。`CosmosClient` はコンストラクターを介して注入されます。
+    以前の Function App と同様に、このコントローラーで依存関係の注入を使用しています。`ICosmosDbService`、`IHttpClientFactory`、および `IConfiguration` サービスは、コントローラのコンストラクターを介してコントローラに注入されます。`CosmosDbService` は、前の手順でコードを更新したクラスです。`CosmosClient` はコンストラクターを介して注入されます。
 
     `Index` コントローラーアクションメソッドは、前の手順で更新した `ICosmosDbService.GetItemsWithPagingAsync` メソッドを呼び出すことによって実装されるページングを使用します。コントローラーでこのサービスを使用すると、アクション メソッドのコードから Cosmos DB クエリーの実装の詳細とビジネス ルールを抽象化し、コントローラを軽量に保ち、サービス内のコードをすべてのコントローラ間で再利用可能にすることができます。
 
@@ -1310,15 +1310,15 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 ### Task 5: Deploy Cosmos DB Processing Function App
 
-1. Visual Studio Solution Explorerで、**Functions.CosmosDB** プロジェクトを右クリックし、**Publish...** を選択します。
+1. Visual Studio Solution Explorer で、**Functions.CosmosDB** プロジェクトを右クリックし、**Publish...** を選択します。
 
     ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
 
-2. 公開ダイアログで、**Azure Functions Consumption Plan** 公開ターゲットを選択します。次に、**Select Existing** ラジオボタンを選択し、**Run from package file (recommended)** がチェックされていることを確認します。フォームの一番下の **Publish** を選択します。
+2. Publish ダイアログで、**Azure Functions Consumption Plan** publish target を選択します。次に、**Select Existing** ラジオボタンを選択し、**Run from package file (recommended)** がチェックされていることを確認します。フォームの一番下の **Publish** を選択します。
 
     ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
 
-3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて開きます。名前は **cosmos-db-iot** で始まるはずです。名前が **IoT-CosmosDBProcessing** で始まるFunction Appを選択し、**OK** を選択します。
+3. App Serviceペインで、この演習で利用している Azure サブスクリプションを選択し、View が **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて開きます。名前が **IoT-CosmosDBProcessing** で始まる Function App を選択し、**OK** を選択します。
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-cosmos.png "App Service")
 
@@ -1326,19 +1326,19 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
     公開が完了した後、出力ウインドウに以下が表示されるはずです: 公開が成功したことを表示する `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========`
 
-    > もし出力ウインドウが表示されない場合、Visual Studioで **View** を選択し、それから **Output** を選択します。
+    > もし出力ウインドウが表示されない場合、Visual Studio で **View** を選択し、それから **Output** を選択します。
 
 ### Task 6: Deploy Stream Processing Function App
 
-1. Visual Studio Solution Explorerで、**Functions.StreamProcessing** プロジェクトを右クリックし、**Publish...** を選択します。
+1. Visual Studio Solution Explorer　で、**Functions.StreamProcessing** プロジェクトを右クリックし、**Publish...** を選択します。
 
     ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
 
-2. 公開ダイアログで、**Azure Functions Consumption Plan** 公開ターゲットを選択します。次に、**Select Existing** ラジオボタンを選択し、**Run from package file (recommended)** がチェックされていることを確認します。フォームの一番下の **Publish** を選択します。
+2. Publish ダイアログで、**Azure Functions Consumption Plan** publish target を選択します。次に、**Select Existing** ラジオボタンを選択し、**Run from package file (recommended)** がチェックされていることを確認します。フォームの一番下の **Publish** を選択します。
 
     ![The publish dialog is displayed.](media/vs-publish-target-functions.png "Pick a publish target")
 
-3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて開きます。名前は **cosmos-db-iot** で始まるはずです。名前が **IoT-StreamProcessing** で始まるFunction Appを選択し、**OK** を選択します。
+3. App Service ペインで、この演習で利用している Azure サブスクリプションを選択し、View が **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて開きます。名前が **IoT-StreamProcessing** で始まる Function App を選択し、**OK** を選択します。
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-function-stream.png "App Service")
 
@@ -1348,41 +1348,41 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 ### Task 7: Deploy Web App
 
-1. Visual Studio Solution Explorerで、**FleetManagementWebApp** プロジェクトを右クリックし、**Publish...** を選択します。
+1. Visual Studio Solution Explorer で、**FleetManagementWebApp** プロジェクトを右クリックし、**Publish...** を選択します。
 
     ![The context menu is displayed and the Publish menu item is highlighted.](media/vs-publish.png "Publish")
 
-2. 公開ダイアログで、**App Service** 公開ターゲットを選択します。次に、**Select Existing** ラジオボタンを選択し、フォームの一番下の **Publish** を選択します。
+2. Publish ダイアログで、**App Service** publish target を選択します。次に、**Select Existing** ラジオボタンを選択し、フォームの一番下の **Publish** を選択します。
 
     ![The publish dialog is displayed.](media/vs-publish-target-webapp.png "Pick a publish target")
 
-3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて開きます。名前は **cosmos-db-iot** で始まるはずです。名前が **IoTWebApp** で始まるWeb Appを選択し、**OK** を選択します。
+3. App Serviceペインで、この演習用に利用しているAzureサブスクリプションを選択し、Viewが **Resource Group** になっていることを確認します。下にある結果内にあるリソースグループを見つけて開きます。名前が **IoTWebApp** で始まる Web App を選択し、**OK** を選択します。
 
     ![The App Service blade of the publish dialog is displayed.](media/vs-publish-app-service-webapp.png "App Service")
 
 4. **Publish** をクリックして開始します。
 
-    公開が完了した後、出力ウインドウに以下が表示されるはずです: 公開が成功したことを表示する `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========`。さらに、Web Appは新しいブラウザ ウィンドウで開く必要があります。サイト内を移動しようとすると、データがないことがわかります。次の演習では、データを含む Cosmos DB の `metadata` コンテナーをシードします。
+    公開が完了した後、出力ウインドウに以下が表示されるはずです: 公開が成功したことを表示する `========== Publish: 1 succeeded, 0 failed, 0 skipped ==========`。さらに、Web App は新しいブラウザ ウィンドウで開く必要があります。サイト内を移動しようとすると、データがないことがわかります。次の演習では、データを含む Cosmos DB の `metadata` コンテナーをシードします。
 
     ![The Fleet Management web app home page is displayed.](media/webapp-home-page.png "Fleet Management home page")
 
-    Web Appが自動で開かない場合は、公開ダイアログでURLをコピーします:
+    Web App が自動で開かない場合は、Publish ダイアログで URL をコピーします:
 
     ![The site URL value is highlighted on the publish dialog.](media/vs-publish-site-url.png "Publish dialog")
 
-> **注:** Web アプリケーションにエラーが表示された場合は、**IoTWebApp** の Azure ポータルに移動し、**Restart** をクリックします。ARM テンプレートから Azure Web Appを作成し、.NET Core 用に構成する場合、.NET Core 構成を完全にインストールしてアプリケーションを実行する準備が整うために、Azure Web App を再起動する必要がある場合があります。再起動すると、Web アプリケーションは期待どおりに実行されます。
+> **注:** Web アプリケーションにエラーが表示された場合は、**IoTWebApp** の Azure ポータルに移動し、**Restart** をクリックします。ARM テンプレートから Azure Web App を作成し、.NET Core 用に構成する場合、.NET Core 構成を完全にインストールしてアプリケーションを実行する準備が整うために、Azure Web App を再起動する必要がある場合があります。再起動すると、Web アプリケーションは期待どおりに実行されます。
 
 > ![App Service blade with Restart button highlighted](media/IoTWebApp-App-Service-Restart-Button.png "App Service blade with Restart button highlighted")
 
-> **追加のトラブルシューティング:** Web アプリケーションを複数回再起動しても _500_ エラーが発生した場合は、Web App のシステム ID に問題がある可能性があります。これが問題であるかどうかを確認するには、Web アプリケーションの構成を開き、そのアプリケーション設定を表示します。**CosmosDBConnection** 設定を開き、設定の下にある **Key Vault Reference Details** を見てください。次のような出力が表示され、シークレットの詳細が表示され、_System が割り当てられたマネージ ID_を使用していることを示します:
+> **追加のトラブルシューティング:** Web アプリケーションを複数回再起動しても _500_ エラーが発生した場合は、Web App のシステム ID に問題がある可能性があります。これが問題であるかどうかを確認するには、Web アプリケーションの構成を開き、そのアプリケーション設定を表示します。**CosmosDBConnection** 設定を開き、設定の下にある **Key Vault Reference Details** を見てください。次のような出力が表示され、シークレットの詳細が表示され、_システムが割り当てられたマネージ ID_ を使用していることを示します:
 
 ![The application setting shows the Key Vault reference details underneath.](media/webapp-app-setting-key-vault-reference.png "Key Vault reference details")
 
-> Key Vault Reference Detailsにエラーが表示された場合は、Key Vault に移動し、Web Appのシステム ID のアクセス ポリシーを削除します。次に、Web App に戻り、システム ID をオフにし、再びオンにして (新しいアプリを作成する)、Key Vault のアクセス ポリシーに再度追加します。
+> Key Vault Reference Details にエラーが表示された場合は、Key Vault に移動し、Web App のシステム ID のアクセス ポリシーを削除します。次に、Web App に戻り、システム ID をオフにし、再びオンにして (新しいアプリを作成する)、Key Vault のアクセス ポリシーに再度追加します。
 
 ### Task 8: View Cosmos DB processing Function App in the portal and copy the Health Check URL
 
-1. Azure portal (<https://portal.azure.com>)で、名前が **IoT-CosmosDBProcessing** で始まる Azure Functions アプリケーションを開きます。
+1. Azure portal (<https://portal.azure.com>) で、名前が **IoT-CosmosDBProcessing** で始まる Azure Functions アプリケーションを開きます。
 
 2. 左側のメニューから **Functions** リストを開き、**TripProcessor** を選択します。
 
@@ -1390,25 +1390,25 @@ Function App と Web App プロジェクトには、デプロイする前に完�
 
 3. **function.json** ファイルを右側に表示します。このファイルは、Visual Studio で Function App を公開したときに生成されました。バインディングは、関数のプロジェクト コードで見たのと同じです。Function App の新しいインスタンスが作成されると、生成された `function.json` ファイルとコンパイル済みアプリケーションを含む ZIP ファイルがこれらのインスタンスにコピーされ、これらのインスタンスは並列に実行され、アーキテクチャを流れるデータフローとして負荷を共有します。`function.json` ファイルは、各インスタンスに属性を関数にバインドする方法、アプリケーション設定を検索する場所、およびコンパイルされたアプリケーション (`scriptFile` と `entryPoint`) に関する情報を指示します。
 
-4. **HealthCheck** 関数を選択します。この関数には Http トリガーがあり、ユーザーは Function App が起動して実行中であり、各構成設定が存在し、値を持っていることを確認できます。データ ジェネレーターは、実行する前にこの関数を呼び出します。
+4. **HealthCheck** 関数を選択します。この関数には HTTP トリガーがあり、ユーザーは Function App が起動して実行中であり、各構成設定が存在し、値を持っていることを確認できます。データ ジェネレーターは、実行する前にこの関数を呼び出します。
 
 5. **Get function URL** を選択します。
 
     ![The HealthCheck function is selected and the Get function URL link is highlighted.](media/portal-cosmos-function-healthcheck.png "HealthCheck function")
 
-6. **Copy the URL** して、後の演習用にNotepadか同等のテキストエディタに保存します。
+6. **Copy the URL** して、後の演習用に Notepad か同等のテキストエディタに保存します。
 
     ![The HealthCheck URL is highlighted.](media/portal-cosmos-function-healthcheck-url.png "Get function URL")
 
 ### Task 9: View stream processing Function App in the portal and copy the Health Check URL
 
-1. Azure portal (<https://portal.azure.com>)で、名前が **IoT-StreamProcessing** で始まる Azure Functions アプリケーションを開きます。
+1. Azure portal (<https://portal.azure.com>) で、名前が **IoT-StreamProcessing** で始まる Azure Functions アプリケーションを開きます。
 
 2. 左側のメニューから **Functions** リストを開き、**HealthCheck** 関数を選択します。次に、**Get function URL** を選択します。
 
     ![The HealthCheck function is selected and the Get function URL link is highlighted.](media/portal-stream-function-healthcheck.png "HealthCheck")
 
-3. **Copy the URL** して、続く演習用にNotepadか同等のテキストエディタに保存します。
+3. **Copy the URL** して、続く演習用に Notepad か同等のテキストエディタに保存します。
 
     ![The HealthCheck URL is highlighted.](media/portal-stream-function-healthcheck-url.png "Get function URL")
 
