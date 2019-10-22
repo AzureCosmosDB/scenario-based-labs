@@ -29,14 +29,14 @@
 		"databaseName": "movies",
 		"throughput": "400",
         "name-suffix": "[uniqueString(resourceGroup().id)]",
-        "appServicePlan": "[concat('s2webplan-', variables('name-suffix'))]",
+        "appServicePlan": "[concat('s2webplan', variables('name-suffix'))]",
         "appServicePlanFunctionAppsName": "[concat('s2funcplan', variables('name-suffix'))]",
 		
 		"webAppName": "[concat('s2web', variables('name-suffix'))]",
         
 		"functionAppName": "[concat('s2func', variables('name-suffix'))]",
         
-		"keyVaultName": "[concat('s2keyvault-', variables('name-suffix'))]",
+		"keyVaultName": "[concat('s2keyvault', variables('name-suffix'))]",
 				
         "storageAccountCosmosDBProcessingName": "[concat('s2data3', variables('name-suffix'))]",
         "storageAccountCosmosDBProcessing-website-contentshare": "[concat('s2cosmosdbprocessing', variables('name-suffix'))]",
@@ -45,15 +45,15 @@
 
         "cosmosDbAccountName": "[concat('s2cosmosdb', variables('name-suffix'))]",
 
-        "appInsightsName": "[concat('s2_appinsights_', variables('name-suffix'))]",
+        "appInsightsName": "[concat('s2appinsights', variables('name-suffix'))]",
         
-        "streamAnalyticsJobName": "[concat('s2_analytics_', variables('name-suffix'))]",
+        "streamAnalyticsJobName": "[concat('s2analytics', variables('name-suffix'))]",
 
-        "databricksWorkspaceName": "[concat('s2_databricks_', variables('name-suffix'))]",
+        "databricksWorkspaceName": "[concat('s2databricks', variables('name-suffix'))]",
 		
 		"connections_office365_name" : "[concat('s2_o365_', variables('name-suffix'))]",
 		
-		"workflows_s2scenerio_name" : "[concat('s2_logicapp_', variables('name-suffix'))]",
+		"workflows_s2scenerio_name" : "[concat('s2logicapp', variables('name-suffix'))]",
 		
 		"webAppIdentity": "[concat(resourceId('Microsoft.Web/sites', variables('webAppName')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
 		
@@ -131,62 +131,6 @@
             "kind": "web",
             "properties": {
                 "Application_Type": "web"
-            }
-        },
-        {
-            "type": "Microsoft.KeyVault/vaults",
-            "apiVersion": "2016-10-01",
-            "name": "[variables('keyVaultName')]",
-            "location": "[variables('location')]",
-            "properties": {
-                "sku": {
-                    "family": "A",
-                    "name": "standard"
-                },
-                "tenantId": "[subscription().tenantId]",
-				"accessPolicies" : [
-				{
-				 "tenantId": "[subscription().tenantid]",
-				 "objectId": "[parameters('userObjectId')]",
-			  "permissions": {
-						"keys": ["all"],
-						"secrets": ["all"],
-						"certificates": ["all"],
-						"storage": ["all"]
-					}
-			   },
-			   {
-				 "tenantId": "[subscription().tenantid]",
-				 "objectId": "[parameters('msiId')]",
-			  "permissions": {
-						"keys": ["all"],
-						"secrets": ["all"],
-						"certificates": ["all"],
-						"storage": ["all"]
-					}
-			   },
-			   {
-				 "tenantId": "[subscription().tenantid]",
-				 "objectId": "[reference(variables('webAppIdentity'), '2015-08-31-PREVIEW').principalId]",
-			  "permissions": {
-						"keys": ["all"],
-						"secrets": ["all"],
-						"certificates": ["all"],
-						"storage": ["all"]
-					}
-			   },
-			   {
-				 "tenantId": "[subscription().tenantid]",
-				 "objectId": "[reference(variables('funcIdentity'), '2015-08-31-PREVIEW').principalId]",
-			  "permissions": {
-						"keys": ["all"],
-						"secrets": ["all"],
-						"certificates": ["all"],
-						"storage": ["all"]
-					}
-			   }
-			   ],
-                "enabledForDeployment": false
             }
         },
         {

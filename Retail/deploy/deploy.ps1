@@ -58,7 +58,7 @@ $useKeyVault = $false
 
 function CheckFunctionAppMaster()
 {
-    write-host "Action Required: Search for your function app '$funcAppName', select it, then click 'Function app settings'"
+    write-host "Action Required: Search for your function app '$funcAppName', select it, then click 'Function app settings'. Wait for the 'master key' to display."
     write-host "Opening url: $url";
     Start-Process $url;
 
@@ -303,7 +303,7 @@ function SetupDatabricks()
         $clusterId = $json.cluster_id
 
         # allow the creation of the cluster to begin before installing libraries
-        start-sleep 10;
+        start-sleep 15;
         
         #install the library
         $json = "{`"cluster_id`": `"$clusterid`",`"libraries`": [{`"maven`": {`"coordinates`": `"com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1`",`"exclusions`": [`"slf4j:slf4j`"]}}]}";
@@ -547,8 +547,11 @@ $json = ConvertObjectToJson $res
 
 $tenantId = $json.tenantId;
 
-#create the resource group
-$res = az group create --name $rgName --location $region;
+#create the resource group (if not in spektra)
+if (!$isSpektra)
+{
+    $res = az group create --name $rgName --location $region;
+}
 
 $parametersRegion = @{
             "schema"="http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
@@ -558,27 +561,19 @@ $parametersRegion = @{
                  }
             } | ConvertTo-Json
 
-#deploy the managed service identity
-$deployment = DeployTemplate "labdeploy5.json" $skipDeployment $parametersRegion;
-
-$res = $(az identity list --resource-group $rgname)
-$json = ConvertObjectToJson $res;
-
-$msIdentity = $json | where {$_.type -eq "Microsoft.ManagedIdentity/userAssignedIdentities"};
-
 $parameters = @{
             "schema"="http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
             "contentVersion"="1.0.0.0"
             "parameters"=@{
                  "region"=@{"value"="$region"}
-                 "msiId"=@{"value"="$($msidentity.principalId)"}
+                 "msiId"=@{"value"="TBD"}
                  "prefix"=@{"value"="$prefix"}
                  "tenantId"=@{"value"="$tenantId"}
                  "userObjectId"=@{"value"="$userObjectId"}
                  }
             } | ConvertTo-Json
             
-$deployment = DeployTemplate "labdeploy.json" $skipDeployment $parameters;
+$deployment = DeployTemplate "labdeploy.json" $skipDeployment $parameters "01_Main";
 
 #need the suffix...
 if ($deployment.properties.provisioningState -eq "Succeeded")
@@ -597,8 +592,26 @@ if (!$suffix)
     }
 }
 
+#get the new 
+$res = $(az identity list --resource-group $rgname)
+$json = ConvertObjectToJson $res;
+
+$msIdentity = $json | where {$_.type -eq "Microsoft.ManagedIdentity/userAssignedIdentities"};
+
+$parameters = @{
+            "schema"="http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
+            "contentVersion"="1.0.0.0"
+            "parameters"=@{
+                 "region"=@{"value"="$region"}
+                 "msiId"=@{"value"="$($msidentity.principalId)"}
+                 "prefix"=@{"value"="$prefix"}
+                 "tenantId"=@{"value"="$tenantId"}
+                 "userObjectId"=@{"value"="$userObjectId"}
+                 }
+            } | ConvertTo-Json
+
 #deploy containers - this is ok to fail
-$deployment = DeployTemplate "labdeploy4.json" $skipDeployment $parametersRegion;
+$deployment = DeployTemplate "labdeploy4.json" $skipDeployment $parametersRegion "02_CosmosContainers";
 
 #get all the resources in the RG
 $res = $(az resource list --resource-group $rgName)
@@ -610,7 +623,7 @@ $saJob = $json | where {$_.type -eq "Microsoft.StreamAnalytics/streamingjobs"};
 if (!$saJob)
 {
     #deploy stream analytics
-    $deployment = DeployTemplate "labdeploy2.json" $skipDeployment $parametersRegion;
+    $deployment = DeployTemplate "labdeploy2.json" $skipDeployment $parametersRegion "03_StreamAnalytics";
 }
 
 #LOGIC APPS will overwrite settings if deployed more than once!
@@ -619,15 +632,18 @@ $logicApp = $json | where {$_.type -eq "Microsoft.Logic/workflows"};
 if (!$logicApp)
 {
     #deploy logic app
-    $deployment = DeployTemplate "labdeploy3.json" $skipDeployment $parametersRegion;
+    $deployment = DeployTemplate "labdeploy3.json" $skipDeployment $parametersRegion "04_LogicApp";
 }
 
+#deploy key vault (avoid race conditions with DependsOn bug)
+$deployment = DeployTemplate "labdeploy3.json" $skipDeployment $parameters "05_KeyVault";
+
 #used later (databricks)
-$databricksName = "s2_databricks_" + $suffix;
+$databricksName = "s2databricks" + $suffix;
 $databricks = $json | where {$_.type -eq "Microsoft.Databricks/workspaces" -and $_.name -eq $databricksName};
 
 #used later (keyvault)
-$keyvaultName = "s2keyvault-" + $suffix;
+$keyvaultName = "s2keyvault" + $suffix;
 $keyvault = $json | where {$_.type -eq "Microsoft.KeyVault/vaults" -and $_.name -eq $keyvaultName};
 
 #used later (function app)
@@ -922,11 +938,14 @@ else
 #compile the project
 #
 ########################
-write-host "Compiling the projects..."
+if ($mode -eq "demo")
+{
+    write-host "Compiling the projects..."
 
-BuildVS "$githubPath\Retail\Solution\Data Import\MovieDataImport.sln" $true $true
-BuildVS "$githubPath\Retail\Solution\DataGenerator\DataGenerator.sln" $true $true
-BuildVS "$githubPath\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.sln" $true $true
+    BuildVS "$githubPath\Retail\Solution\Data Import\MovieDataImport.sln" $true $true
+    BuildVS "$githubPath\Retail\Solution\DataGenerator\DataGenerator.sln" $true $true
+    BuildVS "$githubPath\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.sln" $true $true
+}
 
 
 ########################
@@ -948,9 +967,12 @@ foreach($folder in $folders)
 
     $filePath = "$githubpath\Retail\$folder\Contoso Movies\Contoso.Apps.Movies.Web\web.config"
     UpdateConfig $filePath;
+}
 
+if ($mode -eq "demo")
+{ 
     #update the app.config file with the new values
-    $filePath = "$githubpath\Retail\$folder\Data Import\bin\Debug\MovieDataImport.exe.config"
+    $filePath = "$githubpath\Retail\Solution\Data Import\bin\Debug\MovieDataImport.exe.config"
     UpdateConfig $filePath;
 }
 
