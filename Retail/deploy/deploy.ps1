@@ -6,20 +6,30 @@
 #Install-Module -Name Az -AllowClobber -Scope CurrentUser
 #################
 $githubPath = "YOUR GIT PATH";
-$mode = "demo"  #can be 'lab' or 'demo'
-$subscriptionId = "YOUR SUB ID"
-$subName = "YOUR SUB NAME"
-$isSpektra = $false;
 
+#can be 'lab' or 'demo'
+$mode = "demo"  
+
+#if you want to use a specific subscription
+$subscriptionId = "YOUR SUB ID"
+
+#create a unique resource group name
 $prefix = "YOUR INIT"
-$rgName = $prefix + "_s2_retail"
+
+#used for when you are using spektra environment
+$isSpektra = $true;
 
 if ($isSpektra)
 {
     #if you are using spektra...you have to set your resource group here:
     $rgName = read-host "What is your spektra resource group name?";
 }
+else
+{
+    $rgName = $prefix + "_s2_retail"
+}
 
+#used for cosmos db
 $databaseId = "movies";
 
 #FYI - not all regions have been tested - 
@@ -152,14 +162,21 @@ function BuildVS
     }
 }
 
-function DeployTemplate($filename, $skipDeployment, $parameters)
+function DeployTemplate($filename, $skipDeployment, $parameters, $name)
 {
     write-host "Deploying [$filename] - Please wait";
 
     if (!$skipDeployment)
     {
-        #deploy the template
-        $deployId = "Microsoft.Template"
+        if ($name)
+        {
+            $deployid = $name;
+        }
+        else
+        {
+            #deploy the template
+            $deployId = [System.Guid]::NewGuid().ToString();
+        }
 
         Remove-Item "parameters.json" -ea SilentlyContinue;
         add-content "parameters.json" $parameters;
@@ -508,21 +525,21 @@ cd $githubpath
 
 #login - do this always as AAD will error if you change location/ip
 $res = az login;
-$json = ConvertObjectToJson $res
+$json = ConvertObjectToJson $res;
 
 #help out with the email address...
 $userEmail = $json[0].user.name;
 
-$res = az ad user show --upn-or-object-id $userEmail
+$res = az ad user show --id $userEmail
 $json = ConvertObjectToJson $res
 
 #get object id for current user to assign to key vault
 $userObjectId = $json.objectId;
 
 #select the subscription if you set it
-if ($subName)
+if ($subscriptionId)
 {
-    az account set --subscription $subName;
+    $res = az account set --subscription $subscriptionId;
 }
 
 $res = $(az account show)
@@ -531,7 +548,7 @@ $json = ConvertObjectToJson $res
 $tenantId = $json.tenantId;
 
 #create the resource group
-$result = az group create --name $rgName --location $region;
+$res = az group create --name $rgName --location $region;
 
 $parametersRegion = @{
             "schema"="http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
@@ -902,6 +919,18 @@ else
 
 ########################
 #
+#compile the project
+#
+########################
+write-host "Compiling the projects..."
+
+BuildVS "$githubPath\Retail\Solution\Data Import\MovieDataImport.sln" $true $true
+BuildVS "$githubPath\Retail\Solution\DataGenerator\DataGenerator.sln" $true $true
+BuildVS "$githubPath\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.sln" $true $true
+
+
+########################
+#
 #Update project configs to be nice ;)
 #
 ########################
@@ -941,23 +970,10 @@ if ($mode -eq "demo")
     $databrickToken = read-host "Enter your databricks api token";
 
     #need to wait for a few seconds for the token to kick in or you might get an error.
-    start-sleep 15;
+    write-host "Waiting 30 seconds...";
+    start-sleep 30;
 
     SetupDatabricks
-}
-
-########################
-#
-#compile the project
-#
-########################
-if ($mode -eq "demo")
-{ 
-    write-host "Compiling the projects..."
-
-    BuildVS "C:\github\microsoft\scenario-based-labs\Retail\Solution\Data Import\MovieDataImport.sln" $true $true
-    BuildVS "C:\github\microsoft\scenario-based-labs\Retail\Solution\DataGenerator\DataGenerator.sln" $true $true
-    BuildVS "C:\github\microsoft\scenario-based-labs\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.sln" $true $true
 }
 
 ########################
