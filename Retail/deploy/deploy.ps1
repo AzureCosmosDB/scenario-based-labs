@@ -39,7 +39,7 @@ $databaseId = "movies";
 $region = "northeurope";
 
 #register at https://api.themoviedb.org
-$movieApiKey = "YOUR KEY";
+$movieApiKey = "YOUR API KEY";
 
 #toggles for skipping items
 $skipDeployment = $false;
@@ -530,7 +530,7 @@ $json = ConvertObjectToJson $res;
 #help out with the email address...
 $userEmail = $json[0].user.name;
 
-$res = az ad user show --id $userEmail
+$res = az ad user show --upn-or-object-id $userEmail
 $json = ConvertObjectToJson $res
 
 #get object id for current user to assign to key vault
@@ -573,7 +573,7 @@ $parameters = @{
                  }
             } | ConvertTo-Json
             
-$deployment = DeployTemplate "labdeploy.json" $skipDeployment $parameters "01_Main";
+$deployment = DeployTemplate "labdeploy_main.json" $skipDeployment $parameters "01_Main";
 
 #need the suffix...
 if ($deployment.properties.provisioningState -eq "Succeeded")
@@ -592,18 +592,12 @@ if (!$suffix)
     }
 }
 
-#get the new 
-$res = $(az identity list --resource-group $rgname)
-$json = ConvertObjectToJson $res;
-
-$msIdentity = $json | where {$_.type -eq "Microsoft.ManagedIdentity/userAssignedIdentities"};
-
 $parameters = @{
             "schema"="http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
             "contentVersion"="1.0.0.0"
             "parameters"=@{
                  "region"=@{"value"="$region"}
-                 "msiId"=@{"value"="$($msidentity.principalId)"}
+                 "msiId"=@{"value"="TBD"}
                  "prefix"=@{"value"="$prefix"}
                  "tenantId"=@{"value"="$tenantId"}
                  "userObjectId"=@{"value"="$userObjectId"}
@@ -611,7 +605,7 @@ $parameters = @{
             } | ConvertTo-Json
 
 #deploy containers - this is ok to fail
-$deployment = DeployTemplate "labdeploy4.json" $skipDeployment $parametersRegion "02_CosmosContainers";
+$deployment = DeployTemplate "labdeploy_cosmos.json" $skipDeployment $parametersRegion "02_CosmosContainers";
 
 #get all the resources in the RG
 $res = $(az resource list --resource-group $rgName)
@@ -623,7 +617,7 @@ $saJob = $json | where {$_.type -eq "Microsoft.StreamAnalytics/streamingjobs"};
 if (!$saJob)
 {
     #deploy stream analytics
-    $deployment = DeployTemplate "labdeploy2.json" $skipDeployment $parametersRegion "03_StreamAnalytics";
+    $deployment = DeployTemplate "labdeploy_streamanalytics.json" $skipDeployment $parametersRegion "03_StreamAnalytics";
 }
 
 #LOGIC APPS will overwrite settings if deployed more than once!
@@ -632,11 +626,8 @@ $logicApp = $json | where {$_.type -eq "Microsoft.Logic/workflows"};
 if (!$logicApp)
 {
     #deploy logic app
-    $deployment = DeployTemplate "labdeploy3.json" $skipDeployment $parametersRegion "04_LogicApp";
+    $deployment = DeployTemplate "labdeploy_logicapp.json" $skipDeployment $parametersRegion "04_LogicApp";
 }
-
-#deploy key vault (avoid race conditions with DependsOn bug)
-$deployment = DeployTemplate "labdeploy3.json" $skipDeployment $parameters "05_KeyVault";
 
 #used later (databricks)
 $databricksName = "s2databricks" + $suffix;
@@ -798,7 +789,7 @@ while (!$blob)
 }
 
 #download it..
-az storage blob download --connection-string $azurequeueConnString --container-name azure-webjobs-secrets --name $blob.name --file host.json;
+$res = $(az storage blob download --connection-string $azurequeueConnString --container-name azure-webjobs-secrets --name $blob.name --file host.json);
 
 $data = Get-content "host.json" -raw
 $json = ConvertFrom-json $data;
