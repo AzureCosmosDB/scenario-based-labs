@@ -10,7 +10,7 @@
     "variables": {
         "location": "[parameters('region')]",		
         "name-suffix": "[uniqueString(resourceGroup().id)]",
-        "streamAnalyticsJobName": "[concat('s2_analytics_', variables('name-suffix'))]"
+        "streamAnalyticsJobName": "[concat('s2analytics', variables('name-suffix'))]"
     },
     "resources": [
         {

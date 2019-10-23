@@ -10,7 +10,7 @@
     "variables": {
         "location": "[parameters('region')]",
 		"name-suffix": "[uniqueString(resourceGroup().id)]",		
-		"workflows_s2scenerio_name" : "[concat('s2_logicapp_', variables('name-suffix'))]"
+		"workflows_s2scenerio_name" : "[concat('s2logicapp', variables('name-suffix'))]"
     },
     "resources": [
         {

@@ -23,10 +23,14 @@ namespace Contoso.Apps.Common
                 if (System.IO.File.Exists(path))
                     html = System.IO.File.ReadAllText(path);
 
-                if (string.IsNullOrEmpty(html))
+                if (string.IsNullOrEmpty(html) || html.Contains("Invalid API key"))
                 {
                     HttpHelper hh = new HttpHelper();
                     html = hh.DoGet(url, "");
+
+                    if (System.IO.File.Exists(path))
+                        System.IO.File.Delete(path);
+
                     System.IO.File.WriteAllText(path, html);
 
                     Thread.Sleep(150);
@@ -54,10 +58,14 @@ namespace Contoso.Apps.Common
             if (System.IO.File.Exists(path))
                 html = System.IO.File.ReadAllText(path);
 
-            if (string.IsNullOrEmpty(html))
+            if (string.IsNullOrEmpty(html) || html.Contains("Invalid API key"))
             {
                 HttpHelper hh = new HttpHelper();
                 html = hh.DoGet(url, "");
+
+                if (System.IO.File.Exists(path))
+                    System.IO.File.Delete(path);
+
                 System.IO.File.WriteAllText(path, html);
             }
 

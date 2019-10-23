@@ -6,20 +6,30 @@
 #Install-Module -Name Az -AllowClobber -Scope CurrentUser
 #################
 $githubPath = "YOUR GIT PATH";
-$mode = "demo"  #can be 'lab' or 'demo'
-$subscriptionId = "YOUR SUB ID"
-$subName = "YOUR SUB NAME"
-$isSpektra = $false;
 
+#can be 'lab' or 'demo'
+$mode = "demo"  
+
+#if you want to use a specific subscription
+$subscriptionId = "YOUR SUB ID"
+
+#create a unique resource group name
 $prefix = "YOUR INIT"
-$rgName = $prefix + "_s2_retail"
+
+#used for when you are using spektra environment
+$isSpektra = $true;
 
 if ($isSpektra)
 {
     #if you are using spektra...you have to set your resource group here:
     $rgName = read-host "What is your spektra resource group name?";
 }
+else
+{
+    $rgName = $prefix + "_s2_retail"
+}
 
+#used for cosmos db
 $databaseId = "movies";
 
 #FYI - not all regions have been tested - 
@@ -29,7 +39,7 @@ $databaseId = "movies";
 $region = "northeurope";
 
 #register at https://api.themoviedb.org
-$movieApiKey = "YOUR KEY";
+$movieApiKey = "YOUR API KEY";
 
 #toggles for skipping items
 $skipDeployment = $false;
@@ -48,7 +58,7 @@ $useKeyVault = $false
 
 function CheckFunctionAppMaster()
 {
-    write-host "Action Required: Search for your function app '$funcAppName', select it, then click 'Function app settings'"
+    write-host "Action Required: Search for your function app '$funcAppName', select it, then click 'Function app settings'. Wait for the 'master key' to display."
     write-host "Opening url: $url";
     Start-Process $url;
 
@@ -152,14 +162,21 @@ function BuildVS
     }
 }
 
-function DeployTemplate($filename, $skipDeployment, $parameters)
+function DeployTemplate($filename, $skipDeployment, $parameters, $name)
 {
     write-host "Deploying [$filename] - Please wait";
 
     if (!$skipDeployment)
     {
-        #deploy the template
-        $deployId = "Microsoft.Template"
+        if ($name)
+        {
+            $deployid = $name;
+        }
+        else
+        {
+            #deploy the template
+            $deployId = [System.Guid]::NewGuid().ToString();
+        }
 
         Remove-Item "parameters.json" -ea SilentlyContinue;
         add-content "parameters.json" $parameters;
@@ -286,7 +303,7 @@ function SetupDatabricks()
         $clusterId = $json.cluster_id
 
         # allow the creation of the cluster to begin before installing libraries
-        start-sleep 10;
+        start-sleep 15;
         
         #install the library
         $json = "{`"cluster_id`": `"$clusterid`",`"libraries`": [{`"maven`": {`"coordinates`": `"com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1`",`"exclusions`": [`"slf4j:slf4j`"]}}]}";
@@ -508,7 +525,7 @@ cd $githubpath
 
 #login - do this always as AAD will error if you change location/ip
 $res = az login;
-$json = ConvertObjectToJson $res
+$json = ConvertObjectToJson $res;
 
 #help out with the email address...
 $userEmail = $json[0].user.name;
@@ -520,9 +537,9 @@ $json = ConvertObjectToJson $res
 $userObjectId = $json.objectId;
 
 #select the subscription if you set it
-if ($subName)
+if ($subscriptionId)
 {
-    az account set --subscription $subName;
+    $res = az account set --subscription $subscriptionId;
 }
 
 $res = $(az account show)
@@ -530,8 +547,11 @@ $json = ConvertObjectToJson $res
 
 $tenantId = $json.tenantId;
 
-#create the resource group
-$result = az group create --name $rgName --location $region;
+#create the resource group (if not in spektra)
+if (!$isSpektra)
+{
+    $res = az group create --name $rgName --location $region;
+}
 
 $parametersRegion = @{
             "schema"="http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
@@ -541,27 +561,19 @@ $parametersRegion = @{
                  }
             } | ConvertTo-Json
 
-#deploy the managed service identity
-$deployment = DeployTemplate "labdeploy5.json" $skipDeployment $parametersRegion;
-
-$res = $(az identity list --resource-group $rgname)
-$json = ConvertObjectToJson $res;
-
-$msIdentity = $json | where {$_.type -eq "Microsoft.ManagedIdentity/userAssignedIdentities"};
-
 $parameters = @{
             "schema"="http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
             "contentVersion"="1.0.0.0"
             "parameters"=@{
                  "region"=@{"value"="$region"}
-                 "msiId"=@{"value"="$($msidentity.principalId)"}
+                 "msiId"=@{"value"="TBD"}
                  "prefix"=@{"value"="$prefix"}
                  "tenantId"=@{"value"="$tenantId"}
                  "userObjectId"=@{"value"="$userObjectId"}
                  }
             } | ConvertTo-Json
             
-$deployment = DeployTemplate "labdeploy.json" $skipDeployment $parameters;
+$deployment = DeployTemplate "labdeploy_main.json" $skipDeployment $parameters "01_Main";
 
 #need the suffix...
 if ($deployment.properties.provisioningState -eq "Succeeded")
@@ -580,8 +592,20 @@ if (!$suffix)
     }
 }
 
+$parameters = @{
+            "schema"="http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
+            "contentVersion"="1.0.0.0"
+            "parameters"=@{
+                 "region"=@{"value"="$region"}
+                 "msiId"=@{"value"="TBD"}
+                 "prefix"=@{"value"="$prefix"}
+                 "tenantId"=@{"value"="$tenantId"}
+                 "userObjectId"=@{"value"="$userObjectId"}
+                 }
+            } | ConvertTo-Json
+
 #deploy containers - this is ok to fail
-$deployment = DeployTemplate "labdeploy4.json" $skipDeployment $parametersRegion;
+$deployment = DeployTemplate "labdeploy_cosmos.json" $skipDeployment $parametersRegion "02_CosmosContainers";
 
 #get all the resources in the RG
 $res = $(az resource list --resource-group $rgName)
@@ -593,7 +617,7 @@ $saJob = $json | where {$_.type -eq "Microsoft.StreamAnalytics/streamingjobs"};
 if (!$saJob)
 {
     #deploy stream analytics
-    $deployment = DeployTemplate "labdeploy2.json" $skipDeployment $parametersRegion;
+    $deployment = DeployTemplate "labdeploy_streamanalytics.json" $skipDeployment $parametersRegion "03_StreamAnalytics";
 }
 
 #LOGIC APPS will overwrite settings if deployed more than once!
@@ -602,15 +626,15 @@ $logicApp = $json | where {$_.type -eq "Microsoft.Logic/workflows"};
 if (!$logicApp)
 {
     #deploy logic app
-    $deployment = DeployTemplate "labdeploy3.json" $skipDeployment $parametersRegion;
+    $deployment = DeployTemplate "labdeploy_logicapp.json" $skipDeployment $parametersRegion "04_LogicApp";
 }
 
 #used later (databricks)
-$databricksName = "s2_databricks_" + $suffix;
+$databricksName = "s2databricks" + $suffix;
 $databricks = $json | where {$_.type -eq "Microsoft.Databricks/workspaces" -and $_.name -eq $databricksName};
 
 #used later (keyvault)
-$keyvaultName = "s2keyvault-" + $suffix;
+$keyvaultName = "s2keyvault" + $suffix;
 $keyvault = $json | where {$_.type -eq "Microsoft.KeyVault/vaults" -and $_.name -eq $keyvaultName};
 
 #used later (function app)
@@ -765,7 +789,7 @@ while (!$blob)
 }
 
 #download it..
-az storage blob download --connection-string $azurequeueConnString --container-name azure-webjobs-secrets --name $blob.name --file host.json;
+$res = $(az storage blob download --connection-string $azurequeueConnString --container-name azure-webjobs-secrets --name $blob.name --file host.json);
 
 $data = Get-content "host.json" -raw
 $json = ConvertFrom-json $data;
@@ -902,6 +926,21 @@ else
 
 ########################
 #
+#compile the project
+#
+########################
+if ($mode -eq "demo")
+{
+    write-host "Compiling the projects..."
+
+    BuildVS "$githubPath\Retail\Solution\Data Import\MovieDataImport.sln" $true $true
+    BuildVS "$githubPath\Retail\Solution\DataGenerator\DataGenerator.sln" $true $true
+    BuildVS "$githubPath\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.sln" $true $true
+}
+
+
+########################
+#
 #Update project configs to be nice ;)
 #
 ########################
@@ -919,9 +958,12 @@ foreach($folder in $folders)
 
     $filePath = "$githubpath\Retail\$folder\Contoso Movies\Contoso.Apps.Movies.Web\web.config"
     UpdateConfig $filePath;
+}
 
+if ($mode -eq "demo")
+{ 
     #update the app.config file with the new values
-    $filePath = "$githubpath\Retail\$folder\Data Import\bin\Debug\MovieDataImport.exe.config"
+    $filePath = "$githubpath\Retail\Solution\Data Import\bin\Debug\MovieDataImport.exe.config"
     UpdateConfig $filePath;
 }
 
@@ -941,23 +983,10 @@ if ($mode -eq "demo")
     $databrickToken = read-host "Enter your databricks api token";
 
     #need to wait for a few seconds for the token to kick in or you might get an error.
-    start-sleep 15;
+    write-host "Waiting 30 seconds...";
+    start-sleep 30;
 
     SetupDatabricks
-}
-
-########################
-#
-#compile the project
-#
-########################
-if ($mode -eq "demo")
-{ 
-    write-host "Compiling the projects..."
-
-    BuildVS "C:\github\microsoft\scenario-based-labs\Retail\Solution\Data Import\MovieDataImport.sln" $true $true
-    BuildVS "C:\github\microsoft\scenario-based-labs\Retail\Solution\DataGenerator\DataGenerator.sln" $true $true
-    BuildVS "C:\github\microsoft\scenario-based-labs\Retail\Solution\Contoso Movies\Contoso.Apps.Movies.sln" $true $true
 }
 
 ########################
