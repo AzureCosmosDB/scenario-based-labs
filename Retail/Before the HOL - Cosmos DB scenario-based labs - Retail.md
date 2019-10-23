@@ -54,12 +54,20 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 1. Create an account and copy your API Key for use in the next task
 
-   - Click **SIGN UP**
-   - Fill in your account details, click **Sign up**
-   - Click your profile icon in the menu, select **Settings**
-   - Click **API**
+   - Select **SIGN UP**
+   - Fill in your account details, select **Sign up**
+   - Select your profile icon in the menu, select **Settings**
+   - Select **API**
 
    ![The movie db right navigation.](./media/xx_MovieKey_01.png 'API Link')
+
+   - Select **click here** underneath **Request an API Key** to generate a new key.
+
+   ![The Click Here link is highlighted.](media/movie-key-generate.png 'Request an API Key')
+
+   - Select the **Developer** option for the API key type, accept the license agreement, then complete the form to create a new API key. Select **Website** under _Type of Use_. You may enter any URL (such as http://www.microsoft.com), and you must enter a description, such as: `Creates a movie recommendation engine`.
+
+   ![The Create Key form is displayed.](media/movie-key-generate-form.png 'Create API')
 
    - Copy the `API Key (v3 auth)` key for later use
 
@@ -103,7 +111,7 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 - Deploy the starter ARM template(s)
 - Deploy the initial web and function apps
 - Setup the web and function app configuration variables
-- Create starter objects in the 'object' collection of the Comos DB database
+- Create starter objects in the 'object' collection of the Cosmos DB database
 - Update your project application configuration files with the target azure keys and settings
 
 1. The deployment will take 15-25 minutes to complete. You will be prompted for information in both `demo` and `lab` modes. As part of the deployment, you will see the following items created:
