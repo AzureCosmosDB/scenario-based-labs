@@ -98,17 +98,17 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
 
 ## Requirements
 
-1.  Microsoft Azure subscription must be pay-as-you-go or MSDN.
+1. Microsoft Azure subscription must be pay-as-you-go or MSDN.
 
     - Trial subscriptions will not work.
 
-1.  [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
+1. [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
 
-1.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
+1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
 
-1.  [.Net Framework 4.7.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
+1. [.Net Framework 4.7.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
-1.  [.Net Core 2.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
+1. [.Net Core 2.2](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
 ## Before the hands-on lab
 
@@ -124,136 +124,144 @@ The algorithms for creating the offline calculations are written in Python and a
 
 ### Task 1: Configure Azure Databricks
 
-1.  Open the Azure Portal, search for your **YOURINIT-s2-retail** resource group
+1. Open the Azure portal (<https://portal.azure.com>), search for your assigned lab resource group. If you were not assigned a resource group, your generated resource group will be named after the following pattern: **YOURINIT-s2-retail**.
 
-1.  Select your resource group, and then select your Azure Databricks instance, it should be called **s2_databricks...**
+2. Select your resource group, and then select your Azure Databricks instance, it should be named **s2_databricks...**.
 
-1.  Select **Launch Workspace**, if prompted, login as the account you used to create your environment
+3. Select **Launch Workspace**, if prompted, login as the account you used to create your environment.
 
-1.  In the side navigation, Select **Clusters**
+4. In the side navigation, Select **Clusters**.
 
-![The cluster blade with all the settings filled in.](./media/xx_Databricks_01.png 'Databricks cluster configuration')
+    ![The cluster blade with all the settings filled in.](./media/xx_Databricks_01.png 'Databricks cluster configuration')
 
-4.  Select **Create Cluster**
+5. Select **Create Cluster**.
 
-5.  On the create cluster form, provide the following:
+6. On the create cluster form, provide the following:
 
-- **Cluster Name**: small
+   - **Cluster Name**: small
 
-- **Cluster Type**: Standard
+   - **Cluster Type**: Standard
 
-- **Databricks Runtime Version**: Runtime: 5.5 (Scala 2.11, Spark 2.4.3) (**Note**: the runtime version may have **LTS** after the version. This is also a valid selection.)
+   - **Databricks Runtime Version**: Runtime: 5.5 (Scala 2.11, Spark 2.4.3) (**Note**: the runtime version may have **LTS** after the version. This is also a valid selection.)
 
-- **Python Version**: 3
+   - **Python Version**: 3
 
-- **Enable Autoscaling**: Uncheck this option.
+   - **Enable Autoscaling**: Uncheck this option.
 
-- **Auto Termination**: Check the box and enter 120
+   - **Auto Termination**: Check the box and enter 120
 
-- **Worker Type**: Standard_DS3_v2
+   - **Worker Type**: Standard_DS3_v2
 
-- **Driver Type**: Same as worker
+   - **Driver Type**: Same as worker
 
-- **Workers**: 1
+   - **Workers**: 1
 
-6.  Select **Create Cluster**.
+7. Select **Create Cluster**.
 
-![The cluster blade with all the settings filled in.](./media/xx_Databricks_02.png 'Databricks cluster configuration')
+    ![The cluster blade with all the settings filled in.](./media/xx_Databricks_02.png 'Databricks cluster configuration')
 
-7.  Before continuing to the next step, verify that your new cluster is running. Wait for the state to change from **Pending** to **Running**
+8. Before continuing to the next step, verify that your new cluster is running. Wait for the state to change from **Pending** to **Running**.
 
-8.  Select the **small** cluster, then select **Libraries**
+9. Select the **small** cluster, then select **Libraries**.
 
-9.  Select **Install New**.
+10. Select **Install New**.
 
-![Navigate to the libraries tab and select `Install New`.](./media/xx_Databricks_03.png 'Adding a new library')
+    ![Navigate to the libraries tab and select `Install New`.](./media/xx_Databricks_03.png 'Adding a new library')
 
-10. In the Install Library dialog, select **Maven** for the Library Source
+11. In the Install Library dialog, select **Maven** for the Library Source.
 
-11. In the Coordinates field type:
+12. In the Coordinates field type:
 
-```text
-com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
-```
+    ```text
+    com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
+    ```
 
-12. Select **Install**
+13. Select **Install**.
 
-![Populated library dialog for Maven.](./media/xx_Databricks_04.png 'Add the Maven library')
+    ![Populated library dialog for Maven.](./media/xx_Databricks_04.png 'Add the Maven library')
 
-13. **Wait** until the library's status shows as **Installed** before continuing.
+14. **Wait** until the library's status shows as **Installed** before continuing.
 
 ### Task 2: Populate event data
 
 1. Within Azure Databricks, select **Workspace** on the menu, then **Users**, select your user, then select the down arrow on the top of your user workspace. Select **Import**.
 
-2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it ({un-zipped repo folder}/Retail/Notebooks/02 Retail.dbc)
+2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it (`{un-zipped repo folder}/Retail/Notebooks/02 Retail.dbc`)
 
 3. Select **Import**
 
-![Workspace is highlighted with the user expanded and the Import option highlighted.](./media/xx_Databricks_07.png 'Import the Databricks notebook')
+    ![Workspace is highlighted with the user expanded and the Import option highlighted.](./media/xx_Databricks_07.png 'Import the Databricks notebook')
 
 4. After importing, select the new **02 Retail** folder, then navigation to the **Includes** folder
 
 5. Select the **Shared-Configuration** notebook
 
-![The workspace menu is displayed with `includes` and `shared-configuration` highlighted.](./media/xx_Databricks_08.png 'Navigate to Shared-Configuration')
+    ![The workspace menu is displayed with `includes` and `shared-configuration` highlighted.](./media/xx_Databricks_08.png 'Navigate to Shared-Configuration')
 
 6. Update the configuration settings and set the following using the values from your lab setup script output:
 
-- Endpoint = Cosmos DB endpoint url
-- Masterkey = Cosmos DB master key
-- Database = Database id of the cosmos db ('movies')
+   - Endpoint = Cosmos DB endpoint url
+   - Masterkey = Cosmos DB master key
+   - Database = Database id of the cosmos db ('movies')
+
+   > If you do not have your setup script output values available for reference, you may find the `Endpoint` and `Masterkey` values by navigating to your Cosmos DB account in the Azure portal, then selecting **Keys** in the left-hand menu. Copy the **URI** value for `Endpoint`, and **Primary Key** for the `Masterkey` value.
+
+   ![The Cosmos DB Keys blade is displayed.](media/cosmos-db-keys.png "Cosmos DB Keys")
 
 7. Attach your cluster to the notebook using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
 
+    ![The Shared-Configuration notebook is displayed.](media/databricks-shared-configuration.png "Azure Databricks Shared-Configuration notebook")
+
 8. Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
 
-> This notebook will simulate the browsing and purchasing activity for six users with different personality based preferences and save the result to the `events` collection in Cosmos DB.
+    > This notebook will simulate the browsing and purchasing activity for six users with different personality based preferences and save the result to the `events` collection in Cosmos DB.
 
-> The movies have been pre-selected and sorted into the genres of comedy, drama and action. While the actual movie selection and activity taken is random, it is weighted to respect the user's preferences in each genere to hit a distribution that would mirror that user's taste.
+    > The movies have been pre-selected and sorted into the genres of comedy, drama and action. While the actual movie selection and activity taken is random, it is weighted to respect the user's preferences in each genre to hit a distribution that would mirror that user's taste.
 
-> For example, user 400001 has the preference of 20 for comedy, 30 for drama, 50 for action. This will result in the user logging more activity with action movies.
+    > For example, user 400001 has the preference of 20 for comedy, 30 for drama, 50 for action. This will result in the user logging more activity with action movies.
 
-> NOTE: Your results (aka the `events` generated) may be different from your fellow lab participants
+    > NOTE: Your results (aka the `events` generated) may be different from your fellow lab participants
 
 9. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
-![Click the `detached` drop down, select the small cluster.](./media/xx_Databricks_09.png 'Set the cluster')
+    ![Click the `detached` drop down, select the small cluster.](./media/xx_Databricks_09.png 'Set the cluster')
 
 10. Select **Run All**
 
-> NOTE: With the default RUs on the Cosmos DB, this process will take up to 25 minutes to generate the event data. You could increase the RUs and get it under 5 minutes.
-
 ### Task 3: Review the data generated
 
-1.  Switch back to the Azure Portal
+1. Return to the Azure portal.
 
-1.  In your resource group, navigate to your Cosmos DB instance, it should start with **s2cosmosdb...**
+2. In your resource group, navigate to your Cosmos DB instance, it should start with **s2cosmosdb...**.
 
-1.  Select **Data Explorer**
+3. Select **Data Explorer** in the left-hand menu.
 
-1.  Select the **events** collection, then select **items**
+4. Select the **events** collection, then select **items**.
 
-1.  Select one or more of the items and review them
+5. Select one or more of the items and review them.
 
-![An example item from the events collection is displayed.](./media/xx_EventsColl.png 'The events collection')
+    ![An example item from the events collection is displayed.](./media/xx_EventsColl.png 'The events collection')
 
-> NOTE: These items are created from the Databricks solution and include a random set of generated events for each user personality type. You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated with the event (via the contentId field).
+    > NOTE: These items are created from the Databricks solution and include a random set of generated events for each user personality type. You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated with the event (via the contentId field).
 
 ### Task 4: Review the aggregation and import utility
 
-1.  Browse to the **{un-zipped repo folder}/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
+1. Browse to the **{un-zipped repo folder}/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution.
 
-2.  In the **/Utilities/MovieDataImport** project, open the **program.cs** file, browse code and various methods. Notice that it:
+    > If Visual Studio prompts you to sign in when it first launches, use the account provided to you for this lab (if applicable), or an existing Microsoft account.
 
-- Aggregates all the event data generated from the Databricks notebook
-- Creates the user personalities
-- Creates the movie categories/genres
-- Creates the movies
+2. Within the Solution Explorer, expand the **/Utilities/MovieDataImport** project and open the **Program.cs** file. Take a few moments to browse code. You will see that it:
 
-3.  Right-click the project, select **Set as startup project**
+   - Aggregates all the event data generated from the Databricks notebook
+   - Creates the user personalities
+   - Creates the movie categories/genres
+   - Creates the movies
 
-4.  Press **F5** to run the project
+    ![The MovieDataImport is expanded in Solution Explorer and program.cs is selected.](media/vs-moviedataimport-program.png "Solution Explorer")
+
+3. Right-click the project, select **Set as startup project**.
+
+4. Press **F5** to run the project
 
 > NOTE: You must have waited for the Event Generator Databricks notebook to complete for this to run and have the later steps in the lab match.
 
@@ -265,9 +273,9 @@ com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
 
 ### Task 1: Implement the Top Items recommendation
 
-1.  In the **Contoso.Apps.Movies.Web** project, open the **/Controllers/HomeController.cs** file
+1. In the **Contoso.Apps.Movies.Web** project, open the **/Controllers/HomeController.cs** file
 
-2.  Find the todo task #1 and complete it with the following:
+2. Find the todo task #1 and complete it with the following:
 
 ```csharp
 vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
@@ -275,9 +283,9 @@ vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 
 > The `RecommendationHelper` class is responsible for making the call to the Azure Function to get the recommendations based on the information submitted that includes the algorithm, user and content being used to compute the recommendations.
 
-3.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
+3. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
-4.  In the **TopRecommendation** method, find the todo task #2 and complete it with the following:
+4. In the **TopRecommendation** method, find the todo task #2 and complete it with the following:
 
 ```csharp
 var container = client.GetContainer(databaseId, "object");
@@ -297,7 +305,7 @@ foreach(Item i in items)
 topItems = GetItemsByImdbIds(itemIds);
 ```
 
-5.  Review the code, notice the following:
+5. Review the code, notice the following:
 
 - We are querying an "object" collection for an entity type called 'ItemAggregation' and sorting it by the 'BuyCount'. Essentially these are the top purchased items.
 - We are then querying the object collection for all the top movie items to get their metadata for display on the web front end
@@ -306,7 +314,7 @@ topItems = GetItemsByImdbIds(itemIds);
 
 >It is important that you utilize aggregations to do this as each operation in Cosmos DB consumes a certain amount of RUs. For queries, the RU charge is based on the number of documents returned, the complexity of the query, and the number of partitions queried. To continue to have efficient queries as user count and activity increases, we create an aggregated view. 
 
->Over time the `events` collection expected to get incredibly large as your user count and activity increases.  With respect to RUs, you can imagine the costs for making this query can become costly.
+>Over time the `events` collection expected to get incredibly large as your user count and activity increases. With respect to RUs, you can imagine the costs for making this query can become costly.
 
 #### About Cosmos DB throughput
 
@@ -316,37 +324,37 @@ Cosmos DB allows you to increment/decrement the RUs in small increments of 100 a
 
 When you set a number of RUs for a container, Cosmos DB ensures that those RUs are available in all regions associated with your Cosmos DB account. When you scale out the number of regions by adding a new one, Cosmos will automatically provision the same quantity of RUs in the newly added region. You cannot selectively assign different RUs to a specific region. These RUs are provisioned for a container (or database) for all associated regions.
 
-6.  Compile the solution, fix any errors
+6. Compile the solution, fix any errors
 
 ### Task 2: Deploy the applications
 
-1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1. Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Select **New**, then ensure that **Azure Functions Premium Plan** is selected
+1. Select **New**, then ensure that **Azure Functions Premium Plan** is selected
 
 ![Select the Azure Functions Premium plan and then select 'select existing'](./media/xx_DeployFunction.png 'Select a plan')
 
-1.  Select **Select Existing**, then select **Publish**
+1. Select **Select Existing**, then select **Publish**
 
-1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2func...\***
+1. Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2func...\***
 
 ![Select the pre-created function app service that starts with s2func.](./media/xx_DeployFunction_02.png 'Select the App Service')
 
-1.  Select **OK**
+1. Select **OK**
 
-1.  Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
+1. Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
 
-1.  Select **New**, then ensure that **App Service** is selected
+1. Select **New**, then ensure that **App Service** is selected
 
-1.  Select **Select Existing**, then select **Publish**
+1. Select **Select Existing**, then select **Publish**
 
-1.  Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2web...\***
+1. Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2web...\***
 
-1.  Select **OK**, the application will publish and the site should be displayed:
+1. Select **OK**, the application will publish and the site should be displayed:
 
 ### Task 3: Test the applications
 
-1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see something similar to the following:
+1. In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see something similar to the following:
 
 ![The Contoso Movie website is displayed with the top purchased items as suggestions.](./media/xx_WebSite_01.png 'Contoso Movies web site')
 
@@ -360,11 +368,11 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 ### Task 1: Generate the Associations
 
-1.  Switch back to your Databricks workspace, select the **02 Association Rules** workbook
+1. Switch back to your Databricks workspace, select the **02 Association Rules** workbook
 
-1.  Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
-1.  Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+1. Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
 > The goal of this algorithm is to compute two metrics that indicate the strength of a relationship between a source item and a target item based on event history, and then save that matrix to the associations collection in Cosmos DB.
 
@@ -374,11 +382,11 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 ### Task 2: Review the data generated
 
-1.  Switch back to the Azure Portal
+1. Switch back to the Azure Portal
 
-1.  In your resource group, navigate to your Cosmos DB instance
+1. In your resource group, navigate to your Cosmos DB instance
 
-1.  Open the **associations** collection, review the items in the collection
+1. Open the **associations** collection, review the items in the collection
 
 ![An example item from the associations collection is displayed.](./media/xx_AssocColl.png 'The associations collection')
 
@@ -392,9 +400,9 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 ### Task 1: Implement the Associations recommendation rules
 
-1.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
+1. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
-1.  In the **AssociationRecommendationByUser** method, find the todo task #3 and complete it with the following:
+1. In the **AssociationRecommendationByUser** method, find the todo task #3 and complete it with the following:
 
 ```csharp
 //get 20 log events for the user.
@@ -422,9 +430,9 @@ foreach (Rule r in rules)
 items = GetItemsByImdbIds(itemIds);
 ```
 
-1.  In the **Contoso.Apps.Movies.Web** project, open the **HomeController.cs** file
+1. In the **Contoso.Apps.Movies.Web** project, open the **HomeController.cs** file
 
-1.  Replace the **Index** method with the following:
+1. Replace the **Index** method with the following:
 
 ```csharp
 var vm = new HomeModel();
@@ -444,21 +452,21 @@ return View(vm);
 
 ### Task 2: Deploy the applications
 
-1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1. Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Select **Publish**
+1. Select **Publish**
 
-1.  Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
+1. Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
 
-1.  Select **Publish**, the site should load.
+1. Select **Publish**, the site should load.
 
 ### Task 3: Test the applications
 
-1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see the same results as you received previously.
+1. In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see the same results as you received previously.
 
-2.  In the top navigation, select **LOGIN**, then select the **comedy@contosomovies.com** account
+2. In the top navigation, select **LOGIN**, then select the **comedy@contosomovies.com** account
 
-3.  Notice the main page now has different recommendations than what you received earlier, but we are still missing the similar 'liked' items
+3. Notice the main page now has different recommendations than what you received earlier, but we are still missing the similar 'liked' items
 
 ## Exercise 5: Perform and deploy collaborative filtering rules calculation
 
@@ -468,19 +476,19 @@ return View(vm);
 
 ### Task 1: Compute the user implicit ratings
 
-1.  Switch back to your Databricks workspace, select **03 Ratings**
+1. Switch back to your Databricks workspace, select **03 Ratings**
 
-1.  Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
-1.  Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+1. Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
 > This notebook will use the implict events captured in the events collection in Cosmos DB to calculate what a user would rate a given item, based on their actions. In other words it converts a users buy, addToCart and details actions into a numeric score for the item. The resulting user to item ratings matrix will be saved to the ratings collection in Cosmos DB.
 
-1.  Switch back to the Azure Portal
+1. Switch back to the Azure Portal
 
-1.  In your resource group, navigate to your Cosmos DB instance
+1. In your resource group, navigate to your Cosmos DB instance
 
-1.  Open the **ratings** collection, review the items in the collection
+1. Open the **ratings** collection, review the items in the collection
 
 ![An example item from the ratings collection is displayed.](./media/xx_RatingsColl.png 'The ratings collection')
 
@@ -488,11 +496,11 @@ return View(vm);
 
 ### Task 2: Generate the Collaborative Rules
 
-1.  Switch back to your Databricks workspace, select **04 Similarity**
+1. Switch back to your Databricks workspace, select **04 Similarity**
 
-1.  Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
-1.  Run each cell of the **04 Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+1. Run each cell of the **04 Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
 > The notebook logic uses the user to item ratings previously created to calculate a score indicating the similarity between a source item and a target item. The process begins by loading the ratings matrix and for each user to item rating, calculating a new normalized rating (to adjust for the user's bias).
 
@@ -508,15 +516,15 @@ return View(vm);
 
 ### Task 3: Review the data generated
 
-1.  Switch back to the Azure Portal
+1. Switch back to the Azure Portal
 
-1.  In your resource group, navigate to your Cosmos DB instance, it should start with **s2cosmosdb...**
+1. In your resource group, navigate to your Cosmos DB instance, it should start with **s2cosmosdb...**
 
-1.  Select **Data Explorer**
+1. Select **Data Explorer**
 
-1.  Select the **similarity** collection, then select **items**
+1. Select the **similarity** collection, then select **items**
 
-1.  Select one or more of the items and review them
+1. Select one or more of the items and review them
 
 > NOTE: These items are created from the Databricks solution and include the similarity of one movie, the source, to another, the target.
 
@@ -524,9 +532,9 @@ return View(vm);
 
 ### Task 4: Implement the Collaborative recommendation rules
 
-1.  In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
+1. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
-1.  In the **CollaborativeBasedRecommendation** method, find the todo task #4 and complete it with the following:
+1. In the **CollaborativeBasedRecommendation** method, find the todo task #4 and complete it with the following:
 
 ```csharp
 int neighborhoodSize = 15;
@@ -618,23 +626,23 @@ foreach(PredictionModel pm in sortedItems)
 
 ### Task 5: Deploy the applications
 
-1.  Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1. Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Select **Publish**
+1. Select **Publish**
 
-1.  Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
+1. Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
 
-1.  Select **Publish**, the site should load.
+1. Select **Publish**, the site should load.
 
 ### Task 6: Test the applications
 
-1.  In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see the same results as you received previously.
+1. In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see the same results as you received previously.
 
-2.  If you are not already logged in, select **LOGIN**, then select the **comedy@contosomovies.com** account
+2. If you are not already logged in, select **LOGIN**, then select the **comedy@contosomovies.com** account
 
 ![Select the comedy fan user.](./media/xx_ComedyUser_01.png 'Log in as the comedy fan')
 
-3.  Notice the main page now has both the associative and collaborative results displayed::
+3. Notice the main page now has both the associative and collaborative results displayed::
 
 ![The Contoso Movie website is displayed with the Associations items as suggestions.](./media/xx_WebSite_02.png 'Contoso Movies web site')
 
@@ -648,47 +656,47 @@ foreach(PredictionModel pm in sortedItems)
 
 ### Task 1: Setup Stream Analytics
 
-1.  Open the Azure Portal, navigate to your Stream Analytics job that was created for you in the setup script
+1. Open the Azure Portal, navigate to your Stream Analytics job that was created for you in the setup script
 
-1.  Select **Inputs**
+1. Select **Inputs**
 
-1.  Select **+Add stream input**, then select **Event Hub**
+1. Select **+Add stream input**, then select **Event Hub**
 
-1.  For the alias, type **s2events**
+1. For the alias, type **s2events**
 
-1.  Select your subscription
+1. Select your subscription
 
-1.  Select the **s2ns..** event hub
+1. Select the **s2ns..** event hub
 
-1.  For the event hub, select **store**
+1. For the event hub, select **store**
 
-1.  For the policy name, select **RootManageSharedAccessKey**
+1. For the policy name, select **RootManageSharedAccessKey**
 
-1.  Select **Save**
+1. Select **Save**
 
-1.  Select **Outputs**
+1. Select **Outputs**
 
-1.  Select **+Add**, then select **Power BI**
+1. Select **+Add**, then select **Power BI**
 
-1.  For the output alias, type **eventOrdersLastHour**
+1. For the output alias, type **eventOrdersLastHour**
 
-1.  For the dataset, type **eventOrdersLastHour**
+1. For the dataset, type **eventOrdersLastHour**
 
-1.  For the table name, type **eventOrdersLastHour**
+1. For the table name, type **eventOrdersLastHour**
 
-1.  Select **Authorize**, login to your Power BI instance
+1. Select **Authorize**, login to your Power BI instance
 
-1.  Select **Save**
+1. Select **Save**
 
-1.  Repeat for steps 11-16, but replace **eventOrdersLastHour** with:
+1. Repeat for steps 11-16, but replace **eventOrdersLastHour** with:
 
 - eventSummary
 - failureCount
 - eventData
 
-1.  Select **Query**
+1. Select **Query**
 
-1.  Update the query to the following:
+1. Update the query to the following:
 
 ```sql
 SELECT Count(*) as FailureCount
@@ -714,33 +722,33 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
  GROUP BY SlidingWindow(second,10)
 ```
 
-1.  The Query windows should look similar to this:
+1. The Query windows should look similar to this:
 
 ![An example item from the ratings collection is displayed.](./media/xx_StreamAnalytics_05.png 'The ratings collection')
 
-1.  Select **Save query**
+1. Select **Save query**
 
-1.  Select **Overview**, in the menu, select **Start** to start your stream analytics job
+1. Select **Overview**, in the menu, select **Start** to start your stream analytics job
 
 ![Go to the overview tab, then select 'start'.](./media/xx_StreamAnalytics_05.png 'Start the analytics job')
 
-1.  In the dialog, ensure that **Now** is selected, then select **Start**
+1. In the dialog, ensure that **Now** is selected, then select **Start**
 
 > NOTE: If your job fails for any reason, you can use the **Activity Log** to see what the error(s) were.
 
 ### Task 2: Configure the ChangeFeed Function
 
-1.  In the **Contoso.Apps.FunctionApp** project, open the **FuncChangeFeed.cs** file
+1. In the **Contoso.Apps.FunctionApp** project, open the **FuncChangeFeed.cs** file
 
-1.  Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB collection
+1. Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB collection
 
-1.  Find the todo task #5 and complete it with the following:
+1. Find the todo task #5 and complete it with the following:
 
 ```csharp
 AddEventToEventHub(events);
 ```
 
-1.  Add the following method to the function class:
+1. Add the following method to the function class:
 
 ```csharp
 public void AddEventToEventHub(IReadOnlyList<Document> events)
@@ -776,57 +784,57 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 ### Task 3: Deploy the ChangeFeed Function
 
-1.  Right-Select the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1. Right-Select the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Select **Publish**
+1. Select **Publish**
 
 ### Task 4: Generate user events for PowerBI
 
-1.  Right-click the **DataGenerator** project, select **Set as startup project**
+1. Right-click the **DataGenerator** project, select **Set as startup project**
 
-1.  Press **F5** to run the project
+1. Press **F5** to run the project
 
-1.  Notice events will be generated based on a set of users and their preferred movie type
+1. Notice events will be generated based on a set of users and their preferred movie type
 
 ![The data generator window is displayed with events streaming.](./media/xx_DataGenerator_01.png 'Run the data generator')
 
-1.  Buy events will be generated for the first 30 seconds with random payment failures also generated. After 30 seconds, you will notice the orders per hour will fall below the target of 10. This would signify that something is wrong with the front end web site or order processing.
+1. Buy events will be generated for the first 30 seconds with random payment failures also generated. After 30 seconds, you will notice the orders per hour will fall below the target of 10. This would signify that something is wrong with the front end web site or order processing.
 
-1.  After about 1 minute, close the DataGenerator console program
+1. After about 1 minute, close the DataGenerator console program
 
 ### Task 5: Setup Power BI Dashabord
 
-1.  Open a new browser window to [Power BI](https://www.powerbi.com)
+1. Open a new browser window to [Power BI](https://www.powerbi.com)
 
-1.  Click **Sign In**, sign in using the same credentials you used to authorize your outputs for Stream Analytics above.
+1. Click **Sign In**, sign in using the same credentials you used to authorize your outputs for Stream Analytics above.
 
-1.  Select **My workspace**
+1. Select **My workspace**
 
-1.  Select **+Create**, then select **Dashboard**
+1. Select **+Create**, then select **Dashboard**
 
 ![The main Power BI dashboard page is displayed with the '+Create' highlighted.](./media/xx_PowerBI_01.png 'Create a dashboard')
 
-1.  For the name, type **Contoso Movies**, select **Create**
+1. For the name, type **Contoso Movies**, select **Create**
 
-1.  Select the **...** ellipses, then select **+Add tile**
+1. Select the **...** ellipses, then select **+Add tile**
 
-1.  Select **Custom Streaming Data**, select **Next**
+1. Select **Custom Streaming Data**, select **Next**
 
-1.  Select the **eventData** data set, then select **Next**
+1. Select the **eventData** data set, then select **Next**
 
 ![Select the eventCount dataset and select next.](./media/xx_PowerBI_02.png 'Add the eventCount tile')
 
-1.  For the visualization type, select **Card**
+1. For the visualization type, select **Card**
 
-1.  For the Fields, select **EventCount**
+1. For the Fields, select **EventCount**
 
-1.  Select **Next**
+1. Select **Next**
 
-1.  For the title, type **Event Count**, then select **Apply**
+1. For the title, type **Event Count**, then select **Apply**
 
-1.  Select **+Add tile**, you may need to select the **...** ellipses first
+1. Select **+Add tile**, you may need to select the **...** ellipses first
 
-1.  Select **Custom Streaming Data**, select **Next**. Use the following table to create the needed tiles:
+1. Select **Custom Streaming Data**, select **Next**. Use the following table to create the needed tiles:
 
 |                     |           |                                                  |                  |
 | ------------------- | --------- | ------------------------------------------------ | :--------------: |
@@ -836,15 +844,15 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 | eventSummary        | Line cart | Axis = UserCount, Legend = Event, Values = Count |  Count By Event  |
 | eventOrdersLastHour | Gauge     | Value = Count, Minimum = Min, Target = Target    | Orders Per Hour  |
 
-1.  Your dashboard should look similar to the following:
+1. Your dashboard should look similar to the following:
 
 ![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_PowerBI_03.png 'Configure the dashboard')
 
 ### Task 6: Generate user events for real time analytics
 
-1.  Switch back to Visual Studio, press **F5** to run the data generator project
+1. Switch back to Visual Studio, press **F5** to run the data generator project
 
-1.  Switch to your Power BI dashboard, after a few minutes, you should see it update with the event data:
+1. Switch to your Power BI dashboard, after a few minutes, you should see it update with the event data:
 
 ![This graphic shows the layout of the tiles in the Power BI Dashboard when the event stream is running.](./media/xx_PowerBI_04.png 'Continuously updating dashboard')
 
@@ -856,31 +864,31 @@ In this exercise you will configure your Cosmos DB change feed function to call 
 
 ### Task 1: Setup Logic App
 
-1.  Open the Azure Portal to your resource group and select the Logic App in your resource group, it should be named **s2*logicapp*...**
+1. Open the Azure Portal to your resource group and select the Logic App in your resource group, it should be named **s2*logicapp*...**
 
-2.  Select **Edit**
+2. Select **Edit**
 
 ![The Logic App blade with 'edit' highlighted.](./media/xx_LogicApp_01.png 'Edit the Logic App')
 
-3.  Select **+New step**
+3. Select **+New step**
 
 ![The Logic App Designer is displayed with 'new step' highlighted.](./media/xx_LogicApp_02.png 'Add a new step')
 
-4.  Search for **send an email**, then select the Office 365 outlook connector
+4. Search for **send an email**, then select the Office 365 outlook connector
 
 ![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./media/xx_LogicApp_03.png 'Add Send an Email action')
 
-5.  Select **Sign in**, login using your Azure AD credentials
+5. Select **Sign in**, login using your Azure AD credentials
 
 ![Sign in button is highlighted.](./media/xx_LogicApp_04.png 'Sign in to Office 365')
 
-6.  Set the **To** as your email address
+6. Set the **To** as your email address
 
-7.  Set the **Subject** as **Thank you for your order**
+7. Set the **Subject** as **Thank you for your order**
 
-8.  Set the **Body** as **Your order is being processed**
+8. Set the **Body** as **Your order is being processed**
 
-9.  Select **Save**
+9. Select **Save**
 
 ![Action properties are completed and the 'Save' button is highlighted](./media/xx_LogicApp_05.png 'Complete the action properties')
 
@@ -890,27 +898,27 @@ In this exercise you will configure your Cosmos DB change feed function to call 
 
 ### Task 2: Configure the function app settings
 
-1.  Open the Azure Portal to your resource group and select the Function App in your resource group, it should be named **s2func...**
+1. Open the Azure Portal to your resource group and select the Function App in your resource group, it should be named **s2func...**
 
-1.  Select **Configuration**
+1. Select **Configuration**
 
-1.  Update the **LogicAppUrl** configuration variable to the Logic App http endpoint your recorded above
+1. Update the **LogicAppUrl** configuration variable to the Logic App http endpoint your recorded above
 
-1.  Select **Save**
+1. Select **Save**
 
 ### Task 3: Update and deploy function app
 
-1.  In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file
+1. In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file
 
-1.  Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB collection
+1. Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB collection
 
-1.  Find the todo task #6 and complete it with the following:
+1. Find the todo task #6 and complete it with the following:
 
 ```csharp
 CallLogicApp(events);
 ```
 
-1.  Add the following method to the function class:
+1. Add the following method to the function class:
 
 ```csharp
 public async void CallLogicApp(IReadOnlyList<Document> events)
@@ -941,17 +949,17 @@ public async void CallLogicApp(IReadOnlyList<Document> events)
 }
 ```
 
-1.  Right-Select the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1. Right-Select the **Consoto.Apps.FunctionApp** function app project, select **Publish**
 
-1.  Select **Publish**
+1. Select **Publish**
 
 ### Task 4: Test order email delivery
 
-1.  Switch to Visual Studio, right-click the **DataGenerator** project, select **Set as startup project**
+1. Switch to Visual Studio, right-click the **DataGenerator** project, select **Set as startup project**
 
-1.  Press **F5** to run the project
+1. Press **F5** to run the project
 
-1.  For each `buy` event, you will receive an email
+1. For each `buy` event, you will receive an email
 
 > NOTE: It can take up to 5 minutes to receive emails, when you do you could receive quite a `few` emails.
 
@@ -963,10 +971,10 @@ In this exercise, attendees will deprovision any Azure resources that were creat
 
 ### Task 1: Delete resource group
 
-1.  Using the Azure portal, navigate to the Resource group you used throughout this hands-on lab by selecting **Resource groups** in the menu.
+1. Using the Azure portal, navigate to the Resource group you used throughout this hands-on lab by selecting **Resource groups** in the menu.
 
-2.  Search for the name of your research group, and select it from the list.
+2. Search for the name of your research group, and select it from the list.
 
-3.  Select **Delete** in the command bar, and confirm the deletion by re-typing the Resource group name and selecting **Delete**.
+3. Select **Delete** in the command bar, and confirm the deletion by re-typing the Resource group name and selecting **Delete**.
 
 You should follow all steps provided _after_ attending the Hands-on lab.
