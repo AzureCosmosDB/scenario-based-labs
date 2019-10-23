@@ -8,7 +8,7 @@
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
     - [Task 1: Download GitHub resources](#task-1-download-github-resources)
-    - [Task 2: Get a Movie Api Key](#task-2-get-a-movie-api-key)
+    - [Task 2: Get a Movie API Key](#task-2-get-a-movie-api-key)
     - [Task 3: Deploy resources to Azure](#task-3-deploy-resources-to-azure)
 
 <!-- /TOC -->
@@ -48,7 +48,7 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
    ![A set of extracted folders and files are visible in File Explorer: Hands On Lab, Media, Whiteboard design session, README.md., etc.](./media/beforehol-image2.png 'Extract the zip file')
 
-### Task 2: Get a Movie Api Key
+### Task 2: Get a Movie API Key
 
 1. Open a Chrome browser window to **https://api.themoviedb.org**
 
@@ -85,7 +85,15 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
    ```
 
-1. Browse to the **\$githubdir/Retail/deploy/deploy.ps1** PowerShell script in an PowerShell ISE window
+1. Execute the following command to update the Azure CLI to the latest version:
+
+   ```PowerShell
+   Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
+   ```
+
+1. **Close** the PowerShell ISE window after the Azure CLI update completes. This ensures that the latest CLI version is used when running the following scripts.
+
+1. **Re-open** the PowerShell ISE window, then browse to the **\$githubdir/Retail/deploy/deploy.ps1** PowerShell script in an PowerShell ISE window
 
 > **NOTE** You can reference the [Frequently Asked Questions/Issues](FAQ.md) if you run into issues with your deployment.
 
