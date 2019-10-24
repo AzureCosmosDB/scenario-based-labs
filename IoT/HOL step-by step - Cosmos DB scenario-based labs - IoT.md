@@ -662,6 +662,7 @@ In this task, you will create a new cluster on which data exploration and model 
    9. **Workers**: Enter **1**.
 
    ![The New Cluster form is displayed with the previously described values.](media/databricks-new-cluster.png 'New Cluster')
+   **Note** If you failed to create a cluster, try to change the worker type from Standard_DS3_v2 to other VM sizes.
 
 5. Select **Create Cluster**.
 
