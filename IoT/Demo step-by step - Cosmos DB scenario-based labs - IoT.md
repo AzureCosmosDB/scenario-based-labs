@@ -499,11 +499,11 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
 
-5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks.
+5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks, and a sub-folder named `Includes`, which contains one notebook.
 
     ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
 
-    In both notebooks, you will be required to provide values for your Machine Learning service workspace. You can find these values within the Overview blade of your Machine Learning service workspace that is located in your lab resource group.
+6. Open the **Shared-Configuration** notebook located in the `Includes` sub-folder and provide values for your Machine Learning service workspace. You can find these values within the Overview blade of your Machine Learning service workspace that is located in your lab resource group.
 
     The values highlighted in the screenshot below are for the following variables in the notebooks:
 
@@ -514,9 +514,9 @@ In this task, you will import the Databricks notebooks into your workspace.
 
     ![The required values are highlighted.](media/machine-learning-workspace-values.png "Machine Learning service workspace values")
 
-6. Complete the **Batch Scoring** notebook to download the trained model. **Note**: Since we've not loaded any data in Cosmos DB at this point, you can stop at **cell 17** (*Load the data from Cosmos DB to batch score it*).
+7. Complete the **Batch Scoring** notebook to download the trained model. **Note**: Since we've not loaded any data in Cosmos DB at this point, you can stop at **cell 17** (*Load the data from Cosmos DB to batch score it*).
 
-7. Complete the **Model Deployment** notebook to deploy the model to ACI. **Note**: You can continue with the rest of the tasks below while the last cell runs (deploying the web service).
+8. Complete the **Model Deployment** notebook to deploy the model to ACI. **Note**: You can continue with the rest of the tasks below while the last cell runs (deploying the web service).
 
 ### Task 13: View Cosmos DB processing Function App in the portal and copy the Health Check URL
 
