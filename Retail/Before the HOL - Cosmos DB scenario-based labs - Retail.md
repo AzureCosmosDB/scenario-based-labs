@@ -104,8 +104,8 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
    ```PowerShell
    $githubPath = "PATH YOU EXTRACTED REPO ZIP TO" # Such as: C:\scenario-based-labs-master
    $mode = "lab"  # Can be 'lab' or 'demo'
-   $subscriptionId = "YOUR SUBSCRIPTION ID"
-   $prefix = "YOUR INIT"
+   $subscriptionId = "YOUR SUBSCRIPTION ID" # You can find this at the top of your Azure resource group or any Azure resource, or in the Subscriptions link under "All services" in the portal's left-hand menu
+   $prefix = "YOUR INITIALS"
    $isSpektra = $true # Set to $true if you are running in a Spektra-hosted environment (https://manage.cloudlabs.ai) instead of your own Azure subscription. Otherwise, set to $false.
    $databaseId = "movies"
    $movieApiKey = "YOUR MOVIE API KEY"
@@ -146,11 +146,11 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 12. Once logged in, click the user icon and select **User settings**
 
-![Click your icon, then select User Settings.](./media/xx_DatabricksKey_01.png 'User Settings link')
+    ![Click your icon, then select User Settings.](./media/xx_DatabricksKey_01.png 'User Settings link')
 
 13. Click **Generate New Token**, copy the API key and enter into the PowerShell window. Databricks will proceed to configure itself and execute the necessary notebooks.
 
-![Click the Generate New Token button.](./media/xx_DatabricksKey_02.png 'Generate a Token')
+    ![Click the Generate New Token button.](./media/xx_DatabricksKey_02.png 'Generate a Token')
 
 14. Record the values that were output from the script for use in the lab
 

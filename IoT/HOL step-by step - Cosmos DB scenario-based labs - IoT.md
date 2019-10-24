@@ -812,64 +812,64 @@ Please take a moment to analyze the query below. Notice how we are using the `ev
 
 1. Select **Query** in the left-hand menu. Replace the contents of the query window with the script below:
 
-   ```sql
-   WITH
-   VehicleData AS (
-       select
-           vin,
-           AVG(engineTemperature) AS engineTemperature,
-           AVG(speed) AS speed,
-           AVG(refrigerationUnitKw) AS refrigerationUnitKw,
-           AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,
-           (case when AVG(engineTemperature) >= 400 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,
-           (case when AVG(engineoil) <= 18 then 1 else 0 end) as oilAnomaly,
-           (case when AVG(transmission_gear_position) <= 3.5 AND
-               AVG(accelerator_pedal_position) >= 50 AND
-               AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,
-           (case when AVG(refrigerationUnitTemp) >= 30 then 1 else 0 end) as refrigerationTempAnomaly,
-           System.TimeStamp() as snapshot
-       from events TIMESTAMP BY [timestamp]
-       GROUP BY
-           vin,
-           TumblingWindow(Duration(second, 30))
-   ),
-   VehicleDataAll AS (
-       select
-           AVG(engineTemperature) AS engineTemperature,
-           AVG(speed) AS speed,
-           AVG(refrigerationUnitKw) AS refrigerationUnitKw,
-           AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,
-           COUNT(*) AS eventCount,
-           (case when AVG(engineTemperature) >= 318 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,
-           (case when AVG(engineoil) <= 20 then 1 else 0 end) as oilAnomaly,
-           (case when AVG(transmission_gear_position) <= 4 AND
-               AVG(accelerator_pedal_position) >= 50 AND
-               AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,
-           (case when AVG(refrigerationUnitTemp) >= 22.5 then 1 else 0 end) as refrigerationTempAnomaly,
-           System.TimeStamp() as snapshot
-       from events t TIMESTAMP BY [timestamp]
-       GROUP BY
-           TumblingWindow(Duration(second, 10))
-   )
-   -- INSERT INTO POWER BI
-   SELECT
-       *
-   INTO
-       powerbi
-   FROM
-       VehicleDataAll
-   -- INSERT INTO COSMOS DB
-   SELECT
-       *,
-       entityType = 'VehicleAverage',
-       partitionKey = vin
-   INTO
-       cosmosdb
-   FROM
-       VehicleData
-   ```
+    ```sql
+    WITH
+    VehicleData AS (
+        select
+            vin,
+            AVG(engineTemperature) AS engineTemperature,
+            AVG(speed) AS speed,
+            AVG(refrigerationUnitKw) AS refrigerationUnitKw,
+            AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,
+            (case when AVG(engineTemperature) >= 400 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,
+            (case when AVG(engineoil) <= 18 then 1 else 0 end) as oilAnomaly,
+            (case when AVG(transmission_gear_position) <= 3.5 AND
+                AVG(accelerator_pedal_position) >= 50 AND
+                AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,
+            (case when AVG(refrigerationUnitTemp) >= 30 then 1 else 0 end) as refrigerationTempAnomaly,
+            System.TimeStamp() as snapshot
+        from events TIMESTAMP BY [timestamp]
+        GROUP BY
+            vin,
+            TumblingWindow(Duration(second, 30))
+    ),
+    VehicleDataAll AS (
+        select
+            AVG(engineTemperature) AS engineTemperature,
+            AVG(speed) AS speed,
+            AVG(refrigerationUnitKw) AS refrigerationUnitKw,
+            AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,
+            COUNT(*) AS eventCount,
+            (case when AVG(engineTemperature) >= 318 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,
+            (case when AVG(engineoil) <= 20 then 1 else 0 end) as oilAnomaly,
+            (case when AVG(transmission_gear_position) <= 4 AND
+                AVG(accelerator_pedal_position) >= 50 AND
+                AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,
+            (case when AVG(refrigerationUnitTemp) >= 22.5 then 1 else 0 end) as refrigerationTempAnomaly,
+            System.TimeStamp() as snapshot
+        from events t TIMESTAMP BY [timestamp]
+        GROUP BY
+            TumblingWindow(Duration(second, 10))
+    )
+    -- INSERT INTO POWER BI
+    SELECT
+        *
+    INTO
+        powerbi
+    FROM
+        VehicleDataAll
+    -- INSERT INTO COSMOS DB
+    SELECT
+        *,
+        entityType = 'VehicleAverage',
+        partitionKey = vin
+    INTO
+        cosmosdb
+    FROM
+        VehicleData
+    ```
 
-   ![The Stream Analytics job Query is displayed.](media/stream-analytics-query.png 'Query')
+    ![The Stream Analytics job Query is displayed.](media/stream-analytics-query.png 'Query')
 
 2. Select **Save query**.
 
@@ -2004,9 +2004,20 @@ In this task, you will import the Databricks notebooks into your workspace.
 
    ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
 
-5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks.
+5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks, and a sub-folder named `Includes`, which contains one notebook.
 
-   ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
+    ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
+
+6. Open the **Shared-Configuration** notebook located in the `Includes` sub-folder and provide values for your Machine Learning service workspace. You can find these values within the Overview blade of your Machine Learning service workspace that is located in your lab resource group.
+
+    The values highlighted in the screenshot below are for the following variables in the notebooks:
+
+    1. `subscription_id`
+    2. `resource_group`
+    3. `workspace_name`
+    4. `workspace_region`
+
+    ![The required values are highlighted.](media/machine-learning-workspace-values.png "Machine Learning service workspace values")
 
 ### Task 2: Run batch scoring notebook
 
