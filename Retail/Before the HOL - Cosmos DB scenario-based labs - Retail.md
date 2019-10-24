@@ -77,82 +77,81 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
 
 1. Open a browser window to the [Azure Portal](https://portal.azure.com), be sure to login as the user that has access to your soon to be created resource group
 
-> NOTE: This is necessary as the script will open a window that requires you to have already logged in to the portal.
+   > NOTE: This is necessary as the script will open a window that requires you to have already logged in to the portal.
 
-1. Open a **PowerShell ISE** window, run the following command, if prompted, click **Yes to All**:
+2. Open a **PowerShell ISE** window, run the following command, if prompted, click **Yes to All**:
 
    ```PowerShell
    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
    ```
 
-1. Execute the following command to update the Azure CLI to the latest version:
+3. Execute the following command to update the Azure CLI to the latest version:
 
    ```PowerShell
    Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
    ```
 
-1. **Close** the PowerShell ISE window after the Azure CLI update completes. This ensures that the latest CLI version is used when running the following scripts.
+4. **Close** the PowerShell ISE window after the Azure CLI update completes. This ensures that the latest CLI version is used when running the following scripts.
 
-1. **Re-open** the PowerShell ISE window, then browse to the **\$githubdir/Retail/deploy/deploy.ps1** PowerShell script in an PowerShell ISE window
+5. **Re-open** the PowerShell ISE window, then browse to the **C:\scenario-based-labs-master\Retail\deploy\deploy.ps1** PowerShell script in an PowerShell ISE window
 
-> **NOTE** You can reference the [Frequently Asked Questions/Issues](FAQ.md) if you run into issues with your deployment.
+   > **NOTE** You can reference the [Frequently Asked Questions/Issues](FAQ.md) if you run into issues with your deployment.
 
-1. Set the following variables:
+6. Set the following variables:
 
    > NOTE: If you are performing a demo of this solution, select the "demo" setting, otherwise leave as "lab"
 
-   ```PoweShell
-   $mode = "lab"  #can be 'lab' or 'demo'
+   ```PowerShell
+   $githubPath = "PATH YOU EXTRACTED REPO ZIP TO" # Such as: C:\scenario-based-labs-master
+   $mode = "lab"  # Can be 'lab' or 'demo'
    $subscriptionId = "YOUR SUBSCRIPTION ID"
-   $subName = "YOUR SUBSCRIPTION NAME"
    $prefix = "YOUR INIT"
-   $rgName = $prefix + "_s2_retail"
+   $isSpektra = $true # Set to $true if you are running in a Spektra-hosted environment (https://manage.cloudlabs.ai) instead of your own Azure subscription. Otherwise, set to $false.
    $databaseId = "movies"
    $movieApiKey = "YOUR MOVIE API KEY"
-   $githubPath = "PATH YOU EXTRACTED REPO ZIP TOO"
    ```
 
    > NOTE: You should have Azure CLI 2.0.68 or higher to run this script. You can check by running `az --version`
 
-1. Press **F5** to run the script, this will do the following:
+7. Press **F5** to run the script, this will do the following:
 
-- Deploy the starter ARM template(s)
-- Deploy the initial web and function apps
-- Setup the web and function app configuration variables
-- Create starter objects in the 'object' collection of the Cosmos DB database
-- Update your project application configuration files with the target azure keys and settings
+   - Deploy the starter ARM template(s)
+   - Deploy the initial web and function apps
+   - Setup the web and function app configuration variables
+   - Create starter objects in the 'object' collection of the Cosmos DB database
+   - Update your project application configuration files with the target azure keys and settings
 
-1. The deployment will take 15-25 minutes to complete. You will be prompted for information in both `demo` and `lab` modes. As part of the deployment, you will see the following items created:
+8. The deployment will take 15-25 minutes to complete. You will be prompted for information in both `demo` and `lab` modes. As part of the deployment, you will see the following items created:
 
-- Function App
-- Web App
-- App Service Plans
-- Event Hub
-- Stream Analytics Job
-- Databricks Service
-- Cosmos DB
-- Key Vault
-- Storage Accounts
-- Application Insights
+   - Function App
+   - Web App
+   - App Service Plans
+   - Event Hub
+   - Stream Analytics Job
+   - Databricks Service
+   - Cosmos DB
+   - Key Vault
+   - Storage Accounts
+   - Application Insights
 
-1. If you run the setup in `lab` or `demo` mode, you will be prompted to navigate to the generated functions app settings page before continuing. When the browser window is displayed, do the following:
+9. If you run the setup in `lab` or `demo` mode, you will be prompted to navigate to the generated functions app settings page before continuing. When the browser window is displayed, do the following:
 
-- Select your function app, it will start with **s2func...**
-- Select the **Function app settings** link
-- Respond `yes` to the PowerShell prompt
+   - Select your function app, it will start with **s2func...**.
+   - Select the **Function app settings** link and wait for the 'master key' to display.
+   - Respond `y` to the following PowerShell prompt: `Did you click to the function application's settings page yet? [y/n]:`.
 
-1. If you run the setup in `demo` mode, you will be prompted to enter your Databricks API token. A new browser window will open to allow you to login to your databricks instance.
+10. If you run the setup in `demo` mode, you will be prompted to enter your Databricks API token. A new browser window will open to allow you to login to your databricks instance.
 
-1. When the browser window opens, select your Databricks instance, it should start with **s2databricks...**
+11. When the browser window opens, select your Databricks instance, it should start with **s2databricks...**
 
-1. Once logged in, click the user icon and select **User settings**
+12. Once logged in, click the user icon and select **User settings**
 
-   ![Click your icon, then select User Settings.](./media/xx_DatabricksKey_01.png 'User Settings link')
+![Click your icon, then select User Settings.](./media/xx_DatabricksKey_01.png 'User Settings link')
 
-1. Click **Generate New Token**, copy the API key and enter into the PowerShell window. Databricks will proceed to configure itself and execute the necessary notebooks.
+13. Click **Generate New Token**, copy the API key and enter into the PowerShell window. Databricks will proceed to configure itself and execute the necessary notebooks.
 
-   ![Click the Generate New Token button.](./media/xx_DatabricksKey_02.png 'Generate a Token')
+![Click the Generate New Token button.](./media/xx_DatabricksKey_02.png 'Generate a Token')
 
-1. Record the values that were output from the script for use in the lab
+14. Record the values that were output from the script for use in the lab
 
 You should follow all steps provided _before_ attending the hands-on lab.

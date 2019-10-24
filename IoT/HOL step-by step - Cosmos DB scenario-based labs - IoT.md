@@ -1017,7 +1017,7 @@ When you set the App Settings for the Function Apps and Web App in the next task
 
 In this task, you will open the Visual Studio solution for this lab. It contains projects for both Function Apps, the Web App, and the data generator.
 
-1. Open Windows Explorer and navigate to the location you extracted the solution ZIP file in the _Before the HOL_ guide. If you extracted the ZIP file directly to `C:\`, you need to open the following folder: `C:\cosmos-db-scenario-based-labs-master\IoT\Starter`. Open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
+1. Open Windows Explorer and navigate to the location you extracted the solution ZIP file in the _Before the HOL_ guide. If you extracted the ZIP file directly to `C:\`, you need to open the following folder: `C:\scenario-based-labs-master\IoT\Starter`. Open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
 
     > If Visual Studio prompts you to sign in when it first launches, use the account provided to you for this lab (if applicable), or an existing Microsoft account.
 
@@ -1430,7 +1430,7 @@ After the generator ensures the metadata exists, it begins simulating the specif
 
 ### Task 1: Open the data generator project
 
-1. If the Visual Studio solution is not already open, navigate to `C:\cosmos-db-scenario-based-labs-master\IoT\Starter` and open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
+1. If the Visual Studio solution is not already open, navigate to `C:\scenario-based-labs-master\IoT\Starter` and open the Visual Studio solution file: **CosmosDbIoTScenario.sln**.
 
 2. Expand the **FleetDataGenerator** project and open **Program.cs** in the Solution Explorer.
 
@@ -2123,7 +2123,7 @@ In this lab, you will import a Power BI report that has been created for you. Af
 
     ![The Open other reports link is highlighted.](media/pbi-splash-screen.png "Power BI Desktop")
 
-2. In the Open report dialog, browse to `C:\cosmos-db-scenario-based-labs-master\IoT\Reports`, then select **FleetReport.pbix**. Click **Open**.
+2. In the Open report dialog, browse to `C:\scenario-based-labs-master\IoT\Reports`, then select **FleetReport.pbix**. Click **Open**.
 
     ![The FleetReport.pbix file is selected in the dialog.](media/pbi-open-report.png "Open report dialog")
 

@@ -55,7 +55,7 @@ Download a starter project that includes a vehicle simulator, Azure Function App
 
    ![Download .zip containing the repository](media/github-download-repo.png 'Download ZIP')
 
-4. Unzip the contents to your root hard drive (i.e. `C:\`). This will create a folder on your root drive named `cosmos-db-scenario-based-labs-master`.
+4. Unzip the contents to your root hard drive (i.e. `C:\`). This will create a folder on your root drive named `scenario-based-labs-master`.
 
 ### Task 3: Run deployment scripts
 
