@@ -662,6 +662,7 @@ Contoso Auto は、車両から収集した貴重なデータを使用して、�
    9. **Workers**: Enter **1**.
 
    ![The New Cluster form is displayed with the previously described values.](media/databricks-new-cluster.png 'New Cluster')
+   **注** もしクラスターの作成に失敗した場合は、Worker TypeをStandard_DS3_v2から他のVMサイズに変更してみてください。
 
 5. **Create Cluster** を選択します。
 
