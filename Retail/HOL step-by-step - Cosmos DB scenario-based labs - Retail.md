@@ -214,7 +214,7 @@ The algorithms for creating the offline calculations are written in Python and a
 
 8. Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
 
-    > This notebook will simulate the browsing and purchasing activity for six users with different personality based preferences and save the result to the `events` collection in Cosmos DB.
+    > This notebook will simulate the browsing and purchasing activity for six users with different personality based preferences and save the result to the `events` container in Cosmos DB.
 
     > The movies have been pre-selected and sorted into the genres of comedy, drama and action. While the actual movie selection and activity taken is random, it is weighted to respect the user's preferences in each genre to hit a distribution that would mirror that user's taste.
 
@@ -226,7 +226,7 @@ The algorithms for creating the offline calculations are written in Python and a
 
     ![Click the `detached` drop down, select the small cluster.](./media/xx_Databricks_09.png 'Set the cluster')
 
-10. Select **Run All**
+10. Select **Run All**.
 
 ### Task 3: Review the data generated
 
@@ -236,11 +236,11 @@ The algorithms for creating the offline calculations are written in Python and a
 
 3. Select **Data Explorer** in the left-hand menu.
 
-4. Select the **events** collection, then select **items**.
+4. Select the **events** container, then select **items**.
 
 5. Select one or more of the items and review them.
 
-    ![An example item from the events collection is displayed.](./media/xx_EventsColl.png 'The events collection')
+    ![An example item from the events container is displayed.](./media/xx_EventsColl.png 'The events container')
 
     > NOTE: These items are created from the Databricks solution and include a random set of generated events for each user personality type. You should see events generated for 'details', 'buy' and 'addToCart' as well as the item associated with the event (via the contentId field).
 
@@ -261,7 +261,9 @@ The algorithms for creating the offline calculations are written in Python and a
 
 3. Right-click the project, select **Set as startup project**.
 
-4. Press **F5** to run the project
+4. Press **F5** to run the project.
+
+    You may see several of the following lines output to the console window after saving the genres and before adding the movies: `Input string was not in a correct format.`. You can safely ignore these due to some movies the API retrieved are poorly formatted.
 
 > NOTE: You must have waited for the Event Generator Databricks notebook to complete for this to run and have the later steps in the lab match.
 
@@ -273,48 +275,64 @@ The algorithms for creating the offline calculations are written in Python and a
 
 ### Task 1: Implement the Top Items recommendation
 
-1. In the **Contoso.Apps.Movies.Web** project, open the **/Controllers/HomeController.cs** file
+1. In the **Contoso.Apps.Movies.Web** project, open the **/Controllers/HomeController.cs** file.
 
-2. Find the todo task #1 and complete it with the following:
+2. In Visual Studio, select **View**, then select **Task List**. This will display the list of **TODO** items, helping you navigate to each one.
 
-```csharp
-vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
-```
+    ![The View menu in Visual Studio is displayed, and the Task List item is highlighted.](media/vs-view-tasklist.png "View Task List")
 
-> The `RecommendationHelper` class is responsible for making the call to the Azure Function to get the recommendations based on the information submitted that includes the algorithm, user and content being used to compute the recommendations.
+    The Task List appears at the bottom of the window:
 
-3. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
+    ![The Task List is displayed.](media/vs-tasklist.png "Task List")
 
-4. In the **TopRecommendation** method, find the todo task #2 and complete it with the following:
+3. Find TODO #1 and complete it by adding the following line underneath:
 
-```csharp
-var container = client.GetContainer(databaseId, "object");
+    ```csharp
+    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
+    ```
 
-var query = container.GetItemLinqQueryable<Item>(true)
-    .Where(c => c.EntityType == "ItemAggregation")
-    .OrderByDescending(c => c.BuyCount)
-    .Take(take);
+    > The `RecommendationHelper` class is responsible for making the call to the Azure Function to get the recommendations based on the information submitted that includes the algorithm, user and content being used to compute the recommendations.
 
-items = query.ToList();
+4. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file.
 
-foreach(Item i in items)
-{
-    itemIds.Add(i.ItemId.ToString());
-}
+5. In the **TopRecommendation** method, find the TODO #2 and complete it with the following:
 
-topItems = GetItemsByImdbIds(itemIds);
-```
+    ```csharp
+    var container = client.GetContainer(databaseId, "object");
 
-5. Review the code, notice the following:
+    var query = container.GetItemLinqQueryable<Item>(true)
+        .Where(c => c.EntityType == "ItemAggregation")
+        .OrderByDescending(c => c.BuyCount)
+        .Take(take);
 
-- We are querying an "object" collection for an entity type called 'ItemAggregation' and sorting it by the 'BuyCount'. Essentially these are the top purchased items.
-- We are then querying the object collection for all the top movie items to get their metadata for display on the web front end
+    items = query.ToList();
 
-> This code is responsible for querying the Cosmos DB `object` collection to find the item aggregation information, for example all the `buy` events for a movie. 
+    foreach(Item i in items)
+    {
+        itemIds.Add(i.ItemId.ToString());
+    }
 
->It is important that you utilize aggregations to do this as each operation in Cosmos DB consumes a certain amount of RUs. For queries, the RU charge is based on the number of documents returned, the complexity of the query, and the number of partitions queried. To continue to have efficient queries as user count and activity increases, we create an aggregated view. 
+    topItems = GetItemsByImdbIds(itemIds);
+    ```
 
->Over time the `events` collection expected to get incredibly large as your user count and activity increases. With respect to RUs, you can imagine the costs for making this query can become costly.
+6. Review the code, notice the following:
+
+   - We are querying an "object" container for an entity type called 'ItemAggregation' and sorting it by the 'BuyCount'. Essentially these are the top purchased items.
+   - We are then querying the object container for all the top movie items to get their metadata for display on the web front end
+
+   > This code is responsible for querying the Cosmos DB `object` container to find the item aggregation information, for example all the `buy` events for a movie.
+
+   > It is important that you utilize aggregations to do this as each operation in Cosmos DB consumes a certain amount of RUs. For queries, the RU charge is based on the number of documents returned, the complexity of the query, and the number of partitions queried. To continue to have efficient queries as user count and activity increases, we create an aggregated view.
+
+   > Over time the `events` container expected to get incredibly large as your user count and activity increases. With respect to RUs, you can imagine the costs for making this query can become costly.
+
+7. In the Visual Studio menu, select **Build**, then **Rebuild Solution**. This ensure all NuGet packages are restored, the solutions are cleaned, then build all the projects within the solution.
+
+    ![The Build menu is expanded in Visual Studio and the Rebuild Solution menu item is highlighted.](media/vs-rebuild-solution.png "Rebuild Solution")
+
+    You should see an output stating that build successfully compiled all 9 projects:
+    
+    `========== Rebuild All: 9 succeeded, 0 failed, 0 skipped ==========`.
 
 #### About Cosmos DB throughput
 
@@ -324,33 +342,35 @@ Cosmos DB allows you to increment/decrement the RUs in small increments of 100 a
 
 When you set a number of RUs for a container, Cosmos DB ensures that those RUs are available in all regions associated with your Cosmos DB account. When you scale out the number of regions by adding a new one, Cosmos will automatically provision the same quantity of RUs in the newly added region. You cannot selectively assign different RUs to a specific region. These RUs are provisioned for a container (or database) for all associated regions.
 
-6. Compile the solution, fix any errors
-
 ### Task 2: Deploy the applications
 
-1. Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1. Right-click the **Contoso.Apps.FunctionApp** function app project, then select **Publish**.
 
-1. Select **New**, then ensure that **Azure Functions Premium Plan** is selected
+1. Select **Start**, then ensure that **Azure Functions Premium Plan** is selected.
 
-![Select the Azure Functions Premium plan and then select 'select existing'](./media/xx_DeployFunction.png 'Select a plan')
+    ![Select the Azure Functions Premium plan and then select 'select existing'](./media/xx_DeployFunction.png 'Select a plan')
 
-1. Select **Select Existing**, then select **Publish**
+1. Select **Select Existing**, then select **Create Profile**.
 
-1. Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2func...\***
+1. Select your Azure Subscription, resource group and Function App to deploy to. The name should start with **s2func...\***.
 
-![Select the pre-created function app service that starts with s2func.](./media/xx_DeployFunction_02.png 'Select the App Service')
+    ![Select the pre-created function app service that starts with s2func.](./media/xx_DeployFunction_02.png 'Select the App Service')
 
-1. Select **OK**
+1. Select **OK**, then click the **Publish** button to start the process.
 
-1. Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
+1. Right-click the **Contoso.Apps.Movies.Web** web app project, then select **Publish**.
 
-1. Select **New**, then ensure that **App Service** is selected
+1. Select **Start**, then ensure that **App Service** is selected.
 
-1. Select **Select Existing**, then select **Publish**
+1. Select **Select Existing**, then select **Create Profile**.
 
-1. Select your Azure Subscription, resource group and Function App to deploy too, it should be something like **s2web...\***
+    ![Select the existing App Service.](media/vs-publish-app-service.png "Pick a publish target")
 
-1. Select **OK**, the application will publish and the site should be displayed:
+1. Select your Azure Subscription, resource group and Function App to deploy to. The name should start with **s2web...\***.
+
+1. Select **OK**, then click the **Publish** button to start the process. The application will publish and the site should be displayed. If the site does not automatically launch in a browser, you can copy the Site URL on the publish dialog and open the site in a new browser window.
+
+    ![The Site URL is highlighted in the Publish dialog.](media/vs-publish-web-url.png "Publish")
 
 ### Task 3: Test the applications
 
@@ -368,13 +388,13 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 ### Task 1: Generate the Associations
 
-1. Switch back to your Databricks workspace, select the **02 Association Rules** workbook
+1. Switch back to your Databricks workspace, select the **02 Association Rules** workbook.
 
 1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
-> The goal of this algorithm is to compute two metrics that indicate the strength of a relationship between a source item and a target item based on event history, and then save that matrix to the associations collection in Cosmos DB.
+> The goal of this algorithm is to compute two metrics that indicate the strength of a relationship between a source item and a target item based on event history, and then save that matrix to the associations container in Cosmos DB.
 
 > The algorithm begins with grouping events with a buy action into a transaction, grouping by the sessionId. This provides the set of items bough together.
 
@@ -382,15 +402,15 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 ### Task 2: Review the data generated
 
-1. Switch back to the Azure Portal
+1. Switch back to the Azure Portal.
 
-1. In your resource group, navigate to your Cosmos DB instance
+1. In your resource group, navigate to your Cosmos DB instance.
 
-1. Open the **associations** collection, review the items in the collection
+1. Open the **associations** container, review the items in the container.
 
-![An example item from the associations collection is displayed.](./media/xx_AssocColl.png 'The associations collection')
+    ![An example item from the associations container is displayed.](./media/xx_AssocColl.png 'The associations container')
 
-> NOTE: These items are created from the Databricks solution and include the association confidence level as compared from one movie to another movie.
+    > NOTE: These items are created from the Databricks solution and include the association confidence level as compared from one movie to another movie.
 
 ## Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)
 
@@ -400,63 +420,63 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 ### Task 1: Implement the Associations recommendation rules
 
-1. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
+1. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file.
 
-1. In the **AssociationRecommendationByUser** method, find the todo task #3 and complete it with the following:
+1. In the **AssociationRecommendationByUser** method, find the TODO task #3 and complete it with the following:
 
-```csharp
-//get 20 log events for the user.
-List<CollectorLog> logs = GetUserLogs(userId, 20);
+    ```csharp
+    //get 20 log events for the user.
+    List<CollectorLog> logs = GetUserLogs(userId, 20);
 
-if (logs.Count == 0)
-    return items;
+    if (logs.Count == 0)
+        return items;
 
-List<Rule> rules = GetSeededRules(logs);
+    List<Rule> rules = GetSeededRules(logs);
 
-//get the pre-seeded objects based on confidence
-List<Recommendation> recs = new List<Recommendation>();
+    //get the pre-seeded objects based on confidence
+    List<Recommendation> recs = new List<Recommendation>();
 
-//for each rule returned, evaluate the confidence
-foreach (Rule r in rules)
-{
-    Recommendation rec = new Recommendation();
-    rec.id = int.Parse(r.target);
-    rec.confidence = r.confidence;
-    recs.Add(rec);
+    //for each rule returned, evaluate the confidence
+    foreach (Rule r in rules)
+    {
+        Recommendation rec = new Recommendation();
+        rec.id = int.Parse(r.target);
+        rec.confidence = r.confidence;
+        recs.Add(rec);
 
-    itemIds.Add(rec.id.ToString());
-}
+        itemIds.Add(rec.id.ToString());
+    }
 
-items = GetItemsByImdbIds(itemIds);
-```
+    items = GetItemsByImdbIds(itemIds);
+    ```
 
-1. In the **Contoso.Apps.Movies.Web** project, open the **HomeController.cs** file
+1. In the **Contoso.Apps.Movies.Web** project, open the **HomeController.cs** file.
 
 1. Replace the **Index** method with the following:
 
-```csharp
-var vm = new HomeModel();
+    ```csharp
+    var vm = new HomeModel();
 
-Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
+    Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
 
-vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
+    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
 
-if (user != null)
-{
-    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", user.UserId, 0);
-    vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", user.UserId, 0);
-}
+    if (user != null)
+    {
+        vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("assoc", user.UserId, 0);
+        vm.RecommendProductsLiked = RecommendationHelper.GetViaFunction("collab", user.UserId, 0);
+    }
 
-return View(vm);
-```
+    return View(vm);
+    ```
 
 ### Task 2: Deploy the applications
 
-1. Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1. Right-click the **Contoso.Apps.FunctionApp** function app project, select **Publish**.
 
-1. Select **Publish**
+1. Select **Publish**.
 
-1. Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
+1. Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**.
 
 1. Select **Publish**, the site should load.
 
@@ -482,17 +502,17 @@ return View(vm);
 
 1. Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
-> This notebook will use the implict events captured in the events collection in Cosmos DB to calculate what a user would rate a given item, based on their actions. In other words it converts a users buy, addToCart and details actions into a numeric score for the item. The resulting user to item ratings matrix will be saved to the ratings collection in Cosmos DB.
+> This notebook will use the implict events captured in the events container in Cosmos DB to calculate what a user would rate a given item, based on their actions. In other words it converts a users buy, addToCart and details actions into a numeric score for the item. The resulting user to item ratings matrix will be saved to the ratings container in Cosmos DB.
 
 1. Switch back to the Azure Portal
 
 1. In your resource group, navigate to your Cosmos DB instance
 
-1. Open the **ratings** collection, review the items in the collection
+1. Open the **ratings** container, review the items in the container
 
-![An example item from the ratings collection is displayed.](./media/xx_RatingsColl.png 'The ratings collection')
+![An example item from the ratings container is displayed.](./media/xx_RatingsColl.png 'The ratings container')
 
-> NOTE: These ratings are generated as part of this notebook as an 'offline' operation. If you collect a significant amount of user data, you would need to reevaluate the events using this notebook and populate the ratings collection again for the online calculations to utilize.
+> NOTE: These ratings are generated as part of this notebook as an 'offline' operation. If you collect a significant amount of user data, you would need to reevaluate the events using this notebook and populate the ratings container again for the online calculations to utilize.
 
 ### Task 2: Generate the Collaborative Rules
 
@@ -522,19 +542,19 @@ return View(vm);
 
 1. Select **Data Explorer**
 
-1. Select the **similarity** collection, then select **items**
+1. Select the **similarity** container, then select **items**
 
 1. Select one or more of the items and review them
 
 > NOTE: These items are created from the Databricks solution and include the similarity of one movie, the source, to another, the target.
 
-![An example item from the similarity collection is displayed.](./media/xx_SimilarityColl.png 'The similarity collection')
+![An example item from the similarity container is displayed.](./media/xx_SimilarityColl.png 'The similarity container')
 
 ### Task 4: Implement the Collaborative recommendation rules
 
 1. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
 
-1. In the **CollaborativeBasedRecommendation** method, find the todo task #4 and complete it with the following:
+1. In the **CollaborativeBasedRecommendation** method, find the TODO task #4 and complete it with the following:
 
 ```csharp
 int neighborhoodSize = 15;
@@ -724,7 +744,7 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 1. The Query windows should look similar to this:
 
-![An example item from the ratings collection is displayed.](./media/xx_StreamAnalytics_05.png 'The ratings collection')
+![An example item from the ratings container is displayed.](./media/xx_StreamAnalytics_05.png 'The ratings container')
 
 1. Select **Save query**
 
@@ -740,9 +760,9 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 1. In the **Contoso.Apps.FunctionApp** project, open the **FuncChangeFeed.cs** file
 
-1. Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB collection
+1. Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB container
 
-1. Find the todo task #5 and complete it with the following:
+1. Find the TODO task #5 and complete it with the following:
 
 ```csharp
 AddEventToEventHub(events);
@@ -910,9 +930,9 @@ In this exercise you will configure your Cosmos DB change feed function to call 
 
 1. In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file
 
-1. Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB collection
+1. Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB container
 
-1. Find the todo task #6 and complete it with the following:
+1. Find the TODO task #6 and complete it with the following:
 
 ```csharp
 CallLogicApp(events);
