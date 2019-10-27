@@ -15,7 +15,7 @@
     - [Task 2: Populate event data](#task-2-populate-event-data)
     - [Task 3: Review the data generated](#task-3-review-the-data-generated)
     - [Task 4: Review the aggregation and import utility](#task-4-review-the-aggregation-and-import-utility)
-  - [Exercise 2: Complete and deploy Web and Function Apps](#exercise-2-complete-and-deploy-web-and-function-apps)
+  - [Exercise 2: Complete and deploy Web and Function App](#exercise-2-complete-and-deploy-web-and-function-apps)
     - [Task 1: Implement the Top Items recommendation](#task-1-implement-the-top-items-recommendation)
       - [About Cosmos DB throughput](#about-cosmos-db-throughput)
     - [Task 2: Deploy the applications](#task-2-deploy-the-applications)
@@ -23,7 +23,7 @@
   - [Exercise 3: Perform and deploy association rules calculation for offline algorithms](#exercise-3-perform-and-deploy-association-rules-calculation-for-offline-algorithms)
     - [Task 1: Generate the Associations](#task-1-generate-the-associations)
     - [Task 2: Review the data generated](#task-2-review-the-data-generated)
-  - [Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)](#exercise-4-complete-and-deploy-web-app-and-function-apps-association-rules)
+  - [Exercise 4: Complete and deploy Web App and Function App (Association Rules)](#exercise-4-complete-and-deploy-web-app-and-function-apps-association-rules)
     - [Task 1: Implement the Associations recommendation rules](#task-1-implement-the-associations-recommendation-rules)
     - [Task 2: Deploy the applications](#task-2-deploy-the-applications-1)
     - [Task 3: Test the applications](#task-3-test-the-applications-1)
@@ -94,7 +94,7 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
 
 - eCommerce web app:
 
-  A **Web App** allows Contoso customers to browse and purchase movies. **Azure Key Vault** is used to securely store centralized application secrets, such as connection strings and access keys, and is used by the Function Apps, Web App, and Azure Databricks. Finally, **Application Insights** provides real-time monitoring, metrics, and logging information for the Function Apps and Web App.
+  A **Web App** allows Contoso customers to browse and purchase movies. **Azure Key Vault** is used to securely store centralized application secrets, such as connection strings and access keys, and is used by the Function App, Web App, and Azure Databricks. Finally, **Application Insights** provides real-time monitoring, metrics, and logging information for the Function App and Web App.
 
 ## Requirements
 
@@ -267,7 +267,7 @@ The algorithms for creating the offline calculations are written in Python and a
 
 > NOTE: You must have waited for the Event Generator Databricks notebook to complete for this to run and have the later steps in the lab match.
 
-## Exercise 2: Complete and deploy Web and Function Apps
+## Exercise 2: Complete and deploy Web and Function App
 
 **Duration**: 30 minutes
 
@@ -288,7 +288,7 @@ The algorithms for creating the offline calculations are written in Python and a
 3. Find TODO #1 and complete it by adding the following line underneath:
 
     ```csharp
-    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
+    vm.RecommendProductsTop = RecommendationHelper.GetViaFunction("top", 0, 0);
     ```
 
     > The `RecommendationHelper` class is responsible for making the call to the Azure Function to get the recommendations based on the information submitted that includes the algorithm, user and content being used to compute the recommendations.
@@ -301,7 +301,7 @@ The algorithms for creating the offline calculations are written in Python and a
     var container = client.GetContainer(databaseId, "object");
 
     var query = container.GetItemLinqQueryable<Item>(true)
-        .Where(c => c.EntityType == "ItemAggregation")
+        .Where(c => c.EntityType == "ItemAggregate")
         .OrderByDescending(c => c.BuyCount)
         .Take(take);
 
@@ -346,29 +346,29 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 1. Right-click the **Contoso.Apps.FunctionApp** function app project, then select **Publish**.
 
-1. Select **Start**, then ensure that **Azure Functions Premium Plan** is selected.
+2. Select **Start**, then ensure that **Azure Functions Premium Plan** is selected.
 
     ![Select the Azure Functions Premium plan and then select 'select existing'](./media/xx_DeployFunction.png 'Select a plan')
 
-1. Select **Select Existing**, then select **Create Profile**.
+3. Select **Select Existing**, be sure to **_uncheck_ Run from package file**, then select **Create Profile**.
 
-1. Select your Azure Subscription, resource group and Function App to deploy to. The name should start with **s2func...\***.
+4. Select your Azure Subscription, resource group and Function App to deploy to. The name should start with **s2func...\***.
 
     ![Select the pre-created function app service that starts with s2func.](./media/xx_DeployFunction_02.png 'Select the App Service')
 
-1. Select **OK**, then click the **Publish** button to start the process.
+5. Select **OK**, then click the **Publish** button to start the process.
 
-1. Right-click the **Contoso.Apps.Movies.Web** web app project, then select **Publish**.
+6. Right-click the **Contoso.Apps.Movies.Web** web app project, then select **Publish**.
 
-1. Select **Start**, then ensure that **App Service** is selected.
+7. Select **Start**, then ensure that **App Service** is selected.
 
-1. Select **Select Existing**, then select **Create Profile**.
+8. Select **Select Existing**, then select **Create Profile**.
 
     ![Select the existing App Service.](media/vs-publish-app-service.png "Pick a publish target")
 
-1. Select your Azure Subscription, resource group and Function App to deploy to. The name should start with **s2web...\***.
+9. Select your Azure Subscription, resource group and Function App to deploy to. The name should start with **s2web...\***.
 
-1. Select **OK**, then click the **Publish** button to start the process. The application will publish and the site should be displayed. If the site does not automatically launch in a browser, you can copy the Site URL on the publish dialog and open the site in a new browser window.
+10. Select **OK**, then click the **Publish** button to start the process. The application will publish and the site should be displayed. If the site does not automatically launch in a browser, you can copy the Site URL on the publish dialog and open the site in a new browser window.
 
     ![The Site URL is highlighted in the Publish dialog.](media/vs-publish-web-url.png "Publish")
 
@@ -384,11 +384,11 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 **Duration**: 30 minutes
 
-**Synopsis**: Based on the pre-calculated events in the Cosmos DB for our pre-defined personality types (Comedy fan, Drama fan, etc), you will implement and deploy an algorithm that will generate these associations and put them in Cosmos DB for offline processing by the web and function applications.
+**Synopsis**: Based on the pre-calculated events in the Cosmos DB for our pre-defined personality types (Comedy fan, Drama fan, etc.), you will implement and deploy an algorithm that will generate these associations and put them in Cosmos DB for offline processing by the web and function applications.
 
 ### Task 1: Generate the Associations
 
-1. Switch back to your Databricks workspace, select the **02 Association Rules** workbook.
+1. Switch back to your Databricks workspace and open the **02 Association Rules** notebook.
 
 1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
@@ -402,6 +402,8 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 ### Task 2: Review the data generated
 
+The notebook examined the `events` data to find items that tend to be purchased together, and created a matrix that reflects the strength of the relationship. It then stored the matrix in the associations container. You will now look at the data in Cosmos DB, using the Data Explorer.
+
 1. Switch back to the Azure Portal.
 
 1. In your resource group, navigate to your Cosmos DB instance.
@@ -412,7 +414,7 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
     > NOTE: These items are created from the Databricks solution and include the association confidence level as compared from one movie to another movie.
 
-## Exercise 4: Complete and deploy Web App and Function Apps (Association Rules)
+## Exercise 4: Complete and deploy Web App and Function App (Association Rules)
 
 **Duration**: 30 minutes
 
@@ -422,7 +424,7 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 1. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file.
 
-1. In the **AssociationRecommendationByUser** method, find the TODO task #3 and complete it with the following:
+1. In the **AssociationRecommendationByUser** method, find the TODO #3 and complete it with the following:
 
     ```csharp
     //get 20 log events for the user.
@@ -459,7 +461,7 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
     Contoso.Apps.Movies.Data.Models.User user = (Contoso.Apps.Movies.Data.Models.User)Session["User"];
 
-    vm.RecommendProductsBought = RecommendationHelper.GetViaFunction("top", 0, 0);
+    vm.RecommendProductsTop = RecommendationHelper.GetViaFunction("top", 0, 0);
 
     if (user != null)
     {
@@ -484,7 +486,9 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 1. In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see the same results as you received previously.
 
-2. In the top navigation, select **LOGIN**, then select the **comedy@contosomovies.com** account
+2. In the top navigation, select **LOGIN**, then select the **Comedy Fan (comedy@contosomovies.com)** account.
+
+    ![The Comedy Fan user account is highlighted.](media/website-comedy-fan-user.png "Comedy Fan")
 
 3. Notice the main page now has different recommendations than what you received earlier, but we are still missing the similar 'liked' items
 
@@ -496,161 +500,161 @@ When you set a number of RUs for a container, Cosmos DB ensures that those RUs a
 
 ### Task 1: Compute the user implicit ratings
 
-1. Switch back to your Databricks workspace, select **03 Ratings**
+1. Switch back to your Databricks workspace, select **03 Ratings**.
 
 1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
-> This notebook will use the implict events captured in the events container in Cosmos DB to calculate what a user would rate a given item, based on their actions. In other words it converts a users buy, addToCart and details actions into a numeric score for the item. The resulting user to item ratings matrix will be saved to the ratings container in Cosmos DB.
+    > This notebook will use the implict events captured in the events container in Cosmos DB to calculate what a user would rate a given item, based on their actions. In other words it converts a users buy, addToCart and details actions into a numeric score for the item. The resulting user to item ratings matrix will be saved to the ratings container in Cosmos DB.
 
-1. Switch back to the Azure Portal
+1. Switch back to the Azure portal.
 
-1. In your resource group, navigate to your Cosmos DB instance
+1. In your resource group, navigate to your Cosmos DB instance.
 
-1. Open the **ratings** container, review the items in the container
+1. Open the **ratings** container, review the items in the container.
 
-![An example item from the ratings container is displayed.](./media/xx_RatingsColl.png 'The ratings container')
+    ![An example item from the ratings container is displayed.](./media/xx_RatingsColl.png 'The ratings container')
 
-> NOTE: These ratings are generated as part of this notebook as an 'offline' operation. If you collect a significant amount of user data, you would need to reevaluate the events using this notebook and populate the ratings container again for the online calculations to utilize.
+    > NOTE: These ratings are generated as part of this notebook as an 'offline' operation. If you collect a significant amount of user data, you would need to re-evaluate the events using this notebook and populate the ratings container again for the online calculations to utilize.
 
 ### Task 2: Generate the Collaborative Rules
 
-1. Switch back to your Databricks workspace, select **04 Similarity**
+1. Switch back to your Databricks workspace, select **04 Similarity**.
 
 1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
 
 1. Run each cell of the **04 Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
 
-> The notebook logic uses the user to item ratings previously created to calculate a score indicating the similarity between a source item and a target item. The process begins by loading the ratings matrix and for each user to item rating, calculating a new normalized rating (to adjust for the user's bias).
+    > The notebook logic uses the user to item ratings previously created to calculate a score indicating the similarity between a source item and a target item. The process begins by loading the ratings matrix and for each user to item rating, calculating a new normalized rating (to adjust for the user's bias).
 
-> An overlap matrix is calculated that identifies, for any pair of items, how many users rated both items. First, the normalized ratings matrix is converted to a boolean matrix. That is, if an item for a user has a rating (regardless of the value of the rating), it has a value of 1, otherwise it is zero. Then dot product of the normalized ratings matrix against its transpose is calculated. This yields a simpler matrix where the value each cell now contains the count of the number users who rated both items. Cells that don't have any overlap, have a value of zero.
+    > An overlap matrix is calculated that identifies, for any pair of items, how many users rated both items. First, the normalized ratings matrix is converted to a Boolean matrix. That is, if an item for a user has a rating (regardless of the value of the rating), it has a value of 1, otherwise it is zero. Then dot product of the normalized ratings matrix against its transpose is calculated. This yields a simpler matrix where the value each cell now contains the count of the number users who rated both items. Cells that don't have any overlap, have a value of zero.
 
-> Separately, the cosine similarity of the normalized ratings matrix is computed. It's easiest to understand the cosine similarity calculation as being done between an item `i` and another item `j`. The cosine similarity is a ratio:
+    > Separately, the cosine similarity of the normalized ratings matrix is computed. It's easiest to understand the cosine similarity calculation as being done between an item `i` and another item `j`. The cosine similarity is a ratio:
 
-- The numerator is computed as the sum of the product of the normalized rating of item i multiplied with the rating of j, for all users who have provided ratings.
-  The denominator is computed as the square root of the sum of the squares of the normalized rating of item i multiplied by the square root of the sum of thesquares of the normalized rating of item j.
-  In Python, the logic uses the cosine_similarity method from scikit-learn to compute the similarity between items by providing it our normalized user-to-items ratings matrix.
+    - The numerator is computed as the sum of the product of the normalized rating of item i multiplied with the rating of j, for all users who have provided ratings.
+    The denominator is computed as the square root of the sum of the squares of the normalized rating of item i multiplied by the square root of the sum of thesquares of the normalized rating of item j.
+    In Python, the logic uses the cosine_similarity method from scikit-learn to compute the similarity between items by providing it our normalized user-to-items ratings matrix.
 
-> The result is then filtered to remove entries with a similarity score lower than configured, and having an overlap in the overlap matrix of less than a configured overlap in quantity of ratings for the pair of items. Just before saving, any resulting similarities with scores less than the configured minimum similarity are removed, so that weaker similarities are not recommended.
+    > The result is then filtered to remove entries with a similarity score lower than configured, and having an overlap in the overlap matrix of less than a configured overlap in quantity of ratings for the pair of items. Just before saving, any resulting similarities with scores less than the configured minimum similarity are removed, so that weaker similarities are not recommended.
 
 ### Task 3: Review the data generated
 
-1. Switch back to the Azure Portal
+1. Switch back to the Azure portal.
 
-1. In your resource group, navigate to your Cosmos DB instance, it should start with **s2cosmosdb...**
+1. In your resource group, navigate to your Cosmos DB instance, it should start with **s2cosmosdb...**.
 
-1. Select **Data Explorer**
+1. Select **Data Explorer**.
 
-1. Select the **similarity** container, then select **items**
+1. Select the **similarity** container, then select **items**.
 
-1. Select one or more of the items and review them
+1. Select one or more of the items and review them.
 
-> NOTE: These items are created from the Databricks solution and include the similarity of one movie, the source, to another, the target.
+    > NOTE: These items are created from the Databricks solution and include the similarity of one movie, the source, to another, the target.
 
-![An example item from the similarity container is displayed.](./media/xx_SimilarityColl.png 'The similarity container')
+    ![An example item from the similarity container is displayed.](./media/xx_SimilarityColl.png 'The similarity container')
 
 ### Task 4: Implement the Collaborative recommendation rules
 
-1. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file
+1. In the **Contoso.Apps.FunctionApp** project, open the **RecommendationHelper.cs** file.
 
 1. In the **CollaborativeBasedRecommendation** method, find the TODO task #4 and complete it with the following:
 
-```csharp
-int neighborhoodSize = 15;
-double minSim = 0.0;
-int maxCandidates = 100;
+    ```csharp
+    int neighborhoodSize = 15;
+    double minSim = 0.0;
+    int maxCandidates = 100;
 
-//inside this we do the implict rating of events for the user...
-Hashtable userRatedItems = GetRatedItems(userId, 100);
+    //inside this we do the implict rating of events for the user...
+    Hashtable userRatedItems = GetRatedItems(userId, 100);
 
-if (userRatedItems.Count == 0)
-    return new List<string>();
+    if (userRatedItems.Count == 0)
+        return new List<string>();
 
-//this is the mean rating a user gave
-double ratingSum = 0;
+    //this is the mean rating a user gave
+    double ratingSum = 0;
 
-foreach(double r in userRatedItems.Values)
-{
-    ratingSum += r;
-}
-
-double userMean = ratingSum / userRatedItems.Count;
-
-//get similar items
-List<SimilarItem> candidateItems = GetCandidateItems(userRatedItems.Keys, minSim);
-
-//sort by similarity desc, take only max candidates
-candidateItems = candidateItems.OrderByDescending(c=>c.similarity).Take(maxCandidates).ToList();
-
-Hashtable recs = new Hashtable();
-
-List<PredictionModel> precRecs = new List<PredictionModel>();
-
-foreach(SimilarItem candidate in candidateItems)
-{
-    int target = candidate.Target;
-    double pre = 0;
-    double simSum = 0;
-
-    List<SimilarItem> ratedItems = candidateItems.Where(c=>c.Target == target).Take(neighborhoodSize).ToList();
-
-    if (ratedItems.Count > 1)
+    foreach(double r in userRatedItems.Values)
     {
-        foreach (SimilarItem simItem in ratedItems)
+        ratingSum += r;
+    }
+
+    double userMean = ratingSum / userRatedItems.Count;
+
+    //get similar items
+    List<SimilarItem> candidateItems = GetCandidateItems(userRatedItems.Keys, minSim);
+
+    //sort by similarity desc, take only max candidates
+    candidateItems = candidateItems.OrderByDescending(c=>c.similarity).Take(maxCandidates).ToList();
+
+    Hashtable recs = new Hashtable();
+
+    List<PredictionModel> precRecs = new List<PredictionModel>();
+
+    foreach(SimilarItem candidate in candidateItems)
+    {
+        int target = candidate.Target;
+        double pre = 0;
+        double simSum = 0;
+
+        List<SimilarItem> ratedItems = candidateItems.Where(c=>c.Target == target).Take(neighborhoodSize).ToList();
+
+        if (ratedItems.Count > 1)
         {
-            try
+            foreach (SimilarItem simItem in ratedItems)
             {
-                string source = userRatedItems[simItem.sourceItemId].ToString();
-
-                //rating of the movie - userMean;
-                double r = double.Parse(source) - userMean;
-
-                pre += simItem.similarity * r;
-                simSum += simItem.similarity;
-
-                if (simSum > 0)
+                try
                 {
-                    PredictionModel p = new PredictionModel();
-                    p.Prediction = userMean + pre / simSum;
-                    p.Items = ratedItems;
-                    precRecs.Add(p);
+                    string source = userRatedItems[simItem.sourceItemId].ToString();
+
+                    //rating of the movie - userMean;
+                    double r = double.Parse(source) - userMean;
+
+                    pre += simItem.similarity * r;
+                    simSum += simItem.similarity;
+
+                    if (simSum > 0)
+                    {
+                        PredictionModel p = new PredictionModel();
+                        p.Prediction = userMean + pre / simSum;
+                        p.Items = ratedItems;
+                        precRecs.Add(p);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
                 }
             }
-            catch (Exception ex)
+        }
+    }
+
+    //sort based on the prediction, only take x of them
+    List<PredictionModel> sortedItems = precRecs.OrderByDescending(c => c.Prediction).Take(take).ToList();
+
+    //get first model's items...
+    foreach(PredictionModel pm in sortedItems)
+    {
+        foreach(SimilarItem ri in pm.Items)
+        {
+            if (ri.targetItemId != null)
             {
-                Console.WriteLine(ex.Message);
+                itemIds.Add(ri.targetItemId.ToString());
+                break;
             }
         }
     }
-}
+    ```
 
-//sort based on the prediction, only take x of them
-List<PredictionModel> sortedItems = precRecs.OrderByDescending(c => c.Prediction).Take(take).ToList();
-
-//get first model's items...
-foreach(PredictionModel pm in sortedItems)
-{
-    foreach(SimilarItem ri in pm.Items)
-    {
-        if (ri.targetItemId != null)
-        {
-            itemIds.Add(ri.targetItemId.ToString());
-            break;
-        }
-    }
-}
-```
-
-> This code will grab 100 ratings for a specific user, then query for any associated items that were generated in the association notebook within a preset `neighbohood` size (in this case 15). With a set of similar items, you will then filter out any items that fall outside the user's mean `ratings`. You will then sort the remaining items by the similiarity and present those as the recommendations.
+    > This code will grab 100 ratings for a specific user, then query for any associated items that were generated in the association notebook within a preset `neighbohood` size (in this case 15). With a set of similar items, you will then filter out any items that fall outside the user's mean `ratings`. You will then sort the remaining items by the similiarity and present those as the recommendations.
 
 ### Task 5: Deploy the applications
 
-1. Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1. Right-click the **Consoto.Apps.FunctionApp** function app project, select **Publish**.
 
-1. Select **Publish**
+1. Select **Publish**.
 
-1. Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**
+1. Right-click the **Contoso.Apps.Movies.Web** web app project, select **Publish**.
 
 1. Select **Publish**, the site should load.
 
@@ -658,15 +662,15 @@ foreach(PredictionModel pm in sortedItems)
 
 1. In the browser window that opened from your web application deployment above, check to see that you received recommendations as a non-logged in user. You should see the same results as you received previously.
 
-2. If you are not already logged in, select **LOGIN**, then select the **comedy@contosomovies.com** account
+2. If you are not already logged in, select **LOGIN**, then select the **comedy@contosomovies.com** account.
 
-![Select the comedy fan user.](./media/xx_ComedyUser_01.png 'Log in as the comedy fan')
+    ![The Comedy Fan user account is highlighted.](media/website-comedy-fan-user.png "Comedy Fan")
 
-3. Notice the main page now has both the associative and collaborative results displayed::
+3. Notice the main page now has both the associative and collaborative results displayed:
 
-![The Contoso Movie website is displayed with the Associations items as suggestions.](./media/xx_WebSite_02.png 'Contoso Movies web site')
+    ![The Contoso Movie website is displayed with the Associations items as suggestions.](./media/xx_WebSite_02.png 'Contoso Movies web site')
 
-![The Contoso Movie website is displayed with the Collaborative items as suggestions.](./media/xx_WebSite_03.png 'Contoso Movies web site')
+    ![The Contoso Movie website is displayed with the Collaborative items as suggestions.](./media/xx_WebSite_03.png 'Contoso Movies web site')
 
 ## Exercise 6: Reporting with Stream Analytics and Power BI
 
@@ -676,183 +680,183 @@ foreach(PredictionModel pm in sortedItems)
 
 ### Task 1: Setup Stream Analytics
 
-1. Open the Azure Portal, navigate to your Stream Analytics job that was created for you in the setup script
+1. Open the Azure Portal, navigate to your Stream Analytics job that was created for you in the setup script.
 
-1. Select **Inputs**
+1. Select **Inputs**.
 
-1. Select **+Add stream input**, then select **Event Hub**
+1. Select **+Add stream input**, then select **Event Hub**.
 
-1. For the alias, type **s2events**
+1. For the alias, type **s2events**.
 
-1. Select your subscription
+1. Select your subscription.
 
-1. Select the **s2ns..** event hub
+1. Select the **s2ns..** event hub.
 
-1. For the event hub, select **store**
+1. For the event hub, select **store**.
 
-1. For the policy name, select **RootManageSharedAccessKey**
+1. For the policy name, select **RootManageSharedAccessKey**.
 
-1. Select **Save**
+1. Select **Save**.
 
-1. Select **Outputs**
+1. Select **Outputs**.
 
-1. Select **+Add**, then select **Power BI**
+1. Select **+Add**, then select **Power BI**.
 
-1. For the output alias, type **eventOrdersLastHour**
+1. For the output alias, type **eventOrdersLastHour**.
 
-1. For the dataset, type **eventOrdersLastHour**
+1. For the dataset, type **eventOrdersLastHour**.
 
-1. For the table name, type **eventOrdersLastHour**
+1. For the table name, type **eventOrdersLastHour**.
 
-1. Select **Authorize**, login to your Power BI instance
+1. Select **Authorize**, login to your Power BI instance.
 
-1. Select **Save**
+1. Select **Save**.
 
 1. Repeat for steps 11-16, but replace **eventOrdersLastHour** with:
 
-- eventSummary
-- failureCount
-- eventData
+    - eventSummary
+    - failureCount
+    - eventData
 
-1. Select **Query**
+1. Select **Query**.
 
 1. Update the query to the following:
 
-```sql
-SELECT Count(*) as FailureCount
- INTO failureCount
- FROM s2events
- WHERE Event = 'paymentFailure'
- GROUP BY TumblingWindow(second,10)
+    ```sql
+    SELECT Count(*) as FailureCount
+    INTO failureCount
+    FROM s2events
+    WHERE Event = 'paymentFailure'
+    GROUP BY TumblingWindow(second,10)
 
-SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) as EventCount
- INTO eventData
- FROM s2events
- GROUP BY TumblingWindow(second,10)
+    SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) as EventCount
+    INTO eventData
+    FROM s2events
+    GROUP BY TumblingWindow(second,10)
 
- SELECT System.TimeStamp AS Time, Event, Count(*)
- INTO eventSummary
- FROM s2events
- GROUP BY Event, TumblingWindow(second,10)
+    SELECT System.TimeStamp AS Time, Event, Count(*)
+    INTO eventSummary
+    FROM s2events
+    GROUP BY Event, TumblingWindow(second,10)
 
- select DateAdd(second,-10,System.Timestamp()) AS WinStartTime, System.Timestamp() AS WinEndTime,0 as Min, Count(*) as Count, 10 as Target
- into eventOrdersLastHour
- from s2events
- where event = 'buy'
- GROUP BY SlidingWindow(second,10)
-```
+    select DateAdd(second,-10,System.Timestamp()) AS WinStartTime, System.Timestamp() AS WinEndTime,0 as Min, Count(*) as Count, 10 as Target
+    into eventOrdersLastHour
+    from s2events
+    where event = 'buy'
+    GROUP BY SlidingWindow(second,10)
+    ```
 
-1. The Query windows should look similar to this:
+1. The Query window should look similar to this:
 
-![An example item from the ratings container is displayed.](./media/xx_StreamAnalytics_05.png 'The ratings container')
+    ![An example item from the ratings container is displayed.](./media/xx_StreamAnalytics_05.png 'The ratings container')
 
-1. Select **Save query**
+1. Select **Save query**.
 
-1. Select **Overview**, in the menu, select **Start** to start your stream analytics job
+1. Select **Overview**, in the menu, select **Start** to start your stream analytics job.
 
-![Go to the overview tab, then select 'start'.](./media/xx_StreamAnalytics_05.png 'Start the analytics job')
+    ![Go to the overview tab, then select 'start'.](./media/xx_StreamAnalytics_05.png 'Start the analytics job')
 
-1. In the dialog, ensure that **Now** is selected, then select **Start**
+1. In the dialog, ensure that **Now** is selected, then select **Start**.
 
-> NOTE: If your job fails for any reason, you can use the **Activity Log** to see what the error(s) were.
+    > NOTE: If your job fails for any reason, you can use the **Activity Log** to view the error(s).
 
 ### Task 2: Configure the ChangeFeed Function
 
-1. In the **Contoso.Apps.FunctionApp** project, open the **FuncChangeFeed.cs** file
+1. In the **Contoso.Apps.FunctionApp** project, open the **FuncChangeFeed.cs** file.
 
-1. Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB container
+1. Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB container.
 
 1. Find the TODO task #5 and complete it with the following:
 
-```csharp
-AddEventToEventHub(events);
-```
+    ```csharp
+    AddEventToEventHub(events);
+    ```
 
 1. Add the following method to the function class:
 
-```csharp
-public void AddEventToEventHub(IReadOnlyList<Document> events)
-{
-    try
+    ```csharp
+    public void AddEventToEventHub(IReadOnlyList<Document> events)
     {
-        //event hub connection
-        EventHubClient eventHubClient;
-        string EventHubConnectionString = config["eventHubConnection"];
-        string EventHubName = "store";
-
-        var connectionStringBuilder = new EventHubsConnectionStringBuilder(EventHubConnectionString)
+        try
         {
-            EntityPath = EventHubName
-        };
+            //event hub connection
+            EventHubClient eventHubClient;
+            string EventHubConnectionString = config["eventHubConnection"];
+            string EventHubName = "store";
 
-        eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
+            var connectionStringBuilder = new EventHubsConnectionStringBuilder(EventHubConnectionString)
+            {
+                EntityPath = EventHubName
+            };
 
-        foreach (var e in events)
+            eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
+
+            foreach (var e in events)
+            {
+                string data = JsonConvert.SerializeObject(e);
+                var result = eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(data)));
+            }
+        }
+        catch (Exception ex)
         {
-            string data = JsonConvert.SerializeObject(e);
-            var result = eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(data)));
+            log.LogError(ex.Message);
         }
     }
-    catch (Exception ex)
-    {
-        log.LogError(ex.Message);
-    }
-}
-```
+    ```
 
-> NOTE: This method will forward the change feed events to the event hub where stream analytics will be monitoring and then forwarding data to the Power BI dashboard
+    > NOTE: This method will forward the change feed events to the event hub where stream analytics will be monitoring and then forwarding data to the Power BI dashboard
 
 ### Task 3: Deploy the ChangeFeed Function
 
-1. Right-Select the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1. Right-Select the **Consoto.Apps.FunctionApp** function app project, select **Publish**.
 
-1. Select **Publish**
+1. Select **Publish**.
 
 ### Task 4: Generate user events for PowerBI
 
-1. Right-click the **DataGenerator** project, select **Set as startup project**
+1. Right-click the **DataGenerator** project, select **Set as startup project**.
 
-1. Press **F5** to run the project
+1. Press **F5** to run the project.
 
-1. Notice events will be generated based on a set of users and their preferred movie type
+1. Notice events will be generated based on a set of users and their preferred movie type.
 
-![The data generator window is displayed with events streaming.](./media/xx_DataGenerator_01.png 'Run the data generator')
+    ![The data generator window is displayed with events streaming.](./media/xx_DataGenerator_01.png 'Run the data generator')
 
 1. Buy events will be generated for the first 30 seconds with random payment failures also generated. After 30 seconds, you will notice the orders per hour will fall below the target of 10. This would signify that something is wrong with the front end web site or order processing.
 
-1. After about 1 minute, close the DataGenerator console program
+1. After about 1 minute, close the DataGenerator console program.
 
-### Task 5: Setup Power BI Dashabord
+### Task 5: Setup Power BI Dashboard
 
-1. Open a new browser window to [Power BI](https://www.powerbi.com)
+1. Open a new browser window to [Power BI](https://www.powerbi.com).
 
 1. Click **Sign In**, sign in using the same credentials you used to authorize your outputs for Stream Analytics above.
 
-1. Select **My workspace**
+1. Select **My workspace**.
 
-1. Select **+Create**, then select **Dashboard**
+1. Select **+Create**, then select **Dashboard**.
 
-![The main Power BI dashboard page is displayed with the '+Create' highlighted.](./media/xx_PowerBI_01.png 'Create a dashboard')
+    ![The main Power BI dashboard page is displayed with the '+Create' highlighted.](./media/xx_PowerBI_01.png 'Create a dashboard')
 
-1. For the name, type **Contoso Movies**, select **Create**
+1. For the name, type **Contoso Movies**, select **Create**.
 
-1. Select the **...** ellipses, then select **+Add tile**
+1. Select the **...** ellipses, then select **+Add tile**.
 
-1. Select **Custom Streaming Data**, select **Next**
+1. Select **Custom Streaming Data**, select **Next**.
 
-1. Select the **eventData** data set, then select **Next**
+1. Select the **eventData** data set, then select **Next**.
 
-![Select the eventCount dataset and select next.](./media/xx_PowerBI_02.png 'Add the eventCount tile')
+    ![Select the eventCount dataset and select next.](./media/xx_PowerBI_02.png 'Add the eventCount tile')
 
-1. For the visualization type, select **Card**
+1. For the visualization type, select **Card**.
 
-1. For the Fields, select **EventCount**
+1. For the Fields, select **EventCount**.
 
-1. Select **Next**
+1. Select **Next**.
 
-1. For the title, type **Event Count**, then select **Apply**
+1. For the title, type **Event Count**, then select **Apply**.
 
-1. Select **+Add tile**, you may need to select the **...** ellipses first
+1. Select **+Add tile**, you may need to select the **...** ellipses first.
 
 1. Select **Custom Streaming Data**, select **Next**. Use the following table to create the needed tiles:
 
@@ -866,15 +870,15 @@ public void AddEventToEventHub(IReadOnlyList<Document> events)
 
 1. Your dashboard should look similar to the following:
 
-![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_PowerBI_03.png 'Configure the dashboard')
+    ![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_PowerBI_03.png 'Configure the dashboard')
 
 ### Task 6: Generate user events for real time analytics
 
-1. Switch back to Visual Studio, press **F5** to run the data generator project
+1. Switch back to Visual Studio, press **F5** to run the data generator project.
 
 1. Switch to your Power BI dashboard, after a few minutes, you should see it update with the event data:
 
-![This graphic shows the layout of the tiles in the Power BI Dashboard when the event stream is running.](./media/xx_PowerBI_04.png 'Continuously updating dashboard')
+    ![This graphic shows the layout of the tiles in the Power BI Dashboard when the event stream is running.](./media/xx_PowerBI_04.png 'Continuously updating dashboard')
 
 ## Exercise 7: Email alerts using Logic Apps
 
@@ -884,110 +888,110 @@ In this exercise you will configure your Cosmos DB change feed function to call 
 
 ### Task 1: Setup Logic App
 
-1. Open the Azure Portal to your resource group and select the Logic App in your resource group, it should be named **s2*logicapp*...**
+1. Open the Azure Portal to your resource group and select the Logic App in your resource group, it should be named **s2*logicapp*...**.
 
-2. Select **Edit**
+2. Select **Edit**.
 
-![The Logic App blade with 'edit' highlighted.](./media/xx_LogicApp_01.png 'Edit the Logic App')
+    ![The Logic App blade with 'edit' highlighted.](./media/xx_LogicApp_01.png 'Edit the Logic App')
 
-3. Select **+New step**
+3. Select **+New step**.
 
-![The Logic App Designer is displayed with 'new step' highlighted.](./media/xx_LogicApp_02.png 'Add a new step')
+    ![The Logic App Designer is displayed with 'new step' highlighted.](./media/xx_LogicApp_02.png 'Add a new step')
 
-4. Search for **send an email**, then select the Office 365 outlook connector
+4. Search for **send an email**, then select the Office 365 outlook connector.
 
-![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./media/xx_LogicApp_03.png 'Add Send an Email action')
+    ![Action search box is displayed with the text 'send an email' typed and the corresponding action highlighted.](./media/xx_LogicApp_03.png 'Add Send an Email action')
 
-5. Select **Sign in**, login using your Azure AD credentials
+5. Select **Sign in**, login using your Azure AD credentials.
 
-![Sign in button is highlighted.](./media/xx_LogicApp_04.png 'Sign in to Office 365')
+    ![Sign in button is highlighted.](./media/xx_LogicApp_04.png 'Sign in to Office 365')
 
-6. Set the **To** as your email address
+6. Set the **To** as your email address.
 
-7. Set the **Subject** as **Thank you for your order**
+7. Set the **Subject** as **Thank you for your order**.
 
-8. Set the **Body** as **Your order is being processed**
+8. Set the **Body** as **Your order is being processed**.
 
-9. Select **Save**
+9. Select **Save**.
 
-![Action properties are completed and the 'Save' button is highlighted](./media/xx_LogicApp_05.png 'Complete the action properties')
+    ![Action properties are completed and the 'Save' button is highlighted](./media/xx_LogicApp_05.png 'Complete the action properties')
 
-10. Select on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task
+10. Select on the **When a HTTP request is received** action, copy the **HTTP POST URL** for the logic app and save it for the next task.
 
-![The http action trigger is expanded and the url is highlighted.](./media/xx_LogicApp_06.png 'Copy the function url trigger endpoint')
+    ![The http action trigger is expanded and the url is highlighted.](./media/xx_LogicApp_06.png 'Copy the function url trigger endpoint')
 
 ### Task 2: Configure the function app settings
 
-1. Open the Azure Portal to your resource group and select the Function App in your resource group, it should be named **s2func...**
+1. Open the Azure Portal to your resource group and select the Function App in your resource group, it should be named **s2func...**.
 
-1. Select **Configuration**
+1. Select **Configuration**.
 
-1. Update the **LogicAppUrl** configuration variable to the Logic App http endpoint your recorded above
+1. Update the **LogicAppUrl** configuration variable to the Logic App http endpoint your recorded above.
 
-1. Select **Save**
+1. Select **Save**.
 
 ### Task 3: Update and deploy function app
 
-1. In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file
+1. In the **Contoso.Apps.FunctionApp.ChangeFeed** project, open the **FuncChangeFeed.cs** file.
 
-1. Take a moment to review the function signature. Notice how it is trigger based on a Cosmos DB container
+1. Take a moment to review the function signature. Notice how it is triggered based on a Cosmos DB container.
 
-1. Find the TODO task #6 and complete it with the following:
+1. Find the TODO task #6 and complete it with the following:.
 
-```csharp
-CallLogicApp(events);
-```
+    ```csharp
+    CallLogicApp(events);
+    ```
 
 1. Add the following method to the function class:
 
-```csharp
-public async void CallLogicApp(IReadOnlyList<Document> events)
-{
-    try
+    ```csharp
+    public async void CallLogicApp(IReadOnlyList<Document> events)
     {
-        // Have the HttpClient factory create a new client instance.
-        var httpClient = _httpClientFactory.CreateClient("LogicAppClient");
-
-        // Create the payload to send to the Logic App.
-        foreach (var e in events)
+        try
         {
-            var payload = new LogicAppAlert
+            // Have the HttpClient factory create a new client instance.
+            var httpClient = _httpClientFactory.CreateClient("LogicAppClient");
+
+            // Create the payload to send to the Logic App.
+            foreach (var e in events)
             {
-                data = JsonConvert.SerializeObject(e),
-                recipientEmail = Environment.GetEnvironmentVariable("RecipientEmail")
-            };
+                var payload = new LogicAppAlert
+                {
+                    data = JsonConvert.SerializeObject(e),
+                    recipientEmail = Environment.GetEnvironmentVariable("RecipientEmail")
+                };
 
-            var postBody = JsonConvert.SerializeObject(payload);
+                var postBody = JsonConvert.SerializeObject(payload);
 
-            var httpResult = await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
+                var httpResult = await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
+            }
+        }
+        catch (Exception ex)
+        {
+            log.LogError(ex.Message);
         }
     }
-    catch (Exception ex)
-    {
-        log.LogError(ex.Message);
-    }
-}
-```
+    ```
 
-1. Right-Select the **Consoto.Apps.FunctionApp** function app project, select **Publish**
+1. Right-Select the **Consoto.Apps.FunctionApp** function app project, select **Publish**.
 
-1. Select **Publish**
+1. Select **Publish**.
 
 ### Task 4: Test order email delivery
 
-1. Switch to Visual Studio, right-click the **DataGenerator** project, select **Set as startup project**
+1. Switch to Visual Studio, right-click the **DataGenerator** project, select **Set as startup project**.
 
-1. Press **F5** to run the project
+1. Press **F5** to run the project.
 
-1. For each `buy` event, you will receive an email
+1. For each `buy` event, you will receive an email.
 
-> NOTE: It can take up to 5 minutes to receive emails, when you do you could receive quite a `few` emails.
+    > NOTE: It can take up to 5 minutes to receive emails, when you do you could receive quite a `few` emails.
 
 ## After the hands-on lab
 
 **Duration**: 5 minutes
 
-In this exercise, attendees will deprovision any Azure resources that were created in support of the lab.
+In this exercise, attendees will de-provision any Azure resources that were created in support of the lab.
 
 ### Task 1: Delete resource group
 

@@ -75,30 +75,7 @@ namespace Contoso.Apps.Movies.Logic
             List<string> itemIds = new List<string>();
 
             //TODO #3
-
-            //get 20 log events for the user.
-            List<CollectorLog> logs = GetUserLogs(userId, 20);
-
-            if (logs.Count == 0)
-                return items;
-
-            List<Rule> rules = GetSeededRules(logs);
-
-            //get the pre-seeded objects based on confidence
-            List<Recommendation> recs = new List<Recommendation>();
-
-            //for each rule returned, evaluate the confidence
-            foreach (Rule r in rules)
-            {
-                Recommendation rec = new Recommendation();
-                rec.id = int.Parse(r.target);
-                rec.confidence = r.confidence;
-                recs.Add(rec);
-
-                itemIds.Add(rec.id.ToString());
-            }
-
-            items = GetItemsByImdbIds(itemIds);
+            
 
             //return the "take" number of records
             return items.Take(take).ToList();
