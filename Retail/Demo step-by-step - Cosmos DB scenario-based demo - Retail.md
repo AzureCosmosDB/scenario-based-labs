@@ -11,10 +11,17 @@
   - [Requirements](#requirements)
   - [Before the demo](#before-the-demo)
   - [Exercise 1: Deployment and Setup](#exercise-1-deployment-and-setup)
-    - [Task 1: Setup Stream Analytics](#task-1-setup-stream-analytics)
-    - [Task 2: Generate user events for PowerBI](#task-2-generate-user-events-for-powerbi)
-    - [Task 5: Setup Power BI Dashabord](#task-5-setup-power-bi-dashabord)
-    - [Task 6: Generate user events for real time analytics](#task-6-generate-user-events-for-real-time-analytics)
+  - [Exercise 1: Configure Databricks and generate event data](#exercise-1-configure-databricks-and-generate-event-data)
+    - [Task 1: Configure Azure Databricks](#task-1-configure-azure-databricks)
+    - [Task 2: Populate event data](#task-2-populate-event-data)
+    - [Task 3: Run the aggregation and import utility](#task-3-run-the-aggregation-and-import-utility)
+    - [Task 4: Perform and deploy association rules calculation for offline algorithms](#task-4-perform-and-deploy-association-rules-calculation-for-offline-algorithms)
+  - [Task 5: Perform and deploy collaborative filtering rules calculation](#task-5-perform-and-deploy-collaborative-filtering-rules-calculation)
+    - [Task 6: Generate the Collaborative Rules](#task-6-generate-the-collaborative-rules)
+    - [Task 7: Setup Stream Analytics](#task-7-setup-stream-analytics)
+    - [Task 8: Generate user events for PowerBI](#task-8-generate-user-events-for-powerbi)
+    - [Task 9: Setup Power BI Dashboard](#task-9-setup-power-bi-dashboard)
+    - [Task 10: Generate user events for real time analytics](#task-10-generate-user-events-for-real-time-analytics)
   - [Exercise 2: Email alerts using Logic Apps](#exercise-2-email-alerts-using-logic-apps)
     - [Task 1: Setup Logic App](#task-1-setup-logic-app)
     - [Task 2: Configure the function app settings](#task-2-configure-the-function-app-settings)
@@ -56,7 +63,7 @@ Contoso Movies, Ltd. has redesigned its website to utilize Azure PaaS services i
 > **NOTE** You can run the following commands to install the latest
 
 ```PowerShell
-Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; 
+Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi;
 Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
 ```
 
@@ -76,7 +83,202 @@ Duration: 60 minutes
 
 Synopsis: In this exercise you will do the necessary setup items that could not be done in the deployment scripts.
 
-### Task 1: Setup Stream Analytics
+## Exercise 1: Configure Databricks and generate event data
+
+**Duration**: 30 minutes
+
+**Synopsis**: We have pre-generated a set of events that include **buy** and **details** events. Based on this data, a **Top Items** recommendation will be made to users that are new to the site (aka a cold start recommendation). You will implement this top items code in the web application and function applications, then deploy the applications to test the functionality.
+
+The algorithms for creating the offline calculations are written in Python and are executed via Azure Databricks.
+
+### Task 1: Configure Azure Databricks
+
+1. Open the Azure portal (<https://portal.azure.com>), search for your assigned lab resource group. If you were not assigned a resource group, your generated resource group will be named after the following pattern: **YOURINIT-s2-retail**.
+
+2. Select your resource group, and then select your Azure Databricks instance, it should be named **s2_databricks...**.
+
+3. Select **Launch Workspace**, if prompted, login as the account you used to create your environment.
+
+4. In the side navigation, Select **Clusters**.
+
+   ![The cluster blade with all the settings filled in.](./media/xx_Databricks_01.png 'Databricks cluster configuration')
+
+5. Select **Create Cluster**.
+
+6. On the create cluster form, provide the following:
+
+   - **Cluster Name**: small
+
+   - **Cluster Type**: Standard
+
+   - **Databricks Runtime Version**: Runtime: 5.5 (Scala 2.11, Spark 2.4.3) (**Note**: the runtime version may have **LTS** after the version. This is also a valid selection.)
+
+   - **Python Version**: 3
+
+   - **Enable Autoscaling**: Uncheck this option.
+
+   - **Auto Termination**: Check the box and enter 120
+
+   - **Worker Type**: Standard_DS3_v2
+
+   - **Driver Type**: Same as worker
+
+   - **Workers**: 1
+
+7. Select **Create Cluster**.
+
+   ![The cluster blade with all the settings filled in.](./media/xx_Databricks_02.png 'Databricks cluster configuration')
+
+8. Before continuing to the next step, verify that your new cluster is running. Wait for the state to change from **Pending** to **Running**.
+
+9. Select the **small** cluster, then select **Libraries**.
+
+10. Select **Install New**.
+
+    ![Navigate to the libraries tab and select `Install New`.](./media/xx_Databricks_03.png 'Adding a new library')
+
+11. In the Install Library dialog, select **Maven** for the Library Source.
+
+12. In the Coordinates field type:
+
+    ```text
+    com.microsoft.azure:azure-cosmosdb-spark_2.4.0_2.11:1.4.1
+    ```
+
+13. Select **Install**.
+
+    ![Populated library dialog for Maven.](./media/xx_Databricks_04.png 'Add the Maven library')
+
+14. **Wait** until the library's status shows as **Installed** before continuing.
+
+### Task 2: Populate event data
+
+1. Within Azure Databricks, select **Workspace** on the menu, then **Users**, select your user, then select the down arrow on the top of your user workspace. Select **Import**.
+
+2. Within the Import Notebooks dialog, select Import from: file, then drag-and-drop the file or browse to upload it (`{un-zipped repo folder}/Retail/Notebooks/02 Retail.dbc`)
+
+3. Select **Import**
+
+   ![Workspace is highlighted with the user expanded and the Import option highlighted.](./media/xx_Databricks_07.png 'Import the Databricks notebook')
+
+4. After importing, select the new **02 Retail** folder, then navigation to the **Includes** folder
+
+5. Select the **Shared-Configuration** notebook
+
+   ![The workspace menu is displayed with `includes` and `shared-configuration` highlighted.](./media/xx_Databricks_08.png 'Navigate to Shared-Configuration')
+
+6. Update the configuration settings and set the following using the values from your lab setup script output:
+
+   - Endpoint = Cosmos DB endpoint url
+   - Masterkey = Cosmos DB master key
+   - Database = Database id of the cosmos db ('movies')
+
+   > If you do not have your setup script output values available for reference, you may find the `Endpoint` and `Masterkey` values by navigating to your Cosmos DB account in the Azure portal, then selecting **Keys** in the left-hand menu. Copy the **URI** value for `Endpoint`, and **Primary Key** for the `Masterkey` value.
+
+   ![The Cosmos DB Keys blade is displayed.](media/cosmos-db-keys.png 'Cosmos DB Keys')
+
+7. Attach your cluster to the notebook using the dropdown. You will need to do this for each notebook you open. In the drop down, select the **small** cluster.
+
+   ![The Shared-Configuration notebook is displayed.](media/databricks-shared-configuration.png 'Azure Databricks Shared-Configuration notebook')
+
+8. Next, navigate back up to **02 Retail** and select the **01 Event Generator** notebook
+
+   > This notebook will simulate the browsing and purchasing activity for six users with different personality based preferences and save the result to the `events` container in Cosmos DB.
+
+   > The movies have been pre-selected and sorted into the genres of comedy, drama and action. While the actual movie selection and activity taken is random, it is weighted to respect the user's preferences in each genre to hit a distribution that would mirror that user's taste.
+
+   > For example, user 400001 has the preference of 20 for comedy, 30 for drama, 50 for action. This will result in the user logging more activity with action movies.
+
+   > NOTE: Your results (aka the `events` generated) may be different from your fellow lab participants
+
+9. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+
+   ![Click the `detached` drop down, select the small cluster.](./media/xx_Databricks_09.png 'Set the cluster')
+
+10. Select **Run All**.
+
+### Task 3: Run the aggregation and import utility
+
+1. Browse to the **{un-zipped repo folder}/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution.
+
+   > If Visual Studio prompts you to sign in when it first launches, use the account provided to you for this lab (if applicable), or an existing Microsoft account.
+
+2. Within the Solution Explorer, expand the **/Utilities/MovieDataImport** project and open the **Program.cs** file. Take a few moments to browse code. You will see that it:
+
+   - Aggregates all the event data generated from the Databricks notebook
+   - Creates the user personalities
+   - Creates the movie categories/genres
+   - Creates the movies
+
+   ![The MovieDataImport is expanded in Solution Explorer and program.cs is selected.](media/vs-moviedataimport-program.png 'Solution Explorer')
+
+3. Right-click the project, select **Set as startup project**.
+
+4. Press **F5** to run the project.
+
+   You may see several of the following lines output to the console window after saving the genres and before adding the movies: `Input string was not in a correct format.`. You can safely ignore these due to some movies the API retrieved are poorly formatted.
+
+> NOTE: You must have waited for the Event Generator Databricks notebook to complete for this to run and have the later steps in the lab match.
+
+### Task 4: Perform and deploy association rules calculation for offline algorithms
+
+**Synopsis**: Based on the pre-calculated events in the Cosmos DB for our pre-defined personality types (Comedy fan, Drama fan, etc.), you will implement and deploy an algorithm that will generate these associations and put them in Cosmos DB for offline processing by the web and function applications.
+
+1. Switch back to your Databricks workspace and open the **02 Association Rules** notebook.
+
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+
+1. Run each cell of the **02 Association Rules** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+
+> The goal of this algorithm is to compute two metrics that indicate the strength of a relationship between a source item and a target item based on event history, and then save that matrix to the associations container in Cosmos DB.
+
+> The algorithm begins with grouping events with a buy action into a transaction, grouping by the sessionId. This provides the set of items bough together.
+
+> For example, a transaction with two items would look like: `'404973': ['5512872', '4172430']` where 404973 is the sessionId that is used as the transactionId, and the the array contains the id's of the items bought ('5512872' and '4172430').
+
+## Task 5: Perform and deploy collaborative filtering rules calculation
+
+**Synopsis**: In this exercise you will execute the implict ratings notebook in Azure Databricks to generate the implict rating for each user that has event data. You will only execute this once during this lab, however this notebook would need to be run on a set schedule to ensure that the users rating data is up to date.
+
+1. Within Azure Databricks, open **03 Ratings**.
+
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+
+1. Run each cell of the **03 Ratings** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+
+   > This notebook will use the implict events captured in the events container in Cosmos DB to calculate what a user would rate a given item, based on their actions. In other words it converts a users buy, addToCart and details actions into a numeric score for the item. The resulting user to item ratings matrix will be saved to the ratings container in Cosmos DB.
+
+1. Switch back to the Azure portal.
+
+1. In your resource group, navigate to your Cosmos DB instance.
+
+1. Open the **ratings** container, review the items in the container.
+
+   ![An example item from the ratings container is displayed.](./media/xx_RatingsColl.png 'The ratings container')
+
+   > NOTE: These ratings are generated as part of this notebook as an 'offline' operation. If you collect a significant amount of user data, you would need to re-evaluate the events using this notebook and populate the ratings container again for the online calculations to utilize.
+
+### Task 6: Generate the Collaborative Rules
+
+1. Within Azure Databricks, open **04 Similarity**.
+
+1. Attach your cluster to the notebook using the dropdown. In the drop down, select the **small** cluster.
+
+1. Run each cell of the **04 Similarity** notebook by selecting within the cell, then entering **Ctrl+Enter** on your keyboard. Pay close attention to the instructions within the notebook so you understand each step of the data preparation process.
+
+   > The notebook logic uses the user to item ratings previously created to calculate a score indicating the similarity between a source item and a target item. The process begins by loading the ratings matrix and for each user to item rating, calculating a new normalized rating (to adjust for the user's bias).
+
+   > An overlap matrix is calculated that identifies, for any pair of items, how many users rated both items. First, the normalized ratings matrix is converted to a Boolean matrix. That is, if an item for a user has a rating (regardless of the value of the rating), it has a value of 1, otherwise it is zero. Then dot product of the normalized ratings matrix against its transpose is calculated. This yields a simpler matrix where the value each cell now contains the count of the number users who rated both items. Cells that don't have any overlap, have a value of zero.
+
+   > Separately, the cosine similarity of the normalized ratings matrix is computed. It's easiest to understand the cosine similarity calculation as being done between an item `i` and another item `j`. The cosine similarity is a ratio:
+
+   - The numerator is computed as the sum of the product of the normalized rating of item i multiplied with the rating of j, for all users who have provided ratings.
+     The denominator is computed as the square root of the sum of the squares of the normalized rating of item i multiplied by the square root of the sum of thesquares of the normalized rating of item j.
+     In Python, the logic uses the cosine_similarity method from scikit-learn to compute the similarity between items by providing it our normalized user-to-items ratings matrix.
+
+   > The result is then filtered to remove entries with a similarity score lower than configured, and having an overlap in the overlap matrix of less than a configured overlap in quantity of ratings for the pair of items. Just before saving, any resulting similarities with scores less than the configured minimum similarity are removed, so that weaker similarities are not recommended.
+
+### Task 7: Setup Stream Analytics
 
 1.  Open the Azure Portal, navigate to your Stream Analytics job that was created for you in the setup script
 
@@ -158,7 +360,7 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 > NOTE: If your job fails for any reason, you can use the **Activity Log** to see what the error(s) were.
 
-### Task 2: Generate user events for PowerBI
+### Task 8: Generate user events for PowerBI
 
 1.  Browse to the **{un-zipped repo folder}/Retail/Solution/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution
 
@@ -174,7 +376,7 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 1.  After about 1 minute, close the DataGenerator console program
 
-### Task 5: Setup Power BI Dashabord
+### Task 9: Setup Power BI Dashboard
 
 1.  Open a new browser window to [Power BI](https://www.powerbi.com)
 
@@ -220,7 +422,7 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 ![This graphic shows the layout of the tiles in the Power BI Dashboard.](./media/xx_PowerBI_03.png 'Configure the dashboard')
 
-### Task 6: Generate user events for real time analytics
+### Task 10: Generate user events for real time analytics
 
 1.  Switch back to Visual Studio, press **F5** to run the data generator project
 

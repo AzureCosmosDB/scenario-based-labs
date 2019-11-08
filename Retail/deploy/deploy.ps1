@@ -937,13 +937,15 @@ if ($mode -eq "demo")
 #setup the cosmosdb (run the import tool to create collections and import initial object data)
 #
 ########################
-if ($mode -eq "demo")
-{ 
-    write-host "Importing all the movie data"
+#
+# Commenting out. Must be run after executing the Databricks notebooks...
+# if ($mode -eq "demo")
+# { 
+#     write-host "Importing all the movie data"
 
-    #run the import tool
-    . "$githubpath\Retail\Solution\Data Import\bin\Debug\MovieDataImport.exe"
-}
+#     #run the import tool
+#     . "$githubpath\Retail\Solution\Data Import\bin\Debug\MovieDataImport.exe"
+# }
 
 ########################
 #
