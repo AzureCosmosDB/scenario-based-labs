@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System;
+using Newtonsoft.Json;
 
 namespace Contoso.Apps.Movies.Data.Models
 {

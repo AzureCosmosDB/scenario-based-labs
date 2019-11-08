@@ -9,6 +9,9 @@ namespace Contoso.Apps.Movies.Data.Models
     [Serializable]
     public class CollectorLog : DbObject, IEntity
     {
+        [JsonProperty(PropertyName = "partitionKey")]
+        public string PartitionKey => UserId;
+
         [JsonProperty(PropertyName = "userId")]
         public string UserId { get; set; }
 

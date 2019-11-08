@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace Contoso.Apps.Movies.Data.Models
 {
@@ -7,6 +8,7 @@ namespace Contoso.Apps.Movies.Data.Models
         [Key]
         public string CartItemId { get; set; }
 
+        [JsonProperty(PropertyName = "partitionKey")]
         public string PartitionKey => CartId;
 
         public string CartId { get; set; }

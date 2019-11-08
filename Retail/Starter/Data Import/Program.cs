@@ -45,6 +45,10 @@ namespace MovieDataImport
             {
                Console.WriteLine(ex.Message);
             }
+
+            Console.WriteLine("\nData import completed!");
+            Console.WriteLine("You may now close this window.");
+            Console.ReadLine();
         }
 
         private async static Task PreCalculate()

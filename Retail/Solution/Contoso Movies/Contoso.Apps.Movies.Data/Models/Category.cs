@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System;
+using Newtonsoft.Json;
 
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
     public class Category : DbObject, IEntity
     {
+        [JsonProperty(PropertyName = "partitionKey")]
         public string PartitionKey => EntityType;
 
         [ScaffoldColumn(false)]

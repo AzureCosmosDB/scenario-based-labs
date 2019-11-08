@@ -9,6 +9,9 @@ namespace Contoso.Apps.Movies.Data.Models
     [Serializable]
     public class CollectorLog : DbObject, IEntity
     {
+        [JsonProperty(PropertyName = "partitionKey")]
+        public string PartitionKey => UserId;
+
         [JsonProperty(PropertyName = "userId")]
         public string UserId { get; set; }
 
@@ -21,12 +24,15 @@ namespace Contoso.Apps.Movies.Data.Models
         [JsonProperty(PropertyName = "event")]
         public string Event { get; set; }
 
+        [JsonProperty(PropertyName = "orderid")]
+        public string OrderId { get; set; }
+
         [JsonProperty(PropertyName = "sessionId")]
         public string SessionId { get; set; }
 
         [JsonProperty(PropertyName = "created")]
         public System.DateTime Created { get; set; }
 
-        public string EntityType { get { return "Event"; } }
+        override public string EntityType { get { return "Event"; } }
     }
 }

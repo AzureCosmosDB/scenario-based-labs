@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System;
+using Newtonsoft.Json;
 
 namespace Contoso.Apps.Movies.Data.Models
 {
     [Serializable]
     public class User : DbObject, IEntity
     {
-        public string PartitionKey => UserId.ToString();
+        [JsonProperty(PropertyName = "partitionKey")]
+        public string PartitionKey => EntityType;
         
         public int UserId { get; set; }
 

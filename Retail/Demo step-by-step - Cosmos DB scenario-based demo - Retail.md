@@ -199,7 +199,7 @@ The algorithms for creating the offline calculations are written in Python and a
 
 ### Task 3: Run the aggregation and import utility
 
-1. Browse to the **{un-zipped repo folder}/Retail/Starter/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution.
+1. Browse to the **{un-zipped repo folder}/Retail/Solution/Contoso Movies** folder and open the **Contoso.Apps.Movies.sln** solution.
 
    > If Visual Studio prompts you to sign in when it first launches, use the account provided to you for this lab (if applicable), or an existing Microsoft account.
 

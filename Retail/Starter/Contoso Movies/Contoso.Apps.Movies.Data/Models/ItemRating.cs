@@ -21,6 +21,6 @@ namespace Contoso.Apps.Movies.Data.Models
         [JsonProperty(PropertyName = "ratingTimestamp")]
         public DateTime RatingTimestamp { get; set; }
 
-        public string EntityType { get { return "ItemRating"; } }
+        override public string EntityType { get { return "ItemRating"; } }
     }
 }
