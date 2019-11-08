@@ -8,7 +8,7 @@
 $githubPath = "YOUR GIT PATH";
 
 #can be 'lab' or 'demo'
-$mode = "demo"  
+$mode = "lab"  
 
 #if you want to use a specific subscription
 $subscriptionId = "YOUR SUB ID"
@@ -55,23 +55,6 @@ $useKeyVault = $false
 #  Functions
 #
 ###################################
-
-function CheckFunctionAppMaster()
-{
-    write-host "Action Required: Search for your function app '$funcAppName', select it, then click 'Function app settings'. Wait for the 'master key' to display."
-    write-host "Opening url: $url";
-    Start-Process $url;
-
-    $res = read-host "Did you click to the function application's settings page yet? [y/n]";
-
-    #key is stored in the storage account after the last url loads.
-    $res = $(az storage blob list --connection-string $azurequeueConnString --container-name azure-webjobs-secrets)
-    $json = ConvertObjectToJson $res;
-
-    $blob = $json | where {$_.name -eq "$funcAppName/host.json"};
-    
-    return $blob;
-}
 
 function SetKeyVaultValue($kvName, $name, $value)
 {
@@ -230,14 +213,6 @@ function UpdateConfig($path)
         $data.value = $funcApiUrl;
     }
 
-    #set the function key
-    $data = $xml.configuration.appSettings.add | where {$_.key -eq "funcAPIKey"}
-
-    if($data)
-    {
-        $data.value = $funcApiKey;
-    }
-
     #set the database url
     $data = $xml.configuration.appSettings.add | where {$_.key -eq "dbConnectionUrl"}
 
@@ -279,7 +254,6 @@ function Output()
 
     write-host "Azure Queue: $azurequeueConnString"
     write-host "Func Url: $funcApiUrl"
-    write-host "Func Key: $funcApiKey";
     write-host "Cosmos DB Url: $dbConnectionUrl"
     write-host "Cosmos DB Key: $dbConnectionKey"
     write-host "DatabaseId: $databaseId"
@@ -649,7 +623,6 @@ $webApp = $json | where {$_.type -eq "Microsoft.Web/sites" -and $_.name -eq $web
 $azurequeueConnString = "";
 $paymentsApiUrl = "";
 $funcApiUrl = "";
-$funcApiKey = "";
 $dbConnectionUrl = "";
 $dbConnectionKey = "";
 $databaseId = "movies"
@@ -764,7 +737,7 @@ if ($mode -eq "demo")
 
 ########################
 #
-#get the function url and key
+#get the function url
 #
 #########################
 write-host "Getting the function app url and key"
@@ -775,28 +748,6 @@ $json = ConvertObjectToJson $res;
 $func = $json | where {$_.name -eq $funcAppName};
 
 $funcApiUrl = "https://" + $func.defaultHostName;
-
-#open the function app endpoint to create the host.json file:
-$url = "https://portal.azure.com/#blade/WebsitesExtension/FunctionsIFrameBlade/id/$($func.id)"
-
-$blob = CheckFunctionAppMaster $url;
-
-while (!$blob)
-{
-    write-host "The function app did not load the url, the host.json file is not available";
-
-    $blob = CheckFunctionAppMaster $url;
-}
-
-#download it..
-$res = $(az storage blob download --connection-string $azurequeueConnString --container-name azure-webjobs-secrets --name $blob.name --file host.json);
-
-$data = Get-content "host.json" -raw
-$json = ConvertFrom-json $data;
-
-$funcApiKey = $json.masterkey.value;
-
-Remove-Item "host.json" -ea SilentlyContinue;
 
 ########################
 #
@@ -812,10 +763,6 @@ $res = SetKeyVaultValue $keyvault.Name "AzureQueueConnectionString" $azurequeueC
 $res = SetKeyVaultValue $keyvault.Name "funcApiUrl" $funcApiUrl;
 $json = ConvertObjectToJson $res;
 $kvFuncApiUrl = "@Microsoft.KeyVault(SecretUri=$($json.id))"
-
-$res = SetKeyVaultValue $keyvault.Name "funcApiKey" $funcApiKey;
-$json = ConvertObjectToJson $res;
-$kvfuncApiKey = "@Microsoft.KeyVault(SecretUri=$($json.id))"
 
 $res = SetKeyVaultValue $keyvault.Name "databaseId" $databaseId;
 $json = ConvertObjectToJson $res;
@@ -865,7 +812,6 @@ if($useKeyVault)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$kvazurequeueConnString)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$kvpaymentsApiUrl)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$kvfuncApiUrl)
-    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$kvfuncApiKey)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$kvdatabaseId)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$kvdbConnectionUrl)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$kvdbConnectionKey)
@@ -876,7 +822,6 @@ else
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings AzureQueueConnectionString=$azurequeueConnString)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings paymentsAPIUrl=$paymentsApiUrl)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIUrl=$funcApiUrl)
-    $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings funcAPIKey=$funcApiKey)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings databaseId=$databaseId)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionUrl=$dbConnectionUrl)
     $res = $(az webapp config appsettings set -g $rgName -n $webAppName --settings dbConnectionKey=$dbConnectionKey)
@@ -896,7 +841,6 @@ if ($useKeyVault)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$kvazurequeueConnString)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$kvpaymentsApiUrlah)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$kvfuncApiUrl)
-    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$kvfuncApiKey)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$kvdatabaseId)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings CosmosDBConnection=$kvCosmosDBConnection)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$kvdbConnectionUrl)
@@ -912,7 +856,6 @@ else
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings AzureQueueConnectionString=$azurequeueConnString)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings paymentsAPIUrl=bl$paymentsApiUrlah)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIUrl=$funcApiUrl)
-    $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings funcAPIKey=$funcApiKey)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings databaseId=$databaseId)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings CosmosDBConnection=$CosmosDBConnection)
     $res = $(az webapp config appsettings set -g $rgName -n $funcAppName --settings dbConnectionUrl=$dbConnectionUrl)
@@ -972,22 +915,22 @@ if ($mode -eq "demo")
 #run the data bricks notebook
 #
 ########################
-if ($mode -eq "demo")
-{ 
-    write-host "Action Required: Click 'Launch Workspace', then click your user icon, select 'User Settings'.  Click 'Generate new token'"
+# if ($mode -eq "demo")
+# { 
+#     write-host "Action Required: Click 'Launch Workspace', then click your user icon, select 'User Settings'.  Click 'Generate new token'"
 
-    write-host "Opening url: $databricksInstanceUrl";
+#     write-host "Opening url: $databricksInstanceUrl";
 
-    start-process $databricksInstanceUrl;
+#     start-process $databricksInstanceUrl;
 
-    $databrickToken = read-host "Enter your databricks api token";
+#     $databrickToken = read-host "Enter your databricks api token";
 
-    #need to wait for a few seconds for the token to kick in or you might get an error.
-    write-host "Waiting 30 seconds...";
-    start-sleep 30;
+#     #need to wait for a few seconds for the token to kick in or you might get an error.
+#     write-host "Waiting 30 seconds...";
+#     start-sleep 30;
 
-    SetupDatabricks
-}
+#     SetupDatabricks
+# }
 
 ########################
 #

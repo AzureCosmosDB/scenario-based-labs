@@ -33,7 +33,7 @@ namespace Contoso.Apps.Movies.Logic
             List<Item> items = new List<Item>();
 
             string funcUrl = ConfigurationManager.AppSettings["funcAPIUrl"];
-            string funcKey = ConfigurationManager.AppSettings["funcAPIKey"];
+            //string funcKey = ConfigurationManager.AppSettings["funcAPIKey"];
 
             dynamic request = new System.Dynamic.ExpandoObject();
             request.Algo = algo;
@@ -48,7 +48,8 @@ namespace Contoso.Apps.Movies.Logic
             hh.ContentType = "text/plain";
             hh.Accept = "*/*";
 
-            string finalUrl = $"{funcUrl}/api/Recommend?code={funcKey}";
+            //string finalUrl = $"{funcUrl}/api/Recommend?code={funcKey}";
+            string finalUrl = $"{funcUrl}/api/Recommend";
             string res = hh.DoPost(finalUrl, json, "");
             items = JsonConvert.DeserializeObject<List<Item>>(res);
 

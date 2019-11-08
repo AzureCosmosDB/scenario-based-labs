@@ -134,24 +134,6 @@ Synopsis: In this exercise, you will set up your environment for use in the rest
    - Storage Accounts
    - Application Insights
 
-9. If you run the setup in `lab` or `demo` mode, you will be prompted to navigate to the generated functions app settings page before continuing. When the browser window is displayed, do the following:
-
-   - Select your function app, it will start with **s2func...**.
-   - Select the **Function app settings** link and wait for the 'master key' to display.
-   - Respond `y` to the following PowerShell prompt: `Did you click to the function application's settings page yet? [y/n]:`.
-
-10. If you run the setup in `demo` mode, you will be prompted to enter your Databricks API token. A new browser window will open to allow you to login to your databricks instance.
-
-11. When the browser window opens, select your Databricks instance, it should start with **s2databricks...**
-
-12. Once logged in, click the user icon and select **User settings**
-
-    ![Click your icon, then select User Settings.](./media/xx_DatabricksKey_01.png 'User Settings link')
-
-13. Click **Generate New Token**, copy the API key and enter into the PowerShell window. Databricks will proceed to configure itself and execute the necessary notebooks.
-
-    ![Click the Generate New Token button.](./media/xx_DatabricksKey_02.png 'Generate a Token')
-
-14. Record the values that were output from the script for use in the lab
+9. Record the values that were output from the script for use in the lab
 
 You should follow all steps provided _before_ attending the hands-on lab.
