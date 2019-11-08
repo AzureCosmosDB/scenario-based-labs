@@ -218,7 +218,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
 
                     if (currentOrderId >= 0)
                     {
-                        myCurrentOrder = await DbHelper.GetObject<Order>("Order_" + currentOrderId, "Order");
+                        myCurrentOrder = await DbHelper.GetObject<Order>("Order_" + currentOrderId, "Order", currentOrderId.ToString());
                         
                         myCurrentOrder.PaymentTransactionId = PaymentConfirmation;
 

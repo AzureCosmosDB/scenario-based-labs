@@ -23,7 +23,7 @@ namespace Contoso.Apps.Common
                 if (System.IO.File.Exists(path))
                     html = System.IO.File.ReadAllText(path);
 
-                if (string.IsNullOrEmpty(html) || html.Contains("Invalid API key"))
+                if (string.IsNullOrEmpty(html) || html.Contains("Invalid API key") || html.Contains("over the allowed limit"))
                 {
                     HttpHelper hh = new HttpHelper();
                     html = hh.DoGet(url, "");

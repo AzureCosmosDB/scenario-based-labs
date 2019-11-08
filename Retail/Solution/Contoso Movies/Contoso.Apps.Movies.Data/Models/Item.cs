@@ -7,6 +7,8 @@ namespace Contoso.Apps.Movies.Data.Models
     [Serializable]
     public class Item : DbObject, IEntity
     {
+        public string PartitionKey => ObjectId;
+
         [ScaffoldColumn(false)]
         public int ItemId { get; set; }
 

@@ -63,7 +63,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            CartItem cartItem = await DbHelper.GetObject<CartItem>(id, "CartItem");
+            CartItem cartItem = await DbHelper.GetObject<CartItem>(id, "CartItem", id);
 
             if (cartItem == null)
             {
@@ -106,7 +106,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            CartItem cartItem = await DbHelper.GetObject<CartItem>(id, "CartItem");
+            CartItem cartItem = await DbHelper.GetObject<CartItem>(id, "CartItem", id);
 
             if (cartItem == null)
             {
@@ -143,7 +143,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            CartItem cartItem = await DbHelper.GetObject<CartItem>(id, "CartItem");
+            CartItem cartItem = await DbHelper.GetObject<CartItem>(id, "CartItem", id);
 
             if (cartItem == null)
             {
@@ -158,7 +158,7 @@ namespace Contoso.Apps.Movies.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(string id)
         {
-            CartItem ci = await DbHelper.GetObject<CartItem>(id, "CartItem");
+            CartItem ci = await DbHelper.GetObject<CartItem>(id, "CartItem", id);
 
             await DbHelper.DeleteObject(ci);
             

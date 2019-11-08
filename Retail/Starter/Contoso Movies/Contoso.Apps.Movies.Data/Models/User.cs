@@ -7,6 +7,8 @@ namespace Contoso.Apps.Movies.Data.Models
     [Serializable]
     public class User : DbObject, IEntity
     {
+        public string PartitionKey => UserId.ToString();
+        
         public int UserId { get; set; }
 
         public string Name { get; set; }

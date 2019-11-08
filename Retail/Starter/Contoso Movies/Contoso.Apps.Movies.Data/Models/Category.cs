@@ -7,14 +7,16 @@ namespace Contoso.Apps.Movies.Data.Models
     [Serializable]
     public class Category : DbObject, IEntity
     {
-    [ScaffoldColumn(false)]
-    public int CategoryId { get; set; }
+        public string PartitionKey => EntityType;
 
-    [Required, StringLength(100), Display(Name = "Name")]
-    public string CategoryName { get; set; }
+        [ScaffoldColumn(false)]
+        public int CategoryId { get; set; }
 
-    [Display(Name = "Product Description")]
-    public string Description { get; set; }
+        [Required, StringLength(100), Display(Name = "Name")]
+        public string CategoryName { get; set; }
+
+        [Display(Name = "Product Description")]
+        public string Description { get; set; }
 
         new public string ObjectId { get { return this.EntityType + "_" + this.CategoryId; } }
 

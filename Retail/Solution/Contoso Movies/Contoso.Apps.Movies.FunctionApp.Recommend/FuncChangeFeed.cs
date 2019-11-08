@@ -79,7 +79,7 @@ namespace ContosoFunctionApp
                         int itemId = group.TakeLast<Document>(1).FirstOrDefault().GetPropertyValue<int>("ItemId");
 
                         //get the item aggregate record
-                        ItemAggregate doc = await DbHelper.GetObject<ItemAggregate>(itemId, "ItemAggregate");
+                        ItemAggregate doc = await DbHelper.GetObject<ItemAggregate>(itemId, "ItemAggregate", itemId.ToString());
 
                         ItemAggregate agg = new ItemAggregate();
 

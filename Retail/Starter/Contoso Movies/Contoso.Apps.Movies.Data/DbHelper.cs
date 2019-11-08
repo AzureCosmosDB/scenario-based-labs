@@ -20,13 +20,29 @@ namespace Contoso.Apps.Common
             return await client.GetDatabase(databaseId).CreateContainerIfNotExistsAsync(collectionId, "id", 400);
         }
 
-        public static async Task<T> GetObject<T>(object id, string type)
+        /// <summary>
+        /// Retrieves an individual entity from the database.
+        /// </summary>
+        /// <typeparam name="T">The Type of entity to retrieve.</typeparam>
+        /// <param name="id">The entity's ObjectId.</param>
+        /// <param name="type">The entity type.</param>
+        /// <param name="partitionKeyValue">If provided, the partition key is added to the query and a cross-partition query is avoided.</param>
+        /// <returns></returns>
+        public static async Task<T> GetObject<T>(object id, string type, string partitionKeyValue)
         {
             var container = client.GetContainer(databaseId, "object");
 
             var queryDef = new QueryDefinition("SELECT * FROM object f WHERE f.ObjectId = @id and f.EntityType = @type").WithParameter("@id", id.ToString()).WithParameter("@type", type);
 
-            FeedIterator<T> setIterator = container.GetItemQueryIterator<T>(queryDef, requestOptions: new QueryRequestOptions { MaxItemCount = 1 });
+            var options = new QueryRequestOptions {MaxItemCount = 1};
+
+            // Include the partition key value if provided to avoid cross-partition queries.
+            if (!string.IsNullOrWhiteSpace(partitionKeyValue))
+            {
+                options.PartitionKey = new PartitionKey(partitionKeyValue);
+            }
+
+            FeedIterator<T> setIterator = container.GetItemQueryIterator<T>(queryDef, requestOptions: options);
 
             while (setIterator.HasMoreResults)
             {
@@ -127,6 +143,9 @@ namespace Contoso.Apps.Common
             log.SessionId = sessionId;
             log.Created = DateTime.Now;
 
+            if (eventType == "buy")
+                log.OrderId = Guid.NewGuid().ToString().Replace("-", "");
+
             //add to cosmos db
             var container = client.GetContainer(databaseId, "events");
             var item = await container.CreateItemAsync(log);
@@ -134,7 +153,8 @@ namespace Contoso.Apps.Common
 
         public static async Task<Item> GetItem(int? itemId)
         {
-            Item i = await DbHelper.GetObject<Item>("Item_" + itemId, "Item");
+            var objectId = $"Item_{itemId}";
+            Item i = await DbHelper.GetObject<Item>(objectId, "Item", objectId);
             return i;
         }
 
@@ -148,7 +168,8 @@ namespace Contoso.Apps.Common
 
         internal async static Task<Item> GetItem(int itemId)
         {
-            return await DbHelper.GetObject<Item>($"Item_{itemId}", "Item");
+            var objectId = $"Item_{itemId}";
+            return await DbHelper.GetObject<Item>(objectId, "Item", objectId);
 
             /*
             FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
@@ -172,7 +193,7 @@ namespace Contoso.Apps.Common
 
         internal async static Task<Category> GetCategory(int id)
         {
-            return await DbHelper.GetObject<Category>($"Category_{id}", "Category");
+            return await DbHelper.GetObject<Category>($"Category_{id}", "Category", "Category");
 
             /*
             FeedOptions defaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };

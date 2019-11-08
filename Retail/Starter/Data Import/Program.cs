@@ -43,7 +43,7 @@ namespace MovieDataImport
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+               Console.WriteLine(ex.Message);
             }
         }
 
@@ -61,7 +61,8 @@ namespace MovieDataImport
                 int itemId = int.Parse(group.FirstOrDefault().ContentId);
 
                 //get the item aggregate record
-                ItemAggregate doc = await DbHelper.GetObject<ItemAggregate>("ItemAggregate_" + itemId, "ItemAggregate");
+                var objectId = $"ItemAggregate_{itemId}";
+                ItemAggregate doc = await DbHelper.GetObject<ItemAggregate>(objectId, "ItemAggregate", objectId);
 
                 ItemAggregate agg = new ItemAggregate();
 

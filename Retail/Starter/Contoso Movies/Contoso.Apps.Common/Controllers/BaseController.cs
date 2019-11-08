@@ -65,7 +65,7 @@ namespace Contoso.Apps.Common.Controllers
             Movies.Data.Models.User user = query.ToList().FirstOrDefault();
             */
 
-            Movies.Data.Models.User user = await DbHelper.GetObject<User>("User_" + userId, "User");
+            Movies.Data.Models.User user = await DbHelper.GetObject<User>("User_" + userId, "User", "User");
             Session["User"] = user;
 
             this.HttpContext.User = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity(user.Email), new string[] { /* fill roles if any */ });

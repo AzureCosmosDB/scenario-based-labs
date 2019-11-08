@@ -33,7 +33,8 @@ namespace Contoso.Apps.Movies.Data.Logic
             //collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, "object");
 
             var container = client.GetContainer(databaseId, "object");
-            shoppingCartItems = container.GetItemLinqQueryable<CartItem>(true).Where(c => c.CartId == cartId && c.EntityType == "CartItem");
+            var options = new QueryRequestOptions {PartitionKey = new PartitionKey(cartId)};
+            shoppingCartItems = container.GetItemLinqQueryable<CartItem>(true, null, options).Where(c => c.CartId == cartId && c.EntityType == "CartItem");
 
             /*
             shoppingCartItems = client.CreateDocumentQuery<CartItem>(collectionUri,
@@ -207,7 +208,7 @@ namespace Contoso.Apps.Movies.Data.Logic
 
             foreach (var cartItem in cartItems)
             {
-                CartItem ci = await DbHelper.GetObject<CartItem>(cartItem.ObjectId, "CartItem");
+                CartItem ci = await DbHelper.GetObject<CartItem>(cartItem.ObjectId, "CartItem", "CartItem");
                 DbHelper.DeleteObject(ci);
 
                 /*

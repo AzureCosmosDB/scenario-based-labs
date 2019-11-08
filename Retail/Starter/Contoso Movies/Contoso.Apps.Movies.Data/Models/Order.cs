@@ -9,7 +9,7 @@ namespace Contoso.Apps.Movies.Data.Models
     public class Order : DbObject, IEntity
     {
         public int OrderId { get; set; }
-
+        public string PartitionKey => OrderId.ToString();
         public System.DateTime OrderDate { get; set; }
 
         // Using the customer's email address instead of username, since we're bypassing authentication for this demo.

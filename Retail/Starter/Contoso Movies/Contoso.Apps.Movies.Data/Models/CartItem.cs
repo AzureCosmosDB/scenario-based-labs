@@ -7,6 +7,8 @@ namespace Contoso.Apps.Movies.Data.Models
         [Key]
         public string CartItemId { get; set; }
 
+        public string PartitionKey => CartId;
+
         public string CartId { get; set; }
 
         public int Quantity { get; set; }
