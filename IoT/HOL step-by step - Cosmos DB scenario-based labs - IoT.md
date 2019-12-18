@@ -54,17 +54,19 @@
     - [Task 3: Delete the vehicle](#task-3-delete-the-vehicle)
   - [Exercise 8: Create the Fleet status real-time dashboard in Power BI](#exercise-8-create-the-fleet-status-real-time-dashboard-in-power-bi)
     - [Task 1: Log in to Power BI online and create real-time dashboard](#task-1-log-in-to-power-bi-online-and-create-real-time-dashboard)
-  - [Exercise 9: Run the predictive maintenance batch scoring](#exercise-9-run-the-predictive-maintenance-batch-scoring)
-    - [Task 1: Import lab notebooks into Azure Databricks](#task-1-import-lab-notebooks-into-azure-databricks)
-    - [Task 2: Run batch scoring notebook](#task-2-run-batch-scoring-notebook)
-  - [Exercise 10: Deploy the predictive maintenance web service](#exercise-10-deploy-the-predictive-maintenance-web-service)
-    - [Task 1: Run deployment notebook](#task-1-run-deployment-notebook)
-    - [Task 2: Call the deployed scoring web service from the Web App](#task-2-call-the-deployed-scoring-web-service-from-the-web-app)
-  - [Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI](#exercise-11-create-the-predictive-maintenance--tripconsignment-status-reports-in-power-bi)
+  - [Exercise 9: Create the Trip/Consignment Status reports in Power BI](#exercise-9-create-the-tripconsignment-status-reports-in-power-bi)
     - [Task 1: Import report in Power BI Desktop](#task-1-import-report-in-power-bi-desktop)
     - [Task 2: Update report data sources](#task-2-update-report-data-sources)
     - [Task 3: Explore report](#task-3-explore-report)
-  - [After the hands-on lab](#after-the-hands-on-lab)
+  - [Exercise 10: Run the predictive maintenance batch scoring](#exercise-10-run-the-predictive-maintenance-batch-scoring)
+    - [Task 1: Import lab notebooks into Azure Databricks](#task-1-import-lab-notebooks-into-azure-databricks)
+    - [Task 2: Run batch scoring notebook](#task-2-run-batch-scoring-notebook)
+  - [Exercise 11: Deploy the predictive maintenance web service](#exercise-11-deploy-the-predictive-maintenance-web-service)
+    - [Task 1: Run deployment notebook](#task-1-run-deployment-notebook)
+    - [Task 2: Call the deployed scoring web service from the Web App](#task-2-call-the-deployed-scoring-web-service-from-the-web-app)
+  - [Exercise 12: Refresh the Power BI report and view maintenance data](#exercise-12-refresh-the-power-bi-report-and-view-maintenance-data)
+    - [Task 1: Open and refresh the report in Power BI Desktop](#task-1-open-and-refresh-the-report-in-power-bi-desktop)
+  - [Environment clean-up](#environment-clean-up)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
 <!-- /TOC -->
@@ -233,7 +235,7 @@ In this task, you will review the default indexing set on your new containers, a
 
    ![The Time to Live settings are set to On with no default.](media/cosmos-ttl-on.png 'Scale & Settings')
 
-   Turning the Time to Live setting on with no default allows us to define the TTL individually for each document, giving us more flexibilty in deciding which documents should expire after a set period of time. To do this, we have a `ttl` field on the document that is saved to this container that specifies the TTL in seconds.
+   Turning the Time to Live setting on with no default allows us to define the TTL individually for each document, giving us more flexibility in deciding which documents should expire after a set period of time. To do this, we have a `ttl` field on the document that is saved to this container that specifies the TTL in seconds.
 
 3. Scroll down in the Scale & Settings blade to view the **Indexing Policy**. The default policy is to automatically index all fields for each document stored in the collection. This is because all paths are included (remember, since we are storing JSON documents, we use paths to identify the property since they can exist within child collections in the document) by setting the value of `includedPaths` to `"path": "/*"`, and the only excluded path is the internal `_etag` property, which is used for versioning the documents. Here is what the default Indexing Policy looks like:
 
@@ -1059,7 +1061,8 @@ The Function App and Web App projects contain blocks of code that need to be com
         }
 
         CosmosClientBuilder configurationBuilder = new CosmosClientBuilder(cosmosDbConnectionString.ServiceEndpoint.OriginalString, cosmosDbConnectionString.AuthKey);
-       configurationBuilder.Build();
+        return configurationBuilder
+            .Build();
     });
     ```
 
@@ -1139,7 +1142,7 @@ The Function App and Web App projects contain blocks of code that need to be com
             var consignment = document.Resource;
     ```
 
-    Here we are using the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) by retrieving a Cosmos DB container reference with the CosmosClient (`_cosmosClient`) that was injected into the class. We use the container's `GetItemLinqQueryable` with the `Trip` class type to query the container using LINQ syntax and binding the results to a new collection of type `Trip`. Note how we are passing the **partition key**, in this case the VIN, to prevent executing a cross-partition, fan-out query, saving RU/s. We also define the type of document we want to retrieve by setting the `entityType` document property in the query to Trip, since other entity types can also have the same partition key, such as the Vehicle type.
+    Here we are using the [.NET SDK for Cosmos DB v3](https://github.com/Azure/azure-cosmos-dotnet-v3/) by retrieving a Cosmos DB container reference with the CosmosClient (`_cosmosClient`) that was injected into the class. We use the container's `GetItemLinqQueryable` with the `Trip` class type to query the container using LINQ syntax and binding the results to a new collection of type `Trip`. Note how we are passing the **partition key**, in this case the VIN, to prevent executing a cross-partion, fan-out query, saving RU/s. We also define the type of document we want to retrieve by setting the `entityType` document property in the query to Trip, since other entity types can also have the same partition key, such as the Vehicle type.
 
     Since we have the Consignment ID, we can use the `ReadItemAsync` method to retrieve a single Consignment record. Here we also pass the partition key to minimize fan-out. Within a Cosmos DB container, a document's unique ID is a combination of the `id` field and the partition key value.
 
@@ -1975,154 +1978,7 @@ In this exercise, you will insert, update, and delete a vehicle record.
 
     After the generator starts sending vehicle telemetry, the dashboard should start working after a few seconds. In this screenshot, we are simulating 50 vehicles with 2,486 events in the last 10 seconds. You may see a higher or lower value for the `eventCount`, depending on the speed of your computer on which you are running the generator, your network speed and latency, and other factors.
 
-## Exercise 9: Run the predictive maintenance batch scoring
-
-**Duration**: 20 minutes
-
-In this exercise, you will import Databricks notebooks into your Azure Databricks workspace. A notebook is interactive and runs in any web browser, mixing markup (formatted text with instructions), executable code, and outputs from running the code.
-
-Next, you will run the Batch Scoring notebook to make battery failure predictions on vehicles, using vehicle and trip data stored in Cosmos DB.
-
-### Task 1: Import lab notebooks into Azure Databricks
-
-In this task, you will import the Databricks notebooks into your workspace.
-
-1. In the [Azure portal](https://portal.azure.com), open your lab resource group, then open your **Azure Databricks Service**. The name should start with `iot-databricks`.
-
-   ![The Azure Databricks Service is highlighted in the resource group.](media/resource-group-databricks.png 'Resource Group')
-
-2. Select **Launch Workspace**. Azure Databricks will automatically sign you in through its Azure Active Directory integration.
-
-   ![Launch Workspace](media/databricks-launch-workspace.png 'Launch Workspace')
-
-3. Select **Workspace**, select **Users**, select the dropdown to the right of your username, then select **Import**.
-
-   ![The Import link is highlighted in the Workspace.](media/databricks-import-link.png 'Workspace')
-
-4. Select **URL** next to **Import from**, paste the following into the text box: `https://github.com/AzureCosmosDB/scenario-based-labs/blob/master/IoT/Notebooks/01%20IoT.dbc`, then select **Import**.
-
-   ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
-
-5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks, and a sub-folder named `Includes`, which contains one notebook.
-
-    ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
-
-6. Open the **Shared-Configuration** notebook located in the `Includes` sub-folder and provide values for your Machine Learning service workspace. You can find these values within the Overview blade of your Machine Learning service workspace that is located in your lab resource group.
-
-    The values highlighted in the screenshot below are for the following variables in the notebooks:
-
-    1. `subscription_id`
-    2. `resource_group`
-    3. `workspace_name`
-    4. `workspace_region`
-
-    ![The required values are highlighted.](media/machine-learning-workspace-values.png "Machine Learning service workspace values")
-
-### Task 2: Run batch scoring notebook
-
-In this task, you will run the `Batch Scoring` notebook, using a pre-trained machine learning (ML) model to determine if the battery needs to be replaced on several vehicles within the next 30 days. The notebook performs the following actions:
-
-1. Installs required Python libraries.
-2. Connects to Azure Machine Learning service (Azure ML).
-3. Downloads a pre-trained ML model, saves it to Azure ML, then uses that model for batch scoring.
-4. Uses the Cosmos DB Spark connector to retrieve completed Trips and Vehicle metadata from the `metadata` Cosmos DB container, prepares the data using SQL queries, then surfaces the data as temporary views.
-5. Applies predictions against the data, using the pre-trained model.
-6. Saves the prediction results in the Cosmos DB `maintenance` container for reporting purposes.
-
-To run this notebook, perform the following steps:
-
-1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
-
-2. Select the `01 IoT` folder, then select the **Batch Scoring** notebook to open it.
-
-   ![The Batch Scoring notebook is highlighted.](media/databricks-batch-scoring-notebook.png 'Workspace')
-
-3. Before you can execute the cells in this or the other notebooks for this lab, you must first attach your Databricks cluster. Expand the dropdown at the top of the notebook where you see **Detached**. Select your lab cluster to attach it to the notebook. If it is not currently running, you will see an option to start the cluster.
-
-   ![The screenshot displays the lab cluster selected for attaching to the notebook.](media/databricks-notebook-attach-cluster.png 'Attach cluster')
-
-4. You may use keyboard shortcuts to execute the cells, such as **Ctrl+Enter** to execute a single cell, or **Shift+Enter** to execute a cell and move to the next one below.
-
-In both notebooks, you will be required to provide values for your Machine Learning service workspace. You can find these values within the Overview blade of your Machine Learning service workspace that is located in your lab resource group.
-
-The values highlighted in the screenshot below are for the following variables in the notebooks:
-
-1. `subscription_id`
-2. `resource_group`
-3. `workspace_name`
-4. `workspace_region`
-
-![The required values are highlighted.](media/machine-learning-workspace-values.png "Machine Learning service workspace values")
-
-> If you wish to execute this notebook on a scheduled basis, such as every evening, you can use the Jobs feature in Azure Databricks to accomplish this.
-
-## Exercise 10: Deploy the predictive maintenance web service
-
-**Duration**: 20 minutes
-
-In addition to batch scoring, Contoso Auto would like to predict battery failures on-demand in real time for any given vehicle. They want to be able to call the model from their Fleet Management website when looking at a vehicle to predict whether that vehicle's battery may fail in the next 30 days.
-
-In the previous task, you executed a notebook that used a pre-trained ML model to predict battery failures for all vehicles with trip data in a batch process. But how do you take that same model and deploy it (in data science terms, this is called "operationalization") to a web service for this purpose?
-
-In this task, you will run the `Model Deployment` notebook to deploy the pre-trained model to a web service hosted by Azure Container Instances (ACI), using your Azure ML workspace. While it is possible to deploy the model to a web service running in Azure Kubernetes Service (AKS), we are deploying to ACI instead since doing so saves 10-20 minutes. However, once deployed, the process used to call the web service is the same, as are most of the steps to do the deployment.
-
-### Task 1: Run deployment notebook
-
-To run this notebook, perform the following steps:
-
-1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
-
-2. Select the `01 IoT` folder, then select the **Model Deployment** notebook to open it.
-
-   ![The Model Deployment notebook is highlighted.](media/databricks-model-deployment-notebook.png 'Workspace')
-
-3. As with the Batch Scoring notebook, be sure to attach your lab cluster before executing cells.
-
-4. **After you are finished running the notebook**, open the Azure Machine Learning service workspace in the portal, then select **Models** in the left-hand menu to view the pre-trained model.
-
-   ![The models blade is displayed in the AML service workspace.](media/aml-models.png 'Models')
-
-5. Select **Deployments** in the left-hand menu, then select the Azure Container Instances deployment that was created when you ran the notebook.
-
-    ![The deployments blade is displayed in the AML service workspace.](media/aml-deployments.png "Deployments")
-
-6. Copy the **Scoring URI** value. This will be used by the deployed web app to request predictions in real time.
-
-    ![The deployment's scoring URI is highlighted.](media/aml-deployment-scoring-uri.png "Scoring URI")
-
-### Task 2: Call the deployed scoring web service from the Web App
-
-Now that the web service is deployed to ACI, we can call it to make predictions from the Fleet Management Web App. To enable this capability, we first need to update the Web App's application configuration settings with the scoring URI.
-
-1. Make sure you have copied the Scoring URI of your deployed service, as instructed in the previous task.
-
-2. Open the Web App (App Service) whose name begins with **IoTWebApp**.
-
-3. Select **Configuration** in the left-hand menu.
-
-4. Scroll to the **Application settings** section then select **+ New application setting**.
-
-5. In the Add/Edit application setting form, enter `ScoringUrl` for the **Name**, and paste the web service URI you copied and paste it in the **Value** field. Select **OK** to add the setting.
-
-    ![The form is filled in with the previously described values.](media/app-setting-scoringurl.png "Add/Edit application setting")
-
-6. Select **Save** to save your new application setting.
-
-7. Go back to the **Overview** blade for the Web App, then select **Restart**.
-
-8. Navigate to the deployed Fleet Management web app and open a random Vehicle record. Select **Predict battery failure**, which calls your deployed scoring web service and makes a prediction for the vehicle.
-
-    ![The prediction results show that the battery is not predicted to fail in the next 30 days.](media/web-prediction-no.png "Vehicle details with prediction")
-
-    This vehicle has a low number of **Lifetime cycles used**, compared to the battery's rated 200 cycle lifespan. The model predicted that the battery will not fail within the next 30 days.
-
-9. Look through the list of vehicles to find one whose **Lifetime cycles used** value is closer to 200, then make the prediction for the vehicle.
-
-    ![The prediction results show that the battery is is predicted to fail in the next 30 days.](media/web-prediction-yes.png "Vehicle details with prediction")
-
-    This vehicle has a high number of **Lifetime cycles used**, which is closer to the battery's rated 200 cycle lifespan. The model predicted that the battery will fail within the next 30 days.
-
-## Exercise 11: Create the Predictive Maintenance & Trip/Consignment Status reports in Power BI
+## Exercise 9: Create the Trip/Consignment Status reports in Power BI
 
 **Duration**: 15 minutes
 
@@ -2251,9 +2107,7 @@ In this lab, you will import a Power BI report that has been created for you. Af
 
     ![The trips page is displayed.](media/pbi-trips-tab.png "Trips")
 
-5. The Maintenance page shows results from the batch scoring notebook you executed in Databricks. If you do not see records here, then you need to run the entire batch scoring notebook after some trips have completed.
-
-    ![The maintenance page is displayed.](media/pbi-maintenance-tab.png "Maintenance")
+5. The Maintenance page should contain no data at this time. This page shows information from a batch scoring Machine Learning notebook that you can optionally execute in Databricks in the next exercise.
 
 6. If at any time you have a number of filters set and you cannot see records, **Ctrl+Click** the **Clear Filters** button on the main report page (Trip/Consignments).
 
@@ -2263,7 +2117,174 @@ In this lab, you will import a Power BI report that has been created for you. Af
 
     ![The refresh button is highlighted.](media/pbi-refresh.png "Refresh")
 
-## After the hands-on lab
+-------------------------------------------------------------------------------
+
+> The following exercises walk you through setting up and running the Machine Learning (ML) components of the accelerator, and are optional. If you wish to skip these steps, please jump ahead to the [environment clean-up](#environment-clean-up) section.
+
+## Exercise 10: Run the predictive maintenance batch scoring
+
+**Duration**: 20 minutes
+
+In this exercise, you will import Databricks notebooks into your Azure Databricks workspace. A notebook is interactive and runs in any web browser, mixing markup (formatted text with instructions), executable code, and outputs from running the code.
+
+Next, you will run the Batch Scoring notebook to make battery failure predictions on vehicles, using vehicle and trip data stored in Cosmos DB.
+
+### Task 1: Import lab notebooks into Azure Databricks
+
+In this task, you will import the Databricks notebooks into your workspace.
+
+1. In the [Azure portal](https://portal.azure.com), open your lab resource group, then open your **Azure Databricks Service**. The name should start with `iot-databricks`.
+
+   ![The Azure Databricks Service is highlighted in the resource group.](media/resource-group-databricks.png 'Resource Group')
+
+2. Select **Launch Workspace**. Azure Databricks will automatically sign you in through its Azure Active Directory integration.
+
+   ![Launch Workspace](media/databricks-launch-workspace.png 'Launch Workspace')
+
+3. Select **Workspace**, select **Users**, select the dropdown to the right of your username, then select **Import**.
+
+   ![The Import link is highlighted in the Workspace.](media/databricks-import-link.png 'Workspace')
+
+4. Select **URL** next to **Import from**, paste the following into the text box: `https://github.com/AzureCosmosDB/scenario-based-labs/blob/master/IoT/Notebooks/01%20IoT.dbc`, then select **Import**.
+
+   ![The URL has been entered in the import form.](media/databricks-import.png 'Import Notebooks')
+
+5. After importing, select your username. You will see a new folder named `01 IoT`, which contains two notebooks, and a sub-folder named `Includes`, which contains one notebook.
+
+    ![The imported notebooks are displayed.](media/databricks-notebooks.png 'Imported notebooks')
+
+6. Open the **Shared-Configuration** notebook located in the `Includes` sub-folder and provide values for your Machine Learning service workspace. You can find these values within the Overview blade of your Machine Learning service workspace that is located in your lab resource group.
+
+    The values highlighted in the screenshot below are for the following variables in the notebooks:
+
+    1. `subscription_id`
+    2. `resource_group`
+    3. `workspace_name`
+    4. `workspace_region`
+
+    ![The required values are highlighted.](media/machine-learning-workspace-values.png "Machine Learning service workspace values")
+
+### Task 2: Run batch scoring notebook
+
+In this task, you will run the `Batch Scoring` notebook, using a pre-trained machine learning (ML) model to determine if the battery needs to be replaced on several vehicles within the next 30 days. The notebook performs the following actions:
+
+1. Installs required Python libraries.
+2. Connects to Azure Machine Learning service (Azure ML).
+3. Downloads a pre-trained ML model, saves it to Azure ML, then uses that model for batch scoring.
+4. Uses the Cosmos DB Spark connector to retrieve completed Trips and Vehicle metadata from the `metadata` Cosmos DB container, prepares the data using SQL queries, then surfaces the data as temporary views.
+5. Applies predictions against the data, using the pre-trained model.
+6. Saves the prediction results in the Cosmos DB `maintenance` container for reporting purposes.
+
+To run this notebook, perform the following steps:
+
+1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
+
+2. Select the `01 IoT` folder, then select the **Batch Scoring** notebook to open it.
+
+   ![The Batch Scoring notebook is highlighted.](media/databricks-batch-scoring-notebook.png 'Workspace')
+
+3. Before you can execute the cells in this or the other notebooks for this lab, you must first attach your Databricks cluster. Expand the dropdown at the top of the notebook where you see **Detached**. Select your lab cluster to attach it to the notebook. If it is not currently running, you will see an option to start the cluster.
+
+   ![The screenshot displays the lab cluster selected for attaching to the notebook.](media/databricks-notebook-attach-cluster.png 'Attach cluster')
+
+4. You may use keyboard shortcuts to execute the cells, such as **Ctrl+Enter** to execute a single cell, or **Shift+Enter** to execute a cell and move to the next one below.
+
+In both notebooks, you will be required to provide values for your Machine Learning service workspace. You can find these values within the Overview blade of your Machine Learning service workspace that is located in your lab resource group.
+
+The values highlighted in the screenshot below are for the following variables in the notebooks:
+
+1. `subscription_id`
+2. `resource_group`
+3. `workspace_name`
+4. `workspace_region`
+
+![The required values are highlighted.](media/machine-learning-workspace-values.png "Machine Learning service workspace values")
+
+> If you wish to execute this notebook on a scheduled basis, such as every evening, you can use the Jobs feature in Azure Databricks to accomplish this.
+
+## Exercise 11: Deploy the predictive maintenance web service
+
+**Duration**: 20 minutes
+
+In addition to batch scoring, Contoso Auto would like to predict battery failures on-demand in real time for any given vehicle. They want to be able to call the model from their Fleet Management website when looking at a vehicle to predict whether that vehicle's battery may fail in the next 30 days.
+
+In the previous task, you executed a notebook that used a pre-trained ML model to predict battery failures for all vehicles with trip data in a batch process. But how do you take that same model and deploy it (in data science terms, this is called "operationalization") to a web service for this purpose?
+
+In this task, you will run the `Model Deployment` notebook to deploy the pre-trained model to a web service hosted by Azure Container Instances (ACI), using your Azure ML workspace. While it is possible to deploy the model to a web service running in Azure Kubernetes Service (AKS), we are deploying to ACI instead since doing so saves 10-20 minutes. However, once deployed, the process used to call the web service is the same, as are most of the steps to do the deployment.
+
+### Task 1: Run deployment notebook
+
+To run this notebook, perform the following steps:
+
+1. In Azure Databricks, select **Workspace**, select **Users**, then select your username.
+
+2. Select the `01 IoT` folder, then select the **Model Deployment** notebook to open it.
+
+   ![The Model Deployment notebook is highlighted.](media/databricks-model-deployment-notebook.png 'Workspace')
+
+3. As with the Batch Scoring notebook, be sure to attach your lab cluster before executing cells.
+
+4. **After you are finished running the notebook**, open the Azure Machine Learning service workspace in the portal, then select **Models** in the left-hand menu to view the pre-trained model.
+
+   ![The models blade is displayed in the AML service workspace.](media/aml-models.png 'Models')
+
+5. Select **Deployments** in the left-hand menu, then select the Azure Container Instances deployment that was created when you ran the notebook.
+
+    ![The deployments blade is displayed in the AML service workspace.](media/aml-deployments.png "Deployments")
+
+6. Copy the **Scoring URI** value. This will be used by the deployed web app to request predictions in real time.
+
+    ![The deployment's scoring URI is highlighted.](media/aml-deployment-scoring-uri.png "Scoring URI")
+
+### Task 2: Call the deployed scoring web service from the Web App
+
+Now that the web service is deployed to ACI, we can call it to make predictions from the Fleet Management Web App. To enable this capability, we first need to update the Web App's application configuration settings with the scoring URI.
+
+1. Make sure you have copied the Scoring URI of your deployed service, as instructed in the previous task.
+
+2. Open the Web App (App Service) whose name begins with **IoTWebApp**.
+
+3. Select **Configuration** in the left-hand menu.
+
+4. Scroll to the **Application settings** section then select **+ New application setting**.
+
+5. In the Add/Edit application setting form, enter `ScoringUrl` for the **Name**, and paste the web service URI you copied and paste it in the **Value** field. Select **OK** to add the setting.
+
+    ![The form is filled in with the previously described values.](media/app-setting-scoringurl.png "Add/Edit application setting")
+
+6. Select **Save** to save your new application setting.
+
+7. Go back to the **Overview** blade for the Web App, then select **Restart**.
+
+8. Navigate to the deployed Fleet Management web app and open a random Vehicle record. Select **Predict battery failure**, which calls your deployed scoring web service and makes a prediction for the vehicle.
+
+    ![The prediction results show that the battery is not predicted to fail in the next 30 days.](media/web-prediction-no.png "Vehicle details with prediction")
+
+    This vehicle has a low number of **Lifetime cycles used**, compared to the battery's rated 200 cycle lifespan. The model predicted that the battery will not fail within the next 30 days.
+
+9. Look through the list of vehicles to find one whose **Lifetime cycles used** value is closer to 200, then make the prediction for the vehicle.
+
+    ![The prediction results show that the battery is is predicted to fail in the next 30 days.](media/web-prediction-yes.png "Vehicle details with prediction")
+
+    This vehicle has a high number of **Lifetime cycles used**, which is closer to the battery's rated 200 cycle lifespan. The model predicted that the battery will fail within the next 30 days.
+
+## Exercise 12: Refresh the Power BI report and view maintenance data
+
+**Duration**: 15 minutes
+
+### Task 1: Open and refresh the report in Power BI Desktop
+
+1. Open **Power BI Desktop**, then re-open the report.
+
+2. Select the tab at the bottom of the report to view the Maintenance page. This page shows results from the batch scoring notebook you executed in Databricks. If you do not see records here, then you need to run the entire batch scoring notebook after some trips have completed.
+
+    ![The maintenance page is displayed.](media/pbi-maintenance-tab.png "Maintenance")
+
+3. Update the report with new data by clicking the **Refresh** button. This will show the results of the batch scoring notebook if you had one or more completed trips prior to running the notebook.
+
+    ![The refresh button is highlighted.](media/pbi-refresh.png "Refresh")
+
+## Environment clean-up
 
 **Duration**: 10 mins
 
