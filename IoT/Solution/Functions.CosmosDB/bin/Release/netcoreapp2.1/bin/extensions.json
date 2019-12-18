@@ -1,0 +1,8 @@
+{
+  "extensions":[
+    { "name": "Startup", "typeName":"Functions.CosmosDB.Startup, Functions.CosmosDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"},
+    { "name": "EventHubs", "typeName":"Microsoft.Azure.WebJobs.EventHubs.EventHubsWebJobsStartup, Microsoft.Azure.WebJobs.EventHubs, Version=3.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"},
+    { "name": "CosmosDB", "typeName":"Microsoft.Azure.WebJobs.Extensions.CosmosDB.CosmosDBWebJobsStartup, Microsoft.Azure.WebJobs.Extensions.CosmosDB, Version=3.0.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"},
+    { "name": "AzureStorage", "typeName":"Microsoft.Azure.WebJobs.Extensions.Storage.AzureStorageWebJobsStartup, Microsoft.Azure.WebJobs.Extensions.Storage, Version=3.0.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"}
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "generatedBy": "Microsoft.NET.Sdk.Functions-1.0.29",
+  "configurationSource": "attributes",
+  "bindings": [
+    {
+      "type": "cosmosDBTrigger",
+      "connectionStringSetting": "CosmosDBConnection",
+      "leaseCollectionName": "leases",
+      "leaseCollectionPrefix": "cold",
+      "createLeaseCollectionIfNotExists": true,
+      "startFromBeginning": true,
+      "collectionName": "telemetry",
+      "databaseName": "ContosoAuto",
+      "leaseDatabaseName": "ContosoAuto",
+      "useMultipleWriteLocations": false,
+      "useDefaultJsonSerialization": false,
+      "name": "vehicleEvents"
+    }
+  ],
+  "disabled": false,
+  "scriptFile": "../bin/Functions.CosmosDB.dll",
+  "entryPoint": "Functions.CosmosDB.Functions.ChangeColdStorageFeedTrigger"
+}
