@@ -572,7 +572,7 @@
             "resources": [
                 {
                     "apiVersion": "2015-08-01",
-                    "name": "streamfunction",
+                    "name": "web",
                     "type": "sourcecontrols",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName'))]"
@@ -673,7 +673,7 @@
                 "resources": [
                     {
                         "apiVersion": "2015-08-01",
-                        "name": "cosmosfunction",
+                        "name": "web",
                         "type": "sourcecontrols",
                         "dependsOn": [
                             "[resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName'))]"
