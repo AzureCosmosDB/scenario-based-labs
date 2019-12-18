@@ -43,7 +43,7 @@
     - [Task 1: View batch scoring notebook](#task-1-view-batch-scoring-notebook)
     - [Task 2: Model training highlights](#task-2-model-training-highlights)
     - [Task 2: Call the deployed scoring web service from the Web App](#task-2-call-the-deployed-scoring-web-service-from-the-web-app)
-  - [Exercise 6: View the live dashboard, Predictive Maintenance, & Trip/Consignment Status reports in Power BI](#exercise-6-view-the-live-dashboard-predictive-maintenance--tripconsignment-status-reports-in-power-bi)
+  - [Exercise 6: View the live dashboard, Predictive Maintenance, &amp; Trip/Consignment Status reports in Power BI](#exercise-6-view-the-live-dashboard-predictive-maintenance-amp-tripconsignment-status-reports-in-power-bi)
     - [Task 1: Open the live dashboard report in Power BI online](#task-1-open-the-live-dashboard-report-in-power-bi-online)
     - [Task 2: Explore report in Power BI Desktop](#task-2-explore-report-in-power-bi-desktop)
   - [After the demo](#after-the-demo)
@@ -127,9 +127,7 @@ Download a starter project that includes a vehicle simulator, Azure Function App
 
 4. Unzip the contents to your root hard drive (i.e. `C:\`). This will create a folder on your root drive named `scenario-based-labs-master`.
 
-5. Navigate to the [.NET Core 2.2 download page](https://dotnet.microsoft.com/download/dotnet-core/2.2), then download the SDK for your environment, such as Windows .NET Core Installer x64.
-
-   ![The webpage is displayed with the SDK download section highlighted.](media/dotnet-sdk-2-2.png 'Download .NET Core 2.2')
+5. Navigate to the [.NET Core 3.1 SDK download page](https://dotnet.microsoft.com/download/dotnet-core/3.1), then download the SDK for your environment, such as Windows .NET Core Installer x64.
 
 ### Task 1: Run deployment scripts
 
@@ -153,7 +151,7 @@ Download a starter project that includes a vehicle simulator, Azure Function App
 
 4. Select **Purchase**
 
-> The template deployment will take a few minutes to complete. Continue with the guide once it completes
+> The template deployment will take a few minutes to complete. Continue with the guide once it completes.
 
 ### Task 2: Authenticate the Office 365 API Connection for sending email alerts
 
