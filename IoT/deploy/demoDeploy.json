@@ -39,37 +39,27 @@
     "variables": {
         "location": "[parameters('location')]",
         "name-suffix": "[uniqueString(resourceGroup().id)]",
-
         "iotHubName": "[concat('iot-hub-', variables('name-suffix'))]",
-
         "appServicePlanIoTWebAppNameName": "[concat('IoTWebAppNamePlan-', variables('name-suffix'))]",
         "iotWebAppName": "[concat('IoTWebApp-', variables('name-suffix'))]",
-
         "appServicePlanFunctionAppsName": "[concat('FunctionAppPlan-', variables('name-suffix'))]",
         "functionAppStreamProcessingName": "[concat('IoT-StreamProcessing-', variables('name-suffix'))]",
         "functionAppCosmosDBProcessingName": "[concat('IoT-CosmosDBProcessing-', variables('name-suffix'))]",
-
         "keyVaultName": "[concat('iot-vault-', variables('name-suffix'))]",
-
         "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('name-suffix'))]",
         "storageAccountStreamProcessing-website-contentshare": "[concat('iot-streamprocessing-', variables('name-suffix'))]",
-
         "storageAccountCosmosDBProcessingName": "[concat('iotfunc2', variables('name-suffix'))]",
         "storageAccountCosmosDBProcessing-website-contentshare": "[concat('iot-cosmosdbprocessing-', variables('name-suffix'))]",
-
         "storageAccountIoTStoreName": "[concat('iotstore', variables('name-suffix'))]",
-
         "eventHubsNamespaceIoTName": "[concat('iot-namespace-', variables('name-suffix'))]",
-
         "cosmosDbAccountName": "[concat('cosmos-db-iot-', variables('name-suffix'))]",
         "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('name-suffix'))]",
-
         "streamAnalyticsJobName": "[concat('Cosmos-DB-IoT-Analytics-', variables('name-suffix'))]",
-
         "databricksWorkspaceName": "[concat('iot-databricks-', variables('name-suffix'))]",
-
         "cosmosDbDatabaseName": "ContosoAuto",
-        "cosmosIoTLogicAppName": "[concat('Cosmos-IoT-Logic-', variables('name-suffix'))]"
+        "cosmosIoTLogicAppName": "[concat('Cosmos-IoT-Logic-', variables('name-suffix'))]",
+        "repoURL": "https://github.com/AzureCosmosDB/scenario-based-labs.git",
+        "branch": "master"
     },
     "resources": [
         {
@@ -571,6 +561,10 @@
                         {
                             "name": "IoTHubConnection",
                             "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(concat(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '/secrets/', 'IoTHubConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "Project",
+                            "value": "IoT/Solution/Functions.StreamProcessing"
                         }
                     ]
                 }
@@ -654,6 +648,10 @@
                         {
                             "name": "RecipientEmail",
                             "value": "[parameters('RecipientEmail')]"
+                        },
+                        {
+                            "name": "Project",
+                            "value": "IoT/Solution/Functions.CosmosDB"
                         }
                     ]
                 }
@@ -691,6 +689,10 @@
                         {
                             "name": "ContainerName",
                             "value": "metadata"
+                        },
+                        {
+                            "name": "Project",
+                            "value": "IoT/Solution/FleetManagementWebApp"
                         }
                     ],
                     "metadata": [
@@ -703,7 +705,45 @@
             }
         },
 
-
+        {
+            "apiVersion": "2015-08-01",
+            "name": "web",
+            "type": "sourcecontrols",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('iotWebAppName'))]"
+            ],
+            "properties": {
+                "RepoUrl": "[variables('repoURL')]",
+                "branch": "[variables('branch')]",
+                "IsManualIntegration": true
+            }
+        },
+        {
+            "apiVersion": "2015-08-01",
+            "name": "cosmosfunction",
+            "type": "sourcecontrols",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName'))]"
+            ],
+            "properties": {
+                "RepoUrl": "[variables('repoURL')]",
+                "branch": "[variables('branch')]",
+                "IsManualIntegration": true
+            }
+        },
+        {
+            "apiVersion": "2015-08-01",
+            "name": "streamfunction",
+            "type": "sourcecontrols",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName'))]"
+            ],
+            "properties": {
+                "RepoUrl": "[variables('repoURL')]",
+                "branch": "[variables('branch')]",
+                "IsManualIntegration": true
+            }
+        },
 
         {
             "type": "Microsoft.Resources/deployments",
