@@ -58,7 +58,7 @@
         "databricksWorkspaceName": "[concat('iot-databricks-', variables('name-suffix'))]",
         "cosmosDbDatabaseName": "ContosoAuto",
         "cosmosIoTLogicAppName": "[concat('Cosmos-IoT-Logic-', variables('name-suffix'))]",
-        "repoURL": "https://github.com/joelhulen/scenario-based-labs.git",
+        "repoURL": "https://github.com/AzureCosmosDB/scenario-based-labs.git",
         "branch": "master"
     },
     "resources": [
