@@ -10,29 +10,29 @@
         },
         "location": {
             "type": "string",
-            "defaultValue": "West US",
+            "defaultValue": "westus",
             "metadata": {
                 "description": "The location where all azure resources will be deployed."
             },
             "allowedValues": [
-                "East Asia",
-                "Southeast Asia",
-                "Australia East",
-                "Canada Central",
-                "North Europe",
-                "West Europe",
-                "France Central",
-                "Japan East",
-                "Korea Central",
-                "UK South",
-                "Central US",
-                "East US",
-                "East US 2",
-                "North Central US",
-                "South Central US",
-                "West Central US",
-                "West US",
-                "West US 2"
+                "eastasia",
+                "southeastasia",
+                "australiaeast",
+                "canadacentral",
+                "northeurope",
+                "westeurope",
+                "francecentral",
+                "japaneast",
+                "koreacentral",
+                "uksouth",
+                "centralus",
+                "eastus",
+                "eastus2",
+                "northcentralus",
+                "southcentralus",
+                "westcentralus",
+                "westus",
+                "westus2"
             ]
         }
     },
