@@ -15,7 +15,7 @@
     - [Task 2: Populate event data](#task-2-populate-event-data)
     - [Task 3: Review the data generated](#task-3-review-the-data-generated)
     - [Task 4: Review the aggregation and import utility](#task-4-review-the-aggregation-and-import-utility)
-  - [Exercise 2: Complete and deploy Web and Function App](#exercise-2-complete-and-deploy-web-and-function-apps)
+  - [Exercise 2: Complete and deploy Web and Function App](#exercise-2-complete-and-deploy-web-and-function-app)
     - [Task 1: Implement the Top Items recommendation](#task-1-implement-the-top-items-recommendation)
       - [About Cosmos DB throughput](#about-cosmos-db-throughput)
     - [Task 2: Deploy the applications](#task-2-deploy-the-applications)
@@ -23,7 +23,7 @@
   - [Exercise 3: Perform and deploy association rules calculation for offline algorithms](#exercise-3-perform-and-deploy-association-rules-calculation-for-offline-algorithms)
     - [Task 1: Generate the Associations](#task-1-generate-the-associations)
     - [Task 2: Review the data generated](#task-2-review-the-data-generated)
-  - [Exercise 4: Complete and deploy Web App and Function App (Association Rules)](#exercise-4-complete-and-deploy-web-app-and-function-apps-association-rules)
+  - [Exercise 4: Complete and deploy Web App and Function App (Association Rules)](#exercise-4-complete-and-deploy-web-app-and-function-app-association-rules)
     - [Task 1: Implement the Associations recommendation rules](#task-1-implement-the-associations-recommendation-rules)
     - [Task 2: Deploy the applications](#task-2-deploy-the-applications-1)
     - [Task 3: Test the applications](#task-3-test-the-applications-1)
@@ -39,7 +39,7 @@
     - [Task 2: Configure the ChangeFeed Function](#task-2-configure-the-changefeed-function)
     - [Task 3: Deploy the ChangeFeed Function](#task-3-deploy-the-changefeed-function)
     - [Task 4: Generate user events for PowerBI](#task-4-generate-user-events-for-powerbi)
-    - [Task 5: Setup Power BI Dashabord](#task-5-setup-power-bi-dashabord)
+    - [Task 5: Setup Power BI Dashboard](#task-5-setup-power-bi-dashboard)
     - [Task 6: Generate user events for real time analytics](#task-6-generate-user-events-for-real-time-analytics)
   - [Exercise 7: Email alerts using Logic Apps](#exercise-7-email-alerts-using-logic-apps)
     - [Task 1: Setup Logic App](#task-1-setup-logic-app)
@@ -847,6 +847,8 @@ The notebook examined the `events` data to find items that tend to be purchased 
 1. Select the **eventData** data set, then select **Next**.
 
     ![Select the eventCount dataset and select next.](./media/xx_PowerBI_02.png 'Add the eventCount tile')
+
+    > **Important**: If the **eventData** data set does not appear, it is because there is a lag time of several minutes between when you first configure the Stream Analytics Power BI output and when data first appears in the streaming data set. Please ensure the data generator is running and that you have started the Stream Analytics query. Also, you may try restarting the Function App as well.
 
 1. For the visualization type, select **Card**.
 

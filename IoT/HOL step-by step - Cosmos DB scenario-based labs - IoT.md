@@ -656,12 +656,11 @@ In this task, you will create a new cluster on which data exploration and model 
    1. **Cluster Name**: Enter **lab**.
    2. **Cluster Mode**: Select **Standard**.
    3. **Pool**: Select **None**.
-   4. **Databricks Runtime Version**: Select **Runtime 5.5 LTS (Scala 2.11, Spark 2.4.3)**.
-   5. **Python Version**: Enter **3**.
-   6. **Autopilot Options**: Uncheck **Enable autoscaling** and check **Terminate after...**, with a value of **120** minutes.
-   7. **Worker Type**: Select **Standard_DS3_v2**.
-   8. **Driver Type**: Select **Same as worker**.
-   9. **Workers**: Enter **1**.
+   4. **Databricks Runtime Version**: Select **Runtime 6.1 (Scala 2.11, Spark 2.4.4)**.
+   5. **Autopilot Options**: Uncheck **Enable autoscaling** and **Terminate after...**, with a value of **120** minutes.
+   6. **Worker Type**: Select **Standard_DS3_v2**.
+   7. **Driver Type**: Select **Same as worker**.
+   8. **Workers**: Enter **1**.
 
    ![The New Cluster form is displayed with the previously described values.](media/databricks-new-cluster.png 'New Cluster')
    **Note** If you failed to create a cluster, try to change the worker type from Standard_DS3_v2 to other VM sizes.
@@ -1688,7 +1687,7 @@ In this exercise, we use the Live Metrics Stream feature of Application Insights
     SELECT * FROM c WHERE c.entityType = 'Trip' AND c.status = 'Completed'
     ```
 
-    ![The qwuery editor is displayed with the trip results.](media/cosmos-trip-completed-query.png "Trip query")
+    ![The query editor is displayed with the trip results.](media/cosmos-trip-completed-query.png "Trip query")
 
     Please note, you may not have any trips that have completed yet. Try querying where the `status` = **Active** instead. Active trips are those that are currently running.
 
