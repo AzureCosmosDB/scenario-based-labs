@@ -7,7 +7,7 @@
 - [Cosmos DB scenario-based labs - IoT before the hands-on lab setup guide](#cosmos-db-scenario-based-labs---iot-before-the-hands-on-lab-setup-guide)
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
-    - [Task 1: Install .NET Core SDK 3.1 (or greater)](#task-1-install-net-core-sdk-31-or-greater)
+    - [Task 1: Install .NET Core SDK 2.2 (or greater)](#task-1-install-net-core-sdk-22-or-greater)
     - [Task 2: Download the starter files](#task-2-download-the-starter-files)
     - [Task 3: Run deployment scripts](#task-3-run-deployment-scripts)
 
@@ -22,7 +22,8 @@
 2. Install [Power BI Desktop](https://powerbi.microsoft.com/desktop/)
 3. [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest) - version 2.0.68 or later
 4. Install [Visual Studio 2019 Community](https://visualstudio.microsoft.com/vs/) or greater
-5. Install [.NET Core SDK 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1) or greater
+5. Install [.NET Core SDK 2.2](https://dotnet.microsoft.com/download/dotnet-core/2.2) or greater
+   1. If you are running Visual Studio 2017, install SDK 2.2.109
 
 ## Before the hands-on lab
 
@@ -32,11 +33,13 @@ In this exercise, you will set up your environment for use in the rest of the ha
 
 > **IMPORTANT**: Many Azure resources require unique names. Throughout these steps you will see the word "SUFFIX" as part of resource names. You should replace this with your Microsoft alias, initials, or another value to ensure resources are uniquely named.
 
-### Task 1: Install .NET Core SDK 3.1 (or greater)
+### Task 1: Install .NET Core SDK 2.2 (or greater)
 
-The starter solution requires .NET Core SDK 3.1 or greater to be installed on your machine.
+he starter solution requires .NET Core SDK 2.2 or greater to be installed on your machine.
 
-1. Navigate to the [.NET Core 3.1 SDK download page](https://dotnet.microsoft.com/download/dotnet-core/3.1), then download the SDK for your environment, such as Windows .NET Core Installer x64.
+1. Navigate to the [.NET Core 2.2 download page](https://dotnet.microsoft.com/download/dotnet-core/2.2), then download the SDK for your environment, such as Windows .NET Core Installer x64.
+
+   ![The webpage is displayed with the SDK download section highlighted.](media/dotnet-sdk-2-2.png 'Download .NET Core 2.2')
 
 ### Task 2: Download the starter files
 
