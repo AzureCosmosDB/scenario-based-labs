@@ -127,7 +127,9 @@ Download a starter project that includes a vehicle simulator, Azure Function App
 
 4. Unzip the contents to your root hard drive (i.e. `C:\`). This will create a folder on your root drive named `scenario-based-labs-master`.
 
-5. Navigate to the [.NET Core 3.1 SDK download page](https://dotnet.microsoft.com/download/dotnet-core/3.1), then download the SDK for your environment, such as Windows .NET Core Installer x64.
+5. Navigate to the [.NET Core 2.2 download page](https://dotnet.microsoft.com/download/dotnet-core/2.2), then download the SDK for your environment, such as Windows .NET Core Installer x64.
+
+   ![The webpage is displayed with the SDK download section highlighted.](media/dotnet-sdk-2-2.png 'Download .NET Core 2.2')
 
 ### Task 1: Run deployment scripts
 
