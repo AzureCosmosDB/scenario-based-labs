@@ -190,6 +190,20 @@ namespace FleetDataGenerator
 
             }
 
+            // Take a random sample of 10 trips and update them so they are completed.
+            // This will make some initial trips available for batch scoring from an Azure Databricks notebook.
+            var sample = trips.OrderBy(x => Guid.NewGuid()).Take(10);
+            // Set the average driving speed to 45 MPH.
+            var averageSpeedMph = 45;
+
+            foreach (var trip in sample)
+            {
+                trip.odometerEnd = trip.odometerBegin + trip.plannedTripDistance;
+                trip.status = WellKnown.Status.Completed;
+                trip.tripStarted = RandomDateBeforeToday(14);
+                trip.tripEnded = trip.tripStarted.Value.AddMinutes((trip.plannedTripDistance / averageSpeedMph) * 60);
+            }
+
             return trips;
         }
 
