@@ -398,6 +398,8 @@ SELECT Count(distinct UserId) as UserCount, System.TimeStamp AS Time, Count(*) a
 
 ![Select the eventCount dataset and select next.](./media/xx_PowerBI_02.png 'Add the eventCount tile')
 
+  > **Important**: If the **eventData** data set does not appear, it is because there is a lag time of several minutes between when you first configure the Stream Analytics Power BI output and when data first appears in the streaming data set. Please ensure the data generator is running and that you have started the Stream Analytics query. Also, you may try restarting the Function App as well.
+
 1.  For the visualization type, select **Card**
 
 1.  For the Fields, select **EventCount**
