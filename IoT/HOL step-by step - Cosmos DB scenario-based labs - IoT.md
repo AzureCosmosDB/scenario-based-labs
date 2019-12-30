@@ -1825,151 +1825,101 @@ In this exercise, you will insert, update, and delete a vehicle record.
 
 ### Task 1: Log in to Power BI online and create real-time dashboard
 
+> **Important**: If the data generator is no longer running or sending new telemetry, be sure to start it before continuing. Simulating 50 vehicles should suffice for this exercise.
+
 1. Browse to <https://powerbi.microsoft.com> and sign in with the same account you used when you created the Power BI output in Stream Analytics.
 
 2. Select **My workspace**, then select the **Datasets** tab. You should see the **Contoso Auto IoT Events** dataset. This is the dataset you defined in the Stream Analytics Power BI output.
 
-    ![The Contoso Auto IoT dataset is displayed.](media/powerbi-datasets.png "Power BI Datasets")
+   ![The Contoso Auto IoT dataset is displayed.](media/powerbi-datasets.png 'Power BI Datasets')
 
 3. Select **+ Create** at the top of the page, then select **Dashboard**.
 
-    ![The Create button is highlighted at the top of the page, and the Dashboard menu item is highlighted underneath.](media/powerbi-create-dashboard.png "Create Dashboard")
+   ![The Create button is highlighted at the top of the page, and the Dashboard menu item is highlighted underneath.](media/powerbi-create-dashboard.png 'Create Dashboard')
 
 4. Provide a name for the dashboard, such as `Contoso Auto IoT Live Dashboard`, then select **Create**.
 
-    ![The create dashboard dialog is displayed.](media/powerbi-create-dashboard-dialog.png "Create dashboard dialog")
+   ![The create dashboard dialog is displayed.](media/powerbi-create-dashboard-dialog.png 'Create dashboard dialog')
 
 5. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
+   ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png 'Add tile')
 
 6. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
+   ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png 'Your datasets')
+
+   > **Important**: If the **Contoso Auto IoT Events** data set does not appear, it is because there is a lag time of several minutes between when you first configure the Stream Analytics Power BI output and when data first appears in the streaming data set. Please ensure the data generator is running and that you have started the Stream Analytics query. Also, you may try restarting the Function App as well.
 
 7. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **oilAnomaly** from the dropdown. Select **Next**.
 
-    ![The oilAnomaly field is added.](media/power-bi-dashboard-add-tile-oilanomaly.png "Add a custom streaming data tile")
+   ![The oilAnomaly field is added.](media/power-bi-dashboard-add-tile-oilanomaly.png 'Add a custom streaming data tile')
 
 8. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
+   ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png 'Tile details')
 
 9. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
-
 10. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
-
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
 11. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **engineTempAnomaly** from the dropdown. Select **Next**.
 
-    ![The engineTempAnomaly field is added.](media/power-bi-dashboard-add-tile-enginetempanomaly.png "Add a custom streaming data tile")
-
 12. Leave the values at their defaults for the tile details form, then select **Apply**.
-
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
 13. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
-
 14. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
-
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
 15. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **aggressiveDriving** from the dropdown. Select **Next**.
 
-    ![The aggressiveDriving field is added.](media/power-bi-dashboard-add-tile-aggressivedriving.png "Add a custom streaming data tile")
-
 16. Leave the values at their defaults for the tile details form, then select **Apply**.
-
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
 17. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
-
 18. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
-
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
 19. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **refrigerationTempAnomaly** from the dropdown. Select **Next**.
 
-    ![The refrigerationTempAnomaly field is added.](media/power-bi-dashboard-add-tile-refrigerationtempanomaly.png "Add a custom streaming data tile")
-
 20. Leave the values at their defaults for the tile details form, then select **Apply**.
-
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
 21. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
-
 22. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
-
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
 23. Select the **Card** Visualization Type. Under fields, select **+ Add value**, then select **eventCount** from the dropdown. Select **Next**.
 
-    ![The eventCount field is added.](media/power-bi-dashboard-add-tile-eventcount.png "Add a custom streaming data tile")
-
 24. Leave the values at their defaults for the tile details form, then select **Apply**.
-
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
 
 25. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
 
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
-
 26. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
-
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
 
 27. Select the **Line chart** Visualization Type. Under Axis, select **+ Add value**, then select **snapshot** from the dropdown. Under Values, select **+Add value**, then select **engineTemperature**. Leave the time window to display at 1 minute. Select **Next**.
 
-    ![The engineTemperature field is added.](media/power-bi-dashboard-add-tile-enginetemperature.png "Add a custom streaming data tile")
+    ![The engineTemperature field is added.](media/power-bi-dashboard-add-tile-enginetemperature.png 'Add a custom streaming data tile')
 
 28. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
-
 29. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
-
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
 
 30. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
-
 31. Select the **Line chart** Visualization Type. Under Axis, select **+ Add value**, then select **snapshot** from the dropdown. Under Values, select **+Add value**, then select **refrigerationUnitTemp**. Leave the time window to display at 1 minute. Select **Next**.
-
-    ![The refrigerationUnitTemp field is added.](media/power-bi-dashboard-add-tile-refrigerationunittemp.png "Add a custom streaming data tile")
 
 32. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
-
 33. Above the new dashboard, select **+ Add tile**, then select **Custom Streaming Data** in the dialog, then select **Next**.
-
-    ![The add tile dialog is displayed.](media/power-bi-dashboard-add-tile.png "Add tile")
 
 34. Select your **Contoso Auto IoT Events** dataset, then select **Next**.
 
-    ![The Contoso Auto IoT Events dataset is selected.](media/power-bi-dashboard-add-tile-dataset.png "Your datasets")
-
 35. Select the **Line chart** Visualization Type. Under Axis, select **+ Add value**, then select **snapshot** from the dropdown. Under Values, select **+Add value**, then select **speed**. Leave the time window to display at 1 minute. Select **Next**.
-
-    ![The speed field is added.](media/power-bi-dashboard-add-tile-speed.png "Add a custom streaming data tile")
 
 36. Leave the values at their defaults for the tile details form, then select **Apply**.
 
-    ![The apply button is highlighted on the tile details form.](media/power-bi-dashboard-tile-details.png "Tile details")
-
 37. When you are done, rearrange the tiles as shown:
 
-    ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png "Power BI dashboard")
+    ![The tiles have been rearranged.](media/power-bi-dashboard-rearranged.png 'Power BI dashboard')
 
 38. If the data generator is finished sending events, you may notice that tiles on the dashboard are empty. If so, start the data generator again, this time selecting **option 1** for one vehicle. If you do this, the refrigeration temperature anomaly is guaranteed, and you will see the refrigeration unit temperature gradually climb above the 22.5 degree Fahrenheit alert threshold. Alternatively, you may opt to simulate more vehicles and observe the high event count numbers.
 
@@ -1981,7 +1931,7 @@ In this exercise, you will insert, update, and delete a vehicle record.
 
 **Duration**: 15 minutes
 
-In this lab, you will import a Power BI report that has been created for you. After opening it, you will update the data source to point to your Power BI instance.
+In this exercise, you will import a Power BI report that has been created for you. After opening it, you will update the data source to point to your Power BI instance.
 
 ### Task 1: Import report in Power BI Desktop
 
