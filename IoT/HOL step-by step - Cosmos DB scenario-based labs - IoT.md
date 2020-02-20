@@ -894,7 +894,7 @@ In the architecture for this scenario, Azure functions play a major role in even
 
 Before we dive into this exercise, let's go over how the functions and Web App fit into our architecture.
 
-There are three Function Apps and one Web App in the solution. The Function Apps handle event processing within two stages of the data pipeline, and the Web App is used to perform CRUD operations against data stored in Cosmos DB.
+There are two Function Apps and one Web App in the solution. The Function Apps handle event processing within two stages of the data pipeline, and the Web App is used to perform CRUD operations against data stored in Cosmos DB.
 
 ![The two Function Apps and Web App are highlighted.](media/solution-diagram-function-apps-web-app.png 'Solution diagram')
 
