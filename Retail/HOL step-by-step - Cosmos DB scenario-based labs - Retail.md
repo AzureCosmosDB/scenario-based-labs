@@ -265,7 +265,7 @@ The algorithms for creating the offline calculations are written in Python and a
 
     You may see several of the following lines output to the console window after saving the genres and before adding the movies: `Input string was not in a correct format.`. You can safely ignore these due to some movies the API retrieved are poorly formatted.
 
-> NOTE: You must have waited for the Event Generator Databricks notebook to complete for this to run and have the later steps in the lab match.
+> NOTE: You must wait for the Event Generator Databricks notebook to be completed first before running this step. This is to ensure that later steps in the lab to match.
 
 ## Exercise 2: Complete and deploy Web and Function App
 
@@ -413,6 +413,8 @@ The notebook examined the `events` data to find items that tend to be purchased 
     ![An example item from the associations container is displayed.](./media/xx_AssocColl.png 'The associations container')
 
     > NOTE: These items are created from the Databricks solution and include the association confidence level as compared from one movie to another movie.
+
+    > NOTE: You will only see about 8 items generated here.
 
 ## Exercise 4: Complete and deploy Web App and Function App (Association Rules)
 

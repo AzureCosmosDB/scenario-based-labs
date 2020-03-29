@@ -60,10 +60,10 @@ namespace ContosoFunctionApp
 
             DoAggregateCalculations(events);
 
-            //TODO 5 - Event Hub
+            //TODO #5 - Event Hub
             
 
-            //TODO 6 - Fire the logic app
+            //TODO #6 - Fire the logic app
             
         }        
 

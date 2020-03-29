@@ -8,7 +8,7 @@
 $githubPath = "YOUR GIT PATH";
 
 #can be 'lab' or 'demo'
-$mode = "lab"  
+$mode = "demo"
 
 #if you want to use a specific subscription
 $subscriptionId = "YOUR SUB ID"
@@ -17,7 +17,7 @@ $subscriptionId = "YOUR SUB ID"
 $prefix = "YOUR INIT"
 
 #used for when you are using spektra environment
-$isSpektra = $true;
+$isSpektra = $false;
 
 if ($isSpektra)
 {
@@ -166,16 +166,16 @@ function DeployTemplate($filename, $skipDeployment, $parameters, $name)
 
         if (!$parameters)
         {
-            $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\$fileName") --output json)
+            $result = $(az deployment group create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\$fileName") --output json)
         }
         else
         {
-            $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\$fileName") --output json --parameters `@$githubpath\parameters.json)
+            $result = $(az deployment group create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\$fileName") --output json --parameters `@$githubpath\parameters.json)
         }
         
 
         #wait for the job to complete...
-        $res = $(az group deployment list --resource-group $rgname --output json)
+        $res = $(az deployment group list --resource-group $rgname --output json)
         $json = ConvertObjectToJson $res;
 
         $deployment = $json | where {$_.name -eq $deployId};
@@ -185,7 +185,7 @@ function DeployTemplate($filename, $skipDeployment, $parameters, $name)
         {
             start-sleep 10;
 
-            $res = $(az group deployment list --resource-group $rgname --output json)
+            $res = $(az deployment group list --resource-group $rgname --output json)
             $json = ConvertObjectToJson $res;
 
             $deployment = $json | where {$_.name -eq $deployId};
@@ -412,10 +412,10 @@ function SetupStreamAnalytics($suffix)
 {
     #deploy the template
     $deployId = "Microsoft.Template"
-    $result = $(az group deployment create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\labdeploy2.json") --output json )
+    $result = $(az deployment group create --name $deployId --resource-group $rgName --mode Incremental --template-file $($githubpath + "\retail\deploy\labdeploy2.json") --output json )
 
     #wait for the job to complete...
-    $res = $(az group deployment list --resource-group $rgname --output json)
+    $res = $(az deployment group list --resource-group $rgname --output json)
     $json = ConvertObjectToJson $res;
 
     $deployment = $json | where {$_.name -eq $deployId};

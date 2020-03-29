@@ -137,7 +137,7 @@ namespace Contoso.Apps.Movies.Logic
         {
             List<string> itemIds = new List<string>();
 
-            //TODO 3 - replace the following lines
+            //TODO #3 - replace the following lines
             int neighborhoodSize = 15;
             double minSim = 0.0;
             int maxCandidates = 100;
@@ -411,7 +411,7 @@ namespace Contoso.Apps.Movies.Logic
 
             List<string> itemIds = new List<string>();
 
-            //TODO 2 - add code below here...
+            //TODO #2 - add code below here...
             var container = client.GetContainer(databaseId, "object");
 
             var query = container.GetItemLinqQueryable<Item>(true)

@@ -218,7 +218,7 @@ The algorithms for creating the offline calculations are written in Python and a
 
    You may see several of the following lines output to the console window after saving the genres and before adding the movies: `Input string was not in a correct format.`. You can safely ignore these due to some movies the API retrieved are poorly formatted.
 
-> NOTE: You must have waited for the Event Generator Databricks notebook to complete for this to run and have the later steps in the lab match.
+> NOTE: You must wait for the Event Generator Databricks notebook to be completed first before running this step. This is to ensure that later steps in the lab to match.
 
 ### Task 4: Perform and deploy association rules calculation for offline algorithms
 
@@ -500,21 +500,21 @@ In this exercise you will configure your change feed function to call an HTTP lo
 
 ### Task 4: Explore the Function App Recommendation Code
 
-1.  Switch to Visual Studio and open the **Contoso.Apps.FunctionApp** project, then open the **RecommendationHelper.cs** file
+1. Switch to Visual Studio and open the **Contoso.Apps.FunctionApp** project, then open the **RecommendationHelper.cs** file
 
-1.  Navigate to the `public static List<Item> Get(string algo, int userId, int contentId, int take)` Get method signature. Point out that this is the entry point for where a recommedation will start based on the algorithm requested.
+1. Navigate to the `public static List<Item> Get(string algo, int userId, int contentId, int take)` Get method signature. Point out that this is the entry point for where a recommedation will start based on the algorithm requested.
 
-1.  Review the following methods and their code:
+1. Review the following methods and their code:
 
 - TopRecommendation - this is the basic method for randomly selecting a set of top purchased items.
-- AssociationRecommendationByUser -
-- CollaborativeBasedRecommendation -
+- AssociationRecommendationByUser
+- CollaborativeBasedRecommendation
 
 ### Task 5: Explore the Function App ChangeFeed Code
 
-1.  Switch to Visual Studio and open the **Contoso.Apps.FunctionApp** project, then open the **FuncChangeFeed.cs** file
+1. Switch to Visual Studio and open the **Contoso.Apps.FunctionApp** project, then open the **FuncChangeFeed.cs** file
 
-2.  Review the Dependency Injection for the **IHttpClientFactory** and the **CosmosClient** objects:
+1. Review the Dependency Injection for the **IHttpClientFactory** and the **CosmosClient** objects:
 
 ```csharp
 // Use Dependency Injection to inject the HttpClientFactory service that was configured in Startup.cs.
@@ -525,9 +525,9 @@ public FuncChangeFeed(IHttpClientFactory httpClientFactory, CosmosClient cosmosC
 }
 ```
 
-3.  Review the following methods and their code:
+1. Review the following methods and their code:
 
-- **DoAggregateCalculations** - This method updates the item aggregations for the `buy` events to keep track of the top items purchased. This will continually update and drive the `top` suggestions. You will see this when you execute the Data Generator tool.
+- **DoAggregateCalculations** - This method updates the item aggregations for the `buy` events to keep track of the top items purchased. This will continually update and drive the `top` suggestions. You will see this when you execute the Data Generator tool.  These aggregations will be stored in the `object` table as an `ItemAggregation` object type.
 
 - **AddEventToEventHub** - This method will forward the changefeed item to the event hub where Stream Analytics will then process the data.
 
@@ -535,11 +535,11 @@ public FuncChangeFeed(IHttpClientFactory httpClientFactory, CosmosClient cosmosC
 
 ### Task 6: Test order email delivery
 
-1.  Switch to Visual Studio, right-click the **DataGenerator** project, select **Set as startup project**
+1. Switch to Visual Studio, right-click the **DataGenerator** project, select **Set as startup project**
 
-1.  Press **F5** to run the project
+1. Press **F5** to run the project
 
-1.  For each `buy` event, you should receive an email
+1. For each `buy` event, you should receive an email
 
 > NOTE: You could receive quite a `few` emails.
 

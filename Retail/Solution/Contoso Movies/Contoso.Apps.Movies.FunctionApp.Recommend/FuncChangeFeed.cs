@@ -57,13 +57,13 @@ namespace ContosoFunctionApp
             DbHelper.client = _cosmosClient;
             DbHelper.databaseId = databaseName;
 
-            //TODO 1 - Aggregate into cosmos for top products calcluation
+            //TODO #1 - Aggregate into cosmos for top products calcluation
             DoAggregateCalculations(events);
 
-            //TODO 2 - Event Hub
+            //TODO #2 - Event Hub
             AddEventToEventHub(events);
 
-            //TODO 3 - Fire the logic app
+            //TODO #3 - Fire the logic app
             CallLogicApp(events);            
         }        
 
