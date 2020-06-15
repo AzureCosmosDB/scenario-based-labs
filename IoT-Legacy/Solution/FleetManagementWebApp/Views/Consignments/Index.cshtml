@@ -1,0 +1,98 @@
+﻿@using P.Pager.Mvc.Core
+@using P.Pager
+@model FleetManagementWebApp.ViewModels.ConsignmentIndexViewModel
+
+@{
+    ViewData["Title"] = "Consignments";
+}
+
+<section class="content-header">
+    <h1>
+        @ViewData["Title"]
+        <small>View consignments for customer deliveries</small>
+    </h1>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Index" method="get">
+                <div class="input-group">
+                    <input asp-for="Search" type="text" name="search" class="form-control" placeholder="Search customer name or Consignment ID...">
+                    <span class="input-group-btn">
+                        <button type="submit" id="search-btn" class="btn btn-flat">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @Html.Pager((IPager)Model.Consignments, page => Url.Action("Index", new { page, Model.Search }), PrePagerOptions.MinimalWithEntriesText)
+
+    <table class="table table-striped table-condensed">
+        <thead>
+        <tr>
+            <th>
+                Consignment ID
+            </th>
+            <th>
+                Customer
+            </th>
+            <th>
+                Delivery Due Date
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                # Packages
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Consignments)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(item.id, "Details", new { id = item.id })
+                </td>
+                <td>
+                    @item.customer
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.deliveryDueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)
+                </td>
+                <td style="text-align: right">
+                    @item.packages.Count()
+                </td>
+                <td>
+                    @Html.ActionLink("View", "Details", new { id=item.id })
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    
+    @if (!Model.Consignments.Any())
+    {
+        <div class="col-md-6">
+            <div class="callout callout-warning">
+                <h4>No consignments found</h4>
+
+                <p>We could not locate any consignments, using your applied filter. Try clearing the search box and trying again.</p>
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.Pager((IPager)Model.Consignments, page => Url.Action("Index", new { page, Model.Search }), new PagerOptions { PagesToDisplay = 10 })
+    </div>
+
+</section>

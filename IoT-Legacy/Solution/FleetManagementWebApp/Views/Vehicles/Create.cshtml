@@ -1,0 +1,63 @@
+﻿@model FleetManagementWebApp.ViewModels.VehicleCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Vehicle";
+}
+
+<section class="content-header">
+    <h1>
+        @ViewData["Title"]
+    </h1>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Create">
+                <div class="form-group">
+                    <label asp-for="vin" class="control-label"></label>
+                    <input asp-for="vin" class="form-control"/>
+                    <span asp-validation-for="vin" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="lastServiceDate" class="control-label"></label>
+                    <input asp-for="lastServiceDate" class="form-control"/>
+                    <span asp-validation-for="lastServiceDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="batteryAgeDays" class="control-label"></label>
+                    <input asp-for="batteryAgeDays" class="form-control"/>
+                    <span asp-validation-for="batteryAgeDays" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="batteryRatedCycles" class="control-label"></label>
+                    <input asp-for="batteryRatedCycles" class="form-control"/>
+                    <span asp-validation-for="batteryRatedCycles" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="lifetimeBatteryCyclesUsed" class="control-label"></label>
+                    <input asp-for="lifetimeBatteryCyclesUsed" class="form-control"/>
+                    <span asp-validation-for="lifetimeBatteryCyclesUsed" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="stateVehicleRegistered" class="control-label"></label>
+                    <select id="states-list" class="form-control" asp-for="stateVehicleRegistered" asp-items="@(new SelectList(Model.StatesList))"></select>
+                    <span asp-validation-for="stateVehicleRegistered" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-default"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+</section>
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }

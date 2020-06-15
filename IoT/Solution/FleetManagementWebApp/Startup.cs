@@ -14,6 +14,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Polly;
 
 namespace FleetManagementWebApp
@@ -37,11 +38,11 @@ namespace FleetManagementWebApp
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => options.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddSingleton<ICosmosDbService>(InitializeCosmosClientInstance(Configuration));
 
             // Inject the HttpClientFactory and set a default resilience policy with an exponential back-off using Polly, in case of failures reaching the service.
-            services.AddHttpClient(NamedHttpClients.ScoringService, client =>
+            services.AddHttpClient(WellKnown.SCORING_SVC_CLIENT, client =>
                 {
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 })
@@ -51,7 +52,7 @@ namespace FleetManagementWebApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -86,6 +87,7 @@ namespace FleetManagementWebApp
             var containerName = configuration["ContainerName"];
             var connectionString = configuration["CosmosDBConnection"];
             var cosmosDbConnectionString = new CosmosDbConnectionString(connectionString);
+
             CosmosClientBuilder clientBuilder = new CosmosClientBuilder(cosmosDbConnectionString.ServiceEndpoint.OriginalString, cosmosDbConnectionString.AuthKey);
             CosmosClient client = clientBuilder
                 .WithConnectionModeDirect()

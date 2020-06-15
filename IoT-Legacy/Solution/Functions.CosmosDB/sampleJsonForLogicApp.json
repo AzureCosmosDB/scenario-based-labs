@@ -1,0 +1,20 @@
+{
+  "id": "b1aea167-bb94-472e-86c3-80077794798d",
+  "vin": "4GGHJBM0ZFJ7IGZQH",
+  "consignmentId": "dbac93ef-770f-4205-bb5c-6fe6bd65992b",
+  "plannedTripDistance": 31.58,
+  "distanceDriven": 28.5,
+  "location": "WV",
+  "odometerBegin": 93318,
+  "odometerEnd": 93349.58,
+  "temperatureSetting": 19,
+  "tripStarted": "2019-09-07T16:45:17.8971464Z",
+  "tripEnded": "2019-09-07T17:28:30.7854319Z",
+  "status": "Completed",
+  "hasHighValuePackages": true,
+  "lowestPackageStorageTemperature": 21,
+  "lastRefrigerationUnitTemperatureReading": 19,
+  "customer": "Fincher Architects",
+  "deliveryDueDate": "2019-09-07T09:36:40.460679Z",
+  "recipientEmail": "brian.stitt@contosoauto.com"
+}

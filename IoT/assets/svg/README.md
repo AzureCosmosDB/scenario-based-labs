@@ -1,0 +1,1 @@
+SVG glyph source: https://azure.microsoft.com/patterns/styles/glyphs-icons/

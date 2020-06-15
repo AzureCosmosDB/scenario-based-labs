@@ -230,7 +230,7 @@ namespace FleetManagementWebApp.Controllers
         {
             var payload = new BatteryPredictionPayload(batteryAgeDays, dailyTripDuration);
 
-            var httpClient = _clientFactory.CreateClient(NamedHttpClients.ScoringService);
+            var httpClient = _clientFactory.CreateClient(WellKnown.SCORING_SVC_CLIENT);
 
             // Create the payload to send to the Logic App.
             var postBody = JsonConvert.SerializeObject(payload);
@@ -239,7 +239,7 @@ namespace FleetManagementWebApp.Controllers
                 new StringContent(postBody, Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
 
-            var result = BatteryPredictionResult.FromJson(await httpResponse.Content.ReadAsAsync<string>());
+            var result = BatteryPredictionResult.FromJson(await httpResponse.Content.ReadAsStringAsync());
 
             // The results return in an array of doubles. We only expect a single result for this prediction.
             var predictedDailyCyclesUsed = result.Result[0];

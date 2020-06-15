@@ -6,6 +6,27 @@ namespace CosmosDbIoTScenario.Common
 {
     public static class WellKnown
     {
+        public const string COSMOSDB_CONNECTIONSTRING_NAME = "CosmosDBConnection";
+        public const string COSMOSDB_DB_NAME = "ContosoAuto";
+        public const string COSMOSDB_COLLECTION_NAME_METADATA = "metadata";
+        public const string COSMOSDB_COLLECTION_NAME_TELEMETRY = "telemetry";
+        public const string COSMOSDB_COLLECTION_NAME_LEASES = "leases";
+        public const string COSMOSDB_LEASE_PREFIX_TRIPS = "trips";
+        public const string COSMOSDB_LEASE_PREFIX_REPORTING = "reporting";
+
+        public const string EVENT_HUB_CONNECTION_NAME = "EventHubsConnection";
+        public const string EVENT_HUB_NAME = "reporting";
+
+        public const string LOGIC_APP_CLIENT = "LogicAppClient";
+
+        public const string LOGIC_APP_URL_NAME = "LogicAppUrl";
+        public const string RECIPIENT_EMAIL_NAME = "RecipientEmail";
+
+        public const string IOT_HUB_CONNECTION_NAME = "IoTHubConnection";
+        public const string IOT_HUB_NAME = "messages/events";
+
+        public const string SCORING_SVC_CLIENT = "ScoringService";
+
         public struct Regions
         {
             public static string Southwest = "Southwest";

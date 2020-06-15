@@ -1,0 +1,26 @@
+﻿@using FleetManagementWebApp.Helpers
+
+<ul class="sidebar-menu" data-widget="tree">
+    <li class="header">HEADER</li>
+    <!-- Links: -->
+    <li class="@Html.IsSelected(actions: "Index", controllers: "Home")"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><i class="fa fa-home"></i> <span>Home</span></a></li>
+    <li class="@Html.IsSelected(actions: "Index,Details,Create,Delete,Edit", controllers: "Vehicles")"><a class="nav-link text-dark" asp-area="" asp-controller="Vehicles" asp-action="Index"><i class="fa fa-truck"></i> <span>Vehicles</span></a></li>
+    <li class="@Html.IsSelected(actions: "Index,Details", controllers: "Consignments")"><a class="nav-link text-dark" asp-area="" asp-controller="Consignments" asp-action="Index"><i class="fa fa-user-circle"></i> <span>Consignments</span></a></li>
+    <li class="@Html.IsSelected(actions: "Index", controllers: "Trips")"><a class="nav-link text-dark" asp-area="" asp-controller="Trips" asp-action="Index"><i class="fa fa-map"></i> <span>Trips</span></a></li>
+    <hr />
+    <li class="@Html.IsSelected(actions: "Privacy", controllers: "Home")"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy"><i class="fa fa-eye"></i> <span>Privacy</span></a></li>
+    <!--
+    <li class="treeview">
+        <a href="#">
+            <i class="fa fa-link"></i> <span>Multilevel</span>
+            <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+            </span>
+        </a>
+        <ul class="treeview-menu">
+            <li><a href="#">Link in level 2</a></li>
+            <li><a href="#">Link in level 2</a></li>
+        </ul>
+    </li>
+    -->
+</ul>
