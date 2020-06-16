@@ -15,4 +15,4 @@
 - [Exercise 10: Run the predictive maintenance batch scoring model](./10.batch-model.md)
 - [Exercise 11: Operationalize and call the predictive maintenance prediction model](./11.operationalize-model.md)
 - [Exercise 12: Refresh the Power BI report and view maintenance data](./12.report-maintenance.md)
-- [Environment clean-up](./13.cleanup.md)
+- [Environment clean-up](./99.cleanup.md)

@@ -61,7 +61,7 @@
         "defaultDataLakeStorageAccountUrl": "[concat('https://', variables('synapseStorageAccountName'), '.dfs.core.windows.net')]",
 
         "apiVersionAppInsights": "2015-05-01",
-        "apiVersionCosmosDb": "2020-03-01",
+        "apiVersionCosmosDb": "2020-04-01",
         "apiVersionEventHubs": "2017-04-01",
         "apiVersionEventHubsPreview": "2018-01-01-preview",
         "apiVersionIotHubs": "2020-03-01",

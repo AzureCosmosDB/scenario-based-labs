@@ -87,7 +87,7 @@
         "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('nameSuffix'))]",
 
         "apiVersionAppInsights": "2015-05-01",
-        "apiVersionCosmosDb": "2020-03-01",
+        "apiVersionCosmosDb": "2020-04-01",
         "apiVersionEventHubs": "2017-04-01",
         "apiVersionKeyVault": "2019-09-01",
         "apiVersionLogicApp": "2016-06-01",
