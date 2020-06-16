@@ -3,10 +3,9 @@
 ## Demo Deployment, Configuration, and Use
 
 - [Requirements and Setup](./00.setup.md)
-
-
-- [Requirements and Setup](./00.setup.md)
 - [Exercise 1: Configure environment](./01.configure-environment.md)
+
+
 - [Exercise 2: Configure Stream Analytics](./02.configure-stream-analytics.md)
 - [Exercise 3: Deploy Azure Functions and Web App](./03.deploy-functions-and-webapp.md)
 - [Exercise 4: Explore and run the Data Generator](./04.data-generator.md)
