@@ -44,6 +44,10 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
 
   A **Web App** allows Contoso Auto to manage vehicles and view consignment, package, and trip information that is stored in Cosmos DB. The Web App is also used to make real-time battery failure predictions while viewing vehicle information. **Azure Key Vault** is used to securely store centralized application secrets, such as connection strings and access keys, and is used by the Function Apps and the Web App. Finally, **Application Insights** provides real-time monitoring, metrics, and logging information for the Function Apps and Web App.
 
-## Working on the Lab
+## Deployment
 
-Please follow the steps in order as laid out in the [Lab steps table of contents](./docs-lab/README.md).
+There are two separate deployments of this scenario: a hands-on lab, and a demo. Each deployment results in the same final set of deployed Azure resources.
+
+The hands-on lab deployment starts will a minimal set of automated Azure resource deployments. Learners will then complete several hands-on exercises to complete the lab. To go through the hands-on lab, please follow the steps in order as laid out in the [Lab steps table of contents](./docs-lab/README.md).
+
+The demo deployment automates all Azure resource deployment steps, with a minimum of manual steps required to complete the overall deployment. This deployment results in the complete deployment as quickly as possible to support interactive exploration and demonstrations. To complete the demo deployment, please follow the steps as laid out in the [Demo steps table of contents](./docs-demo/README.md).

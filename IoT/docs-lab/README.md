@@ -1,5 +1,7 @@
 # Cosmos DB scenario-based labs - IoT
 
+## Hands-On Lab Exercises
+
 - [Requirements and Setup](./00.setup.md)
 - [Exercise 1: Configure environment](./01.configure-environment.md)
 - [Exercise 2: Configure Stream Analytics](./02.configure-stream-analytics.md)
