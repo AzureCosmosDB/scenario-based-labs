@@ -46,8 +46,16 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
 
 ## Deployment
 
-There are two separate deployments of this scenario: a hands-on lab, and a demo. Each deployment results in the same final set of deployed Azure resources.
+There are two separate deployments of this scenario: a **hands-on lab**, and a **demo** deployment. Each deployment results in the same final set of deployed Azure resources.
 
-The hands-on lab deployment starts will a minimal set of automated Azure resource deployments. Learners will then complete several hands-on exercises to complete the lab. To go through the hands-on lab, please follow the steps in order as laid out in the [Lab steps table of contents](./docs-lab/README.md).
+### Hands-on Lab
 
-The demo deployment automates all Azure resource deployment steps, with a minimum of manual steps required to complete the overall deployment. This deployment results in the complete deployment as quickly as possible to support interactive exploration and demonstrations. To complete the demo deployment, please follow the steps as laid out in the [Demo steps table of contents](./docs-demo/README.md).
+The hands-on lab starts with a minimal set of automated Azure resource deployments. Learners will then step through several hands-on deployment and configuration exercises to complete the overall lab.
+
+### Demo
+
+The demo deployment automates all Azure resource deployment steps, with a minimum of manual steps required to complete the overall deployment. This deployment results in the complete deployment as quickly as possible to support interactive exploration and demonstrations.
+
+### Getting Started
+
+To go through either the hands-on lab or the demo deployment, please [follow all the steps in order](./docs/README.md).
