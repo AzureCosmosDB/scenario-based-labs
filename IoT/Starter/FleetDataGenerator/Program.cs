@@ -33,6 +33,11 @@ namespace FleetDataGenerator
         private const string MaintenanceContainerName = "maintenance";
         private const string PartitionKey = "partitionKey";
 
+        private const int MAINTENANCE_CONTAINER_RUS = 800;
+        private const int METADATA_CONTAINER_RUS_NORMAL = 15000;
+        private const int METADATA_CONTAINER_RUS_BULK_IMPORT = 50000;
+        private const int TELEMETRY_CONTAINER_RUS = 15000;
+
         private static readonly object LockObject = new object();
         // AutoResetEvent to signal when to exit the application.
         private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
@@ -162,25 +167,15 @@ namespace FleetDataGenerator
                     await InitializeCosmosDb();
 
                     // Find and output the container details, including # of RU/s.
-                    var container = _database.GetContainer(MetadataContainerName);
+                    var metadataContainer = _database.GetContainer(MetadataContainerName);
 
-                    var offer = await container.ReadThroughputAsync(cancellationToken);
-
-                    if (offer != null)
-                    {
-                        var currentCollectionThroughput = offer ?? 0;
-                        WriteLineInColor(
-                            $"Found collection `{MetadataContainerName}` with {currentCollectionThroughput} RU/s.",
-                            ConsoleColor.Green);
-                    }
-
-                    // Ensure the telemetry container throughput is set to 15,000 RU/s.
-                    var telemetryContainer = await GetContainerIfExists(TelemetryContainerName);
-                    await ChangeContainerPerformance(telemetryContainer, 15000);
+                    // Ensure the telemetry container throughput is set correctly
+                    var telemetryContainer = GetContainerIfExists(TelemetryContainerName);
+                    await SetContainerPerformance(telemetryContainer, TELEMETRY_CONTAINER_RUS);
 
                     // Initially seed the Cosmos DB database with metadata if empty.
                     await SeedDatabase(cosmosDbConnectionString, cancellationToken);
-                    trips = await GetTripsFromDatabase(numberSimulatedTrucks, container);
+                    trips = await GetTripsFromDatabase(numberSimulatedTrucks, metadataContainer);
                 }
 
                 try
@@ -201,7 +196,6 @@ namespace FleetDataGenerator
                         }
 
                         tasks = _runningVehicleTasks.Where(t => !t.Value.IsCompleted).Select(t => t.Value).ToList();
-
                     }
                 }
                 catch (OperationCanceledException)
@@ -385,11 +379,13 @@ namespace FleetDataGenerator
             _database = await _cosmosDbClient.CreateDatabaseIfNotExistsAsync(DatabaseName);
 
             #region Telemetry container
-            // Define a new container.
+
+            // Create telemetry container with analytical store enabled
             var telemetryContainerDefinition =
                 new ContainerProperties(id: TelemetryContainerName, partitionKeyPath: $"/{PartitionKey}")
                 {
-                    IndexingPolicy = { IndexingMode = IndexingMode.Consistent }
+                    IndexingPolicy = { IndexingMode = IndexingMode.Consistent },
+                    AnalyticalStoreTimeToLiveInSeconds = -1
                 };
 
             // Tune the indexing policy for write-heavy workloads by only including regularly queried paths.
@@ -402,57 +398,91 @@ namespace FleetDataGenerator
             telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/state/?" });
             telemetryContainerDefinition.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/partitionKey/?" });
 
-            // Create the container with a throughput of 15000 RU/s.
-            await _database.CreateContainerIfNotExistsAsync(telemetryContainerDefinition, throughput: 15000);
+            // Provision the container with autoscale throughput
+            ThroughputProperties telemetryThroughputProperties = ThroughputProperties.CreateAutoscaleThroughput(TELEMETRY_CONTAINER_RUS);
+
+            // Create the container with autoscale throughput
+            var telemetryContainerResponse = await _database.CreateContainerIfNotExistsAsync(telemetryContainerDefinition, telemetryThroughputProperties);
+
             #endregion
 
             #region Metadata container
-            // Define a new container (collection).
+
+            // Create metadata container with analytical store enabled
             var metadataContainerDefinition =
                 new ContainerProperties(id: MetadataContainerName, partitionKeyPath: $"/{PartitionKey}")
                 {
                     // Set the indexing policy to consistent and use the default settings because we expect read-heavy workloads in this container (includes all paths (/*) with all range indexes).
                     // Indexing all paths when you have write-heavy workloads may impact performance and cost more RU/s than desired.
-                    IndexingPolicy = { IndexingMode = IndexingMode.Consistent }
+                    IndexingPolicy = { IndexingMode = IndexingMode.Consistent },
+                    AnalyticalStoreTimeToLiveInSeconds = -1
                 };
 
-            // Set initial performance to 50,000 RU/s for bulk import performance.
-            await _database.CreateContainerIfNotExistsAsync(metadataContainerDefinition, throughput: 50000);
+            // Provision the container with autoscale throughput - start with bulk import throughput since the bulk import will run after this create
+            ThroughputProperties metadataThroughputProperties = ThroughputProperties.CreateAutoscaleThroughput(METADATA_CONTAINER_RUS_BULK_IMPORT);
+
+            // Create the container with autoscale throughput
+            var metadataContainerResponse = await _database.CreateContainerIfNotExistsAsync(metadataContainerDefinition, metadataThroughputProperties);
+
             #endregion
 
             #region Maintenance container
-            // Define a new container (collection).
+
+            // Create maintenance container
             var maintenanceContainerDefinition =
                 new ContainerProperties(id: MaintenanceContainerName, partitionKeyPath: $"/vin")
                 {
                     IndexingPolicy = { IndexingMode = IndexingMode.Consistent }
                 };
 
-            // Set initial performance to 400 RU/s due to light workloads.
-            await _database.CreateContainerIfNotExistsAsync(maintenanceContainerDefinition, throughput: 400);
+            // Provision the container with fixed throughput
+            ThroughputProperties maintenanceThroughputProperties = ThroughputProperties.CreateManualThroughput(MAINTENANCE_CONTAINER_RUS);
+
+            // Create the container
+            var maintenanceContainerResponse = await _database.CreateContainerIfNotExistsAsync(maintenanceContainerDefinition, maintenanceThroughputProperties);
+            
             #endregion
         }
 
-        private static async Task ChangeContainerPerformance(Container container, int desiredThroughput)
+        private static async Task SetContainerPerformance(Container container, int desiredThroughput)
         {
-            // Retrieve the existing throughput.
-            var throughputResponse = await container.ReadThroughputAsync();
+            ThroughputProperties throughputProperties = await container.ReadThroughputAsync(requestOptions: null);
 
-            if (throughputResponse.HasValue && throughputResponse.Value == desiredThroughput)
+            ThroughputResponse throughputResponse = null;
+
+            if (throughputProperties.AutoscaleMaxThroughput != null)
             {
-                WriteLineInColor($"\nThe {container.Id} container is already configured with the following throughput: {desiredThroughput}. Skipping performance change request...", ConsoleColor.Yellow);
+                // Container configured with autoscale throughput
+
+                if (throughputProperties.AutoscaleMaxThroughput.Value == desiredThroughput)
+                    WriteLineInColor($"\nThe {container.Id} container is already configured with max throughput: {desiredThroughput}. Skipping performance change request...", ConsoleColor.Yellow);
+                else
+                {
+                    WriteLineInColor($"\nThe {container.Id} container is configured with max throughput: {throughputProperties.AutoscaleMaxThroughput}\nChanging max throughput to {desiredThroughput}", ConsoleColor.White);
+
+                    ThroughputProperties newThroughputProperties = ThroughputProperties.CreateAutoscaleThroughput(desiredThroughput);
+
+                    throughputResponse = await container.ReplaceThroughputAsync(newThroughputProperties);
+
+                    WriteLineInColor($"\nChanged {container.Id}'s max throughput to {desiredThroughput}", ConsoleColor.Cyan);
+                }
             }
             else
             {
-                WriteLineInColor($"\nThe {container.Id} container is configured with the existing throughput: {throughputResponse}\nChanging throughput to {desiredThroughput}", ConsoleColor.White);
+                // Container configured with manual throughput
 
-                // Change the throughput performance.
-                await container.ReplaceThroughputAsync(desiredThroughput);
+                if (throughputProperties.Throughput.HasValue && throughputProperties.Throughput.Value == desiredThroughput)
+                    WriteLineInColor($"\nThe {container.Id} container is already configured with throughput: {desiredThroughput}. Skipping performance change request...", ConsoleColor.Yellow);
+                else
+                {
+                    WriteLineInColor($"\nThe {container.Id} container is configured with throughput: {throughputProperties.AutoscaleMaxThroughput}\nChanging throughput to {desiredThroughput}", ConsoleColor.White);
 
-                // Verify the changed throughput.
-                throughputResponse = await container.ReadThroughputAsync();
+                    ThroughputProperties newThroughputProperties = ThroughputProperties.CreateManualThroughput(desiredThroughput);
 
-                WriteLineInColor($"\nChanged {container.Id}'s requested throughput to {throughputResponse}", ConsoleColor.Cyan);
+                    throughputResponse = await container.ReplaceThroughputAsync(newThroughputProperties);
+
+                    WriteLineInColor($"\nChanged {container.Id}'s throughput to {desiredThroughput}", ConsoleColor.Cyan);
+                }
             }
         }
 
@@ -469,7 +499,7 @@ namespace FleetDataGenerator
         /// Get the collection if it exists, null if it doesn't.
         /// </summary>
         /// <returns>The requested collection</returns>
-        private static async Task<Container> GetContainerIfExists(string containerName)
+        private static Container GetContainerIfExists(string containerName)
         {
             return _database.GetContainer(containerName);
         }
@@ -482,9 +512,9 @@ namespace FleetDataGenerator
             // Check if data exists before seeding.
             var count = 0;
             var query = new QueryDefinition($"SELECT VALUE COUNT(1) FROM c");
-            var container = await GetContainerIfExists(MetadataContainerName);
-            var resultSetIterator = container.GetItemQueryIterator<int>(query, requestOptions: new QueryRequestOptions() { MaxItemCount = 1});
-            
+            var metadataContainer = GetContainerIfExists(MetadataContainerName);
+            var resultSetIterator = metadataContainer.GetItemQueryIterator<int>(query, requestOptions: new QueryRequestOptions() { MaxItemCount = 1 });
+
             if (resultSetIterator.HasMoreResults)
             {
                 var result = await resultSetIterator.ReadNextAsync();
@@ -494,8 +524,8 @@ namespace FleetDataGenerator
             if (count == 0)
             {
                 // Scale up the requested throughput (RU/s) for the metadata container prior to bulk import:
-                WriteLineInColor($"No data currently exists in the {MetadataContainerName} container. Scaling up the container RU/s to 50,000 prior to bulk data insert...", ConsoleColor.Cyan);
-                await ChangeContainerPerformance(container, 50000);
+                WriteLineInColor($"No data currently exists in the {MetadataContainerName} container. Scaling up the container RU/s to {METADATA_CONTAINER_RUS_BULK_IMPORT} prior to bulk data insert...", ConsoleColor.Cyan);
+                await SetContainerPerformance(metadataContainer, METADATA_CONTAINER_RUS_BULK_IMPORT);
                 WriteLineInColor("Container RU/s adjusted. Generating data to seed database...", ConsoleColor.Cyan);
 
                 var bulkImporter = new BulkImporter(cosmosDbConnectionString);
@@ -523,9 +553,10 @@ namespace FleetDataGenerator
                 await bulkImporter.BulkImport(trips, DatabaseName, MetadataContainerName, cancellationToken, 1);
 
                 WriteLineInColor("Finished seeding Cosmos DB.", ConsoleColor.Cyan);
-                
+
                 // Scale down the requested throughput (RU/s) for the metadata container:
-                await ChangeContainerPerformance(container, 15000);
+                WriteLineInColor($"Scaling down the container RU/s to {METADATA_CONTAINER_RUS_NORMAL} after bulk data insert...", ConsoleColor.Cyan);
+                await SetContainerPerformance(metadataContainer, METADATA_CONTAINER_RUS_NORMAL);
             }
             else
             {
