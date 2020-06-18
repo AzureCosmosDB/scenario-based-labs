@@ -49,9 +49,7 @@ namespace Functions.StreamProcessing
 					vehicleEvent.partitionKey = $"{vehicleEvent.vin}-{DateTime.UtcNow:yyyy-MM}";
 
 					// Set the TTL to expire the document after 60 days.
-
-					// TODO - 2020-04-16 - DISABLE this due to Cosmos DB container enabled for analytical storage - conflict with AS TTL setting
-					//vehicleEvent.ttl = 60 * 60 * 24 * 60;
+					vehicleEvent.ttl = 60 * 60 * 24 * 60;
 
 					vehicleEvent.timestamp = DateTime.UtcNow;
 

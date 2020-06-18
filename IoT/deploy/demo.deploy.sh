@@ -3,14 +3,14 @@
 # ====================
 # Variables
 
-subscription_id=""
+subscription_id="220fc532-6091-423c-8ba0-66c2397d591b"
 location="eastus"
 resource_group_name="pz-iot-demo-20200618-1"
 
 template_file="demo.deploy.json"
 deployment_name="deploy_iot_scenario_demo"
 
-recipient_email=""
+recipient_email="paelaz@microsoft.com"
 # ====================
 
 # Operations

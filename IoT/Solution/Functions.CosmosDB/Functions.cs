@@ -22,6 +22,8 @@ namespace Functions.CosmosDB
 {
     public class Functions
     {
+        private const int LEASES_COLLECTION_THROUGHPUT = 1000;
+
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly CosmosClient _cosmosClient;
 
@@ -39,6 +41,7 @@ namespace Functions.CosmosDB
             ConnectionStringSetting = WellKnown.COSMOSDB_CONNECTIONSTRING_NAME,
             LeaseCollectionName = WellKnown.COSMOSDB_COLLECTION_NAME_LEASES,
             LeaseCollectionPrefix = WellKnown.COSMOSDB_LEASE_PREFIX_TRIPS,
+            LeasesCollectionThroughput = LEASES_COLLECTION_THROUGHPUT,
             CreateLeaseCollectionIfNotExists = true,
             StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
             ILogger log)
@@ -188,6 +191,7 @@ namespace Functions.CosmosDB
             ConnectionStringSetting = WellKnown.COSMOSDB_CONNECTIONSTRING_NAME,
             LeaseCollectionName = WellKnown.COSMOSDB_COLLECTION_NAME_LEASES,
             LeaseCollectionPrefix = WellKnown.COSMOSDB_LEASE_PREFIX_REPORTING,
+            LeasesCollectionThroughput = LEASES_COLLECTION_THROUGHPUT,
             CreateLeaseCollectionIfNotExists = true,
             StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
             [EventHub(WellKnown.EVENT_HUB_NAME, Connection = WellKnown.EVENT_HUB_CONNECTION_NAME)] IAsyncCollector<EventData> vehicleEventsOut,
