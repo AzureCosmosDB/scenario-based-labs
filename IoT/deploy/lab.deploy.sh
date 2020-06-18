@@ -3,9 +3,9 @@
 # ====================
 # Variables
 
-subscription_id="220fc532-6091-423c-8ba0-66c2397d591b"
+subscription_id=""
 location="eastus"
-resource_group_name="iot-lab-test-40"
+resource_group_name="pz-iot-lab-20200618-1"
 
 template_file="lab.deploy.json"
 deployment_name="deploy_iot_scenario_lab"

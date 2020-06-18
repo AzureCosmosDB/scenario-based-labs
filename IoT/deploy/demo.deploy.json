@@ -288,9 +288,21 @@
                         "kind": "Hash"
                     },
                     "analyticalStorageTtl": -1
-                },
-                "options": {
-                    "provisionedThroughputSettings": "[concat('{\"maxThroughput\":\"', variables('cosmosDbMaxThroughputMetadata'), '\"}')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/throughputSettings",
+            "apiVersion": "[variables('apiVersionCosmosDb')]",
+            "name": "[concat(variables('cosmosDbAccountName'), '/', variables('cosmosDbDatabaseName'), '/', variables('cosmosDbContainerNameMetadata'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers', variables('cosmosDbAccountName'), variables('cosmosDbDatabaseName'), variables('cosmosDbContainerNameMetadata'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "autoscaleSettings": {
+                        "maxThroughput": "[variables('cosmosDbMaxThroughputMetadata')]"
+                    }
                 }
             }
         },
@@ -311,12 +323,25 @@
                         "kind": "Hash"
                     },
                     "analyticalStorageTtl": -1
-                },
-                "options": {
-                    "provisionedThroughputSettings": "[concat('{\"maxThroughput\":\"', variables('cosmosDbMaxThroughputTelemetry'), '\"}')]"
                 }
             }
         },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/throughputSettings",
+            "apiVersion": "[variables('apiVersionCosmosDb')]",
+            "name": "[concat(variables('cosmosDbAccountName'), '/', variables('cosmosDbDatabaseName'), '/', variables('cosmosDbContainerNameTelemetry'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers', variables('cosmosDbAccountName'), variables('cosmosDbDatabaseName'), variables('cosmosDbContainerNameTelemetry'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "autoscaleSettings": {
+                        "maxThroughput": "[variables('cosmosDbMaxThroughputTelemetry')]"
+                    }
+                }
+            }
+        },
+
 
         {
             "type": "Microsoft.Web/connections",

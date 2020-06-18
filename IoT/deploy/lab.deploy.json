@@ -514,21 +514,6 @@
             }
         },
         {
-            "type": "Microsoft.EventHub/namespaces/AuthorizationRules",
-            "apiVersion": "[variables('apiVersionEventHubs')]",
-            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/', variables('eventHubsSharedAccessPolicyName'))]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubsNamespaceIoTName'))]"
-            ],
-            "properties": {
-                "rights": [
-                    "Listen",
-                    "Send"
-                ]
-            }
-        },
-        {
             "type": "Microsoft.EventHub/namespaces/eventhubs",
             "apiVersion": "[variables('apiVersionEventHubs')]",
             "name": "[concat(variables('eventHubsNamespaceIoTName'), '/', variables('eventHubsName'))]",
@@ -566,6 +551,24 @@
                 "virtualNetworkRules": [
                 ],
                 "ipRules": [
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/AuthorizationRules",
+            "apiVersion": "[variables('apiVersionEventHubs')]",
+            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/', variables('eventHubsSharedAccessPolicyName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubsNamespaceIoTName'))]",
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', variables('eventHubsNamespaceIoTName'), variables('eventHubsName'))]",
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs/consumergroups', variables('eventHubsNamespaceIoTName'), variables('eventHubsName'), variables('eventHubsConsumerGroupName'))]",
+                "[resourceId('Microsoft.EventHub/namespaces/NetworkRuleSets', variables('eventHubsNamespaceIoTName'), 'default')]"
+            ],
+            "properties": {
+                "rights": [
+                    "Listen",
+                    "Send"
                 ]
             }
         },
