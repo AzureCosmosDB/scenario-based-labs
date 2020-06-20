@@ -3,7 +3,7 @@
 # ====================
 # Variables
 
-subscription_id="220fc532-6091-423c-8ba0-66c2397d591b"
+subscription_id=""
 location="eastus"
 resource_group_name="pz-iot-demo-20200618-1"
 

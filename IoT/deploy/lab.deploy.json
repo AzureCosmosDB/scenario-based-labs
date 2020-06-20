@@ -59,6 +59,7 @@
         "synapseSqlAdministratorPassword": "[uniqueString(concat(subscription().id, resourceGroup().id))]",
         "storageBlobDataContributorRoleID": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
         "defaultDataLakeStorageAccountUrl": "[concat('https://', variables('synapseStorageAccountName'), '.dfs.core.windows.net')]",
+        "synapseStorageRoleAssignmentName": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  guid(resourceGroup().id, variables('storageBlobDataContributorRoleID'), variables('synapseStorageAccountName'), variables('synapseWorkspaceName')))]",
 
         "apiVersionAppInsights": "2015-05-01",
         "apiVersionCosmosDb": "2020-04-01",
@@ -863,22 +864,6 @@
             ]
         },
         {
-            "type": "Microsoft.Storage/storageAccounts/blobServices/containers/providers/roleAssignments",
-            "apiVersion": "[variables('apiVersionStorageRoleAssignment')]",
-            "name": "[concat(variables('synapseStorageAccountName'), '/default/', variables('synapseDataLakeStorageFilesystemName'), '/Microsoft.Authorization/',  guid(concat(resourceGroup().id, '/', variables('storageBlobDataContributorRoleID'), '/', variables('synapseStorageAccountName'))))]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Synapse/workspaces/', variables('synapseWorkspaceName'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', variables('synapseStorageAccountName'), 'default', variables('synapseDataLakeStorageFilesystemName'))]"
-            ],
-            "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleID'))]",
-                "principalId": "[reference(concat('Microsoft.Synapse/workspaces/', variables('synapseWorkspaceName')), variables('apiVersionSynapse'), 'Full').identity.principalId]",
-                "principalType": "ServicePrincipal"
-            }
-        },
-        {
             "type": "Microsoft.Synapse/workspaces/integrationruntimes",
             "apiVersion": "[variables('apiVersionSynapse')]",
             "name": "[concat(variables('synapseWorkspaceName'), '/AutoResolveIntegrationRuntime')]",
@@ -892,6 +877,22 @@
                         "location": "AutoResolve"
                     }
                 }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
+            "apiVersion": "[variables('apiVersionStorageRoleAssignment')]",
+            "name": "[variables('synapseStorageRoleAssignmentName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Synapse/workspaces/', variables('synapseWorkspaceName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleID'))]",
+                "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]",
+                "principalId": "[reference(concat('Microsoft.Synapse/workspaces/', variables('synapseWorkspaceName')), variables('apiVersionSynapse'), 'Full').identity.principalId]",
+                "principalType": "ServicePrincipal"
             }
         }
     ],
