@@ -854,7 +854,7 @@
                     "name": "allowAll",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[concat('Microsoft.Synapse/workspaces/', variables('synapseWorkspaceName'))]"
+                        "[resourceId('Microsoft.Synapse/workspaces', variables('synapseWorkspaceName'))]"
                     ],
                     "properties": {
                         "startIpAddress": "0.0.0.0",
@@ -885,7 +885,7 @@
             "name": "[variables('synapseStorageRoleAssignmentName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Synapse/workspaces/', variables('synapseWorkspaceName'))]",
+                "[resourceId('Microsoft.Synapse/workspaces', variables('synapseWorkspaceName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]"
             ],
             "properties": {

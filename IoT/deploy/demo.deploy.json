@@ -83,10 +83,14 @@
 
         "synapseStorageAccountName": "[concat('synsa', variables('nameSuffix'))]",
         "synapseWorkspaceName": "[concat('synws', variables('nameSuffix'))]",
+        "synapseDataLakeStorageFilesystemName": "workspace",
+        "synapseSqlAdministratorLogin": "sqlAdmin",
+        "synapseSqlAdministratorPassword": "[uniqueString(concat(subscription().id, resourceGroup().id))]",
         "storageBlobDataContributorRoleID": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
         "synapseStorageRoleAssignmentGuid": "[guid(resourceGroup().id, variables('storageBlobDataContributorRoleID'), variables('synapseStorageAccountName'), variables('synapseWorkspaceName'))]",
         "synapseStorageRoleAssignmentName": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  variables('synapseStorageRoleAssignmentGuid'))]",
         "synapseSparkPoolName": "spark1",
+        "defaultDataLakeStorageAccountUrl": "[concat('https://', variables('synapseStorageAccountName'), '.dfs.core.windows.net')]",
 
         "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('nameSuffix'))]",
 
@@ -892,12 +896,51 @@
         },
 
         {
+            "type": "Microsoft.Synapse/workspaces",
+            "apiVersion": "[variables('apiVersionSynapse')]",
+            "name": "[variables('synapseWorkspaceName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "location": "[parameters('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "defaultDataLakeStorage": {
+                    "accountUrl": "[variables('defaultDataLakeStorageAccountUrl')]",
+                    "filesystem": "[variables('synapseDataLakeStorageFilesystemName')]"
+                },
+                "virtualNetworkProfile": {
+                    "computeSubnetId": ""
+                },
+                "synapseSqlAdministratorLogin": "[variables('synapseSqlAdministratorLogin')]",
+                "synapseSqlAdministratorLoginPassword": "[variables('synapseSqlAdministratorPassword')]"
+            },
+            "resources": [
+                {
+                    "type": "firewallrules",
+                    "apiVersion": "[variables('apiVersionSynapse')]",
+                    "name": "allowAll",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Synapse/workspaces', variables('synapseWorkspaceName'))]"
+                    ],
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "255.255.255.255"
+                    }
+                }
+            ]
+        },
+        {
             "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
             "apiVersion": "[variables('apiVersionStorageRoleAssignment')]",
             "name": "[variables('synapseStorageRoleAssignmentName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]",
+                "[resourceId('Microsoft.Synapse/workspaces', variables('synapseWorkspaceName'))]"
             ],
             "properties": {
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleID'))]",
@@ -913,11 +956,12 @@
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]",
+                "[resourceId('Microsoft.Synapse/workspaces', variables('synapseWorkspaceName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts/providers/roleAssignments', variables('synapseStorageAccountName'), 'Microsoft.Authorization',  variables('synapseStorageRoleAssignmentGuid'))]"
             ],
             "properties": {
                 "sparkVersion": "2.4",
-                "nodeCount": 0,
+                "nodeCount": 3,
                 "nodeSize": "Small",
                 "nodeSizeFamily": "MemoryOptimized",
                 "autoScale": {
