@@ -50,19 +50,19 @@
 
         "cosmosDbContainerNameAlerts": "alerts",
         "cosmosDbPartitionKeyAlerts": "/id",
-        "cosmosDbThroughputAlerts": 400,
+        "cosmosDbThroughputAlerts": 600,
 
         "cosmosDbContainerNameMaintenance": "maintenance",
         "cosmosDbPartitionKeyMaintenance": "/vin",
-        "cosmosDbThroughputMaintenance": 400,
+        "cosmosDbThroughputMaintenance": 600,
 
         "cosmosDbContainerNameMetadata": "metadata",
         "cosmosDbPartitionKeyMetadata": "/partitionKey",
-        "cosmosDbMaxThroughputMetadata": 4000,
+        "cosmosDbMaxThroughputMetadata": 50000,
 
         "cosmosDbContainerNameTelemetry": "telemetry",
         "cosmosDbPartitionKeyTelemetry": "/partitionKey",
-        "cosmosDbMaxThroughputTelemetry": 4000,
+        "cosmosDbMaxThroughputTelemetry": 15000,
 
         "eventHubsNamespaceIoTName": "[concat('iot-namespace-', variables('nameSuffix'))]",
         "eventHubsSharedAccessPolicyName": "IotLabSendListen",

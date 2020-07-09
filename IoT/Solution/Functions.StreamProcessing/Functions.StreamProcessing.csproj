@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.7" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.EventHubs" Version="4.1.1" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.7" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.8" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CosmosDbIoTScenario.Common\CosmosDbIoTScenario.Common.csproj" />

@@ -15,6 +15,7 @@ dist/js/i18n/build.txt
 *.user
 *.userosscache
 *.sln.docstates
+*.csproj.user
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
