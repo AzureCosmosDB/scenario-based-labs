@@ -5,12 +5,12 @@
 
 subscription_id=""
 location="eastus"
-resource_group_name="pz-iot-20200629-5"
+resource_group_name="pz-iot-20200709-1"
 
 template_file="demo.deploy.json"
 deployment_name="deploy_iot_scenario_demo"
 
-recipient_email="paelaz@microsoft.com"
+recipient_email=""
 # ====================
 
 # Operations
