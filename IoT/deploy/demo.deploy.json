@@ -325,12 +325,36 @@
             "properties": {
                 "resource": {
                     "id": "[variables('cosmosDbContainerNameTelemetry')]",
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "automatic": true,
+                        "includedPaths": [
+                            {
+                                "path": "/vin/?"
+                            },
+                            {
+                                "path": "/state/?"
+                            },
+                            {
+                                "path": "/partitionKey/?"
+                            }
+                        ],
+                        "excludedPaths": [
+                            {
+                                "path": "/*"
+                            },
+                            {
+                                "path": "/\"_etag\"/?"
+                            }
+                        ]
+                    },
                     "partitionKey": {
                         "paths": [
                             "[variables('cosmosDbPartitionKeyTelemetry')]"
                         ],
                         "kind": "Hash"
                     },
+                    "defaultTtl": -1,
                     "analyticalStorageTtl": -1
                 }
             }
