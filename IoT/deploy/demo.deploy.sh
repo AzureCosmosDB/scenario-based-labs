@@ -5,7 +5,7 @@
 
 subscription_id=""
 location="eastus"
-resource_group_name="pz-iot-20200709-1"
+resource_group_name=""
 
 template_file="demo.deploy.json"
 deployment_name="deploy_iot_scenario_demo"

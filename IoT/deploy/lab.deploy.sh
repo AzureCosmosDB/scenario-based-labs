@@ -5,7 +5,7 @@
 
 subscription_id=""
 location="eastus"
-resource_group_name="pz-iot-20200629-5"
+resource_group_name=""
 
 template_file="lab.deploy.json"
 deployment_name="deploy_iot_scenario_lab"
