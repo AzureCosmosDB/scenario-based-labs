@@ -6,7 +6,6 @@
 subscription_id=""
 location="eastus"
 resource_group_name=""
-
 ml_workspace_name=""
 
 template_file="deploy.ml.json"
@@ -14,9 +13,11 @@ deployment_name="deploy_ml"
 
 # ====================
 
-az group deployment create --subscription "$subscription_id" \
-	-g "$resource_group_name" -n "$deployment_name" --template-file "$template_file" \
-	--parameters location="$location" --verbose
+#az group deployment create --subscription "$subscription_id" \
+#	-g "$resource_group_name" -n "$deployment_name" --template-file "$template_file" \
+#	--parameters location="$location" --verbose
+
+#echo -e "Now add yourself as SBDC to the mlstore storage account!"
 
 #echo -e "List workspaces"
 #az ml workspace list -g "$resource_group_name"
