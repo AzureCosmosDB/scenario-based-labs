@@ -58,8 +58,11 @@
         "synapseSqlAdministratorLogin": "sqlAdmin",
         "synapseSqlAdministratorPassword": "[uniqueString(concat(subscription().id, resourceGroup().id))]",
         "storageBlobDataContributorRoleID": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
+        "storageBlobDataReaderRoleID": "2a2b9908-6ea1-4ae2-8e65-a410df84e7d1",
         "defaultDataLakeStorageAccountUrl": "[concat('https://', variables('synapseStorageAccountName'), '.dfs.core.windows.net')]",
-        "synapseStorageRoleAssignmentName": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  guid(resourceGroup().id, variables('storageBlobDataContributorRoleID'), variables('synapseStorageAccountName'), variables('synapseWorkspaceName')))]",
+        "storageRoleAssignmentSynWs": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  guid(resourceGroup().id, variables('storageBlobDataContributorRoleID'), variables('synapseStorageAccountName'), variables('synapseWorkspaceName')))]",
+        "storageRoleAssignmentAmlWsSbdc": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  guid(resourceGroup().id, variables('storageBlobDataContributorRoleID'), variables('synapseStorageAccountName'), variables('machineLearningServicesWorkspaceName')))]",
+        "storageRoleAssignmentAmlWsSbdr": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  guid(resourceGroup().id, variables('storageBlobDataReaderRoleID'), variables('synapseStorageAccountName'), variables('machineLearningServicesWorkspaceName')))]",
 
         "apiVersionAppInsights": "2015-05-01",
         "apiVersionCosmosDb": "2020-04-01",
@@ -67,7 +70,7 @@
         "apiVersionEventHubsPreview": "2018-01-01-preview",
         "apiVersionIotHubs": "2020-03-01",
         "apiVersionKeyVault": "2019-09-01",
-        "apiVersionMachineLearning": "2020-04-01",
+        "apiVersionMachineLearning": "2020-06-01",
         "apiVersionStorage": "2019-06-01",
         "apiVersionStorageRoleAssignment": "2020-03-01-preview",
         "apiVersionStreamAnalytics": "2017-04-01-preview",
@@ -809,6 +812,10 @@
             "apiVersion": "[variables('apiVersionMachineLearning')]",
             "name": "[variables('machineLearningServicesWorkspaceName')]",
             "location": "[parameters('location')]",
+            "sku": {
+                "name": "Enterprise",
+                "tier": "Enterprise"
+            },
             "dependsOn": [
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('machineLearningServicesStorageAccountName'))]"
@@ -882,7 +889,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
             "apiVersion": "[variables('apiVersionStorageRoleAssignment')]",
-            "name": "[variables('synapseStorageRoleAssignmentName')]",
+            "name": "[variables('storageRoleAssignmentSynWs')]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Synapse/workspaces', variables('synapseWorkspaceName'))]",
@@ -893,6 +900,38 @@
                 "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]",
                 "principalId": "[reference(concat('Microsoft.Synapse/workspaces/', variables('synapseWorkspaceName')), variables('apiVersionSynapse'), 'Full').identity.principalId]",
                 "principalType": "ServicePrincipal"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
+            "apiVersion": "[variables('apiVersionStorageRoleAssignment')]",
+            "name": "[variables('storageRoleAssignmentAmlWsSbdc')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('machineLearningServicesWorkspaceName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]"
+            ],
+            "properties": {
+				"roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleID'))]",
+				"scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]",
+				"principalId": "[reference(concat('Microsoft.MachineLearningServices/workspaces/', variables('machineLearningServicesWorkspaceName')), variables('apiVersionMachineLearning'), 'Full').identity.principalId]",
+				"principalType": "ServicePrincipal"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
+            "apiVersion": "[variables('apiVersionStorageRoleAssignment')]",
+            "name": "[variables('storageRoleAssignmentAmlWsSbdr')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('machineLearningServicesWorkspaceName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]"
+            ],
+            "properties": {
+				"roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataReaderRoleID'))]",
+				"scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]",
+				"principalId": "[reference(concat('Microsoft.MachineLearningServices/workspaces/', variables('machineLearningServicesWorkspaceName')), variables('apiVersionMachineLearning'), 'Full').identity.principalId]",
+				"principalType": "ServicePrincipal"
             }
         }
     ],

@@ -25,7 +25,7 @@
 		"machineLearningServicesStorageAccountName": "[concat('mlstore', variables('nameSuffix'))]",
         "keyVaultName": "[concat('iot-vault-', variables('nameSuffix'))]",
         "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('nameSuffix'))]",
-		"apiVersionMachineLearning": "2020-04-01",
+		"apiVersionMachineLearning": "2020-06-01",
 		"apiVersionStorage": "2019-06-01"
 	},
 	"resources": [
@@ -67,6 +67,10 @@
 			"apiVersion": "[variables('apiVersionMachineLearning')]",
 			"name": "[variables('machineLearningServicesWorkspaceName')]",
 			"location": "[parameters('location')]",
+            "sku": {
+                "name": "Enterprise",
+                "tier": "Enterprise"
+            },
 			"dependsOn": [
 				"[resourceId('Microsoft.Storage/storageAccounts', variables('machineLearningServicesStorageAccountName'))]"
 			],
