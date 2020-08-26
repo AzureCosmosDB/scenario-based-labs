@@ -4,7 +4,7 @@
 # Variables
 
 subscription_id=""
-location=""
+location="eastus"
 resource_group_name=""
 
 template_file="deploy.synsasec.json"
