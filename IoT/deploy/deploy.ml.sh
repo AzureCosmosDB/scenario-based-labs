@@ -6,7 +6,7 @@
 subscription_id=""
 location="eastus"
 resource_group_name=""
-ml_workspace_name=""
+ml_workspace_name="Cosmos-DB-IoT-ML-"
 
 template_file="deploy.ml.json"
 deployment_name="deploy_ml"
@@ -28,8 +28,8 @@ deployment_name="deploy_ml"
 #echo -e "List services"
 #az ml service list -g "$resource_group_name" -w "$ml_workspace_name"
 
-#echo -e "List models"
-#az ml model list -g "$resource_group_name" -w "$ml_workspace_name"
+echo -e "List models"
+az ml model list -g "$resource_group_name" -w "$ml_workspace_name"
 
 #echo -e "List endpoints"
 #az ml endpoint realtime list -g $resource_group_name --workspace-name $ml_workspace_name
