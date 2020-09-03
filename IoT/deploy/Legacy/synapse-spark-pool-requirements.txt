@@ -1,6 +1,0 @@
-inference-schema==1.1.0
-azure-core==1.8.0
-azure-cosmos==4.1.0
-azureml-sdk==1.11.0
-azureml-automl-core==1.11.0
-azureml-automl-runtime==1.11.0
