@@ -1,0 +1,93 @@
+{
+	"info": {
+		"_postman_id": "d34d5c9f-c284-4257-a4eb-e6c08f73e7a5",
+		"name": "IoT Lab",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "predict-batt-maint-needed",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer tejEgV5iuILq4xm2NKxPcuEv8DFK8GPN",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Inputs\": {\r\n          \"WebServiceInput0\":\r\n          [\r\n              {\r\n                    \"vin\": \"T8DNDN5UDCWL7M72H\",\r\n                    \"tripDurationMinutes\": \"19.75\",\r\n                    \"batteryAgeDays\": \"10000\",\r\n                    \"batteryRatedCycles\": \"200\",\r\n                    \"lifetimeBatteryCyclesUsed\": \"10000\"\r\n              }\r\n          ]\r\n    },\r\n    \"GlobalParameters\":  {\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://23.102.131.110:80/api/v1/service/predict-battery-maintenance-need/score",
+					"protocol": "http",
+					"host": [
+						"23",
+						"102",
+						"131",
+						"110"
+					],
+					"port": "80",
+					"path": [
+						"api",
+						"v1",
+						"service",
+						"predict-battery-maintenance-need",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "predict-batt-maint-needed debug local to view",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/Vehicles/BatteryPrediction?vin=T8DNDN5UDCWL7M72H&batteryAgeDays=10000&batteryRatedCycles=200&lifetimeBatteryCyclesUsed=10000&tripDurationMinutes=19.75",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"Vehicles",
+						"BatteryPrediction"
+					],
+					"query": [
+						{
+							"key": "vin",
+							"value": "T8DNDN5UDCWL7M72H"
+						},
+						{
+							"key": "batteryAgeDays",
+							"value": "10000"
+						},
+						{
+							"key": "batteryRatedCycles",
+							"value": "200"
+						},
+						{
+							"key": "lifetimeBatteryCyclesUsed",
+							"value": "10000"
+						},
+						{
+							"key": "tripDurationMinutes",
+							"value": "19.75"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
