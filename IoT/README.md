@@ -11,14 +11,14 @@ Ultimately Contoso would surface the raw and derived insights data to its users 
 - **Logistics Operations personnel** who are interested in the current state of the vehicles and cargo logistics and who would use a web app to quickly understand the status of any single vehicle or piece of cargo, be notified of alerts as well as load vehicle and cargo meta data into the system. What they would like to see on the dashboard are various visualizations of detected anomalies, like engines overheating, abnormal oil pressure, and aggressive driving.
 
 - **Management and Customer Reporting personnel** who would like to be in a position to see the current state of the vehicle fleet and customer consignment level information presented in on a Power BI report that automatically updates with new data as it flows in after being processed. What they would like to see are reports on bad driving behavior by driver and using visual components such as a map to show anomalies related to cities or areas, as well as various charts and graphs depicting aggregate fleet and consignment information in a clear way.
-
+`
 In this experience, you will use Azure Cosmos DB to ingest streaming vehicle telemetry data as the entry point to a near real-time analytics pipeline built on Cosmos DB with Analytical Storage as well as Azure Synapse, Azure Functions, Azure Web Apps, Logic Apps, Azure IoT Hub, Azure Event Hub, Azure Stream Analytics, and Power BI.
 
 ## Solution architecture
 
 Below is a diagram of the solution architecture you will build in this lab. Please study this carefully, so you understand the whole of the solution as you are working on the various components.
 
-![A diagram showing the components of the solution is displayed.](media/architecture-diagram.png 'Architecture Diagram')
+![A diagram showing the components of the solution is displayed.](media/architecture.png 'Architecture Diagram')
 
 - Data ingest, event processing, and storage:
 
