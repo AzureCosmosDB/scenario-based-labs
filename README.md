@@ -10,16 +10,7 @@ This repo contains easy to deploy demos and detailed labs that show how to build
 
 In this scenario, you will use Azure Cosmos DB to ingest streaming vehicle telemetry data as the entry point to a near real-time analytics pipeline built on Cosmos DB, Azure Functions, Event Hubs, Azure Databricks, Azure Storage, Azure Stream Analytics, Power BI, Azure Web Apps, and Logic Apps.
 
-### IoT demo
-
-Follow the [step by step demo guide](./IoT/Demo%20step-by%20step%20-%20Cosmos%20DB%20scenario-based%20labs%20-%20IoT.md) for instructions on how to deploy the demo, and for a script that will help you understand the key points showcased. 
-
-### IoT hands-on lab
-
-The lab guides consists of two documents:
-
-- Complete the [before the hands-on lab setup guide](./IoT/Before%20the%20HOL%20-%20Cosmos%20DB%20scenario-based%20labs%20-%20IoT.md) to understand the requirements and to get setup to run the lab in your own environment.
-- Follow the [hands-on lab step-by-step guide](./IoT/HOL%20step-by%20step%20-%20Cosmos%20DB%20scenario-based%20labs%20-%20IoT.md) to get hands on constructing key components of the solution at your own pace.
+Both a demo and a hands-on lab are available. See the [IoT README](./IoT/README.md), [Deployment](./IoT/README.md#deployment) section for details and how to get started for either the demo or the hands-on lab.
 
 ##  Scenario 2 - Retail Recommendation System for e-Commerce
 
