@@ -865,50 +865,12 @@
         },
 
         {
-            "type": "Microsoft.MachineLearningServices/workspaces",
-            "apiVersion": "[variables('apiVersionMachineLearning')]",
-            "name": "[variables('machineLearningServicesWorkspaceName')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
-            ],
-            "identity": {
-                "type": "SystemAssigned"
-            },
-            "properties": {
-                "friendlyName": "[variables('machineLearningServicesWorkspaceName')]",
-                "keyVault": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
-                "applicationInsights": "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
-                "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts/', variables('machineLearningServicesStorageAccountName'))]"
-            }
-        },
-        {
-            "type": "Microsoft.MachineLearningServices/workspaces/computes",
-            "apiVersion": "[variables('apiVersionMachineLearning')]",
-            "name": "[concat(variables('machineLearningServicesWorkspaceName'), '/iot-ml-inf')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('machineLearningServicesWorkspaceName'))]"
-            ],
-            "properties": {
-                "computeType": "AKS",
-                "computeLocation": "[parameters('location')]",
-                "properties": {
-                    "agentCount": 3,
-                    "agentVmSize": "STANDARD_DS3_V2",
-                    "sslConfiguration": {
-                        "status": "Disabled"
-                    }
-                }
-            }
-        },
-        {
             "type": "Microsoft.MachineLearningServices/workspaces/computes",
             "apiVersion": "[variables('apiVersionMachineLearning')]",
             "name": "[concat(variables('machineLearningServicesWorkspaceName'), '/iot-ml-train')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('machineLearningServicesWorkspaceName'))]"
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
             ],
             "properties": {
                 "computeType": "AmlCompute",
@@ -924,6 +886,25 @@
                     "remoteLoginPortPublicAccess": "Enabled",
                     "osType": "Linux",
                     "enableNodePublicIp": true
+                }
+            }
+        },        {
+            "type": "Microsoft.MachineLearningServices/workspaces/computes",
+            "apiVersion": "[variables('apiVersionMachineLearning')]",
+            "name": "[concat(variables('machineLearningServicesWorkspaceName'), '/iot-ml-inf')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "computeType": "AKS",
+                "computeLocation": "northcentralus",
+                "properties": {
+                    "agentCount": 3,
+                    "agentVmSize": "STANDARD_DS3_V2",
+                    "sslConfiguration": {
+                        "status": "Disabled"
+                    }
                 }
             }
         },

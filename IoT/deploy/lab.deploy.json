@@ -70,7 +70,7 @@
         "apiVersionEventHubsPreview": "2018-01-01-preview",
         "apiVersionIotHubs": "2020-03-01",
         "apiVersionKeyVault": "2019-09-01",
-        "apiVersionMachineLearning": "2020-09-01-preview",
+        "apiVersionMachineLearning": "2020-06-01",
         "apiVersionStorage": "2019-06-01",
         "apiVersionStorageRoleAssignment": "2020-03-01-preview",
         "apiVersionStreamAnalytics": "2017-04-01-preview",
@@ -814,6 +814,7 @@
             "name": "[variables('machineLearningServicesWorkspaceName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('machineLearningServicesStorageAccountName'))]"
             ],
