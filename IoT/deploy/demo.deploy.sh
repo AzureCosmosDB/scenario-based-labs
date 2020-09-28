@@ -21,7 +21,7 @@ az group create --subscription "$subscription_id" -n "$resource_group_name" -l "
 echo -e "\n"
 
 echo "Deploy demo template"
-az group deployment create --subscription "$subscription_id" --verbose \
+az deployment group create --subscription "$subscription_id" --verbose \
 	-g "$resource_group_name" -n "$deployment_name" --template-file "$template_file" \
 	--parameters location="$location" recipientEmail="$recipient_email"
 
