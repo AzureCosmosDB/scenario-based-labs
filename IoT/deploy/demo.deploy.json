@@ -89,7 +89,6 @@
         "defaultDataLakeStorageAccountUrl": "[concat('https://', variables('synapseStorageAccountName'), '.dfs.core.windows.net')]",
 
         "machineLearningServicesWorkspaceName": "[concat('Cosmos-DB-IoT-ML-', variables('nameSuffix'))]",
-        "machineLearningServicesStorageAccountName": "[concat('mlstore', variables('nameSuffix'))]",
 
         "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('nameSuffix'))]",
 
@@ -98,7 +97,7 @@
         "apiVersionEventHubs": "2017-04-01",
         "apiVersionKeyVault": "2019-09-01",
         "apiVersionLogicApp": "2016-06-01",
-        "apiVersionMachineLearning": "2020-09-01-preview",
+        "apiVersionMachineLearning": "2020-06-01",
         "apiVersionResources": "2019-10-01",
         "apiVersionStorage": "2019-06-01",
         "apiVersionStorageRoleAssignment": "2020-03-01-preview",
