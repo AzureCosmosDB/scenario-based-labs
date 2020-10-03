@@ -899,38 +899,6 @@
                 "principalId": "[reference(concat('Microsoft.Synapse/workspaces/', variables('synapseWorkspaceName')), variables('apiVersionSynapse'), 'Full').identity.principalId]",
                 "principalType": "ServicePrincipal"
             }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
-            "apiVersion": "[variables('apiVersionStorageRoleAssignment')]",
-            "name": "[variables('storageRoleAssignmentAmlWsSbdc')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('machineLearningServicesWorkspaceName'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]"
-            ],
-            "properties": {
-				"roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleID'))]",
-				"scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]",
-				"principalId": "[reference(concat('Microsoft.MachineLearningServices/workspaces/', variables('machineLearningServicesWorkspaceName')), variables('apiVersionMachineLearning'), 'Full').identity.principalId]",
-				"principalType": "ServicePrincipal"
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
-            "apiVersion": "[variables('apiVersionStorageRoleAssignment')]",
-            "name": "[variables('storageRoleAssignmentAmlWsSbdr')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('machineLearningServicesWorkspaceName'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]"
-            ],
-            "properties": {
-				"roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataReaderRoleID'))]",
-				"scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]",
-				"principalId": "[reference(concat('Microsoft.MachineLearningServices/workspaces/', variables('machineLearningServicesWorkspaceName')), variables('apiVersionMachineLearning'), 'Full').identity.principalId]",
-				"principalType": "ServicePrincipal"
-            }
         }
     ],
     "outputs": {
