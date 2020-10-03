@@ -85,7 +85,7 @@
         "storageBlobDataContributorRoleID": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
         "synapseStorageRoleAssignmentGuid": "[guid(resourceGroup().id, variables('storageBlobDataContributorRoleID'), variables('synapseStorageAccountName'), variables('synapseWorkspaceName'))]",
         "storageRoleAssignmentSynWs": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  variables('synapseStorageRoleAssignmentGuid'))]",
-        "synapseSparkPoolName": "spark1",
+        "synapseSparkPoolName": "labsparkpool",
         "defaultDataLakeStorageAccountUrl": "[concat('https://', variables('synapseStorageAccountName'), '.dfs.core.windows.net')]",
 
         "machineLearningServicesWorkspaceName": "[concat('Cosmos-DB-IoT-ML-', variables('nameSuffix'))]",
