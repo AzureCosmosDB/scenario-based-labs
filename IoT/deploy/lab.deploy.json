@@ -58,11 +58,8 @@
         "synapseSqlAdministratorLogin": "sqlAdmin",
         "synapseSqlAdministratorPassword": "[uniqueString(concat(subscription().id, resourceGroup().id))]",
         "storageBlobDataContributorRoleID": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
-        "storageBlobDataReaderRoleID": "2a2b9908-6ea1-4ae2-8e65-a410df84e7d1",
         "defaultDataLakeStorageAccountUrl": "[concat('https://', variables('synapseStorageAccountName'), '.dfs.core.windows.net')]",
         "storageRoleAssignmentSynWs": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  guid(resourceGroup().id, variables('storageBlobDataContributorRoleID'), variables('synapseStorageAccountName'), variables('synapseWorkspaceName')))]",
-        "storageRoleAssignmentAmlWsSbdc": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  guid(resourceGroup().id, variables('storageBlobDataContributorRoleID'), variables('synapseStorageAccountName'), variables('machineLearningServicesWorkspaceName')))]",
-        "storageRoleAssignmentAmlWsSbdr": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  guid(resourceGroup().id, variables('storageBlobDataReaderRoleID'), variables('synapseStorageAccountName'), variables('machineLearningServicesWorkspaceName')))]",
 
         "apiVersionAppInsights": "2015-05-01",
         "apiVersionCosmosDb": "2020-06-01-preview",
