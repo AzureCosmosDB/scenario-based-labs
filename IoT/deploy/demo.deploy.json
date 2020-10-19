@@ -717,6 +717,14 @@
                         {
                             "name": "Project",
                             "value": "IoT/Solution/FleetManagementWebApp"
+                        },
+                        {
+                            "name": "ScoringUrl",
+                            "value": ""
+                        },
+                        {
+                            "name": "ScoringKey",
+                            "value": ""
                         }
                     ],
                     "metadata": [
