@@ -10,23 +10,28 @@ namespace FleetManagementWebApp.Models
 
         public List<BatteryPredictionPayloadItem> data { get; set; }
 
-        public BatteryPredictionPayload(int batteryAgeDays, double dailyTripDuration)
+        public BatteryPredictionPayload(string vin, int batteryAgeDays, double batteryRatedCycles, double lifetimeBatteryCyclesUsed, double dailyTripDuration)
         {
             data = new List<BatteryPredictionPayloadItem>
             {
                 new BatteryPredictionPayloadItem
                 {
-                    Battery_Age_Days = batteryAgeDays, Daily_Trip_Duration = dailyTripDuration
+                    vin = vin,
+                    batteryAgeDays = batteryAgeDays,
+                    batteryRatedCycles = batteryRatedCycles,
+                    lifetimeBatteryCyclesUsed = lifetimeBatteryCyclesUsed,
+                    tripDurationMinutes = dailyTripDuration
                 }
             };
         }
 
         public class BatteryPredictionPayloadItem
         {
-            public DateTime Date => DateTime.UtcNow;
-            public int Battery_ID => 0;
-            public int Battery_Age_Days { get; set; }
-            public double Daily_Trip_Duration { get; set; }
+            public string vin { get; set; }
+            public int batteryAgeDays { get; set; }
+            public double batteryRatedCycles { get; set; }
+            public double lifetimeBatteryCyclesUsed { get; set; }
+            public double tripDurationMinutes { get; set; }
         }
     }
 }

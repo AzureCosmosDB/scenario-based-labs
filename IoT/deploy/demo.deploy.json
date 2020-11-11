@@ -1,0 +1,1010 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "eastus",
+            "metadata": {
+                "description": "The Azure region where all resources will be deployed."
+            },
+            "allowedValues": [
+                "eastus",
+                "westus2",
+                "westcentralus",
+                "northeurope",
+                "westeurope",
+                "southeastasia",
+                "australiaeast"
+            ]
+        },
+        "recipientEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "Email address to receive notification emails from the Logic App."
+            }
+        }
+    },
+    "variables": {
+        "labDeploymentName": "deploy_iot_scenario_lab",
+        "labTemplateUrl": "https://raw.githubusercontent.com/plzm/iot-lab/master/scenario-based-labs/IoT/deploy/lab.deploy.json",
+
+        "nameSuffix": "[uniqueString(resourceGroup().id)]",
+
+        "iotWebAppName": "[concat('IoTWebApp-', variables('nameSuffix'))]",
+
+        "functionAppStreamProcessingName": "[concat('IoT-StreamProcessing-', variables('nameSuffix'))]",
+        "functionAppCosmosDBProcessingName": "[concat('IoT-CosmosDBProcessing-', variables('nameSuffix'))]",
+
+        "keyVaultName": "[concat('iot-vault-', variables('nameSuffix'))]",
+        "keyVaultAccessPolicy": "add",
+
+        "storageAccountStreamProcessingName": "[concat('iotfunc1', variables('nameSuffix'))]",
+        "storageAccountStreamProcessing-website-contentshare": "[concat('iot-streamprocessing-', variables('nameSuffix'))]",
+
+        "storageAccountCosmosDBProcessingName": "[concat('iotfunc2', variables('nameSuffix'))]",
+        "storageAccountCosmosDBProcessing-website-contentshare": "[concat('iot-cosmosdbprocessing-', variables('nameSuffix'))]",
+
+        "cosmosDbAccountName": "[concat('cosmos-db-iot-', variables('nameSuffix'))]",
+        "cosmosDbDatabaseName": "ContosoAuto",
+
+        "cosmosDbContainerNameMaintenance": "maintenance",
+        "cosmosDbPartitionKeyMaintenance": "/vin",
+        "cosmosDbThroughputMaintenance": 600,
+
+        "cosmosDbContainerNameMetadata": "metadata",
+        "cosmosDbPartitionKeyMetadata": "/partitionKey",
+        "cosmosDbMaxThroughputMetadata": 50000,
+
+        "cosmosDbContainerNameTelemetry": "telemetry",
+        "cosmosDbPartitionKeyTelemetry": "/partitionKey",
+        "cosmosDbMaxThroughputTelemetry": 15000,
+
+        "eventHubsNamespaceIoTName": "[concat('iot-namespace-', variables('nameSuffix'))]",
+        "eventHubsSharedAccessPolicyName": "IotLabSendListen",
+        "eventHubsName": "reporting",
+        "eventHubsConsumerGroupName": "StreamAnalytics",
+
+        "streamAnalyticsJobName": "[concat('Cosmos-DB-IoT-Analytics-', variables('nameSuffix'))]",
+        "streamAnalyticsStreamingUnits": 3,
+        "streamAnalyticsInputName": "events",
+        "streamAnalyticsOutputCosmosDBName": "cosmosdb",
+        "streamAnalyticsOutputCosmosDBCollection": "metadata",
+        "streamAnalyticsOutputPowerBiName": "powerbi",
+        "streamAnalyticsOutputPowerBiDataset": "Contoso Auto IoT Events",
+        "streamAnalyticsOutputPowerBiTable": "FleetEvents",
+
+        "logicAppName": "[concat('Cosmos-IoT-Logic-', variables('nameSuffix'))]",
+        "logicAppO365ConnectionName": "office365",
+
+        "synapseStorageAccountName": "[concat('synsa', variables('nameSuffix'))]",
+        "synapseWorkspaceName": "[concat('synws', variables('nameSuffix'))]",
+        "synapseDataLakeStorageFilesystemName": "workspace",
+        "synapseSqlAdministratorLogin": "sqlAdmin",
+        "synapseSqlAdministratorPassword": "[uniqueString(concat(subscription().id, resourceGroup().id))]",
+        "storageBlobDataContributorRoleID": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
+        "synapseStorageRoleAssignmentGuid": "[guid(resourceGroup().id, variables('storageBlobDataContributorRoleID'), variables('synapseStorageAccountName'), variables('synapseWorkspaceName'))]",
+        "storageRoleAssignmentSynWs": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  variables('synapseStorageRoleAssignmentGuid'))]",
+        "synapseSparkPoolName": "labsparkpool",
+        "defaultDataLakeStorageAccountUrl": "[concat('https://', variables('synapseStorageAccountName'), '.dfs.core.windows.net')]",
+
+        "machineLearningServicesWorkspaceName": "[concat('Cosmos-DB-IoT-ML-', variables('nameSuffix'))]",
+
+        "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('nameSuffix'))]",
+
+        "apiVersionAppInsights": "2015-05-01",
+        "apiVersionCosmosDb": "2020-06-01-preview",
+        "apiVersionEventHubs": "2017-04-01",
+        "apiVersionKeyVault": "2019-09-01",
+        "apiVersionLogicApp": "2016-06-01",
+        "apiVersionMachineLearning": "2020-06-01",
+        "apiVersionResources": "2019-10-01",
+        "apiVersionStorage": "2019-06-01",
+        "apiVersionStorageRoleAssignment": "2020-03-01-preview",
+        "apiVersionStreamAnalytics": "2016-03-01",
+        "apiVersionSynapse": "2019-06-01-preview",
+        "apiVersionWeb": "2019-08-01",
+        "apiVersionWebConnections": "2016-06-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('apiVersionResources')]",
+            "name": "[variables('labDeploymentName')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('labTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "[variables('apiVersionStorage')]",
+            "name": "[variables('storageAccountStreamProcessingName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "metadata": {
+                "description": "Identical to lab.deploy.json but has to be here again due to an ARM bug with nested template deployments, or dependencies/resourceId/reference calls will not find it and this deployment will fail."
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "[variables('apiVersionStorage')]",
+            "name": "[variables('storageAccountCosmosDBProcessingName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "metadata": {
+                "description": "Identical to lab.deploy.json but has to be here again due to an ARM bug with nested template deployments, or dependencies/resourceId/reference calls will not find it and this deployment will fail."
+            }
+        },
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "[variables('apiVersionAppInsights')]",
+            "name": "[variables('appInsightsName')]",
+            "location": "[parameters('location')]",
+            "kind": "web",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "Application_Type": "web"
+            },
+            "metadata": {
+                "description": "Identical to lab.deploy.json but has to be here again due to an ARM bug with nested template deployments, or dependencies/resourceId/reference calls will not find it and this deployment will fail."
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+            "name": "[concat(variables('cosmosDbAccountName'), '/', variables('cosmosDbDatabaseName'))]",
+            "apiVersion": "[variables('apiVersionCosmosDb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "[variables('cosmosDbDatabaseName')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/', variables('cosmosDbDatabaseName'), '/', variables('cosmosDbContainerNameMaintenance'))]",
+            "apiVersion": "[variables('apiVersionCosmosDb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('cosmosDbAccountName'), variables('cosmosDbDatabaseName'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "[variables('cosmosDbContainerNameMaintenance')]",
+                    "partitionKey": {
+                        "paths": [
+                            "[variables('cosmosDbPartitionKeyMaintenance')]"
+                        ],
+                        "kind": "Hash"
+                    }
+                },
+                "options": {
+                    "throughput": "[variables('cosmosDbThroughputMaintenance')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/', variables('cosmosDbDatabaseName'), '/', variables('cosmosDbContainerNameMetadata'))]",
+            "apiVersion": "[variables('apiVersionCosmosDb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('cosmosDbAccountName'), variables('cosmosDbDatabaseName'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "[variables('cosmosDbContainerNameMetadata')]",
+                    "partitionKey": {
+                        "paths": [
+                            "[variables('cosmosDbPartitionKeyMetadata')]"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "analyticalStorageTtl": -1
+                },
+                "options": {
+                    "autoscaleSettings": {
+                        "maxThroughput": "[variables('cosmosDbMaxThroughputMetadata')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+            "name": "[concat(variables('cosmosDbAccountName'), '/', variables('cosmosDbDatabaseName'), '/', variables('cosmosDbContainerNameTelemetry'))]",
+            "apiVersion": "[variables('apiVersionCosmosDb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('cosmosDbAccountName'), variables('cosmosDbDatabaseName'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "[variables('cosmosDbContainerNameTelemetry')]",
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "automatic": true,
+                        "includedPaths": [
+                            {
+                                "path": "/vin/?"
+                            },
+                            {
+                                "path": "/state/?"
+                            },
+                            {
+                                "path": "/partitionKey/?"
+                            }
+                        ],
+                        "excludedPaths": [
+                            {
+                                "path": "/*"
+                            },
+                            {
+                                "path": "/\"_etag\"/?"
+                            }
+                        ]
+                    },
+                    "partitionKey": {
+                        "paths": [
+                            "[variables('cosmosDbPartitionKeyTelemetry')]"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "defaultTtl": -1,
+                    "analyticalStorageTtl": -1
+                },
+                "options": {
+                    "autoscaleSettings": {
+                        "maxThroughput": "[variables('cosmosDbMaxThroughputTelemetry')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "[variables('apiVersionWebConnections')]",
+            "name": "[variables('logicAppO365ConnectionName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "displayName": "[parameters('recipientEmail')]",
+                "api": {
+                    "id": "[concat(subscription().id,'/providers/Microsoft.Web/locations/', parameters('location'), '/managedApis/office365')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "[variables('apiVersionLogicApp')]",
+            "name": "[variables('logicAppName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', variables('logicAppO365ConnectionName'))]"
+            ],
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "[concat('https://schema.management.azure.com/providers/Microsoft.Logic/schemas/', variables('apiVersionLogicApp'), '/workflowdefinition.json#')]",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "type": "Object",
+                            "defaultValue": {
+                            }
+                        }
+                    },
+                    "triggers": {
+                        "manual": {
+                            "type": "Request",
+                            "kind": "Http",
+                            "inputs": {
+                                "schema": {
+                                    "properties": {
+                                        "consignmentId": {
+                                            "type": "string"
+                                        },
+                                        "customer": {
+                                            "type": "string"
+                                        },
+                                        "deliveryDueDate": {
+                                            "type": "string"
+                                        },
+                                        "distanceDriven": {
+                                            "type": "number"
+                                        },
+                                        "hasHighValuePackages": {
+                                            "type": "boolean"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "lastRefrigerationUnitTemperatureReading": {
+                                            "type": "integer"
+                                        },
+                                        "location": {
+                                            "type": "string"
+                                        },
+                                        "lowestPackageStorageTemperature": {
+                                            "type": "integer"
+                                        },
+                                        "odometerBegin": {
+                                            "type": "integer"
+                                        },
+                                        "odometerEnd": {
+                                            "type": "number"
+                                        },
+                                        "plannedTripDistance": {
+                                            "type": "number"
+                                        },
+                                        "recipientEmail": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "temperatureSetting": {
+                                            "type": "integer"
+                                        },
+                                        "tripEnded": {
+                                            "type": "string"
+                                        },
+                                        "tripStarted": {
+                                            "type": "string"
+                                        },
+                                        "vin": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Send_an_email": {
+                            "runAfter": {
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "Here are the details of the trip and consignment:\n\nCONSIGNMENT INFORMATION:\n\nCustomer: @{triggerBody()?['customer']}\nDelivery Due Date: @{triggerBody()?['deliveryDueDate']}\nLocation: @{triggerBody()?['location']}\nStatus: @{triggerBody()?['status']}\n\nTRIP INFORMATION:\n\nTrip Start Time: @{triggerBody()?['tripStarted']} \nTrip End Time: @{triggerBody()?['tripEnded']} \nVehicle (VIN): @{triggerBody()?['vin']}\nPlanned Trip Distance: @{triggerBody()?['plannedTripDistance']}\nDistance Driven: @{triggerBody()?['distanceDriven']}\nStart Odometer Reading: @{triggerBody()?['odometerBegin']}\nEnd Odometer Reading: @{triggerBody()?['odometerEnd']}\n\nPACKAGE INFORMATION:\n\nHas High Value Packages: @{triggerBody()?['hasHighValuePackages']}\nLowest Package Storage Temp (F): @{triggerBody()?['lowestPackageStorageTemperature']}\nTrip Temp Setting (F): @{triggerBody()?['temperatureSetting']}\nLast Refrigeration Unit Temp Reading (F): @{triggerBody()?['lastRefrigerationUnitTemperatureReading']}\n\nREFERENCE INFORMATION:\n\nTrip ID: @{triggerBody()?['id']}\nConsignment ID: @{triggerBody()?['consignmentId']}\nVehicle VIN: @{triggerBody()?['vin']}\n\nRegards,\nContoso Auto Bot\n",
+                                    "Subject": "Contoso Auto trip status update: @{triggerBody()?['status']}",
+                                    "To": "@triggerBody()?['recipientEmail']"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "[concat('@parameters(''$connections'')[''', variables('logicAppO365ConnectionName'), '''][''connectionId'']')]"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/Mail"
+                            }
+                        }
+                    },
+                    "outputs": {
+                    }
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "office365": {
+                                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('location'), '/managedApis/', variables('logicAppO365ConnectionName'))]",
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('logicAppO365ConnectionName'))]",
+                                "connectionName": "[variables('logicAppO365ConnectionName')]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBConnection')]",
+            "apiVersion": "[variables('apiVersionKeyVault')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "value": "[reference(variables('labDeploymentName')).outputs.CosmosDBConnection.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBEndpoint')]",
+            "apiVersion": "[variables('apiVersionKeyVault')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "value": "[reference(variables('labDeploymentName')).outputs.CosmosDBEndpoint.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'CosmosDBPrimaryKey')]",
+            "apiVersion": "[variables('apiVersionKeyVault')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "value": "[reference(variables('labDeploymentName')).outputs.CosmosDBPrimaryKey.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'IoTHubConnection')]",
+            "apiVersion": "[variables('apiVersionKeyVault')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "value": "[reference(variables('labDeploymentName')).outputs.IoTHubConnection.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'EventHubsConnection')]",
+            "apiVersion": "[variables('apiVersionKeyVault')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "value": "[reference(variables('labDeploymentName')).outputs.EventHubsConnection.value]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'LogicAppUrl')]",
+            "apiVersion": "[variables('apiVersionKeyVault')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('logicAppName')), '/triggers/manual'), variables('apiVersionLogicApp')).value]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "[variables('apiVersionWeb')]",
+            "name": "[variables('functionAppStreamProcessingName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]",
+                "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'CosmosDBConnection')]",
+                "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'IoTHubConnection')]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName')), variables('apiVersionStorage')).keys[0].value)]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName')), variables('apiVersionStorage')).keys[0].value)]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), variables('apiVersionAppInsights')).InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountStreamProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountStreamProcessingName')), variables('apiVersionStorage')).keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('storageAccountStreamProcessing-website-contentshare')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
+                        },
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
+                        },
+                        {
+                            "name": "CosmosDBConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "IoTHubConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'IoTHubConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "Project",
+                            "value": "IoT/Solution/Functions.StreamProcessing"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "[variables('apiVersionWeb')]",
+            "name": "[variables('functionAppCosmosDBProcessingName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]",
+                "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'CosmosDBConnection')]",
+                "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'EventHubsConnection')]",
+                "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'LogicAppUrl')]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName')), variables('apiVersionStorage')).keys[0].value)]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName')), variables('apiVersionStorage')).keys[0].value)]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), variables('apiVersionAppInsights')).InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountCosmosDBProcessingName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountCosmosDBProcessingName')), variables('apiVersionStorage')).keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('storageAccountCosmosDBProcessing-website-contentshare')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
+                        },
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
+                        },
+                        {
+                            "name": "CosmosDBConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "EventHubsConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'EventHubsConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "LogicAppUrl",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'LogicAppUrl')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "RecipientEmail",
+                            "value": "[parameters('recipientEmail')]"
+                        },
+                        {
+                            "name": "Project",
+                            "value": "IoT/Solution/Functions.CosmosDB"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "[variables('apiVersionWeb')]",
+            "name": "[variables('iotWebAppName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]",
+                "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'CosmosDBConnection')]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), variables('apiVersionAppInsights')).InstrumentationKey]"
+                        },
+                        {
+                            "name": "CosmosDBConnection",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'CosmosDBConnection')).secretUriWithVersion, ')')]"
+                        },
+                        {
+                            "name": "DatabaseName",
+                            "value": "[variables('cosmosDbDatabaseName')]"
+                        },
+                        {
+                            "name": "ContainerName",
+                            "value": "[variables('cosmosDbContainerNameMetadata')]"
+                        },
+                        {
+                            "name": "Project",
+                            "value": "IoT/Solution/FleetManagementWebApp"
+                        },
+                        {
+                            "name": "ScoringUrl",
+                            "value": ""
+                        },
+                        {
+                            "name": "ScoringKey",
+                            "value": ""
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "name": "CURRENT_STACK",
+                            "value": "dotnetcore"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/accessPolicies",
+            "name": "[concat(variables('keyVaultName'), '/', variables('keyVaultAccessPolicy'))]",
+            "apiVersion": "[variables('apiVersionKeyVault')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]",
+                "[resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName'))]",
+                "[resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName'))]",
+                "[resourceId('Microsoft.Web/sites', variables('iotWebAppName'))]"
+            ],
+            "properties": {
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[reference(resourceId('Microsoft.Web/sites', variables('functionAppStreamProcessingName')), variables('apiVersionWeb'), 'full').identity.principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "get"
+                            ]
+                        }
+                    },
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[reference(resourceId('Microsoft.Web/sites', variables('functionAppCosmosDBProcessingName')), variables('apiVersionWeb'), 'full').identity.principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "get"
+                            ]
+                        }
+                    },
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[reference(resourceId('Microsoft.Web/sites', variables('iotWebAppName')), variables('apiVersionWeb'), 'full').identity.principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "get"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/AuthorizationRules",
+            "apiVersion": "[variables('apiVersionEventHubs')]",
+            "name": "[concat(variables('eventHubsNamespaceIoTName'), '/', variables('eventHubsSharedAccessPolicyName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "rights": [
+                    "Listen",
+                    "Send"
+                ]
+            }
+        },
+        {
+            "name": "[concat(variables('streamAnalyticsJobName'), '/Transformation')]",
+            "type": "Microsoft.StreamAnalytics/streamingjobs/transformations",
+            "apiVersion": "[variables('apiVersionStreamAnalytics')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "streamingUnits": "[variables('streamAnalyticsStreamingUnits')]",
+                "query": "WITH\nVehicleData AS (\n    select\n        vin,\n        AVG(engineTemperature) AS engineTemperature,\n        AVG(speed) AS speed,\n        AVG(refrigerationUnitKw) AS refrigerationUnitKw,\n        AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,\n        (case when AVG(engineTemperature) >= 400 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,\n        (case when AVG(engineoil) <= 18 then 1 else 0 end) as oilAnomaly,\n        (case when AVG(transmission_gear_position) <= 3.5 AND\n            AVG(accelerator_pedal_position) >= 50 AND\n            AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,\n        (case when AVG(refrigerationUnitTemp) >= 30 then 1 else 0 end) as refrigerationTempAnomaly,\n        System.TimeStamp() as snapshot\n    from events TIMESTAMP BY [timestamp]\n    GROUP BY\n        vin,\n        TumblingWindow(Duration(second, 30))\n),\nVehicleDataAll AS (\n    select\n        AVG(engineTemperature) AS engineTemperature,\n        AVG(speed) AS speed,\n        AVG(refrigerationUnitKw) AS refrigerationUnitKw,\n        AVG(refrigerationUnitTemp) AS refrigerationUnitTemp,\n        COUNT(*) AS eventCount,\n        (case when AVG(engineTemperature) >= 318 OR AVG(engineTemperature) <= 15 then 1 else 0 end) as engineTempAnomaly,\n        (case when AVG(engineoil) <= 20 then 1 else 0 end) as oilAnomaly,\n        (case when AVG(transmission_gear_position) <= 4 AND\n            AVG(accelerator_pedal_position) >= 50 AND\n            AVG(speed) >= 55 then 1 else 0 end) as aggressiveDriving,\n        (case when AVG(refrigerationUnitTemp) >= 22.5 then 1 else 0 end) as refrigerationTempAnomaly,\n        System.TimeStamp() as snapshot\n    from events t TIMESTAMP BY [timestamp]\n    GROUP BY\n        TumblingWindow(Duration(second, 10))\n)\n-- INSERT INTO POWER BI\nSELECT\n    *\nINTO\n    powerbi\nFROM\n    VehicleDataAll\n-- INSERT INTO COSMOS DB\nSELECT\n    *,\n    entityType = 'VehicleAverage',\n    partitionKey = vin\nINTO\n    cosmosdb\nFROM\n    VehicleData"
+            }
+        },
+        {
+            "type": "Microsoft.StreamAnalytics/streamingjobs/inputs",
+            "apiVersion": "[variables('apiVersionStreamAnalytics')]",
+            "name": "[concat(variables('streamAnalyticsJobName'), '/', variables('streamAnalyticsInputName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "type": "Stream",
+                "datasource": {
+                    "type": "Microsoft.ServiceBus/EventHub",
+                    "properties": {
+                        "serviceBusNamespace": "[variables('eventHubsNamespaceIoTName')]",
+                        "eventHubName": "[variables('eventHubsName')]",
+                        "consumerGroupName": "[variables('eventHubsConsumerGroupName')]",
+                        "sharedAccessPolicyName": "[variables('eventHubsSharedAccessPolicyName')]",
+                        "sharedAccessPolicyKey": "[listKeys(resourceId('Microsoft.EventHub/namespaces/AuthorizationRules', variables('eventHubsNamespaceIoTName'), variables('eventHubsSharedAccessPolicyName')), variables('apiVersionEventHubs')).primaryKey]"
+                    }
+                },
+                "serialization": {
+                    "type": "Json",
+                    "properties": {
+                        "encoding": "UTF8"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.StreamAnalytics/streamingjobs/outputs",
+            "apiVersion": "[variables('apiVersionStreamAnalytics')]",
+            "name": "[concat(variables('streamAnalyticsJobName'), '/', variables('streamAnalyticsOutputCosmosDBName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "datasource": {
+                    "type": "Microsoft.Storage/DocumentDB",
+                    "properties": {
+                        "accountId": "[variables('cosmosDbAccountName')]",
+                        "accountKey": "[reference(variables('labDeploymentName')).outputs.CosmosDBPrimaryKey.value]",
+                        "database": "[variables('cosmosDbDatabaseName')]",
+                        "collectionNamePattern": "[variables('streamAnalyticsOutputCosmosDBCollection')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.StreamAnalytics/streamingjobs/outputs",
+            "apiVersion": "[variables('apiVersionStreamAnalytics')]",
+            "name": "[concat(variables('streamAnalyticsJobName'), '/', variables('streamAnalyticsOutputPowerBiName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "datasource": {
+                    "type": "PowerBI",
+                    "properties": {
+                        "refreshToken": "DUMMY",
+                        "groupName": "My Workspace",
+                        "dataset": "[variables('streamAnalyticsOutputPowerBiDataset')]",
+                        "table": "[variables('streamAnalyticsOutputPowerBiTable')]"
+                    }
+                }
+            }
+        },
+
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/computes",
+            "apiVersion": "[variables('apiVersionMachineLearning')]",
+            "name": "[concat(variables('machineLearningServicesWorkspaceName'), '/iot-ml-train')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "computeType": "AmlCompute",
+                "computeLocation": "[parameters('location')]",
+                "properties": {
+                    "vmSize": "STANDARD_DS3_V2",
+                    "vmPriority": "Dedicated",
+                    "scaleSettings": {
+                        "maxNodeCount": 1,
+                        "minNodeCount": 0,
+                        "nodeIdleTimeBeforeScaleDown": "PT2M"
+                    },
+                    "remoteLoginPortPublicAccess": "Enabled",
+                    "osType": "Linux",
+                    "enableNodePublicIp": true
+                }
+            }
+        },        {
+            "type": "Microsoft.MachineLearningServices/workspaces/computes",
+            "apiVersion": "[variables('apiVersionMachineLearning')]",
+            "name": "[concat(variables('machineLearningServicesWorkspaceName'), '/iot-ml-inf')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "properties": {
+                "computeType": "AKS",
+                "computeLocation": "northcentralus",
+                "properties": {
+                    "agentCount": 3,
+                    "agentVmSize": "STANDARD_DS3_V2",
+                    "sslConfiguration": {
+                        "status": "Disabled"
+                    }
+                }
+            }
+        },
+
+        {
+            "type": "Microsoft.Synapse/workspaces",
+            "apiVersion": "[variables('apiVersionSynapse')]",
+            "name": "[variables('synapseWorkspaceName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]"
+            ],
+            "location": "[parameters('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "defaultDataLakeStorage": {
+                    "accountUrl": "[variables('defaultDataLakeStorageAccountUrl')]",
+                    "filesystem": "[variables('synapseDataLakeStorageFilesystemName')]"
+                },
+                "virtualNetworkProfile": {
+                    "computeSubnetId": ""
+                },
+                "synapseSqlAdministratorLogin": "[variables('synapseSqlAdministratorLogin')]",
+                "synapseSqlAdministratorLoginPassword": "[variables('synapseSqlAdministratorPassword')]"
+            },
+            "resources": [
+                {
+                    "type": "firewallrules",
+                    "apiVersion": "[variables('apiVersionSynapse')]",
+                    "name": "allowAll",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Synapse/workspaces', variables('synapseWorkspaceName'))]"
+                    ],
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "255.255.255.255"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
+            "apiVersion": "[variables('apiVersionStorageRoleAssignment')]",
+            "name": "[variables('storageRoleAssignmentSynWs')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]",
+                "[resourceId('Microsoft.Synapse/workspaces', variables('synapseWorkspaceName'))]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleID'))]",
+                "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('synapseStorageAccountName'))]",
+                "principalId": "[reference(concat('Microsoft.Synapse/workspaces/', variables('synapseWorkspaceName')), variables('apiVersionSynapse'), 'Full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+            }
+        },
+        {
+            "type": "Microsoft.Synapse/workspaces/bigDataPools",
+            "apiVersion": "[variables('apiVersionSynapse')]",
+            "name": "[concat(variables('synapseWorkspaceName'), '/', variables('synapseSparkPoolName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('labDeploymentName'))]",
+                "[resourceId('Microsoft.Synapse/workspaces', variables('synapseWorkspaceName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts/providers/roleAssignments', variables('synapseStorageAccountName'), 'Microsoft.Authorization',  variables('synapseStorageRoleAssignmentGuid'))]"
+            ],
+            "properties": {
+                "sparkVersion": "2.4",
+                "nodeCount": 3,
+                "nodeSize": "Medium",
+                "nodeSizeFamily": "MemoryOptimized",
+                "autoScale": {
+                    "enabled": true,
+                    "minNodeCount": 3,
+                    "maxNodeCount": 4
+                },
+                "autoPause": {
+                    "enabled": true,
+                    "delayInMinutes": 15
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "nameSuffix": {
+            "type": "string",
+            "value": "[variables('nameSuffix')]"
+        },
+        "appInsightsResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Insights/Components', variables('appInsightsName'))]"
+        }
+    }
+}

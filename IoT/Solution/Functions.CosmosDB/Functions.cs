@@ -1,33 +1,29 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using CosmosDbIoTScenario.Common;
-using CosmosDbIoTScenario.Common.Models;
-using CosmosDbIoTScenario.Common.Models.Alerts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Documents.Linq;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using PartitionKey = Microsoft.Azure.Documents.PartitionKey;
-using RequestOptions = Microsoft.Azure.Documents.Client.RequestOptions;
+using CosmosDbIoTScenario.Common;
+using CosmosDbIoTScenario.Common.Models;
+using CosmosDbIoTScenario.Common.Models.Alerts;
 
 namespace Functions.CosmosDB
 {
     public class Functions
     {
+        private const int LEASES_COLLECTION_THROUGHPUT = 1000;
+
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly CosmosClient _cosmosClient;
 
@@ -38,13 +34,14 @@ namespace Functions.CosmosDB
             _cosmosClient = cosmosClient;
         }
 
-        [FunctionName("TripProcessor")]
+        [FunctionName(nameof(TripProcessor))]
         public async Task TripProcessor([CosmosDBTrigger(
-            databaseName: "ContosoAuto",
-            collectionName: "telemetry",
-            ConnectionStringSetting = "CosmosDBConnection",
-            LeaseCollectionName = "leases",
-            LeaseCollectionPrefix = "trips",
+            databaseName: WellKnown.COSMOSDB_DB_NAME,
+            collectionName: WellKnown.COSMOSDB_COLLECTION_NAME_TELEMETRY,
+            ConnectionStringSetting = WellKnown.COSMOSDB_CONNECTIONSTRING_NAME,
+            LeaseCollectionName = WellKnown.COSMOSDB_COLLECTION_NAME_LEASES,
+            LeaseCollectionPrefix = WellKnown.COSMOSDB_LEASE_PREFIX_TRIPS,
+            LeasesCollectionThroughput = LEASES_COLLECTION_THROUGHPUT,
             CreateLeaseCollectionIfNotExists = true,
             StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
             ILogger log)
@@ -54,17 +51,17 @@ namespace Functions.CosmosDB
             // Retrieve the Trip records by VIN, compare the odometer reading to the starting odometer reading to calculate miles driven,
             // and update the Trip and Consignment status and send an alert if needed once completed.
             var sendTripAlert = false;
-            var database = "ContosoAuto";
-            var metadataContainer = "metadata";
+            var database = WellKnown.COSMOSDB_DB_NAME;
+            var metadataContainer = WellKnown.COSMOSDB_COLLECTION_NAME_METADATA;
 
             if (vehicleEvents.Count > 0)
             {
-                foreach (var group in vehicleEvents.GroupBy(singleEvent => singleEvent.GetPropertyValue<string>("vin")))
+                foreach (var group in vehicleEvents.GroupBy(singleEvent => singleEvent.GetPropertyValue<string>(nameof(VehicleEvent.vin))))
                 {
                     var vin = group.Key;
-                    var odometerHigh = group.Max(item => item.GetPropertyValue<double>("odometer"));
+                    var odometerHigh = group.Max(item => item.GetPropertyValue<double>(nameof(VehicleEvent.odometer)));
                     var averageRefrigerationUnitTemp =
-                        group.Average(item => item.GetPropertyValue<double>("refrigerationUnitTemp"));
+                        group.Average(item => item.GetPropertyValue<double>(nameof(VehicleEvent.refrigerationUnitTemp)));
 
                     // First, retrieve the metadata Cosmos DB container reference:
                     var container = _cosmosClient.GetContainer(database, metadataContainer);
@@ -81,7 +78,7 @@ namespace Functions.CosmosDB
                     {
                         // Only retrieve the first result.
                         var trip = (await query.ReadNextAsync()).FirstOrDefault();
-                        
+
                         if (trip != null)
                         {
                             // Retrieve the Consignment record.
@@ -152,7 +149,7 @@ namespace Functions.CosmosDB
                             if (sendTripAlert)
                             {
                                 // Have the HttpClient factory create a new client instance.
-                                var httpClient = _httpClientFactory.CreateClient(NamedHttpClients.LogicAppClient);
+                                var httpClient = _httpClientFactory.CreateClient(WellKnown.LOGIC_APP_CLIENT);
 
                                 // Create the payload to send to the Logic App.
                                 var payload = new LogicAppAlert
@@ -173,12 +170,12 @@ namespace Functions.CosmosDB
                                     status = trip.status,
                                     vin = trip.vin,
                                     temperatureSetting = trip.temperatureSetting,
-                                    recipientEmail = Environment.GetEnvironmentVariable("RecipientEmail")
+                                    recipientEmail = Environment.GetEnvironmentVariable(WellKnown.RECIPIENT_EMAIL_NAME)
                                 };
 
                                 var postBody = JsonConvert.SerializeObject(payload);
 
-                                await httpClient.PostAsync(Environment.GetEnvironmentVariable("LogicAppUrl"), new StringContent(postBody, Encoding.UTF8, "application/json"));
+                                await httpClient.PostAsync(Environment.GetEnvironmentVariable(WellKnown.LOGIC_APP_URL_NAME), new StringContent(postBody, Encoding.UTF8, "application/json"));
                             }
                         }
                     }
@@ -186,52 +183,18 @@ namespace Functions.CosmosDB
             }
         }
 
-        [FunctionName("ColdStorage")]
-        public async Task ChangeColdStorageFeedTrigger([CosmosDBTrigger(
-            databaseName: "ContosoAuto",
-            collectionName: "telemetry",
-            ConnectionStringSetting = "CosmosDBConnection",
-            LeaseCollectionName = "leases",
-            LeaseCollectionPrefix = "cold",
-            CreateLeaseCollectionIfNotExists = true,
-            StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
-            Binder binder,
-            ILogger log)
-        {
-            log.LogInformation($"Saving {vehicleEvents.Count} events from Cosmos DB to cold storage.");
 
-            if (vehicleEvents.Count > 0)
-            {
-                // Use imperative binding to Azure Storage, as opposed to declarative binding.
-                // This allows us to compute the binding parameters and set the file path dynamically during runtime.
-                var attributes = new Attribute[]
-                {
-                    new BlobAttribute($"telemetry/custom/scenario1/{DateTime.UtcNow:yyyy/MM/dd/HH/mm/ss-fffffff}.json", FileAccess.ReadWrite),
-                    new StorageAccountAttribute("ColdStorageAccount")
-                };
-
-                using (var fileOutput = await binder.BindAsync<TextWriter>(attributes))
-                {
-                    // Write the data to Azure Storage for cold storage and batch processing requirements.
-                    // Please note: Application Insights will log Dependency errors with a 404 result code for each write.
-                    // The error is harmless since the internal Storage SDK returns a 404 when it first checks if the file already exists.
-                    // Application Insights cannot distinguish between "good" and "bad" 404 responses for these calls. These errors can be ignored for now.
-                    // For more information, see https://github.com/Azure/azure-functions-durable-extension/issues/593
-                    fileOutput.Write(JsonConvert.SerializeObject(vehicleEvents));
-                }
-            }
-        }
-
-        [FunctionName("SendToEventHubsForReporting")]
+        [FunctionName(nameof(SendToEventHubsForReporting))]
         public async Task SendToEventHubsForReporting([CosmosDBTrigger(
-            databaseName: "ContosoAuto",
-            collectionName: "telemetry",
-            ConnectionStringSetting = "CosmosDBConnection",
-            LeaseCollectionName = "leases",
-            LeaseCollectionPrefix = "reporting",
+            databaseName: WellKnown.COSMOSDB_DB_NAME,
+            collectionName: WellKnown.COSMOSDB_COLLECTION_NAME_TELEMETRY,
+            ConnectionStringSetting = WellKnown.COSMOSDB_CONNECTIONSTRING_NAME,
+            LeaseCollectionName = WellKnown.COSMOSDB_COLLECTION_NAME_LEASES,
+            LeaseCollectionPrefix = WellKnown.COSMOSDB_LEASE_PREFIX_REPORTING,
+            LeasesCollectionThroughput = LEASES_COLLECTION_THROUGHPUT,
             CreateLeaseCollectionIfNotExists = true,
             StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
-            [EventHub("reporting", Connection = "EventHubsConnection")] IAsyncCollector<EventData> vehicleEventsOut,
+            [EventHub(WellKnown.EVENT_HUB_NAME, Connection = WellKnown.EVENT_HUB_CONNECTION_NAME)] IAsyncCollector<EventData> vehicleEventsOut,
             ILogger log)
         {
             log.LogInformation($"Sending {vehicleEvents.Count} Cosmos DB records to Event Hubs for reporting.");
@@ -242,14 +205,14 @@ namespace Functions.CosmosDB
                 {
                     // Convert to a VehicleEvent class.
                     var vehicleEventOut = await vehicleEvent.ReadAsAsync<VehicleEvent>();
+
                     // Add to the Event Hub output collection.
-                    await vehicleEventsOut.AddAsync(new EventData(
-                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleEventOut))));
+                    await vehicleEventsOut.AddAsync(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleEventOut))));
                 }
             }
         }
 
-        [FunctionName("HealthCheck")]
+        [FunctionName(nameof(HealthCheck))]
         public static async Task<IActionResult> HealthCheck(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
@@ -261,18 +224,16 @@ namespace Functions.CosmosDB
             // The function will return an HTTP status of 200 (OK) if all values contain non-zero strings.
             // If any are null or empty, the function will return an error, indicating which values are missing.
 
-            var cosmosDbConnection = Environment.GetEnvironmentVariable("CosmosDBConnection");
-            var coldStorageAccount = Environment.GetEnvironmentVariable("ColdStorageAccount");
-            var eventHubsConnection = Environment.GetEnvironmentVariable("EventHubsConnection");
-            var logicAppUrl = Environment.GetEnvironmentVariable("LogicAppUrl");
-            var recipientEmail = Environment.GetEnvironmentVariable("RecipientEmail");
+            var cosmosDbConnection = Environment.GetEnvironmentVariable(WellKnown.COSMOSDB_CONNECTIONSTRING_NAME);
+            var eventHubsConnection = Environment.GetEnvironmentVariable(WellKnown.EVENT_HUB_CONNECTION_NAME);
+            var logicAppUrl = Environment.GetEnvironmentVariable(WellKnown.LOGIC_APP_URL_NAME);
+            var recipientEmail = Environment.GetEnvironmentVariable(WellKnown.RECIPIENT_EMAIL_NAME);
 
             var variableList = new List<string>();
-            if (string.IsNullOrWhiteSpace(cosmosDbConnection)) variableList.Add("CosmosDBConnection");
-            if (string.IsNullOrWhiteSpace(coldStorageAccount)) variableList.Add("ColdStorageAccount");
-            if (string.IsNullOrWhiteSpace(eventHubsConnection)) variableList.Add("EventHubsConnection");
-            if (string.IsNullOrWhiteSpace(logicAppUrl)) variableList.Add("LogicAppUrl");
-            if (string.IsNullOrWhiteSpace(recipientEmail)) variableList.Add("RecipientEmail");
+            if (string.IsNullOrWhiteSpace(cosmosDbConnection)) variableList.Add(WellKnown.COSMOSDB_CONNECTIONSTRING_NAME);
+            if (string.IsNullOrWhiteSpace(eventHubsConnection)) variableList.Add(WellKnown.EVENT_HUB_CONNECTION_NAME);
+            if (string.IsNullOrWhiteSpace(logicAppUrl)) variableList.Add(WellKnown.LOGIC_APP_URL_NAME);
+            if (string.IsNullOrWhiteSpace(recipientEmail)) variableList.Add(WellKnown.RECIPIENT_EMAIL_NAME);
 
             if (variableList.Count > 0)
             {

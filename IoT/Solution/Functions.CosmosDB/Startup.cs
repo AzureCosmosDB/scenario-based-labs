@@ -34,7 +34,7 @@ namespace Functions.CosmosDB
             // enough time to hopefully allow the downstream service to recover.
             // See the following for more information:
             // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/implement-http-call-retries-exponential-backoff-polly
-            builder.Services.AddHttpClient(NamedHttpClients.LogicAppClient, client =>
+            builder.Services.AddHttpClient(WellKnown.LOGIC_APP_CLIENT, client =>
             {
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             })
@@ -48,17 +48,17 @@ namespace Functions.CosmosDB
 
             // Register the Cosmos DB client as a Singleton.
             builder.Services.AddSingleton((s) => {
-                var connectionString = configuration["CosmosDBConnection"];
+                var connectionString = configuration[WellKnown.COSMOSDB_CONNECTIONSTRING_NAME];
                 var cosmosDbConnectionString = new CosmosDbConnectionString(connectionString);
 
                 if (string.IsNullOrEmpty(connectionString))
                 {
-                    throw new ArgumentNullException("Please specify a value for CosmosDBConnection in the local.settings.json file or your Azure Functions Settings.");
+                    throw new ArgumentNullException($"Please specify a value for {WellKnown.COSMOSDB_CONNECTIONSTRING_NAME} in the local.settings.json file or your Azure Functions Settings.");
                 }
 
                 CosmosClientBuilder configurationBuilder = new CosmosClientBuilder(cosmosDbConnectionString.ServiceEndpoint.OriginalString, cosmosDbConnectionString.AuthKey);
-                return configurationBuilder
-                    .Build();
+                
+                return configurationBuilder.Build();
             });
         }
     }

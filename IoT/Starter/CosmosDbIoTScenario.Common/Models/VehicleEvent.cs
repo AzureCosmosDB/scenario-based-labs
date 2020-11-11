@@ -23,8 +23,11 @@ namespace CosmosDbIoTScenario.Common.Models
         // This is needed because a container can contain any number of document types within,
         // since it does not enforce any type of schema.
         [JsonProperty] public string entityType => WellKnown.EntityTypes.VehicleTelemetry;
+
         // Used to set the expiration policy (time to live).
-        [JsonProperty] public int? ttl { get; set; }
+        // TODO - 2020-04-16 - DISABLE this due to Cosmos DB container enabled for analytical storage - conflict with AS TTL setting
+        //[JsonProperty] public int? ttl { get; set; }
+
         [JsonProperty] public string tripId { get; set; }
         [JsonProperty] public string vin { get; set; }
         [JsonProperty] public string state { get; set; }

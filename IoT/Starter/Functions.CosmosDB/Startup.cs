@@ -34,7 +34,7 @@ namespace Functions.CosmosDB
             // enough time to hopefully allow the downstream service to recover.
             // See the following for more information:
             // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/implement-http-call-retries-exponential-backoff-polly
-            builder.Services.AddHttpClient(NamedHttpClients.LogicAppClient, client =>
+            builder.Services.AddHttpClient(WellKnown.LOGIC_APP_CLIENT, client =>
             {
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             })
@@ -49,7 +49,7 @@ namespace Functions.CosmosDB
             // Register the Cosmos DB client as a Singleton.
             // TODO 1: Register the Cosmos DB client as a Singleton so it can be injected into the Function App code.
             // Complete: builder.Services.AddSingleton((s) => { ... }
-            
+
         }
     }
 }
