@@ -37,8 +37,9 @@ Below is a diagram of the solution architecture you will build in this lab. Plea
 
 - Advanced analytics and ML model training:
 
-  **Azure Synapse** is used to train a machine learning model to predict vehicle battery failure, based on historic information. It saves a trained model locally for batch predictions, and deploys a model and scoring web service to **Azure Kubernetes Service (AKS)** or **Azure Container Instances (ACI)** for real-time predictions.
-  Azure Synapse also connects to Azure Cosmos DB Analytical Store to retrieve daily trip information to make batch predictions on battery failure, then stores the predictions in the maintenance container.
+  **Azure Synapse** connects to **Azure Cosmos DB Analytical Store** via **Synapse Link for Cosmos DB** to retrieve daily trip information, transform it, write it to a data set that **Azure Machine Learning** can use to train batch and real-time prediction models, and then write batch predictions back to Cosmos DB. A Spark cluster and Python notebooks are used for data movement and transformation between Azure Cosmos DB Analytical Store and **Azure Data Lake Store**.
+
+  **Azure Machine Learning** is used to train a machine learning model to predict vehicle battery failure based on historic information. Batch and real-time inferencing pipelines are published. The real-time inference pipeline is published to an **Azure Kubernetes Service** (AKS) cluster, where it is called by the web app when a user requests a battery maintenance prediction.
 
 - Fleet management web app, security, and monitoring:
 
