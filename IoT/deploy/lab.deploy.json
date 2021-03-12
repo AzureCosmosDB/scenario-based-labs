@@ -62,17 +62,17 @@
         "storageRoleAssignmentSynWs": "[concat(variables('synapseStorageAccountName'), '/Microsoft.Authorization/',  guid(resourceGroup().id, variables('storageBlobDataContributorRoleID'), variables('synapseStorageAccountName'), variables('synapseWorkspaceName')))]",
 
         "apiVersionAppInsights": "2015-05-01",
-        "apiVersionCosmosDb": "2020-06-01-preview",
+        "apiVersionCosmosDb": "2021-01-15",
         "apiVersionEventHubs": "2017-04-01",
         "apiVersionEventHubsPreview": "2018-01-01-preview",
-        "apiVersionIotHubs": "2020-03-01",
+        "apiVersionIotHubs": "2020-08-01",
         "apiVersionKeyVault": "2019-09-01",
-        "apiVersionMachineLearning": "2020-06-01",
+        "apiVersionMachineLearning": "2020-09-01-preview",
         "apiVersionStorage": "2019-06-01",
         "apiVersionStorageRoleAssignment": "2020-03-01-preview",
         "apiVersionStreamAnalytics": "2017-04-01-preview",
-        "apiVersionSynapse": "2019-06-01-preview",
-        "apiVersionWeb": "2019-08-01"
+        "apiVersionSynapse": "2021-03-01",
+        "apiVersionWeb": "2020-09-01"
     },
     "resources": [
         {
@@ -347,6 +347,8 @@
                     "name": "standard"
                 },
                 "enabledForDeployment": false,
+                "enableSoftDelete": false,
+                "enablePurgeProtection": false,
                 "accessPolicies": [
                 ]
             }

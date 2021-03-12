@@ -3,14 +3,14 @@
 # ====================
 # Variables
 
-subscription_id=""
-location="eastus"
-resource_group_name=""
+subscription_id="PROVIDE"
+location="PROVIDE"
+resource_group_name="PROVIDE"
 
 template_file="demo.deploy.json"
 deployment_name="deploy_iot_scenario_demo"
 
-recipient_email=""
+recipient_email="PROVIDE"
 # ====================
 
 # Operations

@@ -27,7 +27,7 @@
     },
     "variables": {
         "labDeploymentName": "deploy_iot_scenario_lab",
-        "labTemplateUrl": "https://raw.githubusercontent.com/plzm/iot-lab/master/scenario-based-labs/IoT/deploy/lab.deploy.json",
+        "labTemplateUrl": "https://raw.githubusercontent.com/AzureCosmosDB/scenario-based-labs/master/IoT/deploy/lab.deploy.json",
 
         "nameSuffix": "[uniqueString(resourceGroup().id)]",
 
@@ -93,17 +93,17 @@
         "appInsightsName": "[concat('Cosmos-DB-IoT-Insights-', variables('nameSuffix'))]",
 
         "apiVersionAppInsights": "2015-05-01",
-        "apiVersionCosmosDb": "2020-06-01-preview",
+        "apiVersionCosmosDb": "2021-01-15",
         "apiVersionEventHubs": "2017-04-01",
         "apiVersionKeyVault": "2019-09-01",
         "apiVersionLogicApp": "2016-06-01",
-        "apiVersionMachineLearning": "2020-06-01",
-        "apiVersionResources": "2019-10-01",
+        "apiVersionMachineLearning": "2020-09-01-preview",
+        "apiVersionResources": "2020-10-01",
         "apiVersionStorage": "2019-06-01",
         "apiVersionStorageRoleAssignment": "2020-03-01-preview",
-        "apiVersionStreamAnalytics": "2016-03-01",
-        "apiVersionSynapse": "2019-06-01-preview",
-        "apiVersionWeb": "2019-08-01",
+        "apiVersionStreamAnalytics": "2017-04-01-preview",
+        "apiVersionSynapse": "2021-03-01",
+        "apiVersionWeb": "2020-09-01",
         "apiVersionWebConnections": "2016-06-01"
     },
     "resources": [
@@ -905,7 +905,7 @@
             ],
             "properties": {
                 "computeType": "AKS",
-                "computeLocation": "northcentralus",
+                "computeLocation": "[parameters('location')]",
                 "properties": {
                     "agentCount": 3,
                     "agentVmSize": "STANDARD_DS3_V2",
