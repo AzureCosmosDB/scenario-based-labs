@@ -5,15 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using IoTHubTrigger = Microsoft.Azure.WebJobs.EventHubTriggerAttribute;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Azure.Messaging.EventHubs;
 
 namespace Functions.StreamProcessing
 {
@@ -35,7 +34,7 @@ namespace Functions.StreamProcessing
 			{
 				try
 				{
-					var messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
+					var messageBody = Encoding.UTF8.GetString(eventData.EventBody.ToArray());
 					var vehicleEvent = JsonConvert.DeserializeObject<VehicleEvent>(messageBody);
 
 					// Update the partitionKey value.
