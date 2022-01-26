@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.Documents;
-using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
@@ -17,6 +16,7 @@ using Newtonsoft.Json;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
 using CosmosDbIoTScenario.Common.Models.Alerts;
+using Azure.Messaging.EventHubs;
 
 namespace Functions.CosmosDB
 {
