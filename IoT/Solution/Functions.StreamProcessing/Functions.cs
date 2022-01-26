@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,29 +11,27 @@ using IoTHubTrigger = Microsoft.Azure.WebJobs.EventHubTriggerAttribute;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Azure.Messaging.EventHubs;
 
 namespace Functions.StreamProcessing
 {
     public static class Functions
 	{
 		[FunctionName(nameof(IoTHubTrigger))]
-		public static async Task IoTHubTrigger([IoTHubTrigger(WellKnown.IOT_HUB_NAME, Connection = WellKnown.IOT_HUB_CONNECTION_NAME)] EventData[] vehicleEventData,
+		public static async Task IoTHubTrigger([IoTHubTrigger(WellKnown.IOT_HUB_NAME, Connection = WellKnown.IOT_HUB_CONNECTION_NAME)] string[] vehicleMessages,
 			[CosmosDB(
 				databaseName: WellKnown.COSMOSDB_DB_NAME,
-				collectionName: WellKnown.COSMOSDB_COLLECTION_NAME_TELEMETRY,
-				ConnectionStringSetting = WellKnown.COSMOSDB_CONNECTIONSTRING_NAME)]
+				containerName: WellKnown.COSMOSDB_COLLECTION_NAME_TELEMETRY,
+				Connection = WellKnown.COSMOSDB_CONNECTIONSTRING_NAME)]
 			IAsyncCollector<VehicleEvent> vehicleTelemetryOut,
 			ILogger log)
 		{
 			var exceptions = new List<Exception>();
-			log.LogInformation($"IoT Hub trigger function processing {vehicleEventData.Length} events.");
+			log.LogInformation($"IoT Hub trigger function processing {vehicleMessages.Length} events.");
 
-			foreach (var eventData in vehicleEventData)
+			foreach (var messageBody in vehicleMessages)
 			{
 				try
 				{
-					var messageBody = Encoding.UTF8.GetString(eventData.EventBody.ToArray());
 					var vehicleEvent = JsonConvert.DeserializeObject<VehicleEvent>(messageBody);
 
 					// Update the partitionKey value.
