@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
 using Microsoft.Azure.Devices.Client;
-using Microsoft.Azure.EventHubs;
 using Newtonsoft.Json;
 
 namespace FleetDataGenerator
@@ -30,7 +28,6 @@ namespace FleetDataGenerator
         private double _distanceTraveled = 0;
         private readonly Trip _trip;
         private readonly string _tripId;
-        private readonly EventHubClient _eventHubClient;
         private readonly CancellationTokenSource _localCancellationSource = new CancellationTokenSource();
 
         public string TripId => _tripId;
