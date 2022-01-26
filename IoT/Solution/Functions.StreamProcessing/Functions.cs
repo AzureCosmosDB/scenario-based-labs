@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using IoTHubTrigger = Microsoft.Azure.WebJobs.EventHubTriggerAttribute;
 using CosmosDbIoTScenario.Common;
 using CosmosDbIoTScenario.Common.Models;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 
 namespace Functions.StreamProcessing
 {
-	public static class Functions
+    public static class Functions
 	{
 		[FunctionName(nameof(IoTHubTrigger))]
 		public static async Task IoTHubTrigger([IoTHubTrigger(WellKnown.IOT_HUB_NAME, Connection = WellKnown.IOT_HUB_CONNECTION_NAME)] EventData[] vehicleEventData,
@@ -93,7 +94,7 @@ namespace Functions.StreamProcessing
 
 			if (variableList.Count > 0)
 			{
-				return new BadRequestObjectResult($"The service is missing one or more application settings: {string.Join(", ", variableList)}");
+                return new BadRequestObjectResult($"The service is missing one or more application settings: {string.Join(", ", variableList)}");
 			}
 
 			return new OkObjectResult($"The service contains expected application settings");
