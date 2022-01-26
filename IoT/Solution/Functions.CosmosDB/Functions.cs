@@ -37,13 +37,13 @@ namespace Functions.CosmosDB
         [FunctionName(nameof(TripProcessor))]
         public async Task TripProcessor([CosmosDBTrigger(
             databaseName: WellKnown.COSMOSDB_DB_NAME,
-            collectionName: WellKnown.COSMOSDB_COLLECTION_NAME_TELEMETRY,
-            ConnectionStringSetting = WellKnown.COSMOSDB_CONNECTIONSTRING_NAME,
-            LeaseCollectionName = WellKnown.COSMOSDB_COLLECTION_NAME_LEASES,
-            LeaseCollectionPrefix = WellKnown.COSMOSDB_LEASE_PREFIX_TRIPS,
-            LeasesCollectionThroughput = LEASES_COLLECTION_THROUGHPUT,
-            CreateLeaseCollectionIfNotExists = true,
-            StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
+            containerName: WellKnown.COSMOSDB_COLLECTION_NAME_TELEMETRY,
+            Connection = WellKnown.COSMOSDB_CONNECTIONSTRING_NAME,
+            LeaseContainerName = WellKnown.COSMOSDB_COLLECTION_NAME_LEASES,
+            LeaseContainerPrefix = WellKnown.COSMOSDB_LEASE_PREFIX_TRIPS,
+            LeasesContainerThroughput = LEASES_COLLECTION_THROUGHPUT,
+            CreateLeaseContainerIfNotExists = true,
+            StartFromBeginning = true)]IReadOnlyList<VehicleEvent> vehicleEvents,
             ILogger log)
         {
             log.LogInformation($"Evaluating {vehicleEvents.Count} events from Cosmos DB to optionally update Trip and Consignment metadata.");
@@ -56,12 +56,12 @@ namespace Functions.CosmosDB
 
             if (vehicleEvents.Count > 0)
             {
-                foreach (var group in vehicleEvents.GroupBy(singleEvent => singleEvent.GetPropertyValue<string>(nameof(VehicleEvent.vin))))
+                foreach (var group in vehicleEvents.GroupBy(singleEvent => singleEvent.vin))
                 {
                     var vin = group.Key;
-                    var odometerHigh = group.Max(item => item.GetPropertyValue<double>(nameof(VehicleEvent.odometer)));
+                    var odometerHigh = group.Max(item => item.odometer);
                     var averageRefrigerationUnitTemp =
-                        group.Average(item => item.GetPropertyValue<double>(nameof(VehicleEvent.refrigerationUnitTemp)));
+                        group.Average(item => item.refrigerationUnitTemp);
 
                     // First, retrieve the metadata Cosmos DB container reference:
                     var container = _cosmosClient.GetContainer(database, metadataContainer);
@@ -183,17 +183,16 @@ namespace Functions.CosmosDB
             }
         }
 
-
         [FunctionName(nameof(SendToEventHubsForReporting))]
         public async Task SendToEventHubsForReporting([CosmosDBTrigger(
             databaseName: WellKnown.COSMOSDB_DB_NAME,
-            collectionName: WellKnown.COSMOSDB_COLLECTION_NAME_TELEMETRY,
-            ConnectionStringSetting = WellKnown.COSMOSDB_CONNECTIONSTRING_NAME,
-            LeaseCollectionName = WellKnown.COSMOSDB_COLLECTION_NAME_LEASES,
-            LeaseCollectionPrefix = WellKnown.COSMOSDB_LEASE_PREFIX_REPORTING,
-            LeasesCollectionThroughput = LEASES_COLLECTION_THROUGHPUT,
-            CreateLeaseCollectionIfNotExists = true,
-            StartFromBeginning = true)]IReadOnlyList<Document> vehicleEvents,
+            containerName: WellKnown.COSMOSDB_COLLECTION_NAME_TELEMETRY,
+            Connection = WellKnown.COSMOSDB_CONNECTIONSTRING_NAME,
+            LeaseContainerName = WellKnown.COSMOSDB_COLLECTION_NAME_LEASES,
+            LeaseContainerPrefix = WellKnown.COSMOSDB_LEASE_PREFIX_REPORTING,
+            LeasesContainerThroughput = LEASES_COLLECTION_THROUGHPUT,
+            CreateLeaseContainerIfNotExists = true,
+            StartFromBeginning = true)]IReadOnlyList<VehicleEvent> vehicleEvents,
             [EventHub(WellKnown.EVENT_HUB_NAME, Connection = WellKnown.EVENT_HUB_CONNECTION_NAME)] IAsyncCollector<EventData> vehicleEventsOut,
             ILogger log)
         {
@@ -203,11 +202,8 @@ namespace Functions.CosmosDB
             {
                 foreach (var vehicleEvent in vehicleEvents)
                 {
-                    // Convert to a VehicleEvent class.
-                    var vehicleEventOut = await vehicleEvent.ReadAsAsync<VehicleEvent>();
-
                     // Add to the Event Hub output collection.
-                    await vehicleEventsOut.AddAsync(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleEventOut))));
+                    await vehicleEventsOut.AddAsync(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleEvent))));
                 }
             }
         }

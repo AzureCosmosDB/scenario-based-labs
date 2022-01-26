@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using CosmosDbIoTScenario.Common.Models;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Cosmos.Linq;
-using Microsoft.Azure.Documents.Linq;
-using Microsoft.Extensions.Configuration;
 using P.Pager;
 
 namespace FleetManagementWebApp.Services
 {
-	public class CosmosDbService : ICosmosDbService
+    public class CosmosDbService : ICosmosDbService
 	{
 		private readonly Container _container;
 
