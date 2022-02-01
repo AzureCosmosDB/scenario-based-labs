@@ -347,8 +347,8 @@
                     "name": "standard"
                 },
                 "enabledForDeployment": false,
-                "enableSoftDelete": false,
-                "enablePurgeProtection": false,
+                "enableSoftDelete": true,
+                "enablePurgeProtection": true,
                 "accessPolicies": [
                 ]
             }
