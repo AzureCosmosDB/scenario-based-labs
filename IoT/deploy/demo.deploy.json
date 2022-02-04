@@ -27,7 +27,7 @@
     },
     "variables": {
         "labDeploymentName": "deploy_iot_scenario_lab",
-        "labTemplateUrl": "https://raw.githubusercontent.com/DavideDelVecchio/scenario-based-labs/master/IoT/deploy/lab.deploy.json",
+        "labTemplateUrl": "https://raw.githubusercontent.com/AzureCosmosDB/scenario-based-labs/master/IoT/deploy/lab.deploy.json",
 
         "nameSuffix": "[uniqueString(resourceGroup().id)]",
 
